@@ -23,7 +23,6 @@ html{scroll-behavior:smooth}
 body{font-family:var(--fb);background:var(--wh);color:var(--bk);font-size:14px;line-height:1.75;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:var(--or)}
 
-/* GRAIN */
 body::after{content:'';position:fixed;inset:0;z-index:8000;pointer-events:none;opacity:.032;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:180px 180px;animation:grain .14s steps(1) infinite}
@@ -32,13 +31,11 @@ body::after{content:'';position:fixed;inset:0;z-index:8000;pointer-events:none;o
   40%{background-position:30px -20px} 60%{background-position:-50px 50px}
   80%{background-position:20px -40px} 100%{background-position:-30px 10px}}
 
-/* SCANLINE */
 body::before{content:'';position:fixed;inset:0;z-index:7999;pointer-events:none;
   background:linear-gradient(to bottom,transparent 48%,rgba(255,68,0,.016) 50%,transparent 52%);
   background-size:100% 240px;animation:scan 10s linear infinite}
 @keyframes scan{from{background-position:0 -240px}to{background-position:0 110vh}}
 
-/* BOOT */
 #boot{position:fixed;inset:0;z-index:9999;background:var(--bk);
   display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
   padding:clamp(28px,5vw,64px);transition:clip-path .5s ease}
@@ -64,10 +61,8 @@ body::before{content:'';position:fixed;inset:0;z-index:7999;pointer-events:none;
 .boot-skip:hover{color:var(--or);border-color:var(--or)}
 .boot-bg{position:absolute;bottom:40px;right:56px;font-family:var(--fw);font-size:clamp(48px,12vw,120px);color:rgba(255,255,255,.025);letter-spacing:.06em;user-select:none}
 
-/* PROGRESS */
 #prog{position:fixed;top:0;left:0;z-index:500;height:3px;width:0;background:var(--or);transition:width .1s linear}
 
-/* TICKER */
 .ticker-bar{background:var(--bk);padding:0 20px;height:32px;display:flex;align-items:center;overflow:hidden}
 .t-live{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.18em;flex-shrink:0;padding-right:16px;border-right:1px solid #222}
 .t-live::before{content:'● ';animation:pulse 2s infinite}
@@ -80,7 +75,6 @@ body::before{content:'';position:fixed;inset:0;z-index:7999;pointer-events:none;
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 #clock{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.18em;flex-shrink:0;padding-left:16px;border-left:1px solid #222}
 
-/* NAV */
 header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
   display:flex;align-items:center;justify-content:space-between;
   position:sticky;top:0;z-index:200;background:var(--wh);
@@ -93,7 +87,6 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .nav-note{font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--bk);border:1px solid var(--bk);padding:7px 16px;text-decoration:none;transition:all .2s}
 .nav-note:hover{background:var(--or);border-color:var(--or)}
 
-/* HERO ANIMATIONS */
 @keyframes fup{to{opacity:1;transform:translateY(0)}}
 @keyframes fIn{to{opacity:1}}
 .h-ey {opacity:0;animation:fup .5s ease var(--boot-end) forwards}
@@ -104,7 +97,6 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .h-st {opacity:0;animation:fIn .4s ease calc(var(--boot-end) + .75s) forwards}
 .h-deco{opacity:0;animation:fIn .8s ease calc(var(--boot-end) + .2s) forwards}
 
-/* SCROLL REVEAL */
 .rv{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
 .rv.on{opacity:1;transform:translateY(0)}
 .rv2{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
@@ -112,10 +104,8 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
-/* LAYOUT */
 .wrap{max-width:1080px;margin:0 auto;padding:0 40px}
 
-/* HERO */
 .hero{padding:80px 0 0;position:relative;overflow:hidden;border-bottom:2px solid var(--bk)}
 .hero-deco{position:absolute;right:40px;top:50%;transform:translateY(-60%);
   font-family:var(--fw);font-size:clamp(80px,18vw,220px);color:rgba(0,0,0,.04);
@@ -135,7 +125,6 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .stat-n{font-family:var(--fw);font-size:40px;line-height:1;display:block}
 .stat-l{font-family:var(--fm);font-size:9px;color:var(--mu);letter-spacing:.2em;text-transform:uppercase}
 
-/* ── DARK SECTION ── */
 .sec-dark{background:var(--dk);color:var(--wh);padding:72px 0;border-bottom:2px solid #000}
 .sec-label{font-family:var(--fm);font-size:10px;letter-spacing:.32em;text-transform:uppercase;margin-bottom:8px;display:block}
 .sec-dark .sec-label{color:var(--or)}
@@ -143,20 +132,16 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .sec-sub{font-family:var(--fc);font-size:18px;font-weight:500;margin-bottom:40px}
 .sec-dark .sec-sub{color:#555}
 
-/* ── ORANGE SECTION ── */
 .sec-or{background:var(--or);color:var(--bk);padding:72px 0;border-bottom:2px solid var(--bk)}
 .sec-or .sec-label{color:rgba(0,0,0,.38)}
 .sec-or .sec-sub{color:rgba(0,0,0,.45)}
 
-/* ── WHITE SECTION ── */
 .sec-wh{padding:72px 0;border-bottom:2px solid var(--bk)}
 .sec-wh .sec-label{color:var(--or)}
 .sec-wh .sec-sub{color:var(--mu)}
 
-/* CARDS grid */
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px}
 
-/* DARK card */
 .card-d{background:#1E1E1E;border:1px solid #2A2A2A;text-decoration:none;color:inherit;
   display:flex;flex-direction:column;position:relative;overflow:hidden;
   transition:transform .25s ease,box-shadow .25s ease}
@@ -181,7 +166,6 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .card-arr{font-family:var(--fm);font-size:14px;color:var(--or);transition:transform .2s}
 .card-d:hover .card-arr{transform:translateX(4px)}
 
-/* ORANGE section card */
 .card-o{background:#fff;border:1px solid rgba(0,0,0,.12);text-decoration:none;color:inherit;
   display:flex;flex-direction:column;position:relative;overflow:hidden;
   transition:transform .25s ease,box-shadow .25s ease}
@@ -201,7 +185,6 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .card-o .card-arr{font-family:var(--fm);font-size:14px;color:var(--bk);transition:transform .2s}
 .card-o:hover .card-arr{transform:translateX(4px)}
 
-/* HOW TO */
 .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:2px solid var(--bk);margin-top:32px}
 .how-card{background:#fff;padding:28px 24px;border-right:1px solid var(--bd);transition:background .2s}
 .how-card:last-child{border-right:none}
@@ -211,7 +194,6 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .how-card p{font-size:13px;color:#555;line-height:1.7}
 code{font-family:var(--fm);font-size:11px;background:var(--gy);padding:2px 6px}
 
-/* FOOTER */
 footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);padding:20px 40px;
   display:flex;justify-content:space-between;align-items:center;
   font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;flex-wrap:wrap;gap:8px}
@@ -250,13 +232,13 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   <div class="t-wrap">
     <div class="t-track">
       <span class="ti">KITACORE PUBLIC TOOLS · GITHUB PAGES</span>
-      <span class="ti">NAME GENERATOR MANUAL — <span class="ot">LIVE</span></span>
+      <span class="ti">NAME EDITOR V1 MANUAL — <span class="ot">LIVE</span></span>
       <span class="ti">SKI RANKING 2 GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">AI 7 POWERS GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
       <span class="ti">DEPLOYMENT: KITACORE-2026-ALPHA</span>
       <span class="ti">KITACORE PUBLIC TOOLS · GITHUB PAGES</span>
-      <span class="ti">NAME GENERATOR MANUAL — <span class="ot">LIVE</span></span>
+      <span class="ti">NAME EDITOR V1 MANUAL — <span class="ot">LIVE</span></span>
       <span class="ti">SKI RANKING 2 GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">AI 7 POWERS GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
@@ -275,7 +257,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </header>
 
-<!-- ══ HERO (WHITE) ══ -->
+<!-- HERO -->
 <div class="hero">
   <div class="wrap">
     <div class="hero-deco h-deco">KITAcore</div>
@@ -299,7 +281,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 
 <div id="tools"></div>
 
-<!-- ══ 使い方を読む (DARK) ══ -->
+<!-- 使い方を読む (DARK) -->
 <section class="sec-dark">
   <div class="wrap">
     <div class="rv">
@@ -308,22 +290,22 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <p class="sec-sub">ツールを開く前に読んでおくと、すぐ使いこなせる。</p>
     </div>
     <div class="cards">
-      <a class="card-d rv2" href="name-generator-manual.html">
+      <a class="card-d rv2" href="name-editor-v1-manual.html">
         <div class="ct">
           <span class="card-num">01</span>
           <div>
-            <div class="card-status">FIELD MANUAL<br>VERSION 2</div>
+            <div class="card-status">FIELD MANUAL<br>VERSION 1</div>
             <span class="live-badge">● LIVE</span>
           </div>
         </div>
         <div class="cb">
           <span class="card-tag">MANUAL · MANGA STORYBOARD</span>
-          <h3 class="card-title">NAME Generator<br>取扱説明書</h3>
-          <p class="card-hook">V1〜V5、どれを使えばいい？ 機能の違いがわからない──そんな疑問をこの1ページで解消。</p>
-          <span class="card-get">読むと、自分に合うバージョンが30秒で選べる</span>
+          <h3 class="card-title">NAME Editor V1<br>取扱説明書</h3>
+          <p class="card-hook">コマ割り・セリフ入力・下絵描画・書き出しまで。V1の基本操作をこの1ページで完全解説。</p>
+          <span class="card-get">読むと、ツールがすぐ使いこなせる</span>
         </div>
         <div class="cf">
-          <span class="card-date">2026.04 · v2</span>
+          <span class="card-date">2026.04 · V1</span>
           <span class="card-arr">→</span>
         </div>
       </a>
@@ -331,7 +313,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
-<!-- ══ 記事と一緒に読む (ORANGE) ══ -->
+<!-- 記事と一緒に読む (ORANGE) -->
 <section class="sec-or">
   <div class="wrap">
     <div class="rv">
@@ -382,7 +364,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
-<!-- ══ HOW TO USE THIS SITE (WHITE) ══ -->
+<!-- 3 STEPS (WHITE) -->
 <section class="sec-wh">
   <div class="wrap">
     <div class="rv">
@@ -417,7 +399,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 </footer>
 
 <script>
-/* BOOT */
 const SEEN = 'kc_boot';
 const seen = sessionStorage.getItem(SEEN);
 
@@ -441,9 +422,9 @@ if (seen) {
   const lines = [
     { t:'KITACORE PORTAL v2026 INITIALIZING...', c:'hi', d:0 },
     { t:'LOADING: PUBLIC TOOLS & GUIDES',        c:'',   d:260 },
-    { t:'  [取説]      NAME GENERATOR MANUAL  ■', c:'or', d:500 },
-    { t:'  [補足 01]   SKI RANKING 2 GUIDE    ■', c:'or', d:680 },
-    { t:'  [補足 02]   AI 7 POWERS GUIDE      ■', c:'or', d:860 },
+    { t:'  [取説]      NAME EDITOR V1 MANUAL   ■', c:'or', d:500 },
+    { t:'  [補足 01]   SKI RANKING 2 GUIDE     ■', c:'or', d:680 },
+    { t:'  [補足 02]   AI 7 POWERS GUIDE       ■', c:'or', d:860 },
     { t:'ALL SYSTEMS OPERATIONAL',               c:'hi', d:1060 },
     { t:'LAUNCHING...',                          c:'hi cur', d:1200 },
   ];
@@ -465,13 +446,11 @@ if (seen) {
   setTimeout(finishBoot, max + 450);
 }
 
-/* PROGRESS */
 const bar = document.getElementById('prog');
 window.addEventListener('scroll', () => {
   bar.style.width = (scrollY / (document.documentElement.scrollHeight - innerHeight) * 100) + '%';
 }, { passive:true });
 
-/* CLOCK */
 const ck = document.getElementById('clock');
 const pad = n => String(n).padStart(2,'0');
 function tick() {
@@ -480,27 +459,25 @@ function tick() {
 }
 tick(); setInterval(tick, 1000);
 
-/* SCROLL REVEAL */
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
 }, { threshold:.08, rootMargin:'0px 0px -32px 0px' });
 document.querySelectorAll('.rv,.rv2').forEach(el => io.observe(el));
 
-/* COUNT UP */
-function countUp(id, target, delay=0) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  setTimeout(() => {
-    const s = performance.now();
-    const f = now => {
-      const t = Math.min((now-s)/900, 1);
-      el.textContent = Math.round((1-Math.pow(1-t,3))*target);
-      if (t<1) requestAnimationFrame(f);
-    };
-    requestAnimationFrame(f);
-  }, delay);
-}
 window.addEventListener('load', () => {
+  function countUp(id, target, delay=0) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    setTimeout(() => {
+      const s = performance.now();
+      const f = now => {
+        const t = Math.min((now-s)/900, 1);
+        el.textContent = Math.round((1-Math.pow(1-t,3))*target);
+        if (t<1) requestAnimationFrame(f);
+      };
+      requestAnimationFrame(f);
+    }, delay);
+  }
   countUp('cnt-p', 3, 600);
   countUp('cnt-c', 2, 700);
 });
