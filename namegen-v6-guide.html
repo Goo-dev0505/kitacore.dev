@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KITAcore NAME GENERATOR — FIELD MANUAL R1</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --or: #FF4B1A;
+  --or2: rgba(255,75,26,0.14);
+  --or3: rgba(255,75,26,0.06);
+  --bk: #0C0C0C;
+  --dk: #141414;
+  --dk2: #1C1C1C;
+  --wh: #F4F4F2;
+  --wh2: #E8E8E4;
+  --mu: #666;
+  --grid: rgba(0,0,0,0.055);
+  --grid-w: rgba(255,255,255,0.07);
+  --fw: 'Anton', Impact, sans-serif;
+  --fm: 'JetBrains Mono','IBM Plex Mono',monospace;
+  --fb: 'Noto Sans JP','Hiragino Sans',sans-serif;
+  --nav: 200px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family: var(--fb);
+  background: var(--wh);
+  color: var(--bk);
+  cursor: crosshair;
+  overflow-x: hidden;
+}
+a, button, summary { cursor: pointer; }
+
+/* ═══════════════════════════════════════════════
+   BOOT SCREEN
+═══════════════════════════════════════════════ */
+#boot {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bk);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  transition: opacity 600ms ease, visibility 600ms ease;
+}
+#boot.fade { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.boot-logo {
+  font-family: var(--fw);
+  font-size: clamp(60px, 10vw, 120px);
+  color: var(--wh);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 48px;
+  position: relative;
+}
+.boot-logo em { color: var(--or); font-style: normal; }
+.boot-logo::after {
+  content: 'FIELD MANUAL R1';
+  display: block;
+  font-family: var(--fm);
+  font-size: 11px;
+  color: var(--or);
+  letter-spacing: 0.3em;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.boot-lines {
+  font-family: var(--fm);
+  font-size: 12px;
+  color: #555;
+  line-height: 2.4;
+  min-height: 200px;
+  width: min(440px, 90vw);
+}
+.boot-line {
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 250ms, transform 250ms;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.boot-line.show { opacity: 1; transform: none; }
+.boot-line .bl-or { color: var(--or); }
+.boot-line .bl-gr { color: #4ADE80; }
+.boot-line .bl-wh { color: var(--wh); font-weight: 600; }
+
+.boot-bar-wrap {
+  width: min(440px, 90vw);
+  height: 3px;
+  background: #222;
+  margin-top: 24px;
+  border-radius: 1px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 300ms;
+}
+.boot-bar-wrap.show { opacity: 1; }
+.boot-bar {
+  height: 100%;
+  background: var(--or);
+  width: 0%;
+  transition: width 1800ms cubic-bezier(.1,.8,.2,1);
+  border-radius: 1px;
+}
+.boot-bar.go { width: 100%; }
+
+.boot-cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: var(--or);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.7s step-end infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ═══════════════════════════════════════════════
+   STATUS BARS
+═══════════════════════════════════════════════ */
+#top-status {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 26px;
+  background: var(--bk);
+  z-index: 200;
+  display: flex; align-items: center;
+  padding: 0 16px;
+  gap: 24px;
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #222;
+}
+.ts-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--or);
+  animation: blink 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.ts-txt { color: var(--or); }
+.ts-sep { color: #333; }
+.ts-muted { color: #444; }
+.ts-r { margin-left: auto; color: #444; }
+
+#bot-status {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 24px;
+  background: var(--or);
+  z-index: 200;
+  display: flex; align-items: center;
+  padding: 0 16px;
+  gap: 20px;
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bk);
+  font-weight: 600;
+}
+.bs-sep { opacity: 0.4; }
+.bs-r { margin-left: auto; }
+
+/* ═══════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════ */
+#wrap {
+  display: flex;
+  padding-top: 26px;
+  padding-bottom: 24px;
+  min-height: 100dvh;
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+#nav {
+  width: var(--nav);
+  min-width: var(--nav);
+  position: sticky;
+  top: 26px;
+  height: calc(100dvh - 50px);
+  overflow-y: auto;
+  background: var(--bk);
+  border-right: 1px solid #1E1E1E;
+  flex-shrink: 0;
+  padding: 0 0 32px;
+  scrollbar-width: none;
+  z-index: 100;
+}
+#nav::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  padding: 20px 14px 16px;
+  border-bottom: 1px solid #1E1E1E;
+}
+.nb-title {
+  font-family: var(--fw);
+  font-size: 18px;
+  color: var(--wh);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+.nb-title em { color: var(--or); font-style: normal; }
+.nb-sub {
+  font-family: var(--fm);
+  font-size: 8px;
+  color: #444;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.nb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 3px 8px;
+  background: var(--or2);
+  border: 1px solid rgba(255,75,26,0.35);
+  font-family: var(--fm);
+  font-size: 8px;
+  color: var(--or);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nav-group {
+  padding: 16px 14px 0;
+  font-family: var(--fm);
+  font-size: 8px;
+  color: #333;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  font-family: var(--fm);
+  font-size: 10px;
+  color: #555;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: background 100ms, color 100ms;
+  border-left: 2px solid transparent;
+  position: relative;
+}
+.nav-item:hover { background: #111; color: #888; }
+.nav-item.active {
+  border-left-color: var(--or);
+  color: var(--or);
+  background: rgba(255,75,26,0.06);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  right: 12px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--or);
+  animation: blink 1.5s ease-in-out infinite;
+}
+.nav-num {
+  font-size: 8px;
+  color: #2E2E2E;
+  min-width: 16px;
+}
+.nav-item.active .nav-num { color: rgba(255,75,26,0.5); }
+
+/* Crosshair deco in sidebar */
+.nav-xhair {
+  padding: 18px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid #111;
+  margin-top: 8px;
+}
+.xh-sym {
+  font-family: var(--fm);
+  font-size: 9px;
+  color: #2A2A2A;
+  animation: pulse-xh 3s ease-in-out infinite;
+}
+@keyframes pulse-xh {
+  0%,100%{opacity:.3;transform:scale(1)} 50%{opacity:.7;transform:scale(1.15)}
+}
+.xh-line { flex:1; height:1px; background:#1A1A1A; }
+
+/* ═══════════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════════ */
+#main { flex: 1; min-width: 0; }
+
+/* Scan-line animation on current section */
+.scan-host { position: relative; overflow: hidden; }
+.scan-host::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 80px;
+  background: linear-gradient(transparent, rgba(255,75,26,0.04) 50%, transparent);
+  z-index: 1;
+  pointer-events: none;
+  animation: scanline 6s linear infinite;
+}
+@keyframes scanline {
+  0%   { top: -80px; }
+  100% { top: 100%; }
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION BASE
+═══════════════════════════════════════════════ */
+.sec {
+  padding: 70px 56px 64px;
+  border-bottom: 1px solid #DDDDD8;
+  position: relative;
+  scroll-margin-top: 26px;
+}
+
+/* bg variants */
+.sec-wh { background: var(--wh); }
+.sec-dk {
+  background: var(--dk);
+  color: var(--wh);
+  border-bottom-color: #222;
+}
+.sec-or {
+  background: var(--or);
+  color: var(--bk);
+  border-bottom-color: rgba(0,0,0,0.15);
+}
+
+/* Grid overlay */
+.sec-wh::after, .sec-dk::after, .sec-or::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+.sec-wh::after {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.sec-dk::after {
+  background-image:
+    linear-gradient(var(--grid-w) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-w) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.sec-or::after {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.sec > * { position: relative; z-index: 1; }
+
+/* Crosshair decorations */
+.xh {
+  position: absolute;
+  font-family: var(--fm);
+  font-size: 12px;
+  color: var(--or);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 2;
+  animation: pulse-xh 4s ease-in-out infinite;
+  user-select: none;
+}
+.xh:nth-child(2) { animation-delay: 1s; }
+.xh:nth-child(3) { animation-delay: 2.5s; }
+
+/* Background display number */
+.sec-bg-num {
+  position: absolute;
+  font-family: var(--fw);
+  font-size: clamp(120px, 20vw, 280px);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.sec-wh .sec-bg-num { color: rgba(0,0,0,0.04); }
+.sec-dk .sec-bg-num { color: rgba(255,255,255,0.04); }
+.sec-or .sec-bg-num { color: rgba(0,0,0,0.1); }
+
+/* Section header */
+.sec-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fm);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.sec-wh .sec-tag { color: var(--mu); }
+.sec-dk .sec-tag { color: #555; }
+.sec-or .sec-tag { color: rgba(0,0,0,0.5); }
+
+.tag-pill {
+  padding: 3px 8px;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  font-family: var(--fm);
+}
+.sec-wh .tag-pill { background: var(--bk); color: var(--wh); }
+.sec-dk .tag-pill { background: var(--or); color: var(--bk); }
+.sec-or .tag-pill { background: var(--bk); color: var(--wh); }
+
+.sec-title {
+  font-family: var(--fw);
+  font-size: clamp(32px, 5vw, 64px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: 14px;
+}
+.sec-or .sec-title { color: var(--bk); }
+
+.hl-wh { color: var(--wh); }
+.hl-or { color: var(--or); }
+.hl-bk { color: var(--bk); }
+
+.sec-lead {
+  font-size: 14px;
+  line-height: 1.85;
+  margin-bottom: 40px;
+  max-width: 640px;
+  opacity: 0.7;
+}
+
+/* Glitch effect */
+.glitch {
+  position: relative;
+  display: inline-block;
+  animation: glitch-main 10s ease-in-out infinite;
+}
+@keyframes glitch-main {
+  0%,85%,100% { transform: none; }
+  86% { transform: skewX(-3deg) translateX(-3px); }
+  88% { transform: skewX(2deg) translateX(4px); }
+  90% { transform: skewX(-1deg) translateX(-2px); }
+  92% { transform: none; }
+  94% { transform: skewX(1deg) translateX(2px); }
+  96% { transform: none; }
+}
+.glitch::before {
+  content: attr(data-t);
+  position: absolute; inset: 0;
+  color: var(--or);
+  clip-path: inset(20% 0 60% 0);
+  animation: glitch-b 10s ease-in-out infinite;
+}
+.glitch::after {
+  content: attr(data-t);
+  position: absolute; inset: 0;
+  color: cyan;
+  opacity: 0.5;
+  clip-path: inset(60% 0 20% 0);
+  animation: glitch-a 10s ease-in-out infinite;
+}
+@keyframes glitch-b {
+  0%,85%,100% { transform: none; opacity: 0; }
+  86%,96% { opacity: 0; }
+  87% { transform: translateX(-6px); opacity: 0.6; }
+  89% { transform: translateX(4px); opacity: 0.4; }
+  91% { opacity: 0; }
+}
+@keyframes glitch-a {
+  0%,85%,100% { transform: none; opacity: 0; }
+  88% { transform: translateX(4px); opacity: 0.4; }
+  90% { transform: translateX(-3px); opacity: 0.3; }
+  92% { opacity: 0; }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 550ms ease, transform 550ms ease;
+}
+.reveal.in { opacity: 1; transform: none; }
+.reveal.d1 { transition-delay: 80ms; }
+.reveal.d2 { transition-delay: 160ms; }
+.reveal.d3 { transition-delay: 240ms; }
+.reveal.d4 { transition-delay: 320ms; }
+.reveal.d5 { transition-delay: 400ms; }
+
+/* ═══════════════════════════════════════════════
+   CORNER MARKS
+═══════════════════════════════════════════════ */
+.cm {
+  position: relative;
+  padding: 20px;
+}
+.cm::before, .cm::after,
+.cm > .cm-br, .cm > .cm-bl {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border-color: var(--or);
+  border-style: solid;
+  pointer-events: none;
+}
+.cm::before  { top: 0;    left: 0;  border-width: 2px 0 0 2px; }
+.cm::after   { top: 0;    right: 0; border-width: 2px 2px 0 0; }
+.cm > .cm-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+.cm > .cm-bl { bottom: 0; left: 0;  border-width: 0 0 2px 2px; }
+
+/* ═══════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════ */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; margin-bottom: 32px; }
+.card {
+  border: 1px solid #DDDDD8;
+  padding: 18px 16px;
+  position: relative;
+  transition: border-color 200ms, background 200ms;
+  cursor: default;
+}
+.card::before, .card::after {
+  content: '';
+  position: absolute;
+  width: 0; height: 0;
+  border-color: var(--or);
+  border-style: solid;
+  transition: width 200ms, height 200ms;
+}
+.card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+.card:hover { border-color: rgba(255,75,26,0.3); background: rgba(255,75,26,0.03); }
+.card:hover::before, .card:hover::after { width: 16px; height: 16px; }
+
+.sec-dk .card { border-color: #2A2A2A; }
+.sec-dk .card:hover { background: rgba(255,75,26,0.06); border-color: rgba(255,75,26,0.3); }
+.sec-or .card { border-color: rgba(0,0,0,0.2); background: rgba(0,0,0,0.08); }
+.sec-or .card:hover { background: rgba(0,0,0,0.15); }
+
+.card-icon { font-size: 20px; margin-bottom: 10px; }
+.card-tag {
+  font-family: var(--fm); font-size: 8px; letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.sec-wh .card-tag { color: var(--mu); }
+.sec-dk .card-tag { color: #555; }
+.sec-or .card-tag { color: rgba(0,0,0,0.5); }
+.card-title { font-family: var(--fw); font-size: 20px; letter-spacing: 0.02em; margin-bottom: 6px; line-height: 1.1; }
+.card-desc { font-size: 12px; line-height: 1.75; opacity: 0.6; }
+
+/* ═══════════════════════════════════════════════
+   COMPARISON TABLE
+═══════════════════════════════════════════════ */
+.cmp-wrap { margin-bottom: 32px; }
+.cmp-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 2px solid var(--or);
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+.cmp-head span {
+  font-family: var(--fm); font-size: 9px; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0 14px;
+}
+.cmp-head .ch-or { color: var(--or); }
+.cmp-head .ch-wh { color: var(--wh); }
+.cmp-head .ch-mu { color: #555; }
+
+.cmp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid #222;
+  transition: background 120ms;
+}
+.cmp-row:hover { background: rgba(255,255,255,0.03); }
+.cmp-row > * {
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.cmp-row .cf { color: var(--wh); font-weight: 500; font-size: 13px; }
+.yes  { color: #4ADE80; font-family: var(--fm); font-size: 11px; font-weight: 600; }
+.no   { color: #F87171; font-family: var(--fm); font-size: 11px; }
+.part { color: var(--or); font-family: var(--fm); font-size: 11px; }
+.cmp-row .ct { color: #666; }
+
+/* V6 highlight row */
+.cmp-row.v6-only { background: rgba(255,75,26,0.06); }
+.cmp-row.v6-only:hover { background: rgba(255,75,26,0.1); }
+
+/* ═══════════════════════════════════════════════
+   STEP FLOW
+═══════════════════════════════════════════════ */
+.step-flow { display: flex; flex-direction: column; gap: 0; }
+.step {
+  display: flex; gap: 20px;
+  padding-bottom: 32px;
+  position: relative;
+}
+.step-num-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.step-n {
+  width: 36px; height: 36px;
+  border: 2px solid var(--or);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--fw);
+  font-size: 18px;
+  color: var(--or);
+  flex-shrink: 0;
+  position: relative;
+}
+.step-n::before, .step-n::after {
+  content: '';
+  position: absolute;
+  width: 5px; height: 5px;
+  background: var(--or);
+}
+.step-n::before { top: -3px; left: -3px; }
+.step-n::after  { bottom: -3px; right: -3px; }
+.step-connector { flex: 1; width: 2px; background: #222; margin: 4px 0; }
+.sec-wh .step-connector { background: #DDD; }
+.step-body { flex: 1; padding-top: 6px; }
+.step-title {
+  font-family: var(--fm); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sec-dk .step-title { color: var(--or); }
+.sec-wh .step-title { color: var(--bk); }
+.step-desc { font-size: 13px; line-height: 1.8; opacity: 0.65; }
+
+/* ═══════════════════════════════════════════════
+   GESTURE GRID
+═══════════════════════════════════════════════ */
+.gesture-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 2px; }
+.gg {
+  padding: 18px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #1E1E1E;
+  transition: background 150ms;
+  position: relative;
+}
+.gg:hover { background: rgba(255,75,26,0.06); border-color: rgba(255,75,26,0.3); }
+.gg-icon { font-size: 26px; margin-bottom: 10px; }
+.gg-name {
+  font-family: var(--fw); font-size: 18px;
+  letter-spacing: 0.02em; margin-bottom: 4px;
+  line-height: 1.1;
+}
+.gg-desc { font-size: 12px; opacity: 0.5; line-height: 1.7; }
+.gg-badge {
+  display: inline-block;
+  font-family: var(--fm);
+  font-size: 8px; padding: 2px 7px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-top: 8px;
+}
+.badge-new { background: var(--or); color: var(--bk); }
+.badge-old { background: #222; color: #666; border: 1px solid #333; }
+
+/* ═══════════════════════════════════════════════
+   INFO BOXES
+═══════════════════════════════════════════════ */
+.infobox {
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex; gap: 12px;
+  border-left: 3px solid var(--or);
+  background: rgba(255,75,26,0.07);
+  font-size: 13px; line-height: 1.8;
+}
+.infobox.warn { border-color: #F87171; background: rgba(248,113,113,0.07); }
+.infobox.ok   { border-color: #4ADE80; background: rgba(74,222,128,0.07); }
+.sec-or .infobox { background: rgba(0,0,0,0.12); border-color: var(--bk); }
+.ib-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.ib-body { opacity: 0.85; }
+.ib-body strong { font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   SPEC LABEL (like the orange banners in the poster)
+═══════════════════════════════════════════════ */
+.spec-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: var(--or);
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bk);
+  margin-bottom: 24px;
+}
+.spec-banner .sb-num {
+  font-family: var(--fw);
+  font-size: 18px;
+  line-height: 1;
+  border-left: 2px solid rgba(0,0,0,0.3);
+  padding-left: 10px;
+}
+.sec-dk .spec-banner { background: var(--or); }
+.sec-or .spec-banner { background: var(--bk); color: var(--wh); }
+
+/* ═══════════════════════════════════════════════
+   TABLE generic
+═══════════════════════════════════════════════ */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px; }
+.tbl th {
+  padding: 9px 14px;
+  font-family: var(--fm); font-size: 8px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  text-align: left; border-bottom: 2px solid;
+}
+.sec-wh .tbl th { border-color: var(--bk); color: var(--bk); background: var(--wh2); }
+.sec-dk .tbl th { border-color: var(--or); color: var(--or); }
+.sec-or .tbl th { border-color: var(--bk); color: var(--bk); }
+.tbl td { padding: 10px 14px; border-bottom: 1px solid; vertical-align: top; line-height: 1.7; }
+.sec-wh .tbl td { border-color: #E0E0DA; color: #333; }
+.sec-dk .tbl td { border-color: #1E1E1E; color: #999; }
+.sec-or .tbl td { border-color: rgba(0,0,0,0.12); color: rgba(0,0,0,0.75); }
+.tbl td:first-child { font-weight: 500; }
+.sec-wh .tbl td:first-child { color: var(--bk); }
+.sec-dk .tbl td:first-child { color: var(--wh); }
+.tbl tr:hover td { background: rgba(255,75,26,0.04); }
+.tbl tr:last-child td { border-bottom: none; }
+
+code {
+  font-family: var(--fm);
+  font-size: 11px;
+  padding: 2px 6px;
+}
+.sec-wh code { background: var(--wh2); color: var(--bk); border: 1px solid #DDD; }
+.sec-dk code { background: #1A1A1A; color: var(--or); border: 1px solid #2A2A2A; }
+.sec-or code { background: rgba(0,0,0,0.15); color: var(--bk); }
+
+h3 {
+  font-family: var(--fm);
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.18em;
+  margin: 32px 0 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+h3::before {
+  content: '//';
+  color: var(--or);
+  font-size: 11px;
+}
+.sec-wh h3 { color: var(--mu); }
+.sec-dk h3 { color: #555; }
+.sec-or h3 { color: rgba(0,0,0,0.45); }
+h3::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.2; }
+
+p { font-size: 13px; line-height: 1.85; opacity: 0.7; margin-bottom: 14px; }
+ul, ol { margin: 0 0 14px 20px; }
+li { font-size: 13px; line-height: 1.85; opacity: 0.7; margin-bottom: 2px; }
+strong { font-weight: 600; opacity: 1; }
+
+/* ═══════════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════════ */
+.faq { border: 1px solid #1E1E1E; margin-bottom: 8px; overflow: hidden; }
+.faq summary {
+  padding: 16px 20px;
+  font-size: 13px; font-weight: 500;
+  color: var(--wh);
+  display: flex; align-items: center; gap: 10px;
+  list-style: none;
+  transition: background 150ms;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { background: #1A1A1A; }
+.faq summary::before { content: 'Q'; font-family: var(--fw); font-size: 20px; color: var(--or); line-height: 1; }
+.faq summary .fa-arr { margin-left: auto; color: #333; font-size: 12px; transition: transform 200ms; }
+.faq[open] summary .fa-arr { transform: rotate(180deg); }
+.faq-body {
+  padding: 16px 20px;
+  background: #0D0D0D;
+  border-top: 1px solid #1E1E1E;
+  font-size: 13px; color: #888;
+  line-height: 1.8;
+}
+.faq-body::before { content: 'A / '; font-family: var(--fw); font-size: 18px; color: #4ADE80; }
+
+/* ═══════════════════════════════════════════════
+   PRESSURE DEMO
+═══════════════════════════════════════════════ */
+.pressure-demo {
+  background: #0D0D0D;
+  border: 1px solid #1E1E1E;
+  padding: 24px;
+  margin-bottom: 28px;
+  display: flex; gap: 24px; flex-wrap: wrap;
+  align-items: center;
+}
+.pd-canvas {
+  width: 180px; height: 110px;
+  background: #fff;
+  border: 1px solid #222;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.pd-canvas svg { position: absolute; inset: 0; }
+.pd-info { flex: 1; min-width: 200px; }
+.pd-title { font-family: var(--fw); font-size: 28px; color: var(--wh); margin-bottom: 8px; }
+.pd-sub { font-size: 12px; color: #555; line-height: 1.7; margin-bottom: 14px; }
+.pd-bar-row { display: flex; align-items: center; gap: 10px; }
+.pd-lbl { font-family: var(--fm); font-size: 9px; color: #444; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+.pd-track { flex: 1; height: 4px; background: #1A1A1A; }
+.pd-fill { height: 100%; background: var(--or); animation: pressure-anim 3s ease-in-out infinite; }
+@keyframes pressure-anim { 0%,100%{width:18%} 50%{width:82%} }
+.pd-pct { font-family: var(--fw); font-size: 22px; color: var(--or); min-width: 56px; animation: pct-anim 3s ease-in-out infinite; }
+@keyframes pct-anim { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+/* ═══════════════════════════════════════════════
+   AI FLOW
+═══════════════════════════════════════════════ */
+.ai-flow {
+  display: flex; align-items: center; gap: 4px;
+  flex-wrap: wrap; margin-bottom: 28px;
+}
+.af-node {
+  padding: 10px 16px;
+  font-family: var(--fm); font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  border: 1px solid #2A2A2A; color: #666;
+  white-space: nowrap;
+}
+.af-node.accent { border-color: var(--or); color: var(--or); background: rgba(255,75,26,0.08); }
+.af-arr { color: #2A2A2A; font-size: 18px; }
+
+/* ═══════════════════════════════════════════════
+   HERO SECTION (01)
+═══════════════════════════════════════════════ */
+.hero-display {
+  margin: 0 -56px 48px;
+  background: var(--bk);
+  padding: 40px 56px;
+  position: relative;
+  overflow: hidden;
+}
+.hd-grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.hd-inner { position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+.hd-big {
+  font-family: var(--fw);
+  font-size: clamp(64px, 12vw, 160px);
+  color: var(--wh);
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+}
+.hd-big em { color: var(--or); font-style: normal; display: block; }
+.hd-right {
+  display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+}
+.hd-spec {
+  font-family: var(--fm); font-size: 9px;
+  color: #444; letter-spacing: 0.16em; text-transform: uppercase;
+  text-align: right;
+}
+.hd-spec span { display: block; color: var(--wh); font-size: 14px; margin-top: 2px; font-family: var(--fw); letter-spacing: 0; }
+.hd-reg { font-family: var(--fw); font-size: 36px; color: #333; align-self: flex-start; }
+
+/* ═══════════════════════════════════════════════
+   ORANGE SECTION FEATURE BOX
+═══════════════════════════════════════════════ */
+.or-box {
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.or-box-tag {
+  font-family: var(--fm); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--or); margin-bottom: 6px;
+}
+.or-box-title { font-family: var(--fw); font-size: 24px; color: var(--bk); margin-bottom: 6px; }
+.or-box-desc { font-size: 13px; color: #444; line-height: 1.75; }
+
+/* ═══════════════════════════════════════════════
+   LAYOUT DIAGRAMS
+═══════════════════════════════════════════════ */
+.layout-pair { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+.layout-box {
+  flex: 1; min-width: 240px;
+  border: 1px solid #1E1E1E;
+  overflow: hidden;
+}
+.lb-top {
+  padding: 8px 12px;
+  background: #0D0D0D;
+  border-bottom: 1px solid #1E1E1E;
+  font-family: var(--fm); font-size: 9px;
+  color: #555; letter-spacing: 0.1em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px;
+}
+.lb-dot-or { width: 6px; height: 6px; border-radius: 50%; background: var(--or); flex-shrink: 0; }
+.lb-inner { display: flex; height: 160px; }
+.lb-sb { width: 56px; background: #0A0A0A; border-right: 1px solid #1E1E1E; display: flex; flex-direction: column; padding: 8px 6px; gap: 5px; flex-shrink: 0; }
+.lb-sb-item { height: 6px; background: #1E1E1E; border-radius: 1px; }
+.lb-sb-item.a { background: rgba(255,75,26,0.5); }
+.lb-sb-item.ab { width: 24px; }
+.lb-main { flex: 1; display: flex; flex-direction: column; }
+.lb-topbar { height: 26px; background: #F0F0EC; border-bottom: 1px solid #DDD; display: flex; align-items: center; padding: 0 8px; gap: 5px; }
+.lb-dot-sm { width: 5px; height: 5px; border-radius: 50%; }
+.lb-canvas-area { flex: 1; background: #E0E0DC; display: flex; align-items: center; justify-content: center; padding: 8px; }
+.lb-canvas { background: #fff; border: 1px solid #CCC; width: 90%; height: 90%; display: flex; gap: 2px; padding: 3px; }
+.lb-panel { flex: 1; background: #F5F5F5; border: 1px solid #DDD; display: flex; align-items: center; justify-content: center; font-family: var(--fm); font-size: 7px; color: #AAA; }
+.lb-drawer { width: 24px; background: #0A0A0A; border-right: 1px solid #1E1E1E; display: flex; flex-direction: column; align-items: center; padding: 8px 0; gap: 4px; flex-shrink: 0; }
+.lb-drawer-line { width: 12px; height: 2px; background: #1E1E1E; }
+
+/* ═══════════════════════════════════════════════
+   MOBILE NAV
+═══════════════════════════════════════════════ */
+#mob-nav-btn {
+  display: none;
+  position: fixed;
+  bottom: 44px; left: 12px;
+  z-index: 300;
+  background: var(--or);
+  border: none;
+  width: 40px; height: 40px;
+  align-items: center; justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+}
+#nav-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 98;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  :root { --nav: 180px; }
+  .sec { padding: 52px 32px 48px; }
+  .hero-display { margin: 0 -32px 40px; padding: 32px; }
+}
+@media (max-width: 680px) {
+  #nav {
+    position: fixed;
+    left: 0; top: 26px; bottom: 24px;
+    transform: translateX(-100%);
+    transition: transform 260ms cubic-bezier(.4,0,.2,1);
+    z-index: 99;
+  }
+  #nav.open { transform: none; }
+  #nav-backdrop.show { display: block; }
+  #mob-nav-btn { display: flex; }
+  .sec { padding: 40px 20px 36px; }
+  .hero-display { margin: 0 -20px 32px; padding: 24px 20px; }
+  .hd-big { font-size: clamp(48px, 13vw, 100px); }
+  .layout-pair { flex-direction: column; }
+  .gesture-grid { grid-template-columns: 1fr; }
+  .card-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 420px) {
+  .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ BOOT SCREEN ══════════════ -->
+<div id="boot">
+  <div class="boot-logo"><em>KITA</em>core</div>
+  <div class="boot-lines" id="boot-lines"></div>
+  <div class="boot-bar-wrap" id="boot-bar-wrap">
+    <div class="boot-bar" id="boot-bar"></div>
+  </div>
+</div>
+
+<!-- ══════════════ STATUS BARS ══════════════ -->
+<div id="top-status">
+  <div class="ts-dot"></div>
+  <span class="ts-txt">STATUS: OPERATIONAL / LIVE TESTING</span>
+  <span class="ts-sep">|</span>
+  <span class="ts-muted">NAME GENERATOR v5 / v6</span>
+  <span class="ts-r">DEPLOYMENT ID: 3027-ALPHA-KTC-NYC</span>
+</div>
+
+<div id="bot-status">
+  <span>FIELD MANUAL R1</span>
+  <span class="bs-sep">//</span>
+  <span>FOR FIELD OPERATORS ONLY — RESTRICTED ACCESS</span>
+  <span class="bs-r">CLEARANCE LEVEL 4</span>
+</div>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<div id="nav-backdrop"></div>
+<button id="mob-nav-btn">☰</button>
+
+<div id="wrap">
+<nav id="nav">
+  <div class="nav-brand">
+    <div class="nb-title"><em>KITA</em>core</div>
+    <div class="nb-sub">Field Manual · R1</div>
+    <div class="nb-badge"><span class="ts-dot" style="width:5px;height:5px"></span>LIVE</div>
+  </div>
+
+  <div class="nav-group">Overview</div>
+  <a class="nav-item" href="#s01"><span class="nav-num">01</span> 概要</a>
+  <a class="nav-item" href="#s02"><span class="nav-num">02</span> V5 vs V6</a>
+  <a class="nav-item" href="#s03"><span class="nav-num">03</span> クイックスタート</a>
+
+  <div class="nav-group">Operations</div>
+  <a class="nav-item" href="#s04"><span class="nav-num">04</span> レイアウト</a>
+  <a class="nav-item" href="#s05"><span class="nav-num">05</span> ジェスチャー</a>
+  <a class="nav-item" href="#s06"><span class="nav-num">06</span> Pencil / ペン</a>
+
+  <div class="nav-group">Functions</div>
+  <a class="nav-item" href="#s07"><span class="nav-num">07</span> コマ割り</a>
+  <a class="nav-item" href="#s08"><span class="nav-num">08</span> テキスト</a>
+  <a class="nav-item" href="#s09"><span class="nav-num">09</span> 描画</a>
+  <a class="nav-item" href="#s10"><span class="nav-num">10</span> AI 生成</a>
+  <a class="nav-item" href="#s11"><span class="nav-num">11</span> エクスポート</a>
+
+  <div class="nav-group">Support</div>
+  <a class="nav-item" href="#s12"><span class="nav-num">12</span> FAQ</a>
+
+  <div class="nav-xhair">
+    <span class="xh-sym">+</span><div class="xh-line"></div>
+    <span class="xh-sym">+</span><div class="xh-line"></div>
+    <span class="xh-sym">+</span>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<main id="main">
+
+<!-- ══ 01 概要 ══ -->
+<section class="sec sec-wh scan-host" id="s01">
+  <span class="xh" style="top:48px;left:14%">+</span>
+  <span class="xh" style="bottom:40px;right:18%">+</span>
+  <span class="sec-bg-num">01</span>
+
+  <!-- Hero display block -->
+  <div class="hero-display reveal">
+    <div class="hd-grid-bg"></div>
+    <div class="hd-inner">
+      <div>
+        <div class="hd-big">NAME<em>GEN</em></div>
+      </div>
+      <div class="hd-right">
+        <div class="hd-spec">SPEC UNIT<span>R1 ®</span></div>
+        <div class="hd-spec">FIELD TESTED<span>Status — Active</span></div>
+        <div class="hd-spec">VERSION<span>V5 / V6</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spec-banner reveal d1"><span class="tag-pill">SPEC</span> KITAcore Name Generator <span class="sb-num">v6</span></div>
+
+  <h1 class="sec-title reveal d2">
+    Autonomous<br>
+    <span class="glitch" data-t="Manga System">Manga System</span>
+  </h1>
+  <p class="sec-lead reveal d3">note記事を解析して漫画ネームを全自動生成するHTML単体ツール。インストール不要、ブラウザで即起動。V6でタブレット・Apple Pencil対応を完全実装。</p>
+
+  <div class="card-grid">
+    <div class="card reveal d1">
+      <div class="card-icon">📐</div>
+      <div class="card-tag">SPEC / LAYOUT</div>
+      <div class="card-title">コマ割り</div>
+      <div class="card-desc">Quad-tree無限ネスト。左右・上下・斜め分割を自由に組み合わせる。</div>
+    </div>
+    <div class="card reveal d2">
+      <div class="card-icon">✍️</div>
+      <div class="card-tag">SPEC / TEXT</div>
+      <div class="card-title">テキスト</div>
+      <div class="card-desc">セリフ縦書き（青）＋AIプロンプト横書き（赤）を各コマに設定。</div>
+    </div>
+    <div class="card reveal d3">
+      <div class="card-icon">🖊️</div>
+      <div class="card-tag">SPEC / DRAW</div>
+      <div class="card-title">下絵描画</div>
+      <div class="card-desc">ペン圧・高解像度・パームリジェクション完全対応（V6）。</div>
+    </div>
+    <div class="card reveal d4">
+      <div class="card-icon">✦</div>
+      <div class="card-tag">SPEC / AI</div>
+      <div class="card-title">AI 生成</div>
+      <div class="card-desc">Claude APIがページ・コマ・セリフ・プロンプトを全自動生成。</div>
+    </div>
+    <div class="card reveal d5">
+      <div class="card-icon">📤</div>
+      <div class="card-tag">SPEC / OUTPUT</div>
+      <div class="card-title">PNG 書き出し</div>
+      <div class="card-desc">全ページ一括2×スケールPNG出力＋シナリオTXT保存。</div>
+    </div>
+    <div class="card reveal d5">
+      <div class="card-icon">💾</div>
+      <div class="card-tag">SPEC / DATA</div>
+      <div class="card-title">JSON 保存</div>
+      <div class="card-desc">V5↔V6相互読み込み可能なJSON形式で作業を永続化。</div>
+    </div>
+  </div>
+
+  <div class="infobox ok reveal">
+    <span class="ib-icon">✅</span>
+    <span class="ib-body"><strong>V5・V6 共存方針：</strong> デスクトップのみなら V5 / V6 どちらも同等。タブレット・スマホ・Apple Pencil で使うなら V6 推奨。JSONは相互読み込み可能。</span>
+  </div>
+</section>
+
+<!-- ══ 02 V5 vs V6 ══ -->
+<section class="sec sec-or" id="s02">
+  <span class="xh" style="top:60px;right:15%;color:rgba(0,0,0,0.2)">+</span>
+  <span class="xh" style="bottom:50px;left:12%;color:rgba(0,0,0,0.2)">+</span>
+  <span class="sec-bg-num">02</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">FIELD COMMAND</span> Comparison Chart <span class="sb-num">02</span></div>
+
+  <h1 class="sec-title reveal d1">
+    <span class="glitch" data-t="V5 vs V6">V5 vs V6</span><br>
+    機能比較
+  </h1>
+  <p class="sec-lead reveal d2">どちらのバージョンを選ぶか判断するための対比チャート。</p>
+
+  <div class="reveal d2" style="margin-bottom:24px">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+      <div class="or-box" style="flex:1;min-width:200px">
+        <div class="or-box-tag">V5 — LEGACY UNIT</div>
+        <div class="or-box-title">デスクトップ安定版</div>
+        <div class="or-box-desc">マウス操作・デスクトップで完成された体験。タブレット対応なし。</div>
+      </div>
+      <div class="or-box" style="flex:1;min-width:200px;border-left:4px solid #FF4B1A">
+        <div class="or-box-tag" style="color:#FF4B1A">V6 — FIELD TESTED · ACTIVE</div>
+        <div class="or-box-title">全デバイス対応版</div>
+        <div class="or-box-desc">タブレット・スマホ・Apple Pencil・パームリジェクション完全実装。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cmp-wrap reveal d3">
+    <div class="cmp-head">
+      <span class="ch-mu">// 機能</span>
+      <span class="ch-wh" style="color:rgba(0,0,0,0.5)">▶ V5</span>
+      <span class="ch-or" style="color:#0C0C0C">▶ V6</span>
+    </div>
+
+    <div class="cmp-row" style="background:rgba(0,0,0,0.05)">
+      <div class="cf" style="color:#111">デスクトップ操作</div>
+      <div class="yes" style="color:#14532D">◎ 完全対応</div>
+      <div class="yes" style="color:#14532D">◎ 完全対応</div>
+    </div>
+    <div class="cmp-row v6-only" style="background:rgba(0,0,0,0.08)">
+      <div class="cf" style="color:#111">タブレット最適化</div>
+      <div class="part" style="color:#92400E">△ 動くが不便</div>
+      <div class="yes" style="color:#14532D">◎ 専用UI</div>
+    </div>
+    <div class="cmp-row" style="background:rgba(0,0,0,0.05)">
+      <div class="cf" style="color:#111">スマートフォン</div>
+      <div class="no" style="color:#7F1D1D">✗ 非対応</div>
+      <div class="yes" style="color:#14532D">◎ ドロワーUI</div>
+    </div>
+    <div class="cmp-row v6-only" style="background:rgba(0,0,0,0.08)">
+      <div class="cf" style="color:#111">Apple Pencil 筆圧</div>
+      <div class="no" style="color:#7F1D1D">✗ 非対応</div>
+      <div class="yes" style="color:#14532D">◎ 0.3〜1.7× 線幅</div>
+    </div>
+    <div class="cmp-row" style="background:rgba(0,0,0,0.05)">
+      <div class="cf" style="color:#111">パームリジェクション</div>
+      <div class="no" style="color:#7F1D1D">✗ 非対応</div>
+      <div class="yes" style="color:#14532D">◎ ペン中は手のひら無視</div>
+    </div>
+    <div class="cmp-row v6-only" style="background:rgba(0,0,0,0.08)">
+      <div class="cf" style="color:#111">Retina 高解像度描画</div>
+      <div class="no" style="color:#7F1D1D">✗ 固定解像度</div>
+      <div class="yes" style="color:#14532D">◎ devicePixelRatio ×3</div>
+    </div>
+    <div class="cmp-row" style="background:rgba(0,0,0,0.05)">
+      <div class="cf" style="color:#111">描画 Undo（↶）</div>
+      <div class="no" style="color:#7F1D1D">✗ なし</div>
+      <div class="yes" style="color:#14532D">◎ 30ステップ</div>
+    </div>
+    <div class="cmp-row v6-only" style="background:rgba(0,0,0,0.08)">
+      <div class="cf" style="color:#111">ロングプレスメニュー</div>
+      <div class="no" style="color:#7F1D1D">✗ 非対応</div>
+      <div class="yes" style="color:#14532D">◎ 右クリック代替</div>
+    </div>
+    <div class="cmp-row" style="background:rgba(0,0,0,0.05)">
+      <div class="cf" style="color:#111">ズーム / 自動フィット</div>
+      <div class="no" style="color:#7F1D1D">✗ 固定560px</div>
+      <div class="yes" style="color:#14532D">◎ ±ボタン + 自動</div>
+    </div>
+    <div class="cmp-row" style="background:rgba(0,0,0,0.05);border-top:2px solid rgba(0,0,0,0.15)">
+      <div class="cf" style="color:#333">AI生成 / コマ割り / Undo / PNG</div>
+      <div class="yes" style="color:#14532D">◎ 共通</div>
+      <div class="yes" style="color:#14532D">◎ 共通</div>
+    </div>
+  </div>
+
+  <div style="display:inline-flex;align-items:center;gap:10px;padding:12px 20px;background:var(--bk);color:var(--wh);" class="reveal d4">
+    <span style="font-family:var(--fw);font-size:20px">VERDICT</span>
+    <span style="font-family:var(--fm);font-size:10px;letter-spacing:0.1em;color:#666"> — タブレット・Pencil使うなら </span>
+    <span style="font-family:var(--fw);font-size:20px;color:var(--or)">V6</span>
+    <span style="font-family:var(--fm);font-size:10px;color:#666">を選べ</span>
+  </div>
+</section>
+
+<!-- ══ 03 クイックスタート ══ -->
+<section class="sec sec-dk scan-host" id="s03">
+  <span class="xh" style="top:60px;left:8%">+</span>
+  <span class="xh" style="bottom:80px;right:10%">+</span>
+  <span class="sec-bg-num" style="color:rgba(255,255,255,0.03)">03</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">FIELD COMMAND</span> Quick Start <span class="sb-num">03</span></div>
+
+  <h1 class="sec-title reveal d1">
+    5 Steps to<br>
+    <span class="glitch hl-or" data-t="First Name">First Name</span>
+  </h1>
+  <p class="sec-lead reveal d2" style="color:#777">まず5ステップで最初のネームを作ろう。V5・V6 共通の基本フロー。</p>
+
+  <div class="step-flow reveal d3">
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">1</div><div class="step-connector"></div></div>
+      <div class="step-body">
+        <div class="step-title">HTML ファイルを開く</div>
+        <div class="step-desc">ダブルクリックまたはブラウザにドロップ。インストール不要。V6はiPadのSafariで「ホーム画面に追加」するとフルスクリーン動作。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">2</div><div class="step-connector"></div></div>
+      <div class="step-body">
+        <div class="step-title">コマを分割する</div>
+        <div class="step-desc">白いコマを<strong style="color:var(--or)">右クリック</strong>（PC）または<strong style="color:var(--or)">ロングプレス</strong>（タブレット）→「左右に分割」などを選択。または右上の <code>⋮</code> ボタンをタップ。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">3</div><div class="step-connector"></div></div>
+      <div class="step-body">
+        <div class="step-title">セリフを入力する</div>
+        <div class="step-desc">コマを<strong style="color:var(--or)">シングルタップ / クリック</strong> → テキストモーダルが開く。縦書き青で表示される。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">4</div><div class="step-connector"></div></div>
+      <div class="step-body">
+        <div class="step-title">下絵を描く</div>
+        <div class="step-desc">コマを<strong style="color:var(--or)">ダブルタップ / ダブルクリック</strong> → 描画モーダルが開く。V6ではApple Pencilの筆圧が線幅に反映。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">5</div></div>
+      <div class="step-body">
+        <div class="step-title">保存 / 書き出し</div>
+        <div class="step-desc">サイドバー「↓ 現在のページをPNG」で書き出し。「💾 保存」でJSONに保存すると次回から続けられる。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="infobox reveal d5">
+    <span class="ib-icon">⚡</span>
+    <span class="ib-body"><strong>AI使うと爆速：</strong> 「AI でネーム生成」からnote記事を貼るだけ。コマ割り・セリフ・プロンプトが全自動生成される。微調整するだけでネーム完成。</span>
+  </div>
+</section>
+
+<!-- ══ 04 レイアウト ══ -->
+<section class="sec sec-wh" id="s04">
+  <span class="xh" style="top:50px;right:12%">+</span>
+  <span class="sec-bg-num">04</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">SPEC</span> Screen Layout <span class="sb-num">04</span></div>
+
+  <h1 class="sec-title reveal d1">画面<span class="hl-or">構成</span></h1>
+  <p class="sec-lead reveal d2">V5は固定レイアウト。V6はデバイスに応じてUIが切り替わる。</p>
+
+  <div class="layout-pair reveal d3">
+    <div class="layout-box">
+      <div class="lb-top"><div class="lb-dot-or"></div>DESKTOP — V5 / V6 共通</div>
+      <div class="lb-inner">
+        <div class="lb-sb">
+          <div class="lb-sb-item a"></div><div class="lb-sb-item"></div>
+          <div class="lb-sb-item"></div><div class="lb-sb-item ab a"></div>
+        </div>
+        <div class="lb-main">
+          <div class="lb-topbar">
+            <div class="lb-dot-sm" style="background:#FF4B1A"></div>
+            <div class="lb-dot-sm" style="background:#ccc"></div>
+          </div>
+          <div class="lb-canvas-area">
+            <div class="lb-canvas">
+              <div class="lb-panel">コマ</div>
+              <div class="lb-panel">コマ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="layout-box">
+      <div class="lb-top"><div class="lb-dot-or"></div>TABLET — V6 ドロワー式</div>
+      <div class="lb-inner">
+        <div class="lb-drawer">
+          <div class="lb-drawer-line"></div><div class="lb-drawer-line"></div><div class="lb-drawer-line"></div>
+        </div>
+        <div class="lb-main">
+          <div class="lb-topbar">
+            <div class="lb-dot-sm" style="background:#888"></div>
+            <div class="lb-dot-sm" style="background:#FF4B1A;margin-left:auto"></div>
+          </div>
+          <div class="lb-canvas-area">
+            <div class="lb-canvas">
+              <div class="lb-panel">コマ</div>
+              <div class="lb-panel">コマ</div>
+              <div class="lb-panel">コマ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="layout-box">
+      <div class="lb-top"><div class="lb-dot-or"></div>PHONE — V6 ボトムシート</div>
+      <div class="lb-inner">
+        <div class="lb-main">
+          <div class="lb-topbar" style="justify-content:space-between">
+            <div style="font-family:var(--fm);font-size:8px;color:#888">☰</div>
+            <div style="font-family:var(--fm);font-size:8px;color:#FF4B1A">AI</div>
+          </div>
+          <div class="lb-canvas-area">
+            <div class="lb-canvas" style="flex-direction:column">
+              <div class="lb-panel" style="flex:none;height:45%">コマ</div>
+              <div style="display:flex;flex:1;gap:2px">
+                <div class="lb-panel">コマ</div>
+                <div class="lb-panel">コマ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>エリア説明</h3>
+  <table class="tbl reveal d4">
+    <thead><tr><th>エリア</th><th>V5</th><th>V6</th></tr></thead>
+    <tbody>
+      <tr><td>サイドバー</td><td>常時固定 210px</td><td>デスク=固定 / タブレット以下=☰ドロワー</td></tr>
+      <tr><td>キャンバス</td><td>固定 560×794px</td><td>ビューポートに自動フィット（transform: scale）</td></tr>
+      <tr><td>ズームコントロール</td><td>なし</td><td>± ボタン + 数値クリックで自動フィットに戻る</td></tr>
+      <tr><td>モーダル</td><td>ウィンドウ中央</td><td>スマホでは下からスライドアップ（ボトムシート）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ 05 ジェスチャー ══ -->
+<section class="sec sec-dk scan-host" id="s05">
+  <span class="xh" style="top:48px;left:10%">+</span>
+  <span class="xh" style="bottom:60px;right:8%">+</span>
+  <span class="sec-bg-num">05</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">FIELD OPS</span> Touch & Gesture <span class="sb-num">05</span></div>
+
+  <h1 class="sec-title reveal d1">
+    <span class="glitch hl-or" data-t="Gesture">Gesture</span><br>
+    操作ガイド
+  </h1>
+  <p class="sec-lead reveal d2" style="color:#777">V6でマウス操作に加えて追加されたタッチジェスチャーの一覧。</p>
+
+  <div class="gesture-grid reveal d3">
+    <div class="gg">
+      <div class="gg-icon">👆</div>
+      <div class="gg-name">Single Tap</div>
+      <div class="gg-desc">コマをタップ → テキスト入力モーダルを開く。セリフ・ト書きを入力。</div>
+      <span class="gg-badge badge-old">V5/V6 共通</span>
+    </div>
+    <div class="gg">
+      <div class="gg-icon">✌️</div>
+      <div class="gg-name">Double Tap</div>
+      <div class="gg-desc">280ms以内に2回タップ → 描画モーダルを開く。下絵・プロンプト入力。</div>
+      <span class="gg-badge badge-old">V5/V6 共通</span>
+    </div>
+    <div class="gg">
+      <div class="gg-icon">📌</div>
+      <div class="gg-name">Long Press</div>
+      <div class="gg-desc">500ms押し続ける → コンテキストメニュー。分割・削除・編集が選べる。対応端末は振動フィードバックあり。</div>
+      <span class="gg-badge badge-new">V6 NEW</span>
+    </div>
+    <div class="gg">
+      <div class="gg-icon">⋮</div>
+      <div class="gg-name">Menu Button</div>
+      <div class="gg-desc">コマ右上の⋮をタップ → メニュー。V6では常時表示（V5はホバー時のみ）。</div>
+      <span class="gg-badge badge-new">V6 強化</span>
+    </div>
+    <div class="gg">
+      <div class="gg-icon">⠿</div>
+      <div class="gg-name">Handle Drag</div>
+      <div class="gg-desc">テキストブロック上部の⠿をドラッグ → コマ内を自由移動。V6ではハンドルが44px以上に拡大。</div>
+      <span class="gg-badge badge-old">V5/V6 共通</span>
+    </div>
+    <div class="gg">
+      <div class="gg-icon">↔</div>
+      <div class="gg-name">Line Drag</div>
+      <div class="gg-desc">分割線をドラッグ → 比率変更。V6ではタッチ判定エリアが18px（V5の2倍近い）。</div>
+      <span class="gg-badge badge-old">V5/V6 共通</span>
+    </div>
+    <div class="gg">
+      <div class="gg-icon">●</div>
+      <div class="gg-name">Endpoint Drag</div>
+      <div class="gg-desc">分割線の端点（水色丸）をドラッグ → 斜め角度を調整。V6は22px判定。</div>
+      <span class="gg-badge badge-old">V5/V6 共通</span>
+    </div>
+    <div class="gg">
+      <div class="gg-icon">☰</div>
+      <div class="gg-name">Drawer Toggle</div>
+      <div class="gg-desc">タブレット・スマホ画面左上の☰をタップ → サイドバーをドロワー形式で開く。</div>
+      <span class="gg-badge badge-new">V6 NEW</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 06 Apple Pencil / ペン ══ -->
+<section class="sec sec-or" id="s06">
+  <span class="xh" style="top:64px;left:14%;color:rgba(0,0,0,0.15)">+</span>
+  <span class="xh" style="bottom:56px;right:12%;color:rgba(0,0,0,0.15)">+</span>
+  <span class="sec-bg-num">06</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">UNIT SPEC</span> Pen Input System <span class="sb-num">06</span></div>
+
+  <h1 class="sec-title reveal d1">
+    Apple<br>
+    <span class="glitch" data-t="Pencil">Pencil</span>
+  </h1>
+  <p class="sec-lead reveal d2">V6専用機能。Pointer Events APIで筆圧・パームリジェクションを完全実装。V5では非対応。</p>
+
+  <div class="pressure-demo reveal d3">
+    <div class="pd-canvas">
+      <svg viewBox="0 0 180 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <path d="M10,70 Q35,30 70,55 Q105,80 140,40 Q155,28 170,35" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"/>
+        <path d="M10,85 Q50,70 100,78 Q140,85 170,75" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+        <path d="M20,25 L70,25" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M70,25 L160,25" fill="none" stroke="#111" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="pd-info">
+      <div class="pd-title">筆圧 → 線幅</div>
+      <div class="pd-sub">Apple Pencil (全世代) / Samsung S Pen / Surface Pen に自動対応。<br>線幅 = 基本太さ × (0.3 + 筆圧 × 1.4)</div>
+      <div class="pd-bar-row">
+        <span class="pd-lbl">PRESSURE</span>
+        <div class="pd-track"><div class="pd-fill"></div></div>
+        <span class="pd-pct">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:28px" class="reveal d4">
+    <div class="or-box">
+      <div class="or-box-tag">PALM REJECTION</div>
+      <div class="or-box-title">手のひら検出</div>
+      <div class="or-box-desc">ペン検出後700msはタッチを完全ブロック。iPad上で手のひらを置きながらApple Pencilで描画可能。サイドバーのトグルでON/OFF可能。</div>
+    </div>
+    <div class="or-box">
+      <div class="or-box-tag">HIGH FIDELITY</div>
+      <div class="or-box-title">高精細描画</div>
+      <div class="or-box-desc">devicePixelRatio (最大3×)でRetina対応。<code>getCoalescedEvents()</code>で240Hzの高サンプリングレートも処理し、素早い線でも滑らか。</div>
+    </div>
+    <div class="or-box">
+      <div class="or-box-tag">DRAW UNDO</div>
+      <div class="or-box-title">描画内 Undo ↶</div>
+      <div class="or-box-desc">Draw Modal内に独立した Undoスタック（最大30ステップ）を搭載。間違えたらすぐ↶ボタンで戻せる。</div>
+    </div>
+  </div>
+
+  <div class="infobox reveal d5" style="background:rgba(0,0,0,0.1);border-color:rgba(0,0,0,0.4)">
+    <span class="ib-icon">✏️</span>
+    <span class="ib-body"><strong>Apple Pencil 第2世代：</strong> ダブルタップジェスチャーはiPadOS側の機能のためツール内切り替えには使えない。描画モーダルのツールバーボタンで「ペン」「消しゴム」を切り替えて。</span>
+  </div>
+</section>
+
+<!-- ══ 07 コマ割り ══ -->
+<section class="sec sec-wh" id="s07">
+  <span class="xh" style="top:56px;right:15%">+</span>
+  <span class="sec-bg-num">07</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">SPEC</span> Panel Division <span class="sb-num">07</span></div>
+  <h1 class="sec-title reveal d1">コマ<span class="hl-or">割り</span></h1>
+  <p class="sec-lead reveal d2">Quad-treeで無限にネストできる分割システム。分割・比率・角度の3段階。</p>
+
+  <h3>分割方法</h3>
+  <table class="tbl reveal d3">
+    <thead><tr><th>操作</th><th>デスクトップ</th><th>タブレット V6</th><th>効果</th></tr></thead>
+    <tbody>
+      <tr><td>左右に分割</td><td>右クリック → ↔</td><td>ロングプレス / ⋮</td><td>コマを左右2分割</td></tr>
+      <tr><td>上下に分割</td><td>右クリック → ↕</td><td>ロングプレス / ⋮</td><td>コマを上下2分割</td></tr>
+      <tr><td>斜め左右</td><td>右クリック → ⤡</td><td>ロングプレス / ⋮</td><td>左右分割+12%傾き</td></tr>
+      <tr><td>斜め上下</td><td>右クリック → ⤢</td><td>ロングプレス / ⋮</td><td>上下分割+12%傾き</td></tr>
+      <tr><td>コマ削除</td><td>右クリック → ✕</td><td>ロングプレス / ⋮</td><td>隣コマと合体</td></tr>
+    </tbody>
+  </table>
+
+  <div class="infobox reveal">
+    <span class="ib-icon">💡</span>
+    <span class="ib-body"><strong>Undo / Redo：</strong> ページごとに独立したUndoスタック（最大60操作）。<code>Ctrl+Z</code> / <code>Ctrl+Shift+Z</code> またはサイドバーのボタン。</span>
+  </div>
+</section>
+
+<!-- ══ 08 テキスト ══ -->
+<section class="sec sec-dk" id="s08">
+  <span class="xh" style="top:54px;right:11%">+</span>
+  <span class="sec-bg-num">08</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">SPEC</span> Text Input <span class="sb-num">08</span></div>
+  <h1 class="sec-title reveal d1">テキスト<span class="hl-or">入力</span></h1>
+  <p class="sec-lead reveal d2" style="color:#777">セリフ・ト書き（縦書き青）とAIプロンプト（横書き赤）を各コマに設定。</p>
+
+  <h3>2種類のテキスト</h3>
+  <div class="cmp-wrap reveal d3">
+    <div class="cmp-head">
+      <span class="ch-mu">// 種別</span>
+      <span class="ch-wh">表示スタイル</span>
+      <span class="ch-wh">開き方</span>
+    </div>
+    <div class="cmp-row">
+      <div class="cf">セリフ・ト書き</div>
+      <div class="ct">縦書き・<span style="color:#60A5FA">青文字</span></div>
+      <div class="ct">シングルタップ / クリック</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cf">AI プロンプト</div>
+      <div class="ct">横書き・等幅・<span style="color:#F87171">赤文字</span></div>
+      <div class="ct">ダブルタップ / ダブルクリック</div>
+    </div>
+  </div>
+
+  <h3>テキストブロック操作</h3>
+  <table class="tbl reveal d4">
+    <thead><tr><th>操作</th><th>方法</th><th>効果</th></tr></thead>
+    <tbody>
+      <tr><td>移動</td><td>⠿バーをドラッグ（V6：44px以上）</td><td>コマ内の好きな位置へ</td></tr>
+      <tr><td>リサイズ</td><td>右下⤡をドラッグ（V6：常時表示）</td><td>ブロックのW/Hを変更</td></tr>
+      <tr><td>内容編集</td><td>テキスト部分をタップ</td><td>対応するモーダルを開く</td></tr>
+    </tbody>
+  </table>
+
+  <div class="infobox reveal">
+    <span class="ib-icon">👁</span>
+    <span class="ib-body"><strong>表示切り替え：</strong> サイドバーのチェックボックスで「セリフ・ト書き」「プロンプト」「下絵」を個別に表示/非表示。PNG書き出し時もこの設定が反映される。</span>
+  </div>
+</section>
+
+<!-- ══ 09 描画 ══ -->
+<section class="sec sec-or" id="s09">
+  <span class="xh" style="top:52px;right:14%;color:rgba(0,0,0,0.15)">+</span>
+  <span class="sec-bg-num">09</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">FIELD OPS</span> Drawing System <span class="sb-num">09</span></div>
+  <h1 class="sec-title reveal d1">下絵 &amp;<br><span class="glitch" data-t="Drawing">Drawing</span></h1>
+  <p class="sec-lead reveal d2">各コマにフリーハンドで下絵を描ける。V6でペン圧・高精細・Undo が追加。</p>
+
+  <h3>ツールバー全項目</h3>
+  <table class="tbl reveal d3">
+    <thead><tr><th>ボタン</th><th>機能</th><th>V5</th><th>V6</th></tr></thead>
+    <tbody>
+      <tr><td>ペン</td><td>フリーハンド描画</td><td>◎</td><td>◎ + 筆圧</td></tr>
+      <tr><td>消しゴム</td><td>部分消し (destination-out)</td><td>◎</td><td>◎</td></tr>
+      <tr><td>↶ Undo</td><td>1ストローク戻す（最大30）</td><td>✗</td><td><span style="color:var(--bk);font-weight:600">◎ NEW</span></td></tr>
+      <tr><td>クリア</td><td>全消し（確認あり）</td><td>◎</td><td>◎</td></tr>
+      <tr><td>太さスライダー</td><td>1〜28px 基準線幅</td><td>◎</td><td>◎ 筆圧で増減</td></tr>
+      <tr><td>色ドット</td><td>カラーピッカー</td><td>◎</td><td>◎</td></tr>
+      <tr><td>筆圧インジケーター</td><td>現在の筆圧を●と%で表示</td><td>✗</td><td><span style="color:var(--bk);font-weight:600">◎ NEW</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="infobox warn reveal" style="background:rgba(0,0,0,0.1);border-color:rgba(0,0,0,0.4)">
+    <span class="ib-icon">⚠️</span>
+    <span class="ib-body"><strong>ファイルサイズ：</strong> 下絵はBase64 PNGとしてJSONに埋め込まれる。多ページ・複雑な下絵は数十〜数百KB/コマになる。定期的に「💾 保存」でバックアップを。</span>
+  </div>
+</section>
+
+<!-- ══ 10 AI生成 ══ -->
+<section class="sec sec-dk scan-host" id="s10">
+  <span class="xh" style="top:52px;left:9%">+</span>
+  <span class="xh" style="bottom:70px;right:11%">+</span>
+  <span class="sec-bg-num">10</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">AUTONOMOUS</span> AI Generation <span class="sb-num">10</span></div>
+
+  <h1 class="sec-title reveal d1">
+    <span class="glitch hl-or" data-t="AI">AI</span><br>
+    ネーム生成
+  </h1>
+  <p class="sec-lead reveal d2" style="color:#777">Anthropic Claude APIでnote記事からネーム全体を自動生成。V5・V6で同一機能。</p>
+
+  <div class="ai-flow reveal d3">
+    <div class="af-node">note 記事</div>
+    <span class="af-arr">→</span>
+    <div class="af-node accent">Claude API</div>
+    <span class="af-arr">→</span>
+    <div class="af-node">JSON</div>
+    <span class="af-arr">→</span>
+    <div class="af-node">ネーム反映</div>
+  </div>
+
+  <div class="step-flow reveal d4">
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">1</div><div class="step-connector"></div></div>
+      <div class="step-body">
+        <div class="step-title">「AI でネーム生成」ボタン</div>
+        <div class="step-desc">トップバー右端の水色ボタン（スマホでは「AI」と短縮）をタップ。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">2</div><div class="step-connector"></div></div>
+      <div class="step-body">
+        <div class="step-title">note記事を貼り付ける</div>
+        <div class="step-desc">テキストエリアにnote本文を貼り付け。最大3,000文字を使用。50文字以上必要。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">3</div><div class="step-connector"></div></div>
+      <div class="step-body">
+        <div class="step-title">設定：ページ数・トーン</div>
+        <div class="step-desc">1〜5ページ、トーン（解説系/ストーリー/コミカル/シリアス）を選択。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num-col"><div class="step-n">4</div></div>
+      <div class="step-body">
+        <div class="step-title">「✦ 生成する」→ 完成</div>
+        <div class="step-desc">10〜30秒でコマ割り・セリフ・プロンプトが全自動生成される。既存の全ページが置き換わる。<strong style="color:var(--or)">生成前にJSONバックアップを強く推奨。</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>8種のAIレイアウト</h3>
+  <table class="tbl reveal">
+    <thead><tr><th>名前</th><th>構成</th><th>適した場面</th></tr></thead>
+    <tbody>
+      <tr><td><code>single</code></td><td>全面1コマ</td><td>大きな見開き・表紙</td></tr>
+      <tr><td><code>2col</code></td><td>左右2分割</td><td>対比・会話</td></tr>
+      <tr><td><code>3col</code></td><td>左・右上・右下</td><td>メイン+サブ2コマ</td></tr>
+      <tr><td><code>manga1〜4</code></td><td>多様な漫画配置</td><td>起承転結・4コマ風</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ 11 エクスポート ══ -->
+<section class="sec sec-wh" id="s11">
+  <span class="xh" style="top:58px;right:13%">+</span>
+  <span class="sec-bg-num">11</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">SPEC</span> Export & Save <span class="sb-num">11</span></div>
+  <h1 class="sec-title reveal d1">保存 /<span class="hl-or"> エクスポート</span></h1>
+  <p class="sec-lead reveal d2">V5・V6で同一の保存・書き出し機能。JSONで作業を永続化、PNGで成果物を書き出す。</p>
+
+  <table class="tbl reveal d3">
+    <thead><tr><th>ボタン</th><th>出力</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td>💾 保存</td><td><code>.json</code>（全ページ・下絵含む）</td><td>作業の永続化・バックアップ</td></tr>
+      <tr><td>📂 読込</td><td>—（ファイル選択）</td><td>V5/V6相互読み込み可</td></tr>
+      <tr><td>↓ 現在ページをPNG</td><td>1120×1588px PNG（2×）</td><td>現在ページの書き出し</td></tr>
+      <tr><td>↓ 全ページを一括PNG</td><td>各ページを順次DL</td><td>全ページ一括書き出し</td></tr>
+      <tr><td>📄 シナリオを保存</td><td><code>.txt</code>（全ページのセリフ+プロンプト）</td><td>ライターへの共有・記録</td></tr>
+    </tbody>
+  </table>
+
+  <div class="infobox ok reveal">
+    <span class="ib-icon">🔄</span>
+    <span class="ib-body"><strong>V5→V6データ移行：</strong> V5で保存したJSONをV6の「📂 読込」で開ける。全ページ・コマ割り・テキスト・下絵を引き継いで作業を継続できる。逆（V6→V5）も同様。</span>
+  </div>
+</section>
+
+<!-- ══ 12 FAQ ══ -->
+<section class="sec sec-dk" id="s12" style="border-bottom:none">
+  <span class="xh" style="top:50px;right:10%">+</span>
+  <span class="xh" style="bottom:80px;left:8%">+</span>
+  <span class="sec-bg-num">12</span>
+
+  <div class="spec-banner reveal"><span class="tag-pill">INTEL</span> Classified Q&amp;A <span class="sb-num">12</span></div>
+  <h1 class="sec-title reveal d1"><span class="glitch hl-or" data-t="FAQ">FAQ</span></h1>
+  <p class="sec-lead reveal d2" style="color:#777">よくある質問と対処法。</p>
+
+  <details class="faq reveal d2">
+    <summary>V5で作ったJSONをV6で開けますか？<span class="fa-arr">▼</span></summary>
+    <div class="faq-body">開けます。「📂 読込」からJSONファイルを選択すると、V5で作ったコマ割り・テキスト・下絵をそのまま引き継いで作業を継続できます。V6固有データ（ズーム値等）はデフォルト設定になります。</div>
+  </details>
+
+  <details class="faq reveal d3">
+    <summary>iPadでApple Pencilの筆圧が効かない<span class="fa-arr">▼</span></summary>
+    <div class="faq-body">1. V6ファイルを使っているか確認。2. サイドバーの「筆圧対応 ✦」チェックがONか確認。3. Safariを使用（Chrome for iPadはPointer Eventsが制限される場合あり）。4. ページを再読み込みして再試行。</div>
+  </details>
+
+  <details class="faq reveal d4">
+    <summary>ロングプレスしてもメニューが出ない<span class="fa-arr">▼</span></summary>
+    <div class="faq-body">コマ内の白い空白部分（テキストブロックや⋮ボタンの上ではない場所）を500ms押し続けてください。⋮ボタンをタップする方が確実です。</div>
+  </details>
+
+  <details class="faq reveal d5">
+    <summary>ダブルタップしてもテキストモーダルが開く<span class="fa-arr">▼</span></summary>
+    <div class="faq-body">ダブルタップの2回目が280ms以内に届いていない可能性があります。より素早く2回タップしてみてください。最初のタップでモーダルが開いた場合は一度閉じてから再試行。</div>
+  </details>
+
+  <details class="faq reveal d2">
+    <summary>AI生成でエラーになる<span class="fa-arr">▼</span></summary>
+    <div class="faq-body">原因：1. テキストが50文字未満。2. ネットワークエラー（少し待って再試行）。3. ファイルを直接開いている場合、一部ブラウザでfetch APIが制限される（ローカルサーバー経由で開くと解決）。</div>
+  </details>
+
+  <details class="faq reveal d3">
+    <summary>コマの削除がグレーアウトで選べない<span class="fa-arr">▼</span></summary>
+    <div class="faq-body">ページ全体が1つのコマ（未分割）の場合、そのコマは削除できません。まず他のコマに分割してから削除してください。</div>
+  </details>
+
+  <!-- Bottom stamp -->
+  <div style="margin-top:56px;padding-top:32px;border-top:1px solid #1E1E1E;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px" class="reveal">
+    <div style="font-family:var(--fw);font-size:clamp(28px,5vw,56px);color:#1A1A1A;letter-spacing:-0.02em;line-height:1">
+      BUILT FOR THE<br>NEW <span style="color:var(--or)">KITA</span>ERA
+    </div>
+    <div style="text-align:right">
+      <div style="font-family:var(--fm);font-size:9px;color:#333;letter-spacing:0.14em;text-transform:uppercase">FIELD MANUAL R1</div>
+      <div style="font-family:var(--fm);font-size:9px;color:#222;letter-spacing:0.1em;margin-top:4px">DEPLOYMENT ID: 3027-ALPHA-KTC</div>
+      <div style="font-family:var(--fw);font-size:28px;color:#2A2A2A;margin-top:6px">®</div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div><!-- /#wrap -->
+
+<script>
+/* ═══════════════════════════════════════
+   BOOT SEQUENCE
+═══════════════════════════════════════ */
+(function bootSequence() {
+  const lines = [
+    { text: '> INITIALIZING KITAcore FIELD MANUAL...', c: '' },
+    { text: '> LOADING: NAME GENERATOR v5 / v6', c: '' },
+    { text: '> CHECKING CLEARANCE LEVEL...', c: '' },
+    { text: '> CLEARANCE LEVEL 4 — FIELD OPERATOR GRANTED', c: 'bl-gr' },
+    { text: '> DEPLOYMENT ID: 3027-ALPHA-KTC-NYC', c: 'bl-wh' },
+    { text: '> STATUS: OPERATIONAL / LIVE TESTING ██████', c: 'bl-or' },
+    { text: '> ACCESS GRANTED — WELCOME, OPERATOR', c: 'bl-wh' },
+  ];
+
+  const container = document.getElementById('boot-lines');
+  const barWrap = document.getElementById('boot-bar-wrap');
+  const bar = document.getElementById('boot-bar');
+
+  let i = 0;
+  function showLine() {
+    if (i >= lines.length) {
+      // Progress bar
+      setTimeout(() => {
+        barWrap.classList.add('show');
+        setTimeout(() => bar.classList.add('go'), 80);
+        setTimeout(() => {
+          document.getElementById('boot').classList.add('fade');
+        }, 1900);
+      }, 200);
+      return;
+    }
+    const div = document.createElement('div');
+    div.className = 'boot-line' + (lines[i].c ? ' ' + lines[i].c : '');
+    div.textContent = lines[i].text;
+    container.appendChild(div);
+    requestAnimationFrame(() => div.classList.add('show'));
+    i++;
+    setTimeout(showLine, i < 3 ? 280 : i < 5 ? 200 : 160);
+  }
+
+  setTimeout(showLine, 300);
+})();
+
+/* ═══════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════ */
+const reveals = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } });
+}, { rootMargin: '0px 0px -60px 0px', threshold: 0.05 });
+reveals.forEach(el => revealObs.observe(el));
+
+/* ═══════════════════════════════════════
+   NAV ACTIVE TRACKING
+═══════════════════════════════════════ */
+const sections = document.querySelectorAll('.sec[id]');
+const navLinks = document.querySelectorAll('.nav-item');
+
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navLinks.forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-25% 0px -65% 0px', threshold: 0 });
+sections.forEach(s => navObs.observe(s));
+
+/* ═══════════════════════════════════════
+   MOBILE NAV
+═══════════════════════════════════════ */
+const nav = document.getElementById('nav');
+const backdrop = document.getElementById('nav-backdrop');
+const mobBtn = document.getElementById('mob-nav-btn');
+function openNav() { nav.classList.add('open'); backdrop.classList.add('show'); }
+function closeNav() { nav.classList.remove('open'); backdrop.classList.remove('show'); }
+mobBtn.addEventListener('click', openNav);
+backdrop.addEventListener('click', closeNav);
+navLinks.forEach(l => l.addEventListener('click', () => { if (window.innerWidth <= 680) closeNav(); }));
+
+/* ═══════════════════════════════════════
+   PRESSURE DEMO PERCENTAGE
+═══════════════════════════════════════ */
+(function pressureDemo() {
+  const pct = document.querySelector('.pd-pct');
+  if (!pct) return;
+  let v = 18, dir = 1;
+  setInterval(() => {
+    v += dir * (Math.random() * 5);
+    if (v > 82) dir = -1;
+    if (v < 15) dir = 1;
+    v = Math.max(15, Math.min(82, v));
+    pct.textContent = Math.round(v) + '%';
+  }, 350);
+})();
+
+/* ═══════════════════════════════════════
+   GLITCH — random extra trigger
+═══════════════════════════════════════ */
+setInterval(() => {
+  const glitches = document.querySelectorAll('.glitch');
+  if (glitches.length) {
+    const el = glitches[Math.floor(Math.random() * glitches.length)];
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = '';
+  }
+}, 5000);
+
+/* ═══════════════════════════════════════
+   ® EASTER EGG
+═══════════════════════════════════════ */
+(function easterEgg() {
+  const reg = document.querySelector('[style*="2A2A2A;margin-top:6px"]');
+  if (!reg) return;
+  reg.style.cursor = 'pointer';
+  reg.title = '🔓 CLASSIFIED';
+  reg.addEventListener('click', () => {
+    const flash = document.createElement('div');
+    Object.assign(flash.style, {
+      position:'fixed', inset:'0', zIndex:'9998',
+      background:'rgba(255,75,26,0.15)',
+      display:'flex', alignItems:'center', justifyContent:'center',
+      pointerEvents:'none',
+      animation:'none'
+    });
+    flash.innerHTML = `<div style="font-family:var(--fw);font-size:clamp(32px,8vw,80px);color:#FF4B1A;text-align:center;letter-spacing:-0.02em;opacity:0.9;transform:rotate(-3deg)">CLEARANCE<br>GRANTED ®</div>`;
+    document.body.appendChild(flash);
+    setTimeout(() => flash.style.opacity = '0', 800);
+    setTimeout(() => flash.remove(), 1400);
+    flash.style.transition = 'opacity 600ms';
+  });
+})();
+</script>
+</body>
+</html>
