@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIの7つの力 — SPEC UNIT R1 / KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   TOKENS
+════════════════════════════════════════ */
+:root {
+  --orange: #FF4400;
+  --black: #111111;
+  --white: #F5F4F0;
+  --dark: #1A1A1A;
+  --dark2: #222222;
+  --gray: #E0DED8;
+  --gray2: #CBCAC4;
+  --muted: #888884;
+  --border: #D0CEC8;
+  --border-dark: #333333;
+  --font-display: 'Bebas Neue', Impact, sans-serif;
+  --font-cond: 'Barlow Condensed', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-body: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--white);
+  color: var(--black);
+  font-size: 14px;
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--orange); }
+
+/* ════════════════════════════════════════
+   BOOT SCREEN
+════════════════════════════════════════ */
+#boot {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--black);
+  display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: center;
+  padding: 48px 64px;
+  pointer-events: all;
+}
+#boot.exit {
+  animation: bootExit 0.6s ease-in 0.3s forwards;
+}
+@keyframes bootExit {
+  0%   { clip-path: inset(0 0 0 0); opacity: 1; }
+  100% { clip-path: inset(0 0 100% 0); opacity: 0; pointer-events: none; }
+}
+.boot-corner {
+  position: absolute; width: 32px; height: 32px;
+  border-color: var(--orange); border-style: solid; border-width: 0;
+  opacity: 0; animation: cornerIn 0.3s ease 0.1s forwards;
+}
+.boot-corner.tl { top: 24px; left: 24px; border-top-width: 2px; border-left-width: 2px; }
+.boot-corner.tr { top: 24px; right: 24px; border-top-width: 2px; border-right-width: 2px; }
+.boot-corner.bl { bottom: 24px; left: 24px; border-bottom-width: 2px; border-left-width: 2px; }
+.boot-corner.br { bottom: 24px; right: 24px; border-bottom-width: 2px; border-right-width: 2px; }
+@keyframes cornerIn { to { opacity: 1; } }
+
+.boot-label {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 32px;
+  opacity: 0; animation: fadeUp 0.4s ease 0.2s forwards;
+}
+#boot-lines {
+  font-family: var(--font-mono);
+  font-size: clamp(11px, 1.2vw, 13px);
+  line-height: 2;
+  color: #aaa;
+  letter-spacing: 0.05em;
+  margin-bottom: 40px;
+}
+#boot-lines .line { display: block; opacity: 0; transform: translateX(-8px); }
+#boot-lines .line.hi { color: #fff; }
+#boot-lines .line.or { color: var(--orange); }
+#boot-lines .cursor::after {
+  content: '▌';
+  color: var(--orange);
+  animation: blink 0.6s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.boot-bar-wrap {
+  width: 320px; max-width: 80vw;
+  opacity: 0; animation: fadeUp 0.3s ease 0.5s forwards;
+}
+.boot-bar-label {
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--muted); letter-spacing: 0.25em; text-transform: uppercase;
+  margin-bottom: 8px; display: flex; justify-content: space-between;
+}
+.boot-bar-label span { color: var(--orange); }
+.boot-bar-track {
+  height: 3px; background: #333; position: relative; overflow: hidden;
+}
+.boot-bar-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--orange); width: 0%;
+  transition: width 0.05s linear;
+}
+.boot-title {
+  position: absolute; bottom: 48px; right: 64px;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 8vw, 96px);
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.04);
+  line-height: 1; user-select: none;
+}
+
+/* ════════════════════════════════════════
+   PROGRESS BAR
+════════════════════════════════════════ */
+#progress-bar {
+  position: fixed; top: 0; left: 0; z-index: 500;
+  height: 3px; width: 0%;
+  background: var(--orange);
+  transition: width 0.12s linear;
+  transform-origin: left;
+}
+
+/* ════════════════════════════════════════
+   STATUS BAR
+════════════════════════════════════════ */
+.status-bar {
+  background: var(--black); color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 7px 28px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; flex-wrap: wrap;
+  overflow: hidden;
+}
+.status-live { color: var(--orange); }
+.status-live::before {
+  content: '●';
+  animation: statusPulse 2s ease-in-out infinite;
+  margin-right: 6px;
+}
+@keyframes statusPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ════════════════════════════════════════
+   TOP NAV
+════════════════════════════════════════ */
+header.top-nav {
+  background: var(--white);
+  border-bottom: 2px solid var(--black);
+  padding: 0 32px;
+  height: 64px;
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  transform: translateY(-100%);
+  animation: navSlide 0.5s ease forwards;
+  animation-delay: var(--nav-delay, 4s);
+}
+@keyframes navSlide { to { transform: translateY(0); } }
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 22px; letter-spacing: 0.08em;
+}
+.nav-brand span { color: var(--orange); }
+.nav-dots { display: flex; align-items: center; gap: 5px; }
+.nav-dot {
+  width: 8px; height: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.nav-dot.active {
+  background: var(--orange); border-color: var(--orange);
+  animation: dotPop 0.3s ease;
+}
+@keyframes dotPop { 0%{transform:scale(0.5)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
+.nav-dot:hover { background: var(--black); border-color: var(--black); }
+.nav-dot[data-label]:hover::after {
+  content: attr(data-label);
+  position: absolute; top: -26px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--black); color: var(--white);
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em;
+  padding: 4px 8px; white-space: nowrap; pointer-events: none;
+  animation: tooltipIn 0.15s ease;
+}
+@keyframes tooltipIn { from{opacity:0;transform:translateX(-50%) translateY(4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+.nav-version {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em; color: var(--muted);
+}
+
+/* ════════════════════════════════════════
+   SCROLL REVEAL (base)
+════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0; transform: translateX(-40px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-scale {
+  opacity: 0; transform: scale(0.92);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+/* stagger children */
+.stagger-children > * {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.stagger-children.visible > *:nth-child(1) { opacity:1;transform:translateY(0);transition-delay:0s; }
+.stagger-children.visible > *:nth-child(2) { opacity:1;transform:translateY(0);transition-delay:0.1s; }
+.stagger-children.visible > *:nth-child(3) { opacity:1;transform:translateY(0);transition-delay:0.2s; }
+.stagger-children.visible > *:nth-child(4) { opacity:1;transform:translateY(0);transition-delay:0.3s; }
+.stagger-children.visible > *:nth-child(5) { opacity:1;transform:translateY(0);transition-delay:0.4s; }
+
+/* ════════════════════════════════════════
+   CROSS MARKS
+════════════════════════════════════════ */
+.cross {
+  position: absolute; width: 20px; height: 20px;
+}
+.cross::before {
+  content: ''; position: absolute;
+  left: 50%; top: 0; width: 1px; height: 100%;
+  background: currentColor; transform: translateX(-50%);
+  transform-origin: top;
+  animation: crossV 0.4s ease forwards;
+}
+.cross::after {
+  content: ''; position: absolute;
+  top: 50%; left: 0; height: 1px; width: 100%;
+  background: currentColor; transform: translateY(-50%);
+  transform-origin: left;
+  animation: crossH 0.4s ease 0.2s forwards;
+}
+@keyframes crossV { from{scaleY:0} to{scaleY:1} }
+@keyframes crossH { from{scaleX:0} to{scaleX:1} }
+.cross.tl{top:12px;left:12px} .cross.tr{top:12px;right:12px}
+.cross.bl{bottom:12px;left:12px} .cross.br{bottom:12px;right:12px}
+
+/* ════════════════════════════════════════
+   HERO ANIMATIONS
+════════════════════════════════════════ */
+.hero-eyebrow { opacity:0; animation: fadeUp 0.5s ease var(--d,4.2s) forwards; }
+.hero-h1 .line-1 { display:block; opacity:0; transform:translateY(40px); animation: fadeUp 0.6s ease var(--d,4.4s) forwards; }
+.hero-h1 .line-2 { display:block; opacity:0; transform:translateY(40px); animation: fadeUp 0.6s ease var(--d,4.6s) forwards; }
+.hero-h1 .line-3 { display:block; opacity:0; transform:translateY(40px); animation: fadeUp 0.6s ease var(--d,4.8s) forwards; }
+.hero-lead     { opacity:0; animation: fadeUp 0.5s ease var(--d,5.0s) forwards; }
+.hero-meta     { opacity:0; animation: fadeUp 0.5s ease var(--d,5.2s) forwards; }
+.hero-side     { opacity:0; transform:translateX(32px); animation: slideLeft 0.7s ease var(--d,4.8s) forwards; }
+.hero-bottom-bar { opacity:0; animation: fadeIn 0.4s ease var(--d,5.4s) forwards; }
+
+@keyframes fadeUp  { to { opacity:1; transform:translateY(0); } }
+@keyframes slideLeft { to { opacity:1; transform:translateX(0); } }
+@keyframes fadeIn  { to { opacity:1; } }
+
+/* scan-line overlay on hero */
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.015) 3px,
+    rgba(0,0,0,0.015) 4px
+  );
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════
+   ORANGE WIPE (section labels)
+════════════════════════════════════════ */
+.orange-wipe {
+  display: inline-block; position: relative; overflow: hidden;
+}
+.orange-wipe::before {
+  content: '';
+  position: absolute; left: -100%; top: 0; bottom: 0;
+  width: 100%; background: var(--orange);
+  transition: left 0.5s cubic-bezier(0.77,0,0.18,1);
+}
+.orange-wipe.wiped::before { left: 100%; }
+
+/* ════════════════════════════════════════
+   GRID BACKGROUND
+════════════════════════════════════════ */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ════════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════ */
+.container { max-width: 1040px; margin: 0 auto; padding: 0 32px; }
+
+.section { padding: 88px 0; border-top: 2px solid var(--black); }
+.section.dark { background: var(--dark); color: var(--white); }
+.section.alt { background: var(--gray); }
+.section-no-border { border-top: none; }
+
+.section-header-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 48px; border-bottom: 1px solid currentColor;
+  padding-bottom: 14px; opacity: 0.35;
+}
+.section-header-bar .sec-num,
+.section-header-bar .sec-tag {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+}
+
+.sec-title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 72px);
+  letter-spacing: 0.04em; line-height: 0.93;
+  margin-bottom: 8px; text-transform: uppercase;
+}
+.sec-title-en { color: var(--orange); }
+.sec-subtitle {
+  font-family: var(--font-cond); font-size: 20px; font-weight: 500;
+  color: var(--muted); letter-spacing: 0.05em; margin-bottom: 32px;
+}
+
+.orange-label {
+  display: inline-block; background: var(--orange); color: var(--black);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; padding: 5px 12px; font-weight: 600;
+}
+.outline-label {
+  display: inline-block; border: 1px solid currentColor;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; padding: 4px 10px; color: var(--muted);
+}
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+.hero {
+  position: relative; overflow: hidden;
+  background: var(--white);
+}
+.hero-inner {
+  padding: 72px 0 0;
+  display: grid; grid-template-columns: 1fr 300px; gap: 48px; align-items: start;
+}
+.hero-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(64px, 10vw, 120px);
+  line-height: 0.92; letter-spacing: 0.03em; text-transform: uppercase;
+  margin-bottom: 32px;
+}
+.hero-h1 .line-orange { color: var(--orange); }
+.hero-lead {
+  font-size: 15px; color: #444; max-width: 580px; line-height: 1.85; margin-bottom: 40px;
+}
+.hero-lead strong { color: var(--black); font-weight: 700; }
+.hero-meta {
+  display: flex; gap: 0; border-top: 1px solid var(--border); padding-top: 24px;
+}
+.hero-meta-item {
+  padding: 0 24px 0 0; margin-right: 24px;
+  border-right: 1px solid var(--border);
+}
+.hero-meta-item:last-child { border-right: none; }
+.meta-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 4px;
+}
+.meta-val { font-family: var(--font-cond); font-size: 16px; font-weight: 600; }
+.hero-side {
+  border: 2px solid var(--black); padding: 28px; background: #fff;
+  position: relative; margin-top: 72px;
+  transition: box-shadow 0.3s ease;
+}
+.hero-side:hover { box-shadow: 6px 6px 0 var(--orange); }
+.side-num {
+  font-family: var(--font-display); font-size: 96px; line-height: 1;
+  letter-spacing: -0.02em; display: block;
+}
+.side-tag {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 14px;
+}
+.side-status {
+  background: var(--orange); color: var(--black);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 8px 12px; display: block; margin-top: 18px;
+}
+.side-desc { font-size: 11px; color: var(--muted); line-height: 1.7; margin-top: 12px; }
+.hero-bottom-bar {
+  background: var(--black); color: var(--white);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 32px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  margin-top: 48px;
+}
+.hero-bottom-bar .bar-orange { color: var(--orange); }
+
+/* glitch effect on hover for hero title */
+.hero-h1:hover .line-1 {
+  animation: glitch 0.3s steps(2) forwards;
+}
+@keyframes glitch {
+  0%   { text-shadow: 2px 0 var(--orange), -2px 0 #0ff; }
+  25%  { text-shadow: -2px 0 var(--orange), 2px 0 #0ff; }
+  50%  { text-shadow: 2px 2px var(--orange), -2px -2px #0ff; }
+  75%  { text-shadow: none; }
+  100% { text-shadow: none; }
+}
+
+/* ════════════════════════════════════════
+   QUOTE BLOCK
+════════════════════════════════════════ */
+.quote-block {
+  border: 2px solid var(--black); padding: 32px 36px;
+  position: relative; background: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.quote-block:hover { transform: translate(-3px, -3px); box-shadow: 5px 5px 0 var(--orange); }
+.quote-block .q-big {
+  font-family: var(--font-cond); font-size: 22px; font-weight: 700;
+  line-height: 1.4; margin-bottom: 14px;
+}
+.quote-block p { color: #444; font-size: 14px; }
+.dark .quote-block { background: var(--dark2); border-color: var(--border-dark); }
+.dark .quote-block p { color: var(--gray2); }
+.dark .quote-block .q-big { color: var(--white); }
+
+/* ════════════════════════════════════════
+   TWO-LAYER
+════════════════════════════════════════ */
+.two-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+.layer-card {
+  border: 1px solid var(--border); background: #fff;
+  overflow: hidden; position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.layer-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.layer-top {
+  background: var(--black); color: var(--white); padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.layer-num-big { font-family: var(--font-display); font-size: 48px; line-height: 1; }
+.layer-card.external .layer-top { background: var(--orange); color: var(--black); }
+.layer-top-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; }
+.layer-body { padding: 24px; }
+.layer-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.layer-en {
+  font-family: var(--font-mono); font-size: 9px; color: var(--muted);
+  letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; display: block;
+}
+.layer-card p { color: #444; font-size: 13px; margin-bottom: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.chip {
+  border: 1px solid var(--black); padding: 5px 12px;
+  font-family: var(--font-cond); font-size: 13px; font-weight: 600;
+  transition: all 0.2s ease;
+}
+.chip:hover { background: var(--black); color: var(--white); }
+.layer-card.external .chip { border-color: var(--black); }
+
+/* ════════════════════════════════════════
+   PIPELINE WRAP
+════════════════════════════════════════ */
+.pipeline-wrap {
+  border: 2px solid var(--black); background: #fff;
+  padding: 32px 24px; margin: 32px 0; overflow-x: auto;
+}
+
+/* ════════════════════════════════════════
+   INSIGHT GRID
+════════════════════════════════════════ */
+.insight-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin: 32px 0; border: 2px solid var(--black);
+}
+.insight-tile {
+  background: #fff; padding: 24px 20px;
+  border-right: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+.insight-tile:last-child { border-right: none; }
+.insight-tile:hover { background: var(--gray); }
+.tile-num {
+  font-family: var(--font-mono); font-size: 9px; color: var(--orange);
+  letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; display: block; font-weight: 600;
+}
+.insight-tile h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.insight-tile p { color: #555; font-size: 13px; line-height: 1.7; }
+
+/* ════════════════════════════════════════
+   TASK TABLE
+════════════════════════════════════════ */
+.task-table-wrap { border: 2px solid var(--black); margin: 24px 0; overflow-x: auto; }
+.task-table-wrap table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.task-table-wrap th {
+  background: var(--black); color: var(--white);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  text-align: left; padding: 14px 20px; font-weight: 500;
+}
+.task-table-wrap td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+.task-table-wrap tr:last-child td { border-bottom: none; }
+.task-table-wrap tr { transition: background 0.15s ease; }
+.task-table-wrap tr:hover td { background: var(--gray); }
+.task-prompt { color: var(--black); font-weight: 600; display: block; }
+.task-meta { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; display: block; }
+.chips-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.pchip {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 32px; height: 26px; padding: 0 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border); color: var(--muted);
+  transition: all 0.2s ease;
+}
+.pchip.on { border-color: var(--orange); background: var(--orange); color: var(--black); }
+
+/* ════════════════════════════════════════
+   POWER CARDS
+════════════════════════════════════════ */
+.power-cards { margin: 0; }
+.power-card {
+  border: 2px solid var(--black); background: #fff;
+  margin-bottom: 2px; position: relative; overflow: hidden;
+  transition: transform 0.3s ease;
+}
+.power-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--orange);
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.power-card:hover::before { transform: scaleY(1); }
+.power-card:hover { transform: translateX(3px); }
+
+.pc-header { display: grid; grid-template-columns: 240px 1fr; background: var(--black); color: var(--white); }
+.power-card.external .pc-header { background: var(--orange); color: var(--black); }
+.power-card.meta .pc-header { background: var(--dark2); color: var(--white); }
+.pc-num-col {
+  padding: 28px 32px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.power-card.external .pc-num-col { border-right-color: rgba(0,0,0,0.15); }
+.pc-num-big {
+  font-family: var(--font-display); font-size: 88px; line-height: 1; letter-spacing: -0.02em;
+}
+.pc-name-en { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.55; margin-top: 8px; display: block; }
+.pc-name-ja { font-family: var(--font-cond); font-size: 22px; font-weight: 700; letter-spacing: 0.05em; margin-top: 2px; display: block; }
+.pc-tags { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+.pc-tag {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 4px 10px; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.5);
+}
+.power-card.external .pc-tag { border-color: rgba(0,0,0,0.2); color: rgba(0,0,0,0.5); }
+.pc-title-col { padding: 28px 32px; display: flex; flex-direction: column; justify-content: flex-end; }
+.pc-title-col h3 { font-family: var(--font-cond); font-size: 26px; font-weight: 700; line-height: 1.2; letter-spacing: 0.02em; margin-bottom: 10px; }
+.pc-title-col .pc-desc { font-size: 13px; line-height: 1.7; opacity: 0.72; }
+.pc-body { display: grid; grid-template-columns: 240px 1fr; border-top: 1px solid var(--border); }
+.pc-left { padding: 28px 32px; border-right: 1px solid var(--border); background: var(--gray); }
+.pc-right { padding: 28px 32px; }
+.pc-insight {
+  background: var(--black); color: var(--white); padding: 18px 20px;
+  font-size: 13px; line-height: 1.75; border-left: 4px solid var(--orange); margin-bottom: 16px;
+}
+.pc-insight strong { color: var(--orange); font-weight: 700; }
+.pc-insight em { font-style: normal; border-bottom: 1px solid var(--orange); }
+.pc-right p { color: #444; font-size: 14px; line-height: 1.8; margin-bottom: 14px; }
+.pc-right p strong { color: var(--black); font-weight: 700; }
+
+/* ── PROMPT TOGGLES ── */
+.prompts-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--border); padding: 16px 32px;
+  cursor: pointer; background: #fff;
+  transition: background 0.15s ease;
+  user-select: none;
+}
+.prompts-toggle:hover { background: var(--gray); }
+.pt-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; }
+.pt-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
+.pt-arrow { font-size: 14px; color: var(--orange); transition: transform 0.25s ease; }
+.prompts-toggle.open .pt-arrow { transform: rotate(180deg); }
+.prompts-body { display: none; border-top: 1px solid var(--border); }
+.prompts-body.open { display: block; animation: slideDown 0.25s ease; }
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.prompt-item {
+  display: grid; grid-template-columns: 140px 1fr auto;
+  border-bottom: 1px solid var(--border); align-items: stretch;
+  transition: background 0.15s ease;
+}
+.prompt-item:last-child { border-bottom: none; }
+.prompt-item:hover { background: var(--gray); }
+.prompt-ctx {
+  padding: 14px 20px; border-right: 1px solid var(--border); background: rgba(0,0,0,0.03);
+  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+  letter-spacing: 0.15em; text-transform: uppercase; display: flex; align-items: center;
+}
+.prompt-text { padding: 14px 20px; font-size: 13px; color: var(--black); line-height: 1.7; display: flex; align-items: center; }
+.prompt-copy {
+  padding: 0 18px; border-left: 1px solid var(--border);
+  background: transparent; cursor: pointer;
+  border-top:none; border-right:none; border-bottom:none;
+  color: var(--muted); font-family: var(--font-mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  transition: all 0.15s ease; display: flex; align-items: center; gap: 5px; white-space: nowrap;
+}
+.prompt-copy:hover { background: var(--orange); color: var(--black); }
+.prompt-copy.copied { background: var(--black); color: var(--white); }
+
+/* ════════════════════════════════════════
+   CHEATSHEET
+════════════════════════════════════════ */
+.cheatsheet-wrap { border: 2px solid var(--black); overflow-x: auto; margin-top: 32px; }
+.cheatsheet-wrap table { width: 100%; border-collapse: collapse; min-width: 640px; }
+.cheatsheet-wrap thead tr { background: var(--orange); }
+.cheatsheet-wrap th {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  text-align: left; padding: 16px 20px; font-weight: 600; color: var(--black);
+}
+.cheatsheet-wrap td { padding: 18px 20px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; }
+.cheatsheet-wrap tr:last-child td { border-bottom: none; }
+.cheatsheet-wrap tr { transition: background 0.15s; }
+.cheatsheet-wrap tbody tr:hover td { background: var(--gray); }
+.cs-num { font-family: var(--font-display); font-size: 32px; line-height: 1; color: var(--muted); width: 64px; }
+.cs-name { font-weight: 700; font-family: var(--font-cond); font-size: 16px; width: 160px; }
+.en-small { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; display: block; font-weight: 500; margin-bottom: 4px; }
+.cs-prompt { color: #444; }
+
+/* ════════════════════════════════════════
+   MAPS CALLOUT
+════════════════════════════════════════ */
+.maps-callout {
+  background: var(--orange); padding: 72px 0;
+  position: relative; overflow: hidden;
+}
+.maps-callout .cross { color: rgba(0,0,0,0.12); }
+.maps-callout h2 {
+  font-family: var(--font-display); font-size: clamp(40px, 7vw, 80px);
+  letter-spacing: 0.04em; line-height: 0.93; text-transform: uppercase;
+  max-width: 720px; margin-bottom: 28px;
+}
+.maps-callout p { font-size: 16px; max-width: 640px; line-height: 1.85; margin-bottom: 12px; }
+.maps-callout strong { font-weight: 700; }
+.maps-footer {
+  border-top: 2px solid rgba(0,0,0,0.15); margin-top: 40px; padding-top: 20px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(0,0,0,0.4);
+}
+
+/* ════════════════════════════════════════
+   AXIS GRID
+════════════════════════════════════════ */
+.axis-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin: 24px 0; border: 2px solid var(--black); }
+.axis-card {
+  background: #fff; padding: 20px 16px; border-right: 1px solid var(--border);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.axis-card:last-child { border-right: none; }
+.axis-card:hover { background: var(--black); transform: translateY(-4px); }
+.axis-card:hover .axis-num { color: var(--orange); }
+.axis-card:hover .axis-ja, .axis-card:hover .axis-en, .axis-card:hover p { color: var(--gray2); }
+.axis-num { font-family: var(--font-display); font-size: 40px; color: var(--orange); line-height: 1; margin-bottom: 10px; transition: color 0.2s; }
+.axis-ja { font-size: 15px; font-weight: 700; margin-bottom: 2px; transition: color 0.2s; }
+.axis-en { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px; display: block; transition: color 0.2s; }
+.axis-card p { color: #555; font-size: 12px; line-height: 1.6; transition: color 0.2s; }
+
+/* ════════════════════════════════════════
+   STEP FLOW
+════════════════════════════════════════ */
+.step-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 24px 0; border: 2px solid var(--black); }
+.step-card {
+  background: #fff; padding: 24px 20px; border-right: 1px solid var(--border);
+  position: relative; transition: background 0.2s;
+}
+.step-card:last-child { border-right: none; }
+.step-card:hover { background: var(--gray); }
+.step-num { font-family: var(--font-mono); font-size: 10px; color: var(--orange); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; display: block; font-weight: 600; }
+.step-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.step-card p { color: #555; font-size: 13px; line-height: 1.7; }
+.step-card p strong { color: var(--black); }
+
+/* ════════════════════════════════════════
+   CODE BLOCK
+════════════════════════════════════════ */
+.code-block {
+  background: var(--dark); color: #E2E8F0;
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.75;
+  padding: 28px 32px; margin: 24px 0; white-space: pre-wrap; overflow-x: auto;
+  position: relative; border: 2px solid var(--black);
+}
+.code-block::before {
+  content: 'PROMPT TEMPLATE';
+  position: absolute; top: 10px; right: 16px;
+  font-size: 9px; color: #64748B; letter-spacing: 0.25em;
+}
+.code-block .hl { color: var(--orange); font-weight: 600; }
+.code-block .cm { color: #64748B; }
+
+/* ════════════════════════════════════════
+   BA GRID / THREE GRID
+════════════════════════════════════════ */
+.ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 24px 0; }
+.ba-card { background: #fff; padding: 24px; border: 2px solid var(--border); transition: border-color 0.2s; }
+.ba-card:hover { border-color: var(--black); }
+.ba-card.after { border-color: var(--orange); border-top-width: 4px; }
+.ba-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; color: var(--muted); display: block; }
+.ba-card.after .ba-label { color: var(--orange); font-weight: 600; }
+.ba-text { font-size: 13px; color: #444; line-height: 1.75; }
+.ba-text strong { color: var(--black); font-weight: 700; }
+
+.three-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 24px 0; }
+.wcard {
+  background: #fff; padding: 24px 20px; border: 1px solid var(--border); border-top: 4px solid var(--orange);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.wcard:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.weak-label { font-family: var(--font-mono); font-size: 9px; color: var(--orange); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 12px; display: block; font-weight: 600; }
+.wcard h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.wcard p { color: #555; font-size: 13px; line-height: 1.7; }
+.wcard p strong { color: var(--black); font-weight: 700; }
+.wcard p em { font-style: normal; border-bottom: 1px solid var(--orange); }
+
+.ocard { background: #fff; padding: 24px 20px; border: 1px solid var(--border); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.ocard:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.orch-num { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; display: block; }
+.ocard h4 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.ocard p { color: #555; font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
+.orch-example { background: var(--dark); color: var(--gray2); padding: 14px 16px; font-family: var(--font-mono); font-size: 11px; line-height: 1.8; border-left: 3px solid var(--orange); }
+.orch-example-label { display: block; font-size: 9px; color: var(--muted); letter-spacing: 0.2em; margin-bottom: 8px; text-transform: uppercase; }
+
+/* ════════════════════════════════════════
+   DARK CALLOUT
+════════════════════════════════════════ */
+.dark-callout {
+  background: var(--dark); color: var(--white);
+  border: 2px solid var(--black); padding: 48px;
+  position: relative; overflow: hidden; margin: 32px 0;
+}
+.dark-callout .cross { color: rgba(255,68,0,0.25); }
+.dark-callout .sec-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); display: block; margin-bottom: 16px; }
+.dark-callout h3 { font-family: var(--font-display); font-size: 40px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 20px; }
+.dark-callout p { color: var(--gray2); font-size: 15px; line-height: 1.85; max-width: 640px; }
+.dark-callout p strong { color: var(--white); font-weight: 700; }
+
+/* ════════════════════════════════════════
+   ESSENCE / HORIZON GRID
+════════════════════════════════════════ */
+.essence-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 32px 0; }
+.ecard {
+  background: #fff; padding: 28px 24px;
+  border: 1px solid var(--border); border-top: 3px solid var(--orange);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.ecard:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(0,0,0,0.12); }
+.etag { display: inline-block; font-family: var(--font-mono); font-size: 9px; color: var(--orange); letter-spacing: 0.25em; text-transform: uppercase; border: 1px solid var(--orange); padding: 4px 10px; margin-bottom: 16px; font-weight: 600; }
+.ecard h4 { font-size: 18px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+.e-en { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px; display: block; }
+.ecard p { color: #555; font-size: 13px; line-height: 1.75; }
+.ecard p strong { color: var(--black); font-weight: 700; }
+
+.hcard {
+  background: var(--dark2); color: var(--white); padding: 28px 24px;
+  border: 1px solid var(--border-dark); display: flex; flex-direction: column;
+  transition: transform 0.3s ease; position: relative; overflow: hidden;
+}
+.hcard::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 3px; height: 0; background: var(--orange);
+  transition: height 0.4s ease;
+}
+.hcard:hover::after { height: 100%; }
+.hcard:hover { transform: translateY(-4px); }
+.htag { font-family: var(--font-mono); font-size: 9px; color: var(--orange); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 16px; font-weight: 600; }
+.hcard h4 { font-size: 18px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+.h-en { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px; display: block; }
+.hcard p { color: var(--gray2); font-size: 13px; line-height: 1.75; margin-bottom: 14px; flex-grow: 1; }
+.h-reality { font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding: 10px 12px; background: rgba(255,255,255,0.04); border-left: 2px solid var(--orange); margin-bottom: 14px; line-height: 1.7; }
+.h-reality-label { display: block; font-size: 9px; letter-spacing: 0.2em; margin-bottom: 6px; color: var(--orange); }
+.h-link { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.1em; padding-top: 14px; border-top: 1px solid var(--border-dark); display: block; }
+.h-link strong { color: var(--orange); }
+
+/* ════════════════════════════════════════
+   AUTHOR NOTE
+════════════════════════════════════════ */
+.author-note {
+  border: 2px solid var(--black); border-left: 6px solid var(--orange);
+  background: #fff; padding: 48px; max-width: 800px; margin: 40px auto 0;
+  transition: box-shadow 0.3s ease;
+}
+.author-note:hover { box-shadow: 8px 8px 0 var(--orange); }
+.author-note blockquote { font-size: 16px; line-height: 1.95; color: var(--black); margin-bottom: 28px; }
+.author-note blockquote p { margin-bottom: 18px; }
+.author-note blockquote p:last-child { margin-bottom: 0; }
+.author-note blockquote em { font-style: normal; border-bottom: 1px solid var(--orange); }
+.author-note blockquote strong { color: var(--orange); font-weight: 700; }
+.author-note .sig { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-align: right; padding-top: 20px; border-top: 1px solid var(--border); }
+
+/* ════════════════════════════════════════
+   TAKEAWAY
+════════════════════════════════════════ */
+.takeaway {
+  background: var(--black); color: var(--white);
+  padding: 96px 32px; text-align: center; position: relative; overflow: hidden;
+}
+.takeaway .cross { color: rgba(255,68,0,0.15); }
+.takeaway-quote {
+  font-family: var(--font-display); font-size: clamp(28px, 5vw, 56px);
+  letter-spacing: 0.03em; line-height: 1.1; text-transform: uppercase;
+  max-width: 800px; margin: 0 auto 24px;
+}
+.takeaway-quote .to-orange { color: var(--orange); }
+.takeaway-sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-top: 40px; }
+
+/* ════════════════════════════════════════
+   FOOTER / BOTTOM BAR
+════════════════════════════════════════ */
+footer {
+  background: var(--black); color: var(--muted);
+  border-top: 2px solid var(--orange); padding: 20px 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em;
+  text-transform: uppercase; flex-wrap: wrap; gap: 8px;
+}
+.foot-brand { color: var(--white); }
+
+#bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: var(--black); color: var(--muted);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 7px 28px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; flex-wrap: wrap;
+  transform: translateY(100%);
+  animation: navSlide 0.5s ease forwards;
+  animation-delay: var(--nav-delay, 4s);
+  border-top: 1px solid #222;
+}
+
+/* ════════════════════════════════════════
+   MISC
+════════════════════════════════════════ */
+.mini-h { font-family: var(--font-cond); font-size: 22px; font-weight: 700; margin: 56px 0 6px; letter-spacing: 0.03em; }
+.mini-desc { font-size: 13px; color: #555; margin-bottom: 20px; max-width: 720px; }
+.mini-desc strong { color: var(--black); font-weight: 700; }
+.insight-block { background: var(--black); color: var(--white); padding: 20px 24px; border-left: 4px solid var(--orange); font-size: 14px; color: #CCC; line-height: 1.8; margin: 24px 0; }
+.insight-block strong { color: var(--orange); font-weight: 700; }
+.insight-block em { font-style: normal; border-bottom: 1px solid var(--orange); color: var(--white); }
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .container { padding: 0 20px; }
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-side { margin-top: 0; }
+  .two-layer { grid-template-columns: 1fr; }
+  .pc-header { grid-template-columns: 1fr; }
+  .pc-body { grid-template-columns: 1fr; }
+  .pc-left { border-right: none; border-bottom: 1px solid var(--border); }
+  .prompt-item { grid-template-columns: 100px 1fr; }
+  .prompt-copy { display: none; }
+  .axis-grid { grid-template-columns: repeat(2, 1fr); }
+  .step-flow { grid-template-columns: 1fr 1fr; }
+  .three-grid { grid-template-columns: 1fr; }
+  .essence-grid { grid-template-columns: 1fr; }
+  .ba-grid { grid-template-columns: 1fr; }
+  .insight-grid { grid-template-columns: 1fr; }
+  .maps-callout { padding: 40px 0; }
+  .author-note { padding: 32px 24px; }
+  .nav-dots { display: none; }
+  #boot { padding: 32px 28px; }
+  .boot-title { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ BOOT SCREEN ═══════════════ -->
+<div id="boot">
+  <div class="boot-corner tl"></div>
+  <div class="boot-corner tr"></div>
+  <div class="boot-corner bl"></div>
+  <div class="boot-corner br"></div>
+  <div class="boot-title">KITACORE</div>
+  <div class="boot-label">■ SYSTEM INITIALIZATION SEQUENCE</div>
+  <div id="boot-lines"></div>
+  <div class="boot-bar-wrap">
+    <div class="boot-bar-label">LOADING<span id="boot-pct">0%</span></div>
+    <div class="boot-bar-track"><div class="boot-bar-fill" id="boot-fill"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ PROGRESS BAR ═══════════════ -->
+<div id="progress-bar"></div>
+
+<!-- ─── STATUS BAR ─── -->
+<div class="status-bar">
+  <span><span class="status-live">STATUS: OPERATIONAL / LIVE TESTING</span></span>
+  <span style="color:#555;">DEPLOYMENT ID: KITACORE-2026-ALPHA-R1 · MAPS+R+O COMPLETE SPEC</span>
+  <span>CLEARANCE: OPEN</span>
+</div>
+
+<!-- ─── TOP NAV ─── -->
+<header class="top-nav">
+  <div class="nav-brand">KITA<span>core</span></div>
+  <nav class="nav-dots">
+    <div class="nav-dot active" data-section="0" data-label="HERO"></div>
+    <div class="nav-dot" data-section="1" data-label="INSIGHT"></div>
+    <div class="nav-dot" data-section="2" data-label="2-LAYER"></div>
+    <div class="nav-dot" data-section="3" data-label="CONNECT"></div>
+    <div class="nav-dot" data-section="4" data-label="5POWERS"></div>
+    <div class="nav-dot" data-section="5" data-label="REFINE"></div>
+    <div class="nav-dot" data-section="6" data-label="ORCH"></div>
+    <div class="nav-dot" data-section="7" data-label="CHEAT"></div>
+    <div class="nav-dot" data-section="8" data-label="MAPS"></div>
+    <div class="nav-dot" data-section="9" data-label="NEXT"></div>
+    <div class="nav-dot" data-section="10" data-label="BEYOND"></div>
+    <div class="nav-dot" data-section="11" data-label="NOTE"></div>
+  </nav>
+  <div class="nav-version">SPEC R1 · 2026 ®</div>
+</header>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="sec01" class="hero section-no-border">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-main">
+        <div class="hero-eyebrow" style="display:flex;align-items:center;gap:16px;margin-bottom:32px;">
+          <span class="orange-label">SPEC UNIT · KITAcore</span>
+          <span class="outline-label">SEVEN POWERS · 2026</span>
+        </div>
+        <h1 class="hero-h1">
+          <span class="line-1">AIの</span>
+          <span class="line-2 line-orange">7つ</span>
+          <span class="line-3">の力</span>
+        </h1>
+        <p class="hero-lead">
+          「AIを使いこなせてない」って人、大体<strong>"何ができるかがピンときてない"</strong>だけや。</br>この2026年版では、AIの能力を <strong>5つの基本力</strong>（理解・生成・推論・検索・実行）に、<strong>第6の力：自己評価（Refinement）</strong>、そして<strong>第7の力：束ねる力（Orchestration）</strong>を加えた完全版として整理した。</br>
+          "地図"を持ったうえで、あんたが<strong>"監督席"</strong>に座るための設計図や。
+        </p>
+        <div class="hero-meta">
+          <div class="hero-meta-item"><span class="meta-label">AUDIENCE</span><span class="meta-val">ALL LEVELS</span></div>
+          <div class="hero-meta-item"><span class="meta-label">PROMPTS</span><span class="meta-val">35+</span></div>
+          <div class="hero-meta-item"><span class="meta-label">EDITION</span><span class="meta-val">KITAcore · 2026</span></div>
+        </div>
+      </div>
+
+      <div class="hero-side grid-bg">
+        <div class="cross tl" style="color:var(--orange)"></div>
+        <div class="cross tr" style="color:var(--orange)"></div>
+        <div class="cross bl" style="color:var(--orange)"></div>
+        <div class="cross br" style="color:var(--orange)"></div>
+        <span class="side-tag">SPEC UNIT</span>
+        <span class="side-num">R1</span>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+          <span class="orange-label">Field Tested</span>
+          <span class="outline-label">Status · Active</span>
+        </div>
+        <span class="side-status">FIELD TESTED · STATUS — ACTIVE</span>
+        <p class="side-desc">The next generation of AI capability coordination. Born from the pursuit of clarity. Built for the modern knowledge worker where speed, precision, and intelligence define output.</p>
+        <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.15em;">DATA FEED STATUS · SYNCHRONIZED ®</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-bottom-bar">
+    <span>UNIT · <span class="bar-orange">AIの地図から監督席まで</span></span>
+    <span>PRG 01 · KITAcore · 2026</span>
+    <span>STATUS: OPERATIONAL / LIVE TESTING · DEPLOYMENT ID: 3027-ALPHA</span>
+  </div>
+</section>
+
+<!-- ═══════════════ SEC 02 INSIGHT ═══════════════ -->
+<section id="sec02" class="section dark">
+<div class="container">
+  <div class="section-header-bar reveal"><span class="sec-num">02 / THE INSIGHT</span><span class="sec-tag">FOUNDATION BRIEF</span></div>
+  <h2 class="sec-title reveal" style="color:#fff;">WHY A <br><span class="sec-title-en">MAP MATTERS</span></h2>
+  <p class="sec-subtitle reveal">地図がないと、使いこなせへん</p>
+  <div class="reveal" style="margin-bottom:32px;">
+    <div class="quote-block">
+      <span class="q-big">AIは、頭のめっちゃ賢い部下か後輩。しかも、逆らわないええやつ。</span>
+      <p>指示さえちゃんと出せば、とんでもない成果を出すタイプ。</br>ただし、"何を頼めるか"を知らんと、ずっと同じ仕事しか振れへん。</br><strong>"自分で評価させる"</strong>まで設計できたら副編集長ポジに。</br>さらに<strong>"複数AIを束ねる"</strong>まで来たら、あんたは<em style="font-style:normal;border-bottom:1px solid var(--orange);">監督</em>や。</p>
+    </div>
+  </div>
+  <p class="reveal" style="color:var(--gray2);font-size:15px;max-width:720px;line-height:1.85;">「AIを使いこなせてない」って言う人に共通するのは、能力がない訳やなくて、単にAIが何できるかの全体像が見えてへんだけ。だから、まずは"地図"を渡す。これがこの資料の目的や。</p>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 03 TWO-LAYER ═══════════════ -->
+<section id="sec03" class="section">
+<div class="container">
+  <div class="section-header-bar reveal"><span class="sec-num">03 / TWO-LAYER MODEL</span><span class="sec-tag">INTERNAL vs EXTERNAL</span></div>
+  <h2 class="sec-title reveal">AI HAS<br><span class="sec-title-en">TWO LAYERS</span></h2>
+  <p class="sec-subtitle reveal">AIの中には2層ある</p>
+  <p class="reveal" style="color:#444;max-width:720px;margin-bottom:0;">AIがやってることは全部が「外に出す（アウトプット）」やない。</br>"頭の中で考えてる段階"と"外に出す段階"の2層がある。</br>この切り分けができるだけで、プロンプトの精度がガラッと変わる。</p>
+  <div class="two-layer stagger-children reveal">
+    <div class="layer-card">
+      <div class="layer-top"><span class="layer-num-big">01</span><span class="layer-top-label">INTERNAL<br>SELF-CONTAINED</span></div>
+      <div class="layer-body">
+        <h3>内的処理</h3><span class="layer-en">INTERNAL / SELF-CONTAINED</span>
+        <p>AIが「頭の中」で考えとる段階。情報を理解したり、思い出したり、推論したり──まだ発言もしてへんし、行動もしてへん。静かに頭を使ってるAI。</p>
+        <p style="color:var(--muted);font-size:12px;">人間で言うなら「読んで・考えて・思い出してる」フェーズ。</p>
+        <div class="chips"><span class="chip">① 理解</span><span class="chip">③ 推論</span><span class="chip">④ 検索</span></div>
+      </div>
+    </div>
+    <div class="layer-card external">
+      <div class="layer-top"><span class="layer-num-big">02</span><span class="layer-top-label">EXTERNAL<br>OUTPUT</span></div>
+      <div class="layer-body">
+        <h3>外的処理</h3><span class="layer-en">EXTERNAL / OUTPUT</span>
+        <p>その考えを外に出すフェーズ。AIが「話す」「書く」「動く」段階。ここで初めて、私たちが目にする文章・画像・アクションが生まれる。</p>
+        <p style="color:var(--muted);font-size:12px;">人間で言うなら「喋る・描く・手を動かす」フェーズ。</p>
+        <div class="chips"><span class="chip">② 生成</span><span class="chip">⑤ 実行</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="reveal">
+    <div class="quote-block" style="margin-top:24px;"><p><strong>プロンプトを作るとき、「AIに今"考えさせたい"のか、"動かせたい"のか」を意識するだけで、AIの反応精度はほんまにガラッと変わる。</strong></p></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 04 CONNECTIONS ═══════════════ -->
+<section id="sec04" class="section alt">
+<div class="container">
+  <div class="section-header-bar reveal"><span class="sec-num">04 / CONNECTIONS</span><span class="sec-tag">HOW THEY CONNECT</span></div>
+  <h2 class="sec-title reveal">FORCES<br><span class="sec-title-en">CONNECT</span></h2>
+  <p class="sec-subtitle reveal">力は単独では使わへん</p>
+  <p class="reveal" style="color:#444;max-width:720px;">実際のAIタスクでは、5つの力が連鎖・組み合わさって動いてる。</br>プロンプト1つで何個の力が呼び出されてるかを意識すると、設計の精度が一段上がる。</p>
+
+  <div class="pipeline-wrap reveal">
+    <svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;" role="img">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="arr-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#FF4400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <text x="48" y="113" font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="0.12em" text-anchor="middle" fill="#111">PROMPT</text>
+      <text x="48" y="130" font-family="'Noto Sans JP',sans-serif" font-size="10" text-anchor="middle" fill="#888">あなたの指示</text>
+      <line x1="82" y1="118" x2="96" y2="118" stroke="#888" stroke-width="1" marker-end="url(#arr)"/>
+      <rect x="100" y="40" width="400" height="160" fill="#F5F4F0" stroke="#111" stroke-width="2"/>
+      <rect x="100" y="40" width="400" height="28" fill="#111"/>
+      <text x="114" y="59" font-family="'IBM Plex Mono',monospace" font-size="10" font-weight="600" letter-spacing="0.2em" fill="#F5F4F0">INTERNAL · 考える層</text>
+      <text x="300" y="195" font-family="'Noto Sans JP',sans-serif" font-size="10" text-anchor="middle" fill="#888">3つの力を組み合わせて処理する</text>
+      <rect x="118" y="82" width="110" height="82" fill="#fff" stroke="#ddd" stroke-width="1"/>
+      <rect x="118" y="82" width="110" height="20" fill="#FF4400"/>
+      <text x="126" y="97" font-family="'IBM Plex Mono',monospace" font-size="10" font-weight="600" fill="#fff" letter-spacing="0.1em">01</text>
+      <text x="173" y="136" font-family="'Noto Sans JP',sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#111">理解する</text>
+      <text x="173" y="153" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="0.15em" text-anchor="middle" fill="#888">UNDERSTAND</text>
+      <rect x="243" y="82" width="110" height="82" fill="#fff" stroke="#ddd" stroke-width="1"/>
+      <rect x="243" y="82" width="110" height="20" fill="#FF4400"/>
+      <text x="251" y="97" font-family="'IBM Plex Mono',monospace" font-size="10" font-weight="600" fill="#fff" letter-spacing="0.1em">03</text>
+      <text x="298" y="136" font-family="'Noto Sans JP',sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#111">考える</text>
+      <text x="298" y="153" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="0.15em" text-anchor="middle" fill="#888">REASON</text>
+      <rect x="368" y="82" width="110" height="82" fill="#fff" stroke="#ddd" stroke-width="1"/>
+      <rect x="368" y="82" width="110" height="20" fill="#FF4400"/>
+      <text x="376" y="97" font-family="'IBM Plex Mono',monospace" font-size="10" font-weight="600" fill="#fff" letter-spacing="0.1em">04</text>
+      <text x="423" y="136" font-family="'Noto Sans JP',sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#111">思い出す</text>
+      <text x="423" y="153" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="0.15em" text-anchor="middle" fill="#888">RETRIEVE</text>
+      <line x1="502" y1="118" x2="526" y2="118" stroke="#FF4400" stroke-width="2" marker-end="url(#arr-o)"/>
+      <rect x="530" y="40" width="290" height="160" fill="#F5F4F0" stroke="#FF4400" stroke-width="2"/>
+      <rect x="530" y="40" width="290" height="28" fill="#FF4400"/>
+      <text x="544" y="59" font-family="'IBM Plex Mono',monospace" font-size="10" font-weight="600" letter-spacing="0.2em" fill="#111">EXTERNAL · 出す層</text>
+      <text x="675" y="195" font-family="'Noto Sans JP',sans-serif" font-size="10" text-anchor="middle" fill="#888">タスクに応じて出口を選ぶ</text>
+      <rect x="548" y="82" width="125" height="82" fill="#fff" stroke="#FF4400" stroke-width="1"/>
+      <rect x="548" y="82" width="125" height="20" fill="#111"/>
+      <text x="556" y="97" font-family="'IBM Plex Mono',monospace" font-size="10" font-weight="600" fill="#fff" letter-spacing="0.1em">02</text>
+      <text x="610" y="136" font-family="'Noto Sans JP',sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#111">つくる</text>
+      <text x="610" y="153" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="0.15em" text-anchor="middle" fill="#888">GENERATE</text>
+      <rect x="685" y="82" width="125" height="82" fill="#fff" stroke="#FF4400" stroke-width="1"/>
+      <rect x="685" y="82" width="125" height="20" fill="#111"/>
+      <text x="693" y="97" font-family="'IBM Plex Mono',monospace" font-size="10" font-weight="600" fill="#fff" letter-spacing="0.1em">05</text>
+      <text x="747" y="136" font-family="'Noto Sans JP',sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#111">動く</text>
+      <text x="747" y="153" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="0.15em" text-anchor="middle" fill="#888">ACT</text>
+      <line x1="822" y1="118" x2="848" y2="118" stroke="#111" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="870" y="113" font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="0.12em" text-anchor="middle" fill="#111">RESULT</text>
+      <text x="870" y="130" font-family="'Noto Sans JP',sans-serif" font-size="10" text-anchor="middle" fill="#888">結果・実行</text>
+      <text x="450" y="240" font-family="'Noto Sans JP',sans-serif" font-size="11" text-anchor="middle" fill="#888">※ タスクが複雑になるほど、呼び出される力の数と組み合わせが増える</text>
+    </svg>
+  </div>
+
+  <div class="insight-grid stagger-children reveal">
+    <div class="insight-tile"><span class="tile-num">01 / FOUNDATION</span><h4>理解が全ての起点</h4><p>生成も推論も、理解なしには始まらん。プロンプトで「何を、どう理解してほしいか」を明確にすることが、すべての出力品質の土台になる。</p></div>
+    <div class="insight-tile"><span class="tile-num">02 / AMPLIFIER</span><h4>思い出す力は"増幅装置"</h4><p>ファイルやDriveを接続すると、他の4つの力が一段強くなる。いわゆる <strong>RAG</strong>（検索拡張生成）は、"検索＋理解＋生成"の組み合わせ技や。</p></div>
+    <div class="insight-tile"><span class="tile-num">03 / TWO EXITS</span><h4>出口は2モードある</h4><p>「つくる」＝文章・画像で見せる。「動く」＝ツールを操作してやらせる。同じ依頼でも、どっちの出口を選ぶかで結果と影響範囲が変わる。</p></div>
+  </div>
+
+  <h3 class="mini-h reveal">タスクの複雑度 ＝ 組み合わせる力の数</h3>
+  <p class="mini-desc reveal">同じAIでも、依頼するタスクの難易度で"動員される力"が変わる。自分のプロンプトが何個の力を呼び出してるか可視化してみた。</p>
+  <div class="task-table-wrap reveal">
+    <table>
+      <thead><tr><th>タスク例</th><th>動員される力（01〜05）</th></tr></thead>
+      <tbody>
+        <tr><td><span class="task-prompt">「この文章を要約して」</span><span class="task-meta">Simple · 1 power</span></td><td><div class="chips-row"><span class="pchip on">01</span><span class="pchip">02</span><span class="pchip">03</span><span class="pchip">04</span><span class="pchip">05</span></div></td></tr>
+        <tr><td><span class="task-prompt">「このデータから傾向を分析して」</span><span class="task-meta">Analytical · 3 powers</span></td><td><div class="chips-row"><span class="pchip on">01</span><span class="pchip on">02</span><span class="pchip on">03</span><span class="pchip">04</span><span class="pchip">05</span></div></td></tr>
+        <tr><td><span class="task-prompt">「このPDFから重要な条項を探して要約して」</span><span class="task-meta">RAG · 3 powers</span></td><td><div class="chips-row"><span class="pchip on">01</span><span class="pchip on">02</span><span class="pchip">03</span><span class="pchip on">04</span><span class="pchip">05</span></div></td></tr>
+        <tr><td><span class="task-prompt">「過去の週報を読んで、今週の目標を提案して」</span><span class="task-meta">Contextual · 4 powers</span></td><td><div class="chips-row"><span class="pchip on">01</span><span class="pchip on">02</span><span class="pchip on">03</span><span class="pchip on">04</span><span class="pchip">05</span></div></td></tr>
+        <tr><td><span class="task-prompt">「議事録→ToDo抽出→Notion追加→Slack共有」</span><span class="task-meta">Full-stack · 5 powers</span></td><td><div class="chips-row"><span class="pchip on">01</span><span class="pchip on">02</span><span class="pchip on">03</span><span class="pchip on">04</span><span class="pchip on">05</span></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 05 FIVE POWERS ═══════════════ -->
+<section id="sec05" class="section">
+<div class="container">
+  <div class="section-header-bar reveal"><span class="sec-num">05 / THE FIVE POWERS</span><span class="sec-tag">DETAILED BREAKDOWN</span></div>
+  <h2 class="sec-title reveal">5 CORE<br><span class="sec-title-en">POWERS</span></h2>
+  <p class="sec-subtitle reveal">5つの力を、プロンプト例つきで分解する</p>
+  <p class="reveal" style="color:#444;max-width:720px;margin-bottom:40px;">各力がどんな働きをするか、そしてそれを引き出すプロンプト例を5つずつセットにした。</br>コピペで使える形で書いてあるから、自分の用途に置き換えながら試してみて。</p>
+
+  <div class="power-cards">
+    <!-- POWER 01 -->
+    <article class="power-card reveal-left" id="power01">
+      <div class="pc-header">
+        <div class="pc-num-col"><div class="pc-num-big">01</div><div><span class="pc-name-en">Understand</span><span class="pc-name-ja">理解する力</span><div class="pc-tags"><span class="pc-tag">INTERNAL ®</span><span class="pc-tag">FIELD TESTED</span></div></div></div>
+        <div class="pc-title-col"><h3>意味を読み取って、文脈を再構成する</h3><p class="pc-desc">検索は"キーワードを拾う"だけやけど、AIは意味を読み取って文脈を再構成する。</br>この「文脈の統計的再現」こそ、AIが"すごい"って言われた入口や。</p></div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-left"><div class="pc-insight"><strong>ポイント：</strong>この力を使わへん／意識せんかったら、ほんまにウェブ検索と変わらん。"読み込ませる素材"があるときほど、この力は真価を発揮する。</div><div style="font-family:var(--font-mono);font-size:9px;color:var(--orange);letter-spacing:0.2em;text-transform:uppercase;font-weight:600;">STATUS — ACTIVE · CORE LAYER</div></div>
+        <div class="pc-right"><p>理解せんと生成できへん。ここが全ての起点やから、最初に押さえたい力。</p></div>
+      </div>
+      <div class="prompts-toggle" onclick="togglePrompts(this)"><span class="pt-label">▶ PROMPT EXAMPLES</span><span class="pt-count">5 examples · UNDERSTAND</span><span class="pt-arrow">▼</span></div>
+      <div class="prompts-body">
+        <div class="prompt-item"><span class="prompt-ctx">要約</span><span class="prompt-text">この文章の意図を3行でまとめて</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">翻訳</span><span class="prompt-text">この英文を、関西弁の友達口調に訳して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">意図抽出</span><span class="prompt-text">このメールの真の意図を推察して、返信のトーンを提案して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">構造化</span><span class="prompt-text">この長い議事録を、決定事項／保留／ToDoの3つに整理して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">平易化</span><span class="prompt-text">この論文の要旨を、初心者にわかる言葉で説明して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      </div>
+    </article>
+
+    <!-- POWER 02 -->
+    <article class="power-card external reveal-left" id="power02">
+      <div class="pc-header">
+        <div class="pc-num-col"><div class="pc-num-big">02</div><div><span class="pc-name-en">Generate</span><span class="pc-name-ja">つくる力</span><div class="pc-tags"><span class="pc-tag">EXTERNAL ®</span><span class="pc-tag">MAIN FRONT</span></div></div></div>
+        <div class="pc-title-col"><h3>文章・絵・曲・コードを生み出す</h3><p class="pc-desc">みんなが「AIすげぇ！」って感じるのは、だいたいここ。</br>人間で言うなら"話す・描く"に近い。理解したことを、自分の言葉や表現で出していく感じ。</p></div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-left" style="background:var(--orange);color:var(--black);"><div class="pc-insight" style="background:var(--black);color:#ccc;"><strong style="color:var(--orange);">主戦場：</strong>指示があいまいなら"それっぽいけど浅い文章"になる。条件を絞りすぎると創造性が死ぬ。<em style="border-color:var(--orange);">"いい塩梅"</em>を見つけたとき、AIはほんまに人間みたいに喋りだす。</div><div style="font-family:var(--font-mono);font-size:9px;color:rgba(0,0,0,0.45);letter-spacing:0.2em;text-transform:uppercase;font-weight:600;">MAIN BATTLEGROUND · PROMPT ENG</div></div>
+        <div class="pc-right"><p><strong>ここがプロンプトエンジニアリングの主戦場。</strong>どんな言葉で、どんなトーンで、どんな構成で出すか──全部この"つくる"プロセスの調整次第。</p></div>
+      </div>
+      <div class="prompts-toggle" onclick="togglePrompts(this)"><span class="pt-label">▶ PROMPT EXAMPLES</span><span class="pt-count">5 examples · GENERATE</span><span class="pt-arrow">▼</span></div>
+      <div class="prompts-body">
+        <div class="prompt-item"><span class="prompt-ctx">文章</span><span class="prompt-text">これを題材に、ラノベ風の導入文を800字で書いて</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">コード</span><span class="prompt-text">PythonでCSVを読んで、月別集計する関数を書いて。コメント多めで</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">画像</span><span class="prompt-text">ミニマル建築風の表紙画像プロンプトを、Midjourney用に書いて</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">キャッチ</span><span class="prompt-text">この記事のタイトル案を、関西弁で5個出して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">変換</span><span class="prompt-text">このスライドの骨子を、noteの導入文に書き直して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      </div>
+    </article>
+
+    <!-- POWER 03 -->
+    <article class="power-card reveal-left" id="power03">
+      <div class="pc-header">
+        <div class="pc-num-col"><div class="pc-num-big">03</div><div><span class="pc-name-en">Reason</span><span class="pc-name-ja">考える力</span><div class="pc-tags"><span class="pc-tag">INTERNAL ®</span><span class="pc-tag">FIELD TESTED</span></div></div></div>
+        <div class="pc-title-col"><h3>関係性を推論し、次を予測する</h3><p class="pc-desc">「これとこれ、関係あるんちゃう？」「次にこうなるはず」── AIに"考える脳みそ"を代わりにさせる部分。</br>データ分析や傾向予測がここに当たる。</p></div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-left"><div class="pc-insight"><strong>指示が雑なほど、考え方も雑になる。</strong>「まぁAIが考えてくれるやろ」と丸投げすると、AIは"考える"というより<em>"想像で埋める"</em>ことを始める。プロンプトで"考える範囲"を決めてやれば、推論はかなり筋が通るようになる。</div><div style="font-family:var(--font-mono);font-size:9px;color:var(--orange);letter-spacing:0.2em;text-transform:uppercase;font-weight:600;">WARNING · HALLUCINATION RISK</div></div>
+        <div class="pc-right"><p>ただし、AIが"考えてる"ふりをしてるだけのときもある。これがいわゆる <strong>ハルシネーション</strong>（嘘つきAI現象）や。</p></div>
+      </div>
+      <div class="prompts-toggle" onclick="togglePrompts(this)"><span class="pt-label">▶ PROMPT EXAMPLES</span><span class="pt-count">5 examples · REASON</span><span class="pt-arrow">▼</span></div>
+      <div class="prompts-body">
+        <div class="prompt-item"><span class="prompt-ctx">分析</span><span class="prompt-text">このデータから傾向を分析して、仮説を3つ立てて</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">比較</span><span class="prompt-text">A案とB案を、コスト／スピード／拡張性で比較して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">予測</span><span class="prompt-text">これが続いた場合、半年後に起こりそうなリスクを挙げて</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">診断</span><span class="prompt-text">このエラーログから原因を推定して、次の一手を提案して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">設計</span><span class="prompt-text">この要件を満たす最小構成を、前提を明記して提案して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      </div>
+    </article>
+
+    <!-- POWER 04 -->
+    <article class="power-card reveal-left" id="power04">
+      <div class="pc-header">
+        <div class="pc-num-col"><div class="pc-num-big">04</div><div><span class="pc-name-en">Retrieve</span><span class="pc-name-ja">思い出す力</span><div class="pc-tags"><span class="pc-tag">INTERNAL ®</span><span class="pc-tag">RAG CORE</span></div></div></div>
+        <div class="pc-title-col"><h3>知識やデータを引っ張ってくる</h3><p class="pc-desc">「この前の議事録どこ？」「○○についての要約ちょうだい」みたいな、AIの"記憶と検索の力"。</br>仕組みのベースはRAG（検索拡張生成）。</p></div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-left"><div class="pc-insight"><strong>初心者が一番ハマるワナ：</strong>多くの人が「AI＝なんでも知ってるやつ」と思い、この力<em>だけ</em>で使って「AIができることの全部」と思い込んでる。<em>ここで終わると、AIの半分しか使えてない。</em></div><div style="font-family:var(--font-mono);font-size:9px;color:var(--orange);letter-spacing:0.2em;text-transform:uppercase;font-weight:600;">AMPLIFIER · CONNECT FILES</div></div>
+        <div class="pc-right"><p>でも、ほんまにすごいのは、この力をベースに <strong>理解→生成→推論→実行</strong>まで繋がること。ChatGPTのファイル検索やGoogle Drive連携がここに当たる。</p></div>
+      </div>
+      <div class="prompts-toggle" onclick="togglePrompts(this)"><span class="pt-label">▶ PROMPT EXAMPLES</span><span class="pt-count">5 examples · RETRIEVE</span><span class="pt-arrow">▼</span></div>
+      <div class="prompts-body">
+        <div class="prompt-item"><span class="prompt-ctx">文書検索</span><span class="prompt-text">この資料の中から「契約期間」に関する条項を探して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">要約復元</span><span class="prompt-text">先週のSlackログから、決定事項だけ時系列で抽出して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">ファイル横断</span><span class="prompt-text">Driveの中で、プロジェクトXに関連するメモを列挙して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">過去参照</span><span class="prompt-text">以前話した"あの方針"について、該当部分を引用して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">知識補強</span><span class="prompt-text">この資料を読んで、書かれてない前提知識を追加で説明して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      </div>
+    </article>
+
+    <!-- POWER 05 -->
+    <article class="power-card external reveal-left" id="power05">
+      <div class="pc-header">
+        <div class="pc-num-col"><div class="pc-num-big">05</div><div><span class="pc-name-en">Act</span><span class="pc-name-ja">動く力</span><div class="pc-tags"><span class="pc-tag">EXTERNAL ®</span><span class="pc-tag">AGENT MODE</span></div></div></div>
+        <div class="pc-title-col"><h3>他のツールと繋がって、手を動かす</h3><p class="pc-desc">メール送る、スケジュール入れる、Slackに返信する── AIが人間の代わりに行動しはじめる世界。</br>"秘書"というより"共同作業者"や。</p></div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-left" style="background:var(--orange);"><div class="pc-insight" style="background:var(--black);color:#ccc;"><strong style="color:var(--orange);">プロンプトの長さ問題：</strong>短すぎると「わかった（つもり）」で動くし、長すぎると途中で混乱して止まる。AIが動ける時代ほど、<em style="border-color:var(--orange);">"指示の設計"</em>が問われる。</div><div style="font-family:var(--font-mono);font-size:9px;color:rgba(0,0,0,0.45);letter-spacing:0.2em;text-transform:uppercase;font-weight:600;">HOTTEST ZONE · 2026 FRONTIER</div></div>
+        <div class="pc-right"><p>今まさにプロンプトエンジニアリング界隈が盛り上がってる領域。「AIに相談する」から「AIに任せる」時代に入りつつある。</p></div>
+      </div>
+      <div class="prompts-toggle" onclick="togglePrompts(this)"><span class="pt-label">▶ PROMPT EXAMPLES</span><span class="pt-count">5 examples · ACT</span><span class="pt-arrow">▼</span></div>
+      <div class="prompts-body">
+        <div class="prompt-item"><span class="prompt-ctx">カレンダー</span><span class="prompt-text">Googleカレンダーに、来週月曜10時〜11時で「定例」を登録して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">メール</span><span class="prompt-text">この内容で下書きを作って、Gmailに保存して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">Notion</span><span class="prompt-text">Notionの「週報」DBに今週分の行を追加して、タグ付けまでして</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">API</span><span class="prompt-text">このエンドポイントを叩いて、結果をCSVに整形して保存して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+        <div class="prompt-item"><span class="prompt-ctx">ワークフロー</span><span class="prompt-text">議事録を読んでToDoを抽出、Notionに追加、関係者にSlackで共有して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      </div>
+    </article>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 06 SIXTH POWER ═══════════════ -->
+<section id="sec06" class="section alt">
+<div class="container">
+  <div class="section-header-bar reveal"><span class="sec-num">06 / THE SIXTH POWER</span><span class="sec-tag">SELF-EVALUATION · REFINEMENT</span></div>
+  <h2 class="sec-title reveal">SELF<br><span class="sec-title-en">REFINE</span></h2>
+  <p class="sec-subtitle reveal">第6の力 ── 自分の答えを、自分で評価する</p>
+  <p class="reveal" style="color:#444;max-width:720px;">5つの力を使い倒すと、どうしても無視できん<strong>"第6の力"</strong>が見えてくる。</br>それが「自分のアウトプットを自分で採点して、書き直す力」──いわゆる Self-Refine / LLM-as-a-judge や。</p>
+  <div class="reveal">
+    <div class="dark-callout"><div class="cross tl"></div><div class="cross tr"></div><span class="sec-tag">06 / THE SIXTH POWER — SELF-REFINE</span><h3>評価する力</h3><p>AIに自分の答えを <strong>5軸10点満点で採点させ</strong>、各観点の改善コメントを書かせてから、それを全部反映した <strong>「第2版」</strong>を書かせる。これだけで、AIは"書記"から"副編集長"ポジに昇格する。</p></div>
+  </div>
+  <h3 class="mini-h reveal">評価に使う "5つの軸"</h3>
+  <div class="axis-grid stagger-children reveal">
+    <div class="axis-card"><div class="axis-num">01</div><div class="axis-ja">網羅性</div><span class="axis-en">Coverage</span><p>重要な論点の抜け漏れはないか。</p></div>
+    <div class="axis-card"><div class="axis-num">02</div><div class="axis-ja">正確性</div><span class="axis-en">Accuracy</span><p>事実・数字・引用がざっくりしすぎてないか。</p></div>
+    <div class="axis-card"><div class="axis-num">03</div><div class="axis-ja">一貫性</div><span class="axis-en">Consistency</span><p>主張が途中でひっくり返ってないか。</p></div>
+    <div class="axis-card"><div class="axis-num">04</div><div class="axis-ja">独自性</div><span class="axis-en">Originality</span><p>「テンプレ文」で終わってないか。</p></div>
+    <div class="axis-card"><div class="axis-num">05</div><div class="axis-ja">実務有用性</div><span class="axis-en">Practicality</span><p>次の一手がイメージ湧くか。</p></div>
+  </div>
+  <h3 class="mini-h reveal">実務での回し方 ── 4ステップ・ループ</h3>
+  <div class="step-flow stagger-children reveal">
+    <div class="step-card"><span class="step-num">Step 01</span><h4>まずは普通に書かせる</h4><p>ケチつけずに、素材としての"第1版"をサクッと出させる。</p></div>
+    <div class="step-card"><span class="step-num">Step 02</span><h4>5軸で採点させる</h4><p>5軸で10点満点評価＋改善コメント。</p></div>
+    <div class="step-card"><span class="step-num">Step 03</span><h4>第2版を書かせる</h4><p>改善コメントを<strong>全部</strong>反映した改訂版を書かせる。</p></div>
+    <div class="step-card"><span class="step-num">Step 04</span><h4>人間が味つけする</h4><p>関西弁・自分の経験・具体例を最後にひと足し。</p></div>
+  </div>
+  <h3 class="mini-h reveal">Before / After</h3>
+  <div class="ba-grid stagger-children reveal">
+    <div class="ba-card"><span class="ba-label">Before · 第1版（一発書き）</span><p class="ba-text">AIの自己評価機能を使うと、文章の質を高めることができます。5つの観点から評価して改善することで、より良い文章になるでしょう。ぜひ試してみてください。</p></div>
+    <div class="ba-card after"><span class="ba-label">After · 第2版（5軸自己評価後）</span><p class="ba-text">AIの自己評価機能を使うと、「なんとなくそれっぽい」文章を、「読者が次の一歩をイメージできる文章」に変えられます。具体的には、AIに <strong>網羅性・正確性・一貫性・独自性・実務有用性</strong>の5点を10点満点で採点させ、その指摘をすべて反映した「第2版」を出してもらうイメージです。</p></div>
+  </div>
+  <h3 class="mini-h reveal">コピペで使える ── プロンプト雛形</h3>
+  <pre class="code-block reveal"><span class="cm"># Step 02: 5軸評価プロンプト</span>
+
+あなたが今出力した回答について、次の 5 つの観点で
+<span class="hl">10 点満点評価</span>を行い、各項目ごとに
+<span class="hl">1〜2 行の改善コメント</span>を書いてください。
+
+### 評価観点
+1. <span class="hl">網羅性</span>：重要な論点の抜け漏れはないか
+2. <span class="hl">正確性</span>：事実や数字、引用に誤りや紛らわしさはないか
+3. <span class="hl">一貫性</span>：主張・トーン・用語が途中でブレていないか
+4. <span class="hl">独自性</span>：テンプレ的な一般論で終わっておらず、視点や例にオリジナリティがあるか
+5. <span class="hl">実務有用性</span>：読み終わった人が「次に何をすればいいか」イメージできるか
+
+<span class="cm"># Step 03: 第2版の生成プロンプト（続けて投げる）</span>
+
+上記の改善コメントを<span class="hl">すべて反映した【改訂版の回答】</span>を
+新しく出力してください。指摘した弱点は必ず修正すること。</pre>
+  <h3 class="mini-h reveal">弱点とその処方箋</h3>
+  <div class="three-grid stagger-children reveal">
+    <div class="wcard"><span class="weak-label">Weakness 01</span><h4>"やったふり"する</h4><p>点数だけそれっぽく付けて、改善コメントがふわっと。<br><br><strong>処方：</strong>評価と改訂版を<em>二段階出力</em>にして、人間にも見える形で出させる。</p></div>
+    <div class="wcard"><span class="weak-label">Weakness 02</span><h4>本当に評価したか見えん</h4><p>「第2版です！良くしました！」と言われても、プロセスが外から見えん。<br><br><strong>処方：</strong><em>もう一度同じ5軸で採点</em>させて、"どこが良くなった？"を説明させる。</p></div>
+    <div class="wcard"><span class="weak-label">Weakness 03</span><h4>評価軸がズレる</h4><p>軸そのものが誤ってると、いくら回しても方向がズレたまま。<br><br><strong>処方：</strong><em>人間が先に</em>、誰向けにどう動いてほしいかを決めてから軸を設計する。</p></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 07 SEVENTH POWER ═══════════════ -->
+<section id="sec07" class="section">
+<div class="container">
+  <div class="section-header-bar reveal"><span class="sec-num">07 / THE SEVENTH POWER</span><span class="sec-tag">ORCHESTRATION · META LAYER</span></div>
+  <h2 class="sec-title reveal">ORCHESTRATE<br><span class="sec-title-en">AI TEAMS</span></h2>
+  <p class="sec-subtitle reveal">第7の力 ── AIを束ねて、チームにする</p>
+  <p class="reveal" style="color:#444;max-width:720px;">6つの力まで来ると、"1人の優秀なAI"をどう使うかの完成形。</br>でも2026年、さらにその上の世界がある。</br><strong>複数のAIを束ねて、別々の仕事をさせて、結果を統合する</strong>──マルチエージェント／オーケストレーションの世界や。</p>
+  <div class="reveal"><div class="dark-callout"><div class="cross tl"></div><div class="cross tr"></div><span class="sec-tag">07 / THE SEVENTH POWER — ORCHESTRATION</span><h3>束ねる力</h3><p>1つのAIに全部やらせるんやなくて、<strong>計画・実行・評価を別々のAIに分担させる</strong>。自分は"監督"ポジに回って、各AIに役割を与える。これが2026年のマルチエージェント時代のコア発想や。</p></div></div>
+  <h3 class="mini-h reveal">代表的な3つのオーケストレーションパターン</h3>
+  <div class="three-grid stagger-children reveal">
+    <div class="ocard"><span class="orch-num">Pattern 01 · Router</span><h4>振り分け型</h4><p>入力の内容や意図に応じて、<strong>どのAIに仕事を振るかを振り分ける</strong>パターン。</p><div class="orch-example"><span class="orch-example-label">USE CASE</span>デザイン質問 → Design AI<br>コード質問 → Code AI<br>分析依頼 → Data AI</div></div>
+    <div class="ocard"><span class="orch-num">Pattern 02 · Supervisor</span><h4>監督型</h4><p>1つのAIが<strong>計画を立て、複数のサブAIに分担させ、結果を統合する</strong>パターン。</p><div class="orch-example"><span class="orch-example-label">USE CASE</span>Planner → 計画<br>Worker × 3 → 分担実行<br>Integrator → 統合出力</div></div>
+    <div class="ocard"><span class="orch-num">Pattern 03 · Loop</span><h4>キャッチボール型</h4><p>2つのAIが<strong>交互に出力と批評を繰り返す</strong>パターン。</p><div class="orch-example"><span class="orch-example-label">USE CASE</span>Writer AI → 原稿<br>Critic AI → 5軸採点<br>Writer AI → 改訂版</div></div>
+  </div>
+  <div class="insight-block reveal"><strong>2026年的リアリティ：</strong>MCP（Model Context Protocol）が標準化されて、AIと外部ツール・他のAIとの接続が格段にやりやすくなった。Claude Code、Claude DesktopのMCPサーバ──<em>「監督としてAIチームを運用する」</em>ことが、個人レベルで実現できる時代に入っとる。</div>
+  <div class="power-card meta reveal" style="margin-top:24px;">
+    <div class="pc-header"><div class="pc-num-col"><div class="pc-num-big">07</div><div><span class="pc-name-en">Orchestrate</span><span class="pc-name-ja">束ねる力</span><div class="pc-tags"><span class="pc-tag">META ®</span><span class="pc-tag">2026 FRONTIER</span></div></div></div><div class="pc-title-col"><h3>束ねるためのプロンプト例</h3><p class="pc-desc">1つのプロンプトの中で複数AIを指揮するときの書き方。役割を明示的に分けるのがコツ。</p></div></div>
+    <div class="prompts-toggle" onclick="togglePrompts(this)" style="background:var(--dark2);border-top:1px solid #333;"><span class="pt-label" style="color:#fff;">▶ PROMPT EXAMPLES</span><span class="pt-count" style="color:var(--muted);">5 examples · ORCHESTRATE</span><span class="pt-arrow" style="color:var(--orange);">▼</span></div>
+    <div class="prompts-body">
+      <div class="prompt-item"><span class="prompt-ctx">Router</span><span class="prompt-text">この質問を、コード／デザイン／分析のどれか判定して、適したプロンプトを使い分けて回答して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      <div class="prompt-item"><span class="prompt-ctx">Supervisor</span><span class="prompt-text">このタスクを「リサーチ→分析→レポート作成」の3役に分解、各役を別プロンプトで実行して最後に統合して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      <div class="prompt-item"><span class="prompt-ctx">Loop</span><span class="prompt-text">あなたが書いた後、別人格の編集者AIとして同じ出力を批評、そのうえで改訂版を書いて</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      <div class="prompt-item"><span class="prompt-ctx">サブエージェント</span><span class="prompt-text">Claude Codeでこの実装を、コード担当・テスト担当・ドキュメント担当の3エージェントに分担させて</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+      <div class="prompt-item"><span class="prompt-ctx">MCP連携</span><span class="prompt-text">Notion・Gmail・Calendarの3つのMCPを使って、議事録から予定と通知を自動展開して</span><button class="prompt-copy" onclick="copyPrompt(this)">COPY</button></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 08 CHEATSHEET ═══════════════ -->
+<section id="sec08" class="section dark">
+<div class="container">
+  <div class="section-header-bar reveal" style="border-bottom-color:#333;"><span class="sec-num">08 / CHEATSHEET</span><span class="sec-tag">PROMPT SWITCHBOARD</span></div>
+  <h2 class="sec-title reveal" style="color:#fff;">PROMPT<br><span class="sec-title-en">SWITCHBOARD</span></h2>
+  <p class="sec-subtitle reveal">プロンプト＝どの力を呼び出すかのスイッチ</p>
+  <p class="reveal" style="color:var(--gray2);max-width:720px;margin-bottom:0;">プロンプトってのは、「AIのどの力を、どう使いたいか」を伝えるための言葉。</br>ただの"命令文"やなくて、AIの使い方の選択スイッチや。</p>
+  <div class="cheatsheet-wrap reveal">
+    <table>
+      <thead><tr><th>No.</th><th>力 / Power</th><th>代表プロンプト</th></tr></thead>
+      <tbody>
+        <tr><td class="cs-num">01</td><td class="cs-name"><span class="en-small">Understand</span>理解</td><td class="cs-prompt">「この文章の意図を3行でまとめて」</td></tr>
+        <tr><td class="cs-num">02</td><td class="cs-name"><span class="en-small">Generate</span>生成</td><td class="cs-prompt">「これを題材にラノベ風で書いて」</td></tr>
+        <tr><td class="cs-num">03</td><td class="cs-name"><span class="en-small">Reason</span>推論</td><td class="cs-prompt">「このデータから傾向を分析して」</td></tr>
+        <tr><td class="cs-num">04</td><td class="cs-name"><span class="en-small">Retrieve</span>検索</td><td class="cs-prompt">「この資料の中から該当部分を探して」</td></tr>
+        <tr><td class="cs-num">05</td><td class="cs-name"><span class="en-small">Act</span>実行</td><td class="cs-prompt">「Googleカレンダーに予定を登録して」</td></tr>
+        <tr><td class="cs-num">06</td><td class="cs-name"><span class="en-small">Evaluate</span>評価</td><td class="cs-prompt">「今の出力を5軸で採点して、改訂版を書いて」</td></tr>
+        <tr><td class="cs-num">07</td><td class="cs-name"><span class="en-small">Orchestrate</span>束ねる</td><td class="cs-prompt">「このタスクを3役に分担させて、最後に統合して」</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 09 MAPS+R+O ═══════════════ -->
+<section id="sec09" class="maps-callout" style="border-top:2px solid var(--black);">
+  <div class="cross tl"></div><div class="cross tr"></div>
+  <div class="cross bl"></div><div class="cross br"></div>
+  <div class="container">
+    <div class="section-header-bar reveal" style="border-bottom-color:rgba(0,0,0,0.2);"><span class="sec-num">09 / THE MAPS+R+O MODEL</span><span class="sec-tag">COMPLETE FRAMEWORK</span></div>
+    <h2 class="sec-title reveal" style="color:var(--black);">MAPS<br>+ R + O</h2>
+    <p class="sec-subtitle reveal" style="color:rgba(0,0,0,0.45);">AIは、7つの力を持つチーム。あんたはその"監督"。</p>
+    <p class="reveal" style="font-size:16px;max-width:640px;line-height:1.85;margin-bottom:12px;">5つの基本力を構造化した <strong>MAPSモデル</strong>（Multimodal · Action · Prompt · Structure）。</br>そこに第6の力（自己評価）= <strong>R（Refinement）</strong>、第7の力（束ねる）= <strong>O（Orchestration）</strong>を加えた完全版が <strong>MAPS+R+O</strong>。</p>
+    <p class="reveal" style="font-size:16px;max-width:640px;line-height:1.85;">プロンプトは"呪文"やなくて、<strong>"チームの誰に・何を・どこまで・どう評価させて・どう束ねるか"</strong>を決める指示書。</br>ここまで設計できたら、AIの出力はもう<strong>別次元</strong>に変わる。</p>
+    <div class="maps-footer reveal">Multimodal · Action · Prompt · Structure · Refinement · Orchestration</div>
+  </div>
+</section>
+
+<!-- ═══════════════ SEC 10 WHAT'S NEXT ═══════════════ -->
+<section id="sec10" class="section alt">
+<div class="container">
+  <div class="section-header-bar reveal"><span class="sec-num">10 / WHAT'S NEXT</span><span class="sec-tag">2026 TRENDS</span></div>
+  <h2 class="sec-title reveal">BEYOND<br><span class="sec-title-en">THE SEVEN</span></h2>
+  <p class="sec-subtitle reveal">7つの力の"その先" ── 2026年の3つの潮流</p>
+  <div class="essence-grid stagger-children reveal">
+    <div class="ecard"><span class="etag">TREND 01</span><h4>コンテキスト<br>エンジニアリング</h4><div class="e-en">Context Engineering</div><p>プロンプト単体やなくて、<strong>AIに渡す情報全体</strong>（システムプロンプト・ファイル・履歴・ツール・出力形式）を設計する考え方。「いい質問をする」から「いい環境を設計する」へ。</p></div>
+    <div class="ecard"><span class="etag">TREND 02</span><h4>拡張思考<br>（推論特化モデル）</h4><div class="e-en">Extended Thinking</div><p>Claude Opus 4.6 や OpenAI o3 系が得意な <strong>"長時間考えてから答える"</strong>モード。第3の力（推論）の強化版。数学・複雑設計・コード生成で差が出る。</p></div>
+    <div class="ecard"><span class="etag">TREND 03</span><h4>コンピュータ<br>ユース</h4><div class="e-en">Computer Use</div><p>AIが<strong>画面を見てブラウザやアプリを直接操作する</strong>世界。Claude in Chrome、Claude for Excel、Computer Use API。第5の力（実行）の究極形。</p></div>
+  </div>
+  <div class="reveal"><div class="quote-block" style="margin-top:32px;"><span class="q-big">プロンプトエンジニアリングは、終わらない。"設計"に進化しただけや。</span><p>7つの力は土台。その上に、コンテキスト設計・拡張思考・コンピュータ操作が積み上がる。ここまで辿り着けば、AIはもう"相棒"を超えて、<strong>"自走するチームメイト"</strong>になっていく。</p></div></div>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 11 HORIZON ═══════════════ -->
+<section id="sec11" class="section dark">
+<div class="container">
+  <div class="section-header-bar reveal" style="border-bottom-color:#333;"><span class="sec-num">11 / THE HORIZON</span><span class="sec-tag">BEYOND THE SEVEN</span></div>
+  <h2 class="sec-title reveal" style="color:#fff;">THE<br><span class="sec-title-en">HORIZON</span></h2>
+  <p class="sec-subtitle reveal">7つの力の"外側" ── 地平線の向こう</p>
+  <p class="reveal" style="color:var(--gray2);max-width:720px;margin-bottom:40px;">ここまでが2026年4月時点の"地図"。でも正直に言うと、7つの力の<strong style="color:#fff;">外側で走ってる3つのパラダイムシフト</strong>がある。</p>
+  <div class="essence-grid stagger-children reveal">
+    <div class="hcard"><span class="htag">BEYOND 01 · UNDERSTAND</span><h4>ネイティブ<br>マルチモーダル推論</h4><div class="h-en">Native Multimodal Reasoning</div><p>画像・音声・動画を<strong style="color:#fff;">"そのままのデータとして直接思考する"</strong>力。「見て、聴いて、即座に動く」レベル。</p><div class="h-reality"><span class="h-reality-label">2026 Reality</span>Gemini 2.0 Live / Claude 4 vision-native / GPT-4o Realtime API</div><span class="h-link">→ <strong>第1の力（理解）</strong>の進化形</span></div>
+    <div class="hcard"><span class="htag">BEYOND 04 · RETRIEVE</span><h4>長期記憶と<br>自己成長</h4><div class="h-en">Persistent Memory</div><p><strong style="color:#fff;">あんたの癖・過去プロジェクト・文体を長期で学習し続ける</strong>"自分専用AI"。検索が"引き出し"から<strong style="color:#fff;">"経験値の蓄積"</strong>へ進化する。</p><div class="h-reality"><span class="h-reality-label">2026 Reality</span>ChatGPT Memory / Claude Projects 記憶化 / パーソナルエージェント</div><span class="h-link">→ <strong>第4の力（検索）</strong>の進化形</span></div>
+    <div class="hcard"><span class="htag">BEYOND 07 · ORCHESTRATE</span><h4>完全自律<br>エージェント</h4><div class="h-en">Full Autonomy</div><p><strong style="color:#fff;">AI同士が目標を共有して24時間稼働する</strong>完全自律型。ここまで来ると、人間はオーナーにポジションが上がる。</p><div class="h-reality"><span class="h-reality-label">2026 Reality</span>Devin / Autonomous research agents / Self-managing workflows</div><span class="h-link">→ <strong>第7の力（束ねる）</strong>の進化形</span></div>
+  </div>
+  <div class="reveal"><div class="dark-callout" style="background:var(--orange);border-color:var(--orange);margin-top:40px;"><div class="cross tl" style="color:rgba(0,0,0,0.12)"></div><div class="cross br" style="color:rgba(0,0,0,0.12)"></div><span class="sec-tag" style="color:var(--black);">Position Statement</span><h3 style="color:var(--black);">"プロンプトが消える時代" ── ほんまはそうやない。</h3><p style="color:rgba(0,0,0,0.65);max-width:720px;">消えるんやなくて、<strong style="color:var(--black);">構造化されて、埋め込まれて、見えなくなるだけ</strong>や。</br>姿を変えても、「AIのどの力を、どう引き出すか」を設計する仕事は残り続ける。7つの力は"プロンプトが見えへんようになった時代"こそ、設計者の頭の中で動き続ける骨格や。</p></div></div>
+</div>
+</section>
+
+<!-- ═══════════════ SEC 12 AUTHOR ═══════════════ -->
+<section id="sec12" class="section">
+<div class="container">
+  <div class="section-header-bar reveal"><span class="sec-num">12 / AUTHOR'S NOTE</span><span class="sec-tag">WHY THIS STILL MATTERS</span></div>
+  <h2 class="sec-title reveal">WHY<br><span class="sec-title-en">THIS MATTERS</span></h2>
+  <p class="sec-subtitle reveal">それでも、"プロンプト"を理解する意味</p>
+  <div class="reveal">
+    <div class="author-note">
+      <blockquote>
+        <p>プロンプトエンジニアリング ── もしかしたら、もう <em>古臭くなってる</em>かもしれへん。<br>マルチエージェント、コンテキスト設計、コンピュータ操作、自律エージェント──<br>時代は確実に「プロンプトの先」へ進んでる。それは事実や。</p>
+        <p>せやけどな。<br><strong>このAIがプロンプトによって何ができるのか</strong>、<br>ここを一回ちゃんと理解するだけで、<br><strong>AIとの向き合い方も、出力の質も、確実に変わる</strong>。<br>ワイはそう信じてる。</p>
+        <p>7つの力は、<em>入口</em>やなくて<em>目盛り</em>や。<br>「今、自分はどの力を呼び出してるか」<br>「どこまで設計できてるか」<br>──これを測るための、あんた専用の定規にしてほしい。</p>
+        <p>呪文を覚えるより、地図を持つ方が、遠くまで行ける。</p>
+      </blockquote>
+      <div class="sig">— にーさん / KITAcore · 2026</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ TAKEAWAY ═══════════════ -->
+<div class="takeaway">
+  <div class="cross tl" style="color:rgba(255,68,0,0.15)"></div><div class="cross tr" style="color:rgba(255,68,0,0.15)"></div>
+  <div class="cross bl" style="color:rgba(255,68,0,0.15)"></div><div class="cross br" style="color:rgba(255,68,0,0.15)"></div>
+  <div class="container">
+    <div class="takeaway-quote reveal">プロンプトを学ぶってのは、<br><span class="to-orange">"呪文"を覚えること</span>やなくて、<br>AIのどの力を呼び出し、<br>どう評価させ、</br><span class="to-orange">どう束ねるかを<br>設計すること</span>や。</div>
+    <div class="takeaway-sub reveal">— KITAcore · MAPS+R+O · 2026</div>
+  </div>
+</div>
+
+<footer>
+  <span class="foot-brand">KITAcore ®</span>
+  <span>SEVEN POWERS OF AI · MAPS+R+O · 2026 EDITION</span>
+  <span>DEPLOYMENT ID: 3027-ALPHA-USA-NYC</span>
+  <span>note.com / @ktcrs1107</span>
+</footer>
+
+<!-- BOTTOM STATUS BAR -->
+<div id="bottom-bar">
+  <span><span class="status-live">STATUS: OPERATIONAL</span></span>
+  <span id="current-section-label" style="color:#555;">01 / HERO</span>
+  <span>DEPLOYMENT ID: 3027-ALPHA-USA-NYC</span>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   BOOT SEQUENCE
+════════════════════════════════════════ */
+const bootLines = [
+  { text: 'KITACORE SYSTEM v2026.04 INITIALIZING...', cls: 'hi', delay: 0 },
+  { text: 'LOADING: AI CAPABILITY MAP', cls: '', delay: 300 },
+  { text: 'UNIT: R1 · FIELD COMMAND CERTIFICATION VERIFIED', cls: 'or', delay: 550 },
+  { text: 'PROTOCOL: MAPS+R+O · 7 POWERS ACTIVE', cls: '', delay: 750 },
+  { text: 'CHECKING FIELD STATUS...', cls: '', delay: 950 },
+  { text: '  [01] UNDERSTAND     ■ ACTIVE', cls: 'or', delay: 1100 },
+  { text: '  [02] GENERATE       ■ ACTIVE', cls: 'or', delay: 1220 },
+  { text: '  [03] REASON         ■ ACTIVE', cls: 'or', delay: 1340 },
+  { text: '  [04] RETRIEVE       ■ ACTIVE', cls: 'or', delay: 1460 },
+  { text: '  [05] ACT            ■ ACTIVE', cls: 'or', delay: 1580 },
+  { text: '  [06] REFINE         ■ ACTIVE', cls: 'or', delay: 1700 },
+  { text: '  [07] ORCHESTRATE    ■ ACTIVE', cls: 'or', delay: 1820 },
+  { text: 'ALL SYSTEMS NOMINAL', cls: 'hi', delay: 2000 },
+  { text: 'DEPLOYMENT CLEARANCE: OPEN', cls: '', delay: 2150 },
+  { text: 'SYSTEM READY · LAUNCHING...', cls: 'hi cursor', delay: 2300 },
+];
+
+const bootEl = document.getElementById('boot-lines');
+const fill = document.getElementById('boot-fill');
+const pct = document.getElementById('boot-pct');
+let totalTime = 0;
+
+bootLines.forEach((l, i) => {
+  setTimeout(() => {
+    const span = document.createElement('span');
+    span.className = 'line ' + (l.cls || '');
+    span.textContent = l.text;
+    bootEl.appendChild(span);
+    // animate in
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        span.style.opacity = '1';
+        span.style.transform = 'translateX(0)';
+        span.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+      }, 10);
+    });
+    // progress bar
+    const p = Math.round(((i + 1) / bootLines.length) * 100);
+    fill.style.width = p + '%';
+    pct.textContent = p + '%';
+  }, l.delay);
+  totalTime = Math.max(totalTime, l.delay);
+});
+
+// exit boot after all lines shown
+setTimeout(() => {
+  document.getElementById('boot').classList.add('exit');
+  document.body.style.overflow = 'auto';
+  // set hero animation delays to now
+  const heroDelay = '0.1s';
+  document.documentElement.style.setProperty('--nav-delay', '0.5s');
+  document.querySelectorAll('.hero-eyebrow,.hero-h1 .line-1,.hero-h1 .line-2,.hero-h1 .line-3,.hero-lead,.hero-meta,.hero-side,.hero-bottom-bar').forEach(el => {
+    const d = el.style.animationDelay;
+    if (d && d.includes('4')) {
+      el.style.animationDelay = d.replace(/4\.\d+s/, (m) => (parseFloat(m) - 3.9) + 's');
+    }
+  });
+}, totalTime + 600);
+
+// Prevent scroll during boot
+document.body.style.overflow = 'hidden';
+
+/* ════════════════════════════════════════
+   SCROLL REVEAL (IntersectionObserver)
+════════════════════════════════════════ */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-scale, .stagger-children').forEach(el => {
+  observer.observe(el);
+});
+
+/* ════════════════════════════════════════
+   PROGRESS BAR + NAV DOTS
+════════════════════════════════════════ */
+const progressBar = document.getElementById('progress-bar');
+const sections = ['sec01','sec02','sec03','sec04','sec05','sec06','sec07','sec08','sec09','sec10','sec11','sec12'];
+const sectionLabels = ['01/HERO','02/INSIGHT','03/2-LAYER','04/CONNECT','05/5POWERS','06/REFINE','07/ORCH','08/CHEAT','09/MAPS','10/NEXT','11/BEYOND','12/NOTE'];
+const dots = document.querySelectorAll('.nav-dot');
+const secLabel = document.getElementById('current-section-label');
+
+function onScroll() {
+  const scrolled = window.scrollY;
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = (scrolled / total * 100) + '%';
+
+  let current = 0;
+  sections.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el && scrolled >= el.offsetTop - 120) current = i;
+  });
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  if (secLabel) secLabel.textContent = sectionLabels[current];
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// Dot clicks
+dots.forEach((dot, i) => {
+  dot.addEventListener('click', () => {
+    const el = document.getElementById(sections[i]);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+/* ════════════════════════════════════════
+   PROMPT TOGGLES
+════════════════════════════════════════ */
+function togglePrompts(btn) {
+  btn.classList.toggle('open');
+  const body = btn.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+/* ════════════════════════════════════════
+   COPY TO CLIPBOARD
+════════════════════════════════════════ */
+function copyPrompt(btn) {
+  const text = btn.previousElementSibling.textContent.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ COPIED';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
