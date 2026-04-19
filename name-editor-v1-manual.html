@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KITAcore NAME V1 — Field Manual</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens ─────────────────────────────────────── */
+:root {
+  --or: #FF4B1A;
+  --bk: #0C0C0C;
+  --dk: #141414;
+  --wh: #F4F4F2;
+  --gy: #E0E0DC;
+  --tx: #111111;
+  --tx2: #444444;
+  --bd: #CCCCCC;
+  --fw: 'Anton', sans-serif;
+  --fm: 'JetBrains Mono', monospace;
+  --fb: 'Noto Sans JP', sans-serif;
+  --nav-w: 220px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--fb);
+  background: var(--bk);
+  color: var(--tx);
+  cursor: crosshair;
+  overflow-x: hidden;
+}
+a, button, summary { cursor: pointer; }
+
+/* ── Boot Screen ───────────────────────────────────────── */
+#boot {
+  position: fixed; inset: 0;
+  background: var(--bk);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--fm);
+  font-size: 12px;
+  color: #555;
+  letter-spacing: 0.1em;
+}
+#boot-lines { display: flex; flex-direction: column; gap: 5px; min-height: 120px; }
+.boot-line { color: #444; opacity: 0; transition: opacity 0.1s; }
+.boot-line.ok { color: #888; }
+.boot-line.ok::after { content: " [OK]"; color: var(--or); }
+#boot-bar-wrap { width: 240px; height: 2px; background: #222; margin-top: 16px; }
+#boot-bar { width: 0%; height: 100%; background: var(--or); transition: width 0.6s ease; }
+#boot-logo {
+  font-family: var(--fw);
+  font-size: 28px;
+  color: var(--wh);
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+#boot-logo span { color: var(--or); }
+
+/* ── Fixed Bars ────────────────────────────────────────── */
+#top-status {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 26px;
+  background: var(--bk);
+  border-bottom: 1px solid #222;
+  font-family: var(--fm);
+  font-size: 10px;
+  color: #555;
+  letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  z-index: 200;
+}
+#top-status::before { content: "●"; color: var(--or); font-size: 8px; }
+
+#bot-status {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 24px;
+  background: var(--or);
+  font-family: var(--fm);
+  font-size: 10px;
+  color: var(--bk);
+  letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 200;
+}
+
+/* ── Layout ────────────────────────────────────────────── */
+#wrap {
+  display: flex;
+  padding-top: 26px;
+  padding-bottom: 24px;
+  min-height: 100vh;
+}
+
+/* ── Sidebar Nav ───────────────────────────────────────── */
+#nav {
+  width: var(--nav-w);
+  background: var(--bk);
+  border-right: 1px solid #222;
+  position: fixed;
+  top: 26px;
+  bottom: 24px;
+  left: 0;
+  overflow-y: auto;
+  z-index: 100;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+}
+#nav-brand {
+  font-family: var(--fw);
+  font-size: 13px;
+  color: var(--wh);
+  letter-spacing: 0.15em;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid #222;
+  margin-bottom: 12px;
+}
+#nav-brand span { color: var(--or); }
+
+.nav-section {
+  padding: 0 12px 8px;
+}
+.nav-label {
+  font-family: var(--fm);
+  font-size: 9px;
+  color: #444;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 12px 8px 6px;
+}
+.nav-item {
+  display: block;
+  padding: 7px 8px;
+  font-family: var(--fm);
+  font-size: 11px;
+  color: #666;
+  text-decoration: none;
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+  transition: color 120ms, background 120ms;
+  line-height: 1.3;
+}
+.nav-item:hover { color: var(--wh); background: #1a1a1a; }
+.nav-item.active { color: var(--or); }
+.nav-num {
+  font-size: 9px;
+  color: #333;
+  margin-right: 6px;
+}
+
+/* ── Main Content ──────────────────────────────────────── */
+#main {
+  margin-left: var(--nav-w);
+  flex: 1;
+}
+
+/* ── Sections ──────────────────────────────────────────── */
+.sec {
+  position: relative;
+  padding: 72px 64px;
+  overflow: hidden;
+}
+.sec-wh { background: var(--wh); color: var(--tx); }
+.sec-dk { background: var(--dk); color: var(--wh); }
+.sec-or { background: var(--or); color: var(--bk); }
+
+/* Grid overlay */
+.sec::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+.sec-dk::before {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+}
+.sec-or::before {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
+}
+
+/* Scanline */
+.scan-host::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(255,75,26,0.025) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  animation: scan 8s linear infinite;
+}
+@keyframes scan { to { background-position: 0 100px; } }
+
+/* Section number */
+.sec-bg-num {
+  position: absolute;
+  right: 32px; top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--fw);
+  font-size: 200px;
+  line-height: 1;
+  opacity: 0.04;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+}
+.sec-dk .sec-bg-num { color: var(--wh); }
+.sec-wh .sec-bg-num { color: var(--bk); }
+.sec-or .sec-bg-num { color: var(--bk); }
+
+/* Crosshair */
+.xh {
+  position: absolute;
+  font-family: var(--fm);
+  font-size: 14px;
+  color: var(--or);
+  opacity: 0.5;
+  animation: xhpulse 3s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+}
+.xh-tl { top: 16px; left: 20px; }
+.xh-br { bottom: 16px; right: 20px; }
+.sec-or .xh { color: var(--bk); }
+@keyframes xhpulse { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+
+/* ── Typography ────────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  font-family: var(--fm);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.sec-title {
+  font-family: var(--fw);
+  font-size: clamp(36px, 5vw, 60px);
+  line-height: 1.0;
+  letter-spacing: 0.02em;
+  margin-bottom: 24px;
+}
+.sec-title .hl { color: var(--or); }
+.sec-dk .sec-title .hl { color: var(--or); }
+.sec-or .sec-title .hl { color: var(--bk); }
+
+.sec-lead {
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 600px;
+  color: var(--tx2);
+}
+.sec-dk .sec-lead { color: #aaa; }
+.sec-or .sec-lead { color: rgba(0,0,0,0.7); }
+
+/* Glitch */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before, .glitch::after {
+  content: attr(data-t);
+  position: absolute; top: 0; left: 0;
+  font-family: var(--fw);
+  font-size: inherit;
+  pointer-events: none;
+}
+.glitch::before {
+  color: var(--or); clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  animation: glitch-a 4s infinite 0.5s;
+}
+.glitch::after {
+  color: #0af; clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+  animation: glitch-b 4s infinite 0.7s;
+}
+@keyframes glitch-a {
+  0%,85%,100%{transform:translate(0)} 87%{transform:translate(-3px,1px)} 90%{transform:translate(2px,-1px)} 93%{transform:translate(0)}
+}
+@keyframes glitch-b {
+  0%,85%,100%{transform:translate(0)} 87%{transform:translate(3px,-1px)} 90%{transform:translate(-2px,1px)} 93%{transform:translate(0)}
+}
+
+/* ── Hero ──────────────────────────────────────────────── */
+#s01 {
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.hero-meta {
+  font-family: var(--fm);
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 0.1em;
+  margin-bottom: 32px;
+  display: flex;
+  gap: 24px;
+}
+.hero-meta span::before { content: "— "; color: var(--or); }
+.hero-chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 32px;
+}
+.chip {
+  font-family: var(--fm);
+  font-size: 11px;
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  color: var(--tx2);
+  display: flex; align-items: center; gap: 6px;
+}
+.chip .ico { color: var(--or); font-size: 13px; }
+
+/* ── Feature Cards ─────────────────────────────────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: #ddd;
+  border: 1px solid #ddd;
+  margin-top: 40px;
+}
+.card {
+  background: var(--wh);
+  padding: 24px;
+  position: relative;
+}
+.card-num {
+  font-family: var(--fm);
+  font-size: 11px;
+  color: var(--or);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.card-title {
+  font-family: var(--fw);
+  font-size: 22px;
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+.card-body {
+  font-size: 13px;
+  color: var(--tx2);
+  line-height: 1.7;
+}
+.card-icon {
+  position: absolute;
+  bottom: 16px; right: 16px;
+  font-size: 28px;
+  opacity: 0.15;
+}
+
+/* Dark cards */
+.card-dk {
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+}
+.card-dk .card-title { color: var(--wh); }
+.card-dk .card-body { color: #888; }
+
+/* ── Step Flow ─────────────────────────────────────────── */
+.step-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 40px;
+  max-width: 640px;
+}
+.step {
+  display: flex;
+  gap: 20px;
+  position: relative;
+  padding-bottom: 32px;
+}
+.step:last-child { padding-bottom: 0; }
+.step-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+.step-num {
+  width: 36px; height: 36px;
+  background: var(--or);
+  color: var(--bk);
+  font-family: var(--fw);
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.step-connector {
+  width: 2px;
+  flex: 1;
+  background: #333;
+  margin-top: 4px;
+}
+.step:last-child .step-connector { display: none; }
+.step-content { padding-top: 6px; }
+.step-title {
+  font-family: var(--fw);
+  font-size: 20px;
+  color: var(--wh);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+.step-desc { font-size: 13px; color: #888; line-height: 1.7; }
+.step-hint {
+  margin-top: 8px;
+  font-family: var(--fm);
+  font-size: 11px;
+  color: var(--or);
+  letter-spacing: 0.05em;
+}
+
+/* ── Kbd & Code ────────────────────────────────────────── */
+kbd {
+  display: inline-block;
+  font-family: var(--fm);
+  font-size: 11px;
+  background: #222;
+  color: var(--wh);
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 2px 8px;
+  margin: 0 2px;
+  letter-spacing: 0.05em;
+}
+.sec-wh kbd { background: #111; color: #eee; border-color: #333; }
+.sec-or kbd { background: rgba(0,0,0,0.2); color: var(--bk); border-color: rgba(0,0,0,0.3); }
+
+.code-block {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-left: 3px solid var(--or);
+  padding: 16px 20px;
+  font-family: var(--fm);
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.8;
+  margin-top: 12px;
+  border-radius: 2px;
+}
+.code-block .cm { color: #555; }
+.code-block .ck { color: var(--or); }
+.code-block .cv { color: #7ec8e3; }
+
+/* ── Operation Table ───────────────────────────────────── */
+.op-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 32px;
+  font-size: 13px;
+}
+.op-table th {
+  text-align: left;
+  font-family: var(--fm);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  border-bottom: 2px solid var(--or);
+  color: var(--or);
+}
+.op-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #222;
+  color: #aaa;
+  line-height: 1.5;
+  vertical-align: top;
+}
+.op-table td:first-child { color: var(--wh); font-weight: 500; width: 160px; }
+.op-table td:nth-child(2) { width: 140px; }
+.op-table tr:last-child td { border-bottom: none; }
+.op-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* White table */
+.op-table-wh th { border-bottom-color: var(--bk); color: var(--bk); }
+.op-table-wh td { border-bottom-color: #ddd; color: var(--tx2); }
+.op-table-wh td:first-child { color: var(--tx); }
+.op-table-wh tr:hover td { background: rgba(0,0,0,0.03); }
+
+/* ── UI Diagram ────────────────────────────────────────── */
+.ui-diagram {
+  margin-top: 40px;
+  border: 1px solid #ddd;
+  background: #fff;
+  overflow: hidden;
+  border-radius: 2px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.ui-header {
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+}
+.ui-dot { width: 8px; height: 8px; border-radius: 50%; }
+.ui-dot-r { background: #FF5F57; }
+.ui-dot-y { background: #FEBC2E; }
+.ui-dot-g { background: #28C840; }
+.ui-title { font-family: var(--fm); font-size: 11px; color: #666; margin-left: 8px; }
+.ui-body {
+  display: flex;
+  height: 320px;
+}
+.ui-sidebar {
+  width: 160px;
+  border-right: 1px solid #ddd;
+  background: #fff;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.ui-sb-label { font-family: var(--fm); font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 2px; }
+.ui-sb-check { font-size: 11px; color: #555; display: flex; gap: 6px; align-items: center; }
+.ui-sb-check::before { content: "☑"; color: #333; }
+.ui-sb-btn {
+  font-family: var(--fm);
+  font-size: 9px;
+  padding: 5px 8px;
+  border: 1px solid #ddd;
+  background: #f8f8f8;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 2px;
+}
+.ui-sb-btn-primary { background: #111; color: #fff; border-color: #111; }
+.ui-canvas {
+  flex: 1;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.ui-page {
+  background: #fff;
+  border: 1px solid #999;
+  width: 160px;
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ui-panel-row { display: flex; flex: 1; }
+.ui-panel {
+  flex: 1;
+  border: 1px solid #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fm);
+  font-size: 8px;
+  color: #999;
+  position: relative;
+}
+.ui-panel-text { font-size: 7px; color: #1155CC; position: absolute; top: 2px; right: 2px; max-width: 40%; text-align: right; line-height: 1.3; }
+.ui-panel-prompt { font-size: 7px; color: #CC2200; position: absolute; bottom: 2px; left: 2px; max-width: 50%; line-height: 1.3; }
+.ui-label-box {
+  position: absolute;
+  background: rgba(255,75,26,0.9);
+  color: #fff;
+  font-family: var(--fm);
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* ── FAQ ───────────────────────────────────────────────── */
+.faq-list { margin-top: 40px; display: flex; flex-direction: column; gap: 1px; }
+details {
+  border-bottom: 1px solid #222;
+}
+summary {
+  padding: 18px 0;
+  font-family: var(--fb);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wh);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+}
+summary::-webkit-details-marker { display: none; }
+.faq-icon {
+  width: 24px; height: 24px;
+  background: #222;
+  color: var(--or);
+  font-family: var(--fm);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+details[open] .faq-icon { background: var(--or); color: var(--bk); }
+.faq-body {
+  padding: 0 0 20px 36px;
+  font-size: 13px;
+  color: #888;
+  line-height: 1.8;
+}
+
+/* ── Version Compare ───────────────────────────────────── */
+.ver-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 40px;
+}
+.ver-card {
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 2px;
+  padding: 20px;
+}
+.ver-card.current { background: rgba(0,0,0,0.25); border-color: rgba(0,0,0,0.4); }
+.ver-badge {
+  font-family: var(--fw);
+  font-size: 28px;
+  color: var(--bk);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+.ver-card.current .ver-badge::after {
+  content: " ←HERE";
+  font-family: var(--fm);
+  font-size: 10px;
+  vertical-align: middle;
+  opacity: 0.7;
+}
+.ver-desc { font-size: 12px; color: rgba(0,0,0,0.6); line-height: 1.6; margin-bottom: 12px; }
+.ver-feat { font-size: 11px; color: rgba(0,0,0,0.5); }
+.ver-feat li { list-style: none; padding: 3px 0; }
+.ver-feat li::before { content: "+ "; color: rgba(0,0,0,0.4); font-family: var(--fm); }
+
+/* ── Scroll Reveal ─────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal.in { opacity: 1; transform: none; }
+
+/* ── Mobile ────────────────────────────────────────────── */
+#mob-nav-btn {
+  display: none;
+  position: fixed;
+  bottom: 40px; right: 16px;
+  width: 44px; height: 44px;
+  background: var(--or);
+  color: var(--bk);
+  border: none;
+  font-size: 18px;
+  z-index: 300;
+  border-radius: 2px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+#nav-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 99;
+}
+@media (max-width: 768px) {
+  #nav { transform: translateX(-100%); transition: transform 0.3s; }
+  #nav.open { transform: translateX(0); }
+  #main { margin-left: 0; }
+  #mob-nav-btn { display: flex; }
+  #nav-backdrop.open { display: block; }
+  .sec { padding: 48px 24px; }
+  .sec-bg-num { font-size: 100px; }
+}
+
+/* ── Easter Egg ────────────────────────────────────────── */
+#easter { cursor: pointer; }
+#easter-flash {
+  position: fixed; inset: 0;
+  background: var(--or);
+  z-index: 9000;
+  display: none;
+  opacity: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- Boot Screen -->
+<div id="boot">
+  <div id="boot-logo">KITA<span>core</span></div>
+  <div id="boot-lines">
+    <div class="boot-line" id="bl0">INITIALIZING NAME EDITOR MANUAL...</div>
+    <div class="boot-line" id="bl1">LOADING PANEL SYSTEM</div>
+    <div class="boot-line" id="bl2">LOADING DIALOGUE ENGINE</div>
+    <div class="boot-line" id="bl3">LOADING SKETCH LAYER</div>
+    <div class="boot-line" id="bl4">LOADING PROMPT INTERFACE</div>
+    <div class="boot-line" id="bl5">FIELD MANUAL READY</div>
+  </div>
+  <div id="boot-bar-wrap"><div id="boot-bar"></div></div>
+</div>
+
+<!-- Fixed Bars -->
+<div id="top-status">KITACORE NAME V1 — FIELD MANUAL / STATUS: OPERATIONAL</div>
+<div id="bot-status">
+  <span>NAME V1 — MANGA STORYBOARD TOOL</span>
+  <span id="easter">® KITAcore 2026</span>
+</div>
+<div id="easter-flash"></div>
+
+<!-- Layout -->
+<div id="wrap">
+
+  <!-- Sidebar -->
+  <nav id="nav">
+    <div id="nav-brand">KITA<span>core</span> NAME V1</div>
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a href="#s01" class="nav-item"><span class="nav-num">01</span>ツール概要</a>
+      <a href="#s02" class="nav-item"><span class="nav-num">02</span>バージョン比較</a>
+      <a href="#s03" class="nav-item"><span class="nav-num">03</span>クイックスタート</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">画面構成</div>
+      <a href="#s04" class="nav-item"><span class="nav-num">04</span>画面レイアウト</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">操作方法</div>
+      <a href="#s05" class="nav-item"><span class="nav-num">05</span>コマを割る</a>
+      <a href="#s06" class="nav-item"><span class="nav-num">06</span>セリフを入れる</a>
+      <a href="#s07" class="nav-item"><span class="nav-num">07</span>下絵・プロンプト</a>
+      <a href="#s08" class="nav-item"><span class="nav-num">08</span>保存・書き出し</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Tips & FAQ</div>
+      <a href="#s09" class="nav-item"><span class="nav-num">09</span>表示コントロール</a>
+      <a href="#s10" class="nav-item"><span class="nav-num">10</span>FAQ</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- S01: Hero -->
+    <section class="sec sec-wh scan-host" id="s01">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">01</div>
+      <div class="hero-meta reveal">
+        <span>FIELD MANUAL</span>
+        <span>VERSION 1</span>
+        <span>SINGLE FILE HTML</span>
+      </div>
+      <div class="tag reveal">KITAcore NAME V1</div>
+      <h1 class="sec-title reveal">
+        <span class="glitch" data-t="KITAcore NAME">KITAcore NAME</span><br>
+        <span class="hl">V1</span> — FIELD MANUAL
+      </h1>
+      <p class="sec-lead reveal">
+        コマ割り・セリフ・AI用プロンプト・下絵を<strong>ブラウザだけ</strong>で管理できる、漫画ネーム設計ツール。インストール不要。HTMLファイル1つで完結。
+      </p>
+      <div class="hero-chips reveal">
+        <div class="chip"><span class="ico">⊞</span> コマ割り</div>
+        <div class="chip"><span class="ico">✎</span> セリフ入力</div>
+        <div class="chip"><span class="ico">✦</span> AI プロンプト</div>
+        <div class="chip"><span class="ico">◉</span> 下絵スケッチ</div>
+        <div class="chip"><span class="ico">↓</span> PNG 書き出し</div>
+        <div class="chip"><span class="ico">⊙</span> JSON 保存/読込</div>
+      </div>
+
+      <div class="card-grid reveal" style="margin-top:48px;">
+        <div class="card">
+          <div class="card-num">機能 01</div>
+          <div class="card-title">コマ割り</div>
+          <div class="card-body">右クリック → 左右/上下に分割。繰り返しで複雑なコマ構成も作れる。</div>
+          <div class="card-icon">⊞</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 02</div>
+          <div class="card-title">セリフ入力</div>
+          <div class="card-body">コマをクリック → モーダルで入力。縦書き青文字でコマ内に表示。</div>
+          <div class="card-icon">✎</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 03</div>
+          <div class="card-title">プロンプト</div>
+          <div class="card-body">ダブルクリック → 描画モーダル内でAI用プロンプトを入力。赤文字で表示。</div>
+          <div class="card-icon">✦</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 04</div>
+          <div class="card-title">下絵スケッチ</div>
+          <div class="card-body">ダブルクリック → ペン・消しゴムでラフを描ける。構図メモに使う。</div>
+          <div class="card-icon">◉</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 05</div>
+          <div class="card-title">PNG 書き出し</div>
+          <div class="card-body">ネーム全体を1枚の画像として書き出し。SNSへの投稿やGemini/Flowへの入力に使う。</div>
+          <div class="card-icon">↓</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 06</div>
+          <div class="card-title">JSON 保存/読込</div>
+          <div class="card-body">作業状態をJSONで保存し、あとで再開。シナリオをテキストファイルでも保存できる。</div>
+          <div class="card-icon">⊙</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S02: Version Compare -->
+    <section class="sec sec-or" id="s02">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">02</div>
+      <div class="tag reveal">Version Guide</div>
+      <h2 class="sec-title reveal">どの<span class="hl">バージョン</span>を<br>選ぶ？</h2>
+      <p class="sec-lead reveal">V1はベース。まずここから始めて、物足りなくなったら上位バージョンへ。</p>
+      <div class="ver-grid reveal">
+        <div class="ver-card current">
+          <div class="ver-badge">V1</div>
+          <div class="ver-desc">このツール。シンプルなエディタ。30秒で使い始められる。</div>
+          <ul class="ver-feat">
+            <li>コマ割り</li>
+            <li>セリフ入力</li>
+            <li>プロンプト入力</li>
+            <li>手描きスケッチ</li>
+            <li>PNG / JSON 保存</li>
+          </ul>
+        </div>
+        <div class="ver-card">
+          <div class="ver-badge">V2</div>
+          <div class="ver-desc">V1 + AI自動生成 + 複数ページ管理</div>
+          <ul class="ver-feat">
+            <li>V1の全機能</li>
+            <li>AI ネーム自動生成</li>
+            <li>複数ページ管理</li>
+          </ul>
+        </div>
+        <div class="ver-card">
+          <div class="ver-badge">V3</div>
+          <div class="ver-desc">V1 + 斜めコマ割り + Undo機能</div>
+          <ul class="ver-feat">
+            <li>V1の全機能</li>
+            <li>斜めコマ分割</li>
+            <li>Undo（やり直し）</li>
+          </ul>
+        </div>
+        <div class="ver-card">
+          <div class="ver-badge">V4</div>
+          <div class="ver-desc">完全別設計のジェネレーター。記事テキストを貼るだけでAIがネームを構成。</div>
+          <ul class="ver-feat">
+            <li>テキスト→ネーム自動設計</li>
+            <li>演出理論ベース</li>
+            <li>V3と組み合わせ可</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- S03: Quick Start -->
+    <section class="sec sec-dk scan-host" id="s03">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">03</div>
+      <div class="tag reveal" style="color:#888">Quick Start</div>
+      <h2 class="sec-title reveal"><span class="hl">30秒</span>で<br>始める</h2>
+      <p class="sec-lead reveal">ダウンロードして開くだけ。インストール不要。</p>
+      <div class="step-flow reveal">
+        <div class="step">
+          <div class="step-line">
+            <div class="step-num">1</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">HTML ファイルを開く</div>
+            <div class="step-desc">note記事からダウンロードした <code style="color:var(--or);font-family:var(--fm)">KITAcore-name-editor.html</code> をダブルクリック。ChromeやSafariで開く。</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line">
+            <div class="step-num">2</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">白いページを右クリック</div>
+            <div class="step-desc">白いキャンバス上で右クリックすると「左右に分割」「上下に分割」のメニューが出る。</div>
+            <div class="step-hint">→ 右クリック → 左右に分割</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line">
+            <div class="step-num">3</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">コマをクリックしてセリフを入れる</div>
+            <div class="step-desc">コマ（パネル）をシングルクリックするとテキスト入力モーダルが開く。セリフやト書きを入力して「保存」。</div>
+            <div class="step-hint">→ クリック → セリフ入力 → 保存</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line">
+            <div class="step-num">4</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">ダブルクリックで下絵を描く</div>
+            <div class="step-desc">コマをダブルクリックすると描画モーダルが開く。ペンで構図のラフを描き、AIプロンプトも入力できる。</div>
+            <div class="step-hint">→ ダブルクリック → 描く → 保存</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line">
+            <div class="step-num">5</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">PNG で書き出す</div>
+            <div class="step-desc">左サイドバーの「↓ PNG書き出し」ボタンでネーム全体を画像として保存。GeminiやFlowに貼り付けて使う。</div>
+            <div class="step-hint">→ PNG 書き出し → Geminiに貼付</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S04: UI Layout -->
+    <section class="sec sec-wh" id="s04">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">04</div>
+      <div class="tag reveal">UI Layout</div>
+      <h2 class="sec-title reveal">画面<span class="hl">構成</span></h2>
+      <p class="sec-lead reveal">ツールは3エリアで構成されている。左サイドバー・中央キャンバス・右クリックメニュー。</p>
+
+      <div class="ui-diagram reveal">
+        <div class="ui-header">
+          <div class="ui-dot ui-dot-r"></div>
+          <div class="ui-dot ui-dot-y"></div>
+          <div class="ui-dot ui-dot-g"></div>
+          <div class="ui-title">KITAcore NAME — Manga Storyboard Editor</div>
+        </div>
+        <div class="ui-body">
+          <div class="ui-sidebar">
+            <div class="ui-sb-label">表示</div>
+            <div class="ui-sb-check">セリフ・ト書き</div>
+            <div class="ui-sb-check">プロンプト</div>
+            <div class="ui-sb-check">下絵</div>
+            <div style="margin-top:8px;">
+              <div class="ui-sb-label">書き出し</div>
+            </div>
+            <div class="ui-sb-btn ui-sb-btn-primary">↓ PNG 書き出し</div>
+            <div class="ui-sb-btn">シナリオを保存</div>
+            <div style="margin-top:8px;">
+              <div class="ui-sb-label">ファイル</div>
+            </div>
+            <div class="ui-sb-btn">保存 (.json)</div>
+            <div class="ui-sb-btn">読込 (.json)</div>
+          </div>
+          <div class="ui-canvas">
+            <div style="position:relative;">
+              <div class="ui-page">
+                <div class="ui-panel-row" style="flex:2;">
+                  <div class="ui-panel" style="flex:1.5;">
+                    <div class="ui-panel-text">「行くぞ！」</div>
+                  </div>
+                  <div class="ui-panel" style="flex:1;">
+                    <div class="ui-panel-prompt">hero, dramatic pose</div>
+                  </div>
+                </div>
+                <div class="ui-panel-row" style="flex:1;">
+                  <div class="ui-panel">
+                    <div class="ui-panel-text">ト書き...</div>
+                  </div>
+                </div>
+              </div>
+              <div class="ui-label-box" style="top:-10px;left:-80px;">左サイドバー</div>
+              <div class="ui-label-box" style="top:40px;right:-100px;">キャンバスエリア</div>
+              <div class="ui-label-box" style="bottom:20px;left:-90px;">右クリックメニュー</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table class="op-table op-table-wh reveal" style="margin-top:40px;">
+        <thead>
+          <tr>
+            <th>エリア</th>
+            <th>場所</th>
+            <th>内容</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ヘッダー</td>
+            <td>最上部</td>
+            <td>ロゴ・ページタイトル入力・操作ヒント表示</td>
+          </tr>
+          <tr>
+            <td>サイドバー</td>
+            <td>左側（188px）</td>
+            <td>表示トグル・PNG書き出し・JSON保存/読込ボタン群</td>
+          </tr>
+          <tr>
+            <td>キャンバス</td>
+            <td>中央メイン</td>
+            <td>A4比率の白いページ（560×794px）。ここにコマを割っていく</td>
+          </tr>
+          <tr>
+            <td>右クリックメニュー</td>
+            <td>コマ上で右クリック</td>
+            <td>「左右に分割」「上下に分割」「このコマを削除」</td>
+          </tr>
+          <tr>
+            <td>テキストモーダル</td>
+            <td>コマをシングルクリック</td>
+            <td>セリフ・ト書き入力エリア</td>
+          </tr>
+          <tr>
+            <td>描画モーダル</td>
+            <td>コマをダブルクリック</td>
+            <td>スケッチキャンバス（640×400）＋AIプロンプト入力</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- S05: Panel Splitting -->
+    <section class="sec sec-dk scan-host" id="s05">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">05</div>
+      <div class="tag reveal" style="color:#888">Operation 01</div>
+      <h2 class="sec-title reveal">コマを<span class="hl">割る</span></h2>
+      <p class="sec-lead reveal">右クリック一発でコマを分割できる。繰り返し操作で複雑な割りも作れる。</p>
+
+      <table class="op-table reveal">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>方法</th>
+            <th>結果</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>左右に分割</td>
+            <td><kbd>右クリック</kbd> → 左右に分割</td>
+            <td>コマが左右2つに分かれる</td>
+          </tr>
+          <tr>
+            <td>上下に分割</td>
+            <td><kbd>右クリック</kbd> → 上下に分割</td>
+            <td>コマが上下2つに分かれる</td>
+          </tr>
+          <tr>
+            <td>サイズ調整</td>
+            <td>分割線をドラッグ</td>
+            <td>コマのサイズ比率を自由に変更</td>
+          </tr>
+          <tr>
+            <td>コマの削除</td>
+            <td><kbd>右クリック</kbd> → このコマを削除</td>
+            <td>そのコマを削除（兄弟コマが拡張）</td>
+          </tr>
+          <tr>
+            <td>メニューボタン</td>
+            <td>コマをホバー → 右上の ⋯ ボタン</td>
+            <td>分割/削除メニューが開く（右クリックと同じ）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="code-block reveal" style="margin-top:32px;">
+        <div class="cm">// コマ割りの基本パターン例</div>
+        <div class="ck">右クリック</div> → <span style="color:#7ec8e3">上下に分割</span>　　<span class="cm">// まず上下でページを区切る</span><br>
+        <div class="ck">上コマを右クリック</div> → <span style="color:#7ec8e3">左右に分割</span>　<span class="cm">// 上段を左右で分ける</span><br>
+        <div class="ck">分割線をドラッグ</div> → <span style="color:#7ec8e3">サイズ調整</span>　　<span class="cm">// 強調コマを大きく</span>
+      </div>
+
+      <div style="margin-top:32px; background:#1e1e1e; border:1px solid #2a2a2a; padding:24px; border-radius:2px;" class="reveal">
+        <div style="font-family:var(--fm);font-size:11px;color:var(--or);margin-bottom:12px;letter-spacing:0.1em;">⚠ TIPS</div>
+        <ul style="font-size:13px;color:#888;line-height:2;list-style:none;">
+          <li>・分割は何回でも繰り返せる（4コマ・8コマ・それ以上も可）</li>
+          <li>・コマを削除すると元には戻せない（V1にはUndoなし）→ <span style="color:#aaa">V3ならUndo可</span></li>
+          <li>・分割線はピクセル精度でドラッグ調整できる</li>
+          <li>・斜めの分割はV3の機能。V1では横/縦のみ</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- S06: Dialogue -->
+    <section class="sec sec-wh" id="s06">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">06</div>
+      <div class="tag reveal">Operation 02</div>
+      <h2 class="sec-title reveal">セリフを<span class="hl">入れる</span></h2>
+      <p class="sec-lead reveal">コマをシングルクリックするとテキスト入力モーダルが開く。入力したセリフは縦書き・青文字でコマ内に表示される。</p>
+
+      <table class="op-table op-table-wh reveal">
+        <thead>
+          <tr>
+            <th>手順</th>
+            <th>操作</th>
+            <th>詳細</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>① モーダルを開く</td>
+            <td>コマをシングルクリック</td>
+            <td>「01. テキスト入力」モーダルが開く</td>
+          </tr>
+          <tr>
+            <td>② セリフを入力</td>
+            <td>テキストエリアに入力</td>
+            <td>「セリフ」「ト書き」どちらでもOK。改行も使える</td>
+          </tr>
+          <tr>
+            <td>③ 保存</td>
+            <td>「保存」ボタン または <kbd>Enter</kbd></td>
+            <td>コマ右上に縦書き青文字で表示される</td>
+          </tr>
+          <tr>
+            <td>④ 修正</td>
+            <td>コマを再度シングルクリック</td>
+            <td>同じモーダルが開き、内容を編集できる</td>
+          </tr>
+          <tr>
+            <td>⑤ 表示を隠す</td>
+            <td>サイドバー「セリフ・ト書き」チェックを外す</td>
+            <td>全コマのセリフ表示をOFF（PNG書き出しにも反映）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;" class="reveal">
+        <div style="background:#f8f8f8;border:1px solid #ddd;padding:20px;border-radius:2px;">
+          <div style="font-family:var(--fm);font-size:10px;color:#999;margin-bottom:8px;letter-spacing:0.1em;">青文字 = セリフ</div>
+          <div style="color:#1155CC;font-size:14px;line-height:2;writing-mode:vertical-rl;height:80px;">「行くぞ！」</div>
+          <div style="font-family:var(--fm);font-size:10px;color:#bbb;margin-top:8px;">縦書き・コマ右側に表示</div>
+        </div>
+        <div style="background:#f8f8f8;border:1px solid #ddd;padding:20px;border-radius:2px;">
+          <div style="font-family:var(--fm);font-size:10px;color:#999;margin-bottom:8px;letter-spacing:0.1em;">赤文字 = AIプロンプト</div>
+          <div style="color:#CC2200;font-size:12px;font-family:var(--fm);line-height:1.8;">hero, dramatic pose,<br>manga style, action</div>
+          <div style="font-family:var(--fm);font-size:10px;color:#bbb;margin-top:8px;">コマ左下に表示</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S07: Sketch & Prompt -->
+    <section class="sec sec-or" id="s07">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">07</div>
+      <div class="tag reveal">Operation 03</div>
+      <h2 class="sec-title reveal">下絵・<span class="hl">プロンプト</span></h2>
+      <p class="sec-lead reveal">ダブルクリックで描画モーダルを開く。構図ラフとAIプロンプトを同じ場所で管理できる。</p>
+
+      <table class="op-table reveal">
+        <thead>
+          <tr><th style="border-bottom-color:rgba(0,0,0,0.4);color:rgba(0,0,0,0.6);">手順</th><th style="border-bottom-color:rgba(0,0,0,0.4);color:rgba(0,0,0,0.6);">操作</th><th style="border-bottom-color:rgba(0,0,0,0.4);color:rgba(0,0,0,0.6);">詳細</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:rgba(0,0,0,0.8);">① モーダルを開く</td>
+            <td style="color:rgba(0,0,0,0.5);">コマをダブルクリック</td>
+            <td style="color:rgba(0,0,0,0.5);">「02. 下絵・プロンプト」モーダルが開く</td>
+          </tr>
+          <tr>
+            <td style="color:rgba(0,0,0,0.8);">② ツール選択</td>
+            <td style="color:rgba(0,0,0,0.5);">ツールバーで選択</td>
+            <td style="color:rgba(0,0,0,0.5);">ペン / 消しゴム / 色変更 / 線幅変更 が選べる</td>
+          </tr>
+          <tr>
+            <td style="color:rgba(0,0,0,0.8);">③ ラフを描く</td>
+            <td style="color:rgba(0,0,0,0.5);">キャンバス上でドラッグ</td>
+            <td style="color:rgba(0,0,0,0.5);">640×400pxのキャンバスに構図メモを描く</td>
+          </tr>
+          <tr>
+            <td style="color:rgba(0,0,0,0.8);">④ プロンプト入力</td>
+            <td style="color:rgba(0,0,0,0.5);">下部テキストエリア</td>
+            <td style="color:rgba(0,0,0,0.5);">AI画像生成用のプロンプトを英語で入力</td>
+          </tr>
+          <tr>
+            <td style="color:rgba(0,0,0,0.8);">⑤ 保存</td>
+            <td style="color:rgba(0,0,0,0.5);">「保存」ボタン</td>
+            <td style="color:rgba(0,0,0,0.5);">下絵は50%透過でコマに表示。プロンプトは赤文字</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background:rgba(0,0,0,0.15);border:1px solid rgba(0,0,0,0.2);padding:24px;margin-top:32px;border-radius:2px;" class="reveal">
+        <div style="font-family:var(--fm);font-size:11px;color:rgba(0,0,0,0.5);margin-bottom:12px;letter-spacing:0.1em;">WORKFLOW — AI漫画の使い方</div>
+        <div style="font-size:13px;color:rgba(0,0,0,0.6);line-height:2.2;">
+          1. ネームをV1で作る（コマ割り + セリフ + プロンプト）<br>
+          2. PNG書き出し → ネーム画像を取得<br>
+          3. キャラ画像と一緒にGemini or Flowに貼り付ける<br>
+          4. 「赤文字のpromptを削除してカラー漫画を作って」と指示<br>
+          5. AI生成画像を受け取る
+        </div>
+      </div>
+    </section>
+
+    <!-- S08: Save & Export -->
+    <section class="sec sec-dk scan-host" id="s08">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">08</div>
+      <div class="tag reveal" style="color:#888">Operation 04</div>
+      <h2 class="sec-title reveal">保存・<span class="hl">書き出し</span></h2>
+      <p class="sec-lead reveal">4つの保存方法がある。目的に合わせて使い分ける。</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:#222;border:1px solid #222;margin-top:40px;" class="reveal">
+        <div class="card-dk" style="padding:24px;">
+          <div style="font-family:var(--fm);font-size:28px;color:var(--or);margin-bottom:8px;">PNG</div>
+          <div style="font-family:var(--fw);font-size:20px;color:var(--wh);margin-bottom:8px;">PNG 書き出し</div>
+          <div style="font-size:13px;color:#888;line-height:1.7;">ネーム全体を1枚の画像として保存。SNS投稿・Gemini/Flowへの入力・共有に使う。</div>
+          <div style="margin-top:12px;font-family:var(--fm);font-size:10px;color:#555;">サイドバー → ↓ PNG 書き出し</div>
+        </div>
+        <div class="card-dk" style="padding:24px;">
+          <div style="font-family:var(--fm);font-size:28px;color:var(--or);margin-bottom:8px;">TXT</div>
+          <div style="font-family:var(--fw);font-size:20px;color:var(--wh);margin-bottom:8px;">シナリオ保存</div>
+          <div style="font-size:13px;color:#888;line-height:1.7;">全コマのセリフ・プロンプトをテキスト形式で書き出し。コマ番号付きで整理される。</div>
+          <div style="margin-top:12px;font-family:var(--fm);font-size:10px;color:#555;">サイドバー → シナリオを保存</div>
+        </div>
+        <div class="card-dk" style="padding:24px;">
+          <div style="font-family:var(--fm);font-size:28px;color:var(--or);margin-bottom:8px;">JSON</div>
+          <div style="font-family:var(--fw);font-size:20px;color:var(--wh);margin-bottom:8px;">JSON 保存</div>
+          <div style="font-size:13px;color:#888;line-height:1.7;">コマ構成・セリフ・プロンプト・下絵を含む全作業状態を保存。あとで再開できる。</div>
+          <div style="margin-top:12px;font-family:var(--fm);font-size:10px;color:#555;">サイドバー → 保存 (.json)</div>
+        </div>
+        <div class="card-dk" style="padding:24px;">
+          <div style="font-family:var(--fm);font-size:28px;color:var(--or);margin-bottom:8px;">↑</div>
+          <div style="font-family:var(--fw);font-size:20px;color:var(--wh);margin-bottom:8px;">JSON 読込</div>
+          <div style="font-size:13px;color:#888;line-height:1.7;">保存したJSONを読み込んで作業を再開。ページタイトルも復元される。</div>
+          <div style="margin-top:12px;font-family:var(--fm);font-size:10px;color:#555;">サイドバー → 読込 (.json)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S09: Display Controls -->
+    <section class="sec sec-wh" id="s09">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">09</div>
+      <div class="tag reveal">Display Control</div>
+      <h2 class="sec-title reveal">表示<span class="hl">コントロール</span></h2>
+      <p class="sec-lead reveal">サイドバーの3つのチェックボックスで、各レイヤーの表示/非表示を切り替えられる。PNG書き出しにも反映される。</p>
+
+      <table class="op-table op-table-wh reveal">
+        <thead>
+          <tr>
+            <th>トグル</th>
+            <th>効果</th>
+            <th>PNG書き出し</th>
+            <th>使いどころ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>セリフ・ト書き</td>
+            <td>青文字セリフの表示切替</td>
+            <td>反映される</td>
+            <td>プロンプトだけを見たいとき</td>
+          </tr>
+          <tr>
+            <td>プロンプト</td>
+            <td>赤文字プロンプトの表示切替</td>
+            <td>反映される</td>
+            <td>AIに投げる前にOFFにして書き出すと、プロンプトなしの版を作れる</td>
+          </tr>
+          <tr>
+            <td>下絵</td>
+            <td>スケッチレイヤーの表示切替</td>
+            <td>反映される</td>
+            <td>セリフ・プロンプトのみの版が欲しいとき</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background:#f4f4f2;border:1px solid #ddd;padding:24px;margin-top:32px;border-radius:2px;" class="reveal">
+        <div style="font-family:var(--fm);font-size:11px;color:var(--or);margin-bottom:12px;letter-spacing:0.1em;">RECOMMENDED WORKFLOW</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;color:var(--tx2);line-height:1.8;">
+          <div>
+            <strong style="color:var(--tx);">AI に渡す版（プロンプトあり）</strong><br>
+            セリフ ✓ &nbsp; プロンプト ✓ &nbsp; 下絵 ✓<br>
+            → PNG書き出し → Geminiに貼付
+          </div>
+          <div>
+            <strong style="color:var(--tx);">SNS投稿版（プロンプトなし）</strong><br>
+            セリフ ✓ &nbsp; プロンプト ✗ &nbsp; 下絵 ✗<br>
+            → PNG書き出し → SNSに投稿
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S10: FAQ -->
+    <section class="sec sec-dk scan-host" id="s10">
+      <div class="xh xh-tl">+</div>
+      <div class="xh xh-br">+</div>
+      <div class="sec-bg-num">10</div>
+      <div class="tag reveal" style="color:#888">FAQ</div>
+      <h2 class="sec-title reveal">よくある<span class="hl">質問</span></h2>
+
+      <div class="faq-list reveal">
+        <details>
+          <summary>
+            <span class="faq-icon">Q</span>
+            コマを間違えて削除してしまった。元に戻せる？
+          </summary>
+          <div class="faq-body">
+            V1にはUndo機能がない。コマ削除は取り消せない。<strong style="color:var(--wh);">こまめにJSONで保存しておく</strong>ことを強くすすめる。作業前・コマ割り完了後・セリフ入力後の3タイミングで保存する習慣をつけると安心。Undoが必要な場合はV3を使う。
+          </div>
+        </details>
+        <details>
+          <summary>
+            <span class="faq-icon">Q</span>
+            複数ページのネームを作りたい
+          </summary>
+          <div class="faq-body">
+            V1は1ページ固定。複数ページが必要なら<strong style="color:var(--wh);">V2</strong>を使う。V2はページ管理機能を持つ。または、V1でページごとにHTMLファイルを作ってJSONで管理するという運用も可能。
+          </div>
+        </details>
+        <details>
+          <summary>
+            <span class="faq-icon">Q</span>
+            斜めのコマ割りができない
+          </summary>
+          <div class="faq-body">
+            V1は縦・横の分割のみ対応。斜めコマ割りは<strong style="color:var(--wh);">V3</strong>の機能。対角分割・複数コマ対応はV3で実装されている。
+          </div>
+        </details>
+        <details>
+          <summary>
+            <span class="faq-icon">Q</span>
+            PNG書き出しの画質が荒い
+          </summary>
+          <div class="faq-body">
+            html2canvasを使用しているため、ブラウザのズームレベルや画面解像度によって変わる場合がある。書き出し前にブラウザのズームを100%にすることと、Retinaディスプレイ環境では2倍解像度で出力される点を確認する。書き出したPNGをGeminiに貼り付ける際は元の解像度のまま使うのが精度面で有利。
+          </div>
+        </details>
+        <details>
+          <summary>
+            <span class="faq-icon">Q</span>
+            AIに投げるプロンプトはどう書けばいい？
+          </summary>
+          <div class="faq-body">
+            基本は英語で。<span style="color:#aaa;">「キャラ名・ポーズ・カメラ角度・スタイル・雰囲気」</span>を短く書く。例：<code style="color:var(--or);font-family:var(--fm);">hero, dramatic close-up, manga style, intense expression, backlit</code>。GeminiやFlowに投げるときは、別途キャラ参照画像と一緒に渡すと精度が上がる。
+          </div>
+        </details>
+        <details>
+          <summary>
+            <span class="faq-icon">Q</span>
+            スマートフォンから使える？
+          </summary>
+          <div class="faq-body">
+            HTMLファイルはスマホブラウザでも開けるが、右クリックメニューが使えないため操作性が落ちる。コマのホバーメニュー（⋯ボタン）から分割・削除は可能。基本的には<strong style="color:var(--wh);">PC・Mac推奨</strong>。
+          </div>
+        </details>
+        <details>
+          <summary>
+            <span class="faq-icon">Q</span>
+            V5はまだないの？
+          </summary>
+          <div class="faq-body">
+            note記事 #334「ちょっとやらかした。昨日V1を出したのに、もうV5ができた話」で言及されているとおり、<strong style="color:var(--wh);">V5は存在する</strong>。V2+V3の統合版にあたる位置づけ。詳細は該当記事を確認。
+          </div>
+        </details>
+      </div>
+
+      <!-- Final CTA -->
+      <div style="margin-top:64px;padding:40px;background:#1e1e1e;border:1px solid #2a2a2a;border-left:3px solid var(--or);" class="reveal">
+        <div style="font-family:var(--fw);font-size:32px;color:var(--wh);margin-bottom:12px;">次のステップ</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;font-size:13px;color:#888;line-height:1.8;">
+          <div>
+            <div style="color:var(--or);font-family:var(--fm);font-size:10px;margin-bottom:6px;">AIに任せたい</div>
+            V2 + V3 セット記事<br>
+            <span style="font-size:11px;">note記事を貼るだけでAIがネームを自動生成</span>
+          </div>
+          <div>
+            <div style="color:var(--or);font-family:var(--fm);font-size:10px;margin-bottom:6px;">演出理論で構成したい</div>
+            V4 記事<br>
+            <span style="font-size:11px;">フリ/キメ/ヒキの理論でAIが設計</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Mobile Nav Toggle -->
+<button id="mob-nav-btn">☰</button>
+<div id="nav-backdrop"></div>
+
+<script>
+// ── Boot Sequence ───────────────────────────────────────
+(function() {
+  const lines = document.querySelectorAll('.boot-line');
+  const bar = document.getElementById('boot-bar');
+  const boot = document.getElementById('boot');
+  let delay = 200;
+  lines.forEach((l, i) => {
+    setTimeout(() => {
+      l.style.opacity = '1';
+      l.classList.add('ok');
+      bar.style.width = ((i + 1) / lines.length * 100) + '%';
+    }, delay);
+    delay += 180;
+  });
+  setTimeout(() => {
+    boot.style.transition = 'opacity 0.5s';
+    boot.style.opacity = '0';
+    setTimeout(() => boot.remove(), 500);
+  }, delay + 200);
+})();
+
+// ── Scroll Reveal ───────────────────────────────────────
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ── Nav Active ──────────────────────────────────────────
+const sections = document.querySelectorAll('.sec');
+const navItems = document.querySelectorAll('.nav-item');
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const target = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (target) target.classList.add('active');
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-20% 0px -60% 0px' });
+sections.forEach(s => navObs.observe(s));
+
+// ── Mobile Nav ──────────────────────────────────────────
+const nav = document.getElementById('nav');
+const backdrop = document.getElementById('nav-backdrop');
+document.getElementById('mob-nav-btn').addEventListener('click', () => {
+  nav.classList.toggle('open');
+  backdrop.classList.toggle('open');
+});
+backdrop.addEventListener('click', () => {
+  nav.classList.remove('open');
+  backdrop.classList.remove('open');
+});
+nav.querySelectorAll('.nav-item').forEach(a => {
+  a.addEventListener('click', () => {
+    nav.classList.remove('open');
+    backdrop.classList.remove('open');
+  });
+});
+
+// ── Easter Egg ──────────────────────────────────────────
+document.getElementById('easter').addEventListener('click', () => {
+  const f = document.getElementById('easter-flash');
+  f.style.display = 'block';
+  f.style.transition = 'none';
+  f.style.opacity = '0.8';
+  setTimeout(() => {
+    f.style.transition = 'opacity 0.4s';
+    f.style.opacity = '0';
+    setTimeout(() => f.style.display = 'none', 400);
+  }, 80);
+});
+
+// ── FAQ icon toggle ─────────────────────────────────────
+document.querySelectorAll('details').forEach(d => {
+  d.addEventListener('toggle', () => {
+    const icon = d.querySelector('.faq-icon');
+    if (icon) icon.textContent = d.open ? 'A' : 'Q';
+  });
+});
+</script>
+</body>
+</html>
