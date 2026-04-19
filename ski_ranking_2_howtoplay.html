@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKI RANKING 2 — 遊び方 | KITAcore</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg:         #E9E9E9;
+  --ink:        #000000;
+  --mid:        #333333;
+  --muted:      #999999;
+  --line:       #CCCCCC;
+  --white:      #FFFFFF;
+  --accent:     #4A66AC;
+  --accent-dim: #EEF2FA;
+  --gold:       #C9A84C;
+  --silver:     #8A9BA8;
+  --bronze:     #A07848;
+}
+html { font-size: 10px; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans JP', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 40px;
+}
+.nav-brand { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; }
+.nav-links { display: flex; }
+.nav-links a {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: .85rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; padding: 6px 16px;
+  border-right: 1px solid var(--line); transition: color .15s;
+}
+.nav-links a:first-child { border-left: 1px solid var(--line); }
+.nav-links a:hover { color: var(--ink); }
+
+.page { max-width: 900px; margin: 0 auto; padding: 100px 40px 120px; }
+
+/* ヒーロー */
+.hero { padding-bottom: 48px; border-bottom: 2px solid var(--ink); margin-bottom: 64px; }
+.hero-label { font-size: 1rem; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hero-title { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: clamp(4rem,10vw,8rem); font-weight: 700; line-height: .9; letter-spacing: -.03em; text-transform: uppercase; margin-bottom: 20px; }
+.hero-title .accent { color: var(--accent); }
+.hero-desc { font-size: 1.4rem; font-weight: 300; color: var(--mid); line-height: 1.9; max-width: 600px; }
+
+/* セクション */
+section { margin-bottom: 72px; }
+.sec-num { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.sec-title { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 2.4rem; font-weight: 700; letter-spacing: -.01em; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+
+/* カード */
+.card { background: var(--white); border: 1px solid var(--line); border-radius: 2px; padding: 28px 32px; margin-bottom: 16px; }
+.card-title { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1.1rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--mid); margin-bottom: 14px; }
+.card p { font-size: 1.3rem; font-weight: 300; color: var(--mid); line-height: 1.9; }
+.card p + p { margin-top: 12px; }
+
+/* 秘密ボックス */
+.secret-box {
+  background: var(--ink); color: var(--white);
+  padding: 32px; border-radius: 2px; margin-bottom: 24px;
+  text-align: center;
+}
+.secret-formula { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 2rem; font-weight: 700; letter-spacing: .05em; color: rgba(255,255,255,.15); margin-bottom: 16px; filter: blur(4px); user-select: none; }
+.secret-label { font-size: 1.1rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+.secret-emoji { font-size: 2.4rem; margin-bottom: 12px; }
+
+/* ヒントカード */
+.hint-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.hint-card { background: var(--white); border: 1px solid var(--line); border-radius: 2px; padding: 20px 22px; }
+.hint-card-num { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 3.2rem; font-weight: 700; letter-spacing: -.04em; line-height: 1; color: var(--line); margin-bottom: 8px; }
+.hint-card-title { font-size: 1.3rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.hint-card-desc { font-size: 1.1rem; font-weight: 300; color: var(--mid); line-height: 1.8; }
+
+/* バッジ説明 */
+.badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.badge-card { background: var(--white); border: 1px solid var(--line); border-radius: 2px; padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; }
+.badge-icon { font-size: 2.4rem; flex-shrink: 0; line-height: 1; }
+.badge-info-title { font-size: 1.2rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.badge-info-desc { font-size: 1.1rem; font-weight: 300; color: var(--mid); line-height: 1.7; }
+
+/* 表彰台モック */
+.podium-mock { display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; margin-bottom: 24px; }
+.podium-div-m { background: var(--line); }
+.pm-cell { padding: 20px; position: relative; overflow: hidden; }
+.pm-cell.r1 { background: var(--ink); }
+.pm-cell.r2 { background: #EDECEA; }
+.pm-cell.r3 { background: #EEE9E4; }
+.pm-ghost { position: absolute; top: -4px; right: 8px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 7rem; font-weight: 700; line-height: 1; letter-spacing: -.06em; pointer-events: none; }
+.r1 .pm-ghost { color: rgba(201,168,76,.25); }
+.r2 .pm-ghost { color: rgba(138,155,168,.2); }
+.r3 .pm-ghost { color: rgba(160,120,72,.18); }
+.pm-badges { display: flex; gap: 5px; margin-bottom: 6px; flex-wrap: wrap; }
+.pm-badge-streak { font-size: .8rem; font-weight: 700; color: #cc4400; background: rgba(204,68,0,.1); padding: 2px 7px; border-radius: 3px; }
+.r1 .pm-badge-streak { color: #ff8844; background: rgba(255,136,68,.15); }
+.pm-badge-lucky { font-size: .8rem; font-weight: 700; color: var(--gold); background: rgba(201,168,76,.18); padding: 2px 7px; border-radius: 3px; }
+.pm-rank-label { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: .85rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
+.r1 .pm-rank-label { color: rgba(255,255,255,.4); }
+.r2 .pm-rank-label, .r3 .pm-rank-label { color: var(--muted); }
+.pm-name { font-size: 1.2rem; font-weight: 700; margin: 6px 0; }
+.r1 .pm-name { color: var(--white); }
+.pm-score { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 2.8rem; font-weight: 700; letter-spacing: -.04em; line-height: 1; }
+.r1 .pm-score { color: var(--gold); }
+.r2 .pm-score { color: var(--silver); }
+.r3 .pm-score { color: var(--bronze); }
+
+/* タブ */
+.tab-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px; }
+.tab-card { background: var(--white); border: 1px solid var(--line); border-radius: 2px; padding: 16px; text-align: center; }
+.tab-name { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--ink); margin-bottom: 6px; }
+.tab-period { font-size: 1rem; font-weight: 300; color: var(--muted); }
+
+/* FAQ */
+.faq-item { background: var(--white); border: 1px solid var(--line); border-radius: 2px; padding: 20px 24px; margin-bottom: 10px; }
+.faq-q { font-size: 1.3rem; font-weight: 700; color: var(--ink); margin-bottom: 10px; display: flex; gap: 10px; }
+.faq-q-mark { color: var(--accent); flex-shrink: 0; }
+.faq-a { font-size: 1.2rem; font-weight: 300; color: var(--mid); line-height: 1.8; padding-left: 24px; }
+
+/* テーブル */
+table { width: 100%; border-collapse: collapse; background: var(--white); border: 1px solid var(--line); border-radius: 2px; overflow: hidden; margin-bottom: 16px; }
+thead tr { background: var(--ink); }
+th { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--white); padding: 12px 18px; text-align: left; }
+td { font-size: 1.2rem; font-weight: 300; padding: 12px 18px; border-bottom: 1px solid var(--line); color: var(--mid); line-height: 1.7; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+td:first-child { font-weight: 700; color: var(--ink); }
+
+/* フッター */
+footer { border-top: 1px solid var(--line); padding: 24px 0; display: flex; justify-content: space-between; align-items: center; }
+footer span { font-size: .9rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); }
+
+@media (max-width: 680px) {
+  nav { padding: 14px 20px; }
+  .nav-links { display: none; }
+  .page { padding: 80px 20px 80px; }
+  .hint-grid { grid-template-columns: 1fr; }
+  .badge-grid { grid-template-columns: 1fr; }
+  .tab-grid { grid-template-columns: 1fr 1fr; }
+  .podium-mock { grid-template-columns: 1fr; }
+  .podium-div-m { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">01. HOW TO PLAY</span>
+  <div class="nav-links">
+    <a href="#score">スコア</a>
+    <a href="#badge">バッジ</a>
+    <a href="#display">画面</a>
+    <a href="#tab">期間</a>
+    <a href="#faq">FAQ</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-label">KITAcore / SKI RANKING</div>
+    <h1 class="hero-title">Season<span class="accent">2</span><br>遊び方</h1>
+    <p class="hero-desc">スキランキングSeason 2は、ただのスキ数カウントじゃない。<br>あなたの「熱量」が、スコアになる。</p>
+  </div>
+
+  <!-- 01. スコアの仕組み -->
+  <section id="score">
+    <div class="sec-num">01. Score</div>
+    <div class="sec-title">スコアの仕組み</div>
+
+    <div class="secret-box">
+      <div class="secret-emoji">🔐</div>
+      <div class="secret-formula">Score = Σ ( ski × timing × streak ) + lucky</div>
+      <div class="secret-label">Algorithm is confidential</div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <p>スコアの計算式は非公開です。でも、ヒントはあります。</p>
+      <p>「いつ押すか」「どれだけ続けるか」「ラッキーに命中するか」——この3つがスコアを動かします。</p>
+    </div>
+
+    <div class="hint-grid">
+      <div class="hint-card">
+        <div class="hint-card-num">01</div>
+        <div class="hint-card-title">タイミングが鍵</div>
+        <div class="hint-card-desc">同じスキでも、押すタイミングによって価値が変わります。早ければいいとも限りません。</div>
+      </div>
+      <div class="hint-card">
+        <div class="hint-card-num">02</div>
+        <div class="hint-card-title">続けるほど有利</div>
+        <div class="hint-card-desc">毎日スキを押し続けると、ボーナスが積み上がっていきます。継続こそが最大の戦略。</div>
+      </div>
+      <div class="hint-card">
+        <div class="hint-card-num">03</div>
+        <div class="hint-card-title">7が好き</div>
+        <div class="hint-card-desc">このランキング、数字の7に特別な意味があるかもしれません。何かに気づいたら、それが正解かも。</div>
+      </div>
+      <div class="hint-card">
+        <div class="hint-card-num">04</div>
+        <div class="hint-card-title">古い記事も有効</div>
+        <div class="hint-card-desc">過去の記事にスキを押しても、今週・今月のスコアに加算されます。発掘者もランキングに参加できます。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02. バッジ -->
+  <section id="badge">
+    <div class="sec-num">02. Badge</div>
+    <div class="sec-title">バッジの意味</div>
+
+    <div class="badge-grid">
+      <div class="badge-card">
+        <div class="badge-icon">🔥</div>
+        <div>
+          <div class="badge-info-title">○日連続</div>
+          <div class="badge-info-desc">何日連続でスキを押しているかを示すバッジ。日数が増えるほど、スコアに何かが起きています。</div>
+        </div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-icon">🎰</div>
+        <div>
+          <div class="badge-info-title">+○pt</div>
+          <div class="badge-info-desc">ラッキータイムに命中したときに光るバッジ。狙って出せる人もいれば、偶然の産物の人も。金色が目印。</div>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>バッジ</th><th>出現条件</th></tr></thead>
+      <tbody>
+        <tr><td>🔥 連続バッジ</td><td>毎日スキを押し続けると表示。数字が大きいほど継続中の証</td></tr>
+        <tr><td>🎰 ラッキーバッジ</td><td>特定のタイミングでスキを押したときだけ出現する激レアバッジ</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 03. 画面の見方 -->
+  <section id="display">
+    <div class="sec-num">03. Display</div>
+    <div class="sec-title">画面の見方</div>
+
+    <div class="podium-mock">
+      <div class="pm-cell r1">
+        <div class="pm-ghost">1</div>
+        <div class="pm-badges">
+          <span class="pm-badge-streak">🔥 33日連続</span>
+          <span class="pm-badge-lucky">🎰 +107pt</span>
+        </div>
+        <div class="pm-rank-label">01</div>
+        <div class="pm-name" style="color:var(--white);">ユーザー名</div>
+        <div class="pm-score">668<span style="font-size:1.4rem;color:rgba(201,168,76,.5);margin-left:4px;">pt</span></div>
+        <div style="font-size:1rem;color:rgba(255,255,255,.5);margin-top:6px;">43 スキ</div>
+      </div>
+      <div class="podium-div-m"></div>
+      <div class="pm-cell r2">
+        <div class="pm-ghost">2</div>
+        <div class="pm-rank-label">02</div>
+        <div class="pm-name">ユーザー名</div>
+        <div class="pm-score">414<span style="font-size:1.4rem;color:rgba(138,155,168,.5);margin-left:4px;">pt</span></div>
+        <div style="font-size:1rem;color:var(--muted);margin-top:6px;">45 スキ</div>
+      </div>
+      <div class="podium-div-m"></div>
+      <div class="pm-cell r3">
+        <div class="pm-ghost">3</div>
+        <div class="pm-rank-label">03</div>
+        <div class="pm-name" style="color:var(--mid);">ユーザー名</div>
+        <div class="pm-score">350<span style="font-size:1.4rem;color:rgba(160,120,72,.5);margin-left:4px;">pt</span></div>
+        <div style="font-size:1rem;color:var(--muted);margin-top:6px;">37 スキ</div>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>表示要素</th><th>意味</th></tr></thead>
+      <tbody>
+        <tr><td>金色のスコア</td><td>1位。今期間の最高スコア保持者</td></tr>
+        <tr><td>シルバーのスコア</td><td>2位</td></tr>
+        <tr><td>ブロンズのスコア</td><td>3位</td></tr>
+        <tr><td>○ スキ</td><td>集計期間内に押したスキの総数（スコアとは別の数字）</td></tr>
+        <tr><td>Score Trend グラフ</td><td>上位5名のスコア推移。誰が追い上げているかがわかる</td></tr>
+      </tbody>
+    </table>
+
+    <div class="card">
+      <div class="card-title">スキ数 ≠ スコア</div>
+      <p>スキ数が多い人が必ずしもスコアが高いわけではありません。押した「数」ではなく、押した「質」がスコアを決めます。</p>
+    </div>
+  </section>
+
+  <!-- 04. 集計期間 -->
+  <section id="tab">
+    <div class="sec-num">04. Period</div>
+    <div class="sec-title">集計期間</div>
+
+    <div class="tab-grid">
+      <div class="tab-card">
+        <div class="tab-name">今週</div>
+        <div class="tab-period">月曜〜今日</div>
+      </div>
+      <div class="tab-card">
+        <div class="tab-name">先週</div>
+        <div class="tab-period">先週月〜日</div>
+      </div>
+      <div class="tab-card">
+        <div class="tab-name">今月</div>
+        <div class="tab-period">月初〜今日</div>
+      </div>
+      <div class="tab-card">
+        <div class="tab-name">先月</div>
+        <div class="tab-period">先月1日〜末日</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">記事の投稿日は関係ない</div>
+      <p>「この期間にスキを押したか」だけで判定されます。昔の記事を今週発掘してスキしても、今週のスコアに加算されます。新参者でも勝てる設計です。</p>
+    </div>
+  </section>
+
+  <!-- 05. FAQ -->
+  <section id="faq">
+    <div class="sec-num">05. FAQ</div>
+    <div class="sec-title">よくある質問</div>
+
+    <div class="faq-item">
+      <div class="faq-q"><span class="faq-q-mark">Q.</span>アルゴリズムを教えてください</div>
+      <div class="faq-a">企業秘密です🔐　ただ、ヒントは「01. Score」に全部書いてあります。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q"><span class="faq-q-mark">Q.</span>スキ数が多いのにスコアが低い？</div>
+      <div class="faq-a">数より質、というのがこのランキングの考え方です。スキの「押し方」を工夫してみてください。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q"><span class="faq-q-mark">Q.</span>🎰バッジはどうすれば出る？</div>
+      <div class="faq-a">特定のタイミングでスキを押すと出ます。7という数字が好きなランキングです。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q"><span class="faq-q-mark">Q.</span>連続が途切れたら？</div>
+      <div class="faq-a">リセットされます。でも、毎日でなくても大丈夫な仕組みがあります。詳細は秘密です。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q"><span class="faq-q-mark">Q.</span>データはいつ更新される？</div>
+      <div class="faq-a">1日4回（朝・昼・夜・深夜）自動更新されます。画面下部の「Updated」で最終更新時刻を確認できます。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q"><span class="faq-q-mark">Q.</span>Season 1との違いは？</div>
+      <div class="faq-a">Season 1は純粋なタイミング勝負でした。Season 2はそこに「継続」と「ラッキー」の要素が加わっています。新しいルールで、また1位を狙ってください。</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>KITAcore / SKI RANKING SEASON 2</span>
+    <span>How to Play · 2026.04.19</span>
+  </footer>
+
+</div>
+</body>
+</html>
