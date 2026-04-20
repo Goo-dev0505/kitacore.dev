@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KITAcore — Tools & Guides</title>
-<meta name="description" content="KITAcoreが公開するAI・データ・クリエイティブツール集。note記事の補足ページ・取説・インタラクティブガイド。">
+<meta name="description" content="KITAcoreが公開するAI・データ・クリエイティブツール集。note記事の補足ページ・取説・インタラクティブガイド・ナレッジ棚卸し。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -12,6 +12,7 @@
 :root {
   --or:#FF4400; --bk:#111111; --wh:#F5F4F0; --dk:#1A1A1A;
   --gy:#E0DED8; --mu:#888884; --bd:#D0CEC8;
+  --bg2:#DDDBD4;
   --fw:'Bebas Neue',Impact,sans-serif;
   --fc:'Barlow Condensed',sans-serif;
   --fm:'IBM Plex Mono',monospace;
@@ -68,7 +69,7 @@ body::before{content:'';position:fixed;inset:0;z-index:7999;pointer-events:none;
 .t-live::before{content:'● ';animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .t-wrap{overflow:hidden;flex:1;mask-image:linear-gradient(to right,transparent,black 6%,black 94%,transparent)}
-.t-track{display:flex;white-space:nowrap;animation:tick 24s linear infinite}
+.t-track{display:flex;white-space:nowrap;animation:tick 28s linear infinite}
 .t-track:hover{animation-play-state:paused}
 .ti{font-family:var(--fm);font-size:10px;color:#444;letter-spacing:.18em;text-transform:uppercase;padding:0 28px;flex-shrink:0}
 .ti .ot{color:var(--or)}
@@ -136,6 +137,14 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .sec-or .sec-label{color:rgba(0,0,0,.38)}
 .sec-or .sec-sub{color:rgba(0,0,0,.45)}
 
+/* ───────── KNOWLEDGE SHELF (gray/beige) ───────── */
+.sec-gy{background:var(--bg2);color:var(--bk);padding:72px 0;border-bottom:2px solid var(--bk);position:relative;overflow:hidden}
+.sec-gy::before{content:'KNOWLEDGE';position:absolute;right:-20px;top:20px;
+  font-family:var(--fw);font-size:clamp(80px,14vw,160px);letter-spacing:.04em;
+  color:rgba(0,0,0,.035);user-select:none;pointer-events:none;line-height:1}
+.sec-gy .sec-label{color:var(--or)}
+.sec-gy .sec-sub{color:#555}
+
 .sec-wh{padding:72px 0;border-bottom:2px solid var(--bk)}
 .sec-wh .sec-label{color:var(--or)}
 .sec-wh .sec-sub{color:var(--mu)}
@@ -185,6 +194,30 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .card-o .card-arr{font-family:var(--fm);font-size:14px;color:var(--bk);transition:transform .2s}
 .card-o:hover .card-arr{transform:translateX(4px)}
 
+/* ───────── Knowledge Shelf card (beige surface + dark header) ───────── */
+.card-k{background:#fff;border:1px solid rgba(0,0,0,.12);text-decoration:none;color:inherit;
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:transform .25s ease,box-shadow .25s ease}
+.card-k::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--or);transform:scaleY(0);transform-origin:bottom;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.card-k:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--bk)}
+.card-k:hover::before{transform:scaleY(1)}
+.card-k .ct{background:var(--bk);color:var(--wh);padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between}
+.card-k .ct .live-badge{background:var(--or);color:var(--bk)}
+.card-k .cb{padding:22px 24px;flex:1}
+.card-k .card-tag{color:var(--or)}
+.card-k .card-title{color:var(--bk)}
+.card-k .card-hook{color:#555}
+.card-k .card-get{color:var(--or)}
+.card-k .cf{padding:14px 24px;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between;background:#FAFAF7}
+.card-k .card-date-k{font-family:var(--fm);font-size:9px;color:rgba(0,0,0,.3);letter-spacing:.15em;text-transform:uppercase}
+.card-k .card-arr{font-family:var(--fm);font-size:14px;color:var(--or);transition:transform .2s}
+.card-k:hover .card-arr{transform:translateX(4px)}
+.card-k .card-chapters{display:flex;gap:4px;margin-top:12px;flex-wrap:wrap}
+.card-k .chp{font-family:var(--fm);font-size:8px;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 7px;background:var(--gy);color:#555;border-radius:1px}
+
 .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:2px solid var(--bk);margin-top:32px}
 .how-card{background:#fff;padding:28px 24px;border-right:1px solid var(--bd);transition:background .2s}
 .how-card:last-child{border-right:none}
@@ -205,6 +238,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   .hero-h1{font-size:52px} .how-grid{grid-template-columns:1fr}
   .cards{grid-template-columns:1fr} .nav-meta{display:none}
   footer{padding:20px} .hero-stats{flex-wrap:wrap} #clock{display:none}
+  .sec-gy::before{font-size:72px}
 }
 </style>
 </head>
@@ -235,12 +269,14 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <span class="ti">NAME EDITOR V1 MANUAL — <span class="ot">LIVE</span></span>
       <span class="ti">SKI RANKING 2 GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">AI 7 POWERS GUIDE — <span class="ot">LIVE</span></span>
+      <span class="ti">MARKETING MECE MAP — <span class="ot">NEW</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
       <span class="ti">DEPLOYMENT: KITACORE-2026-ALPHA</span>
       <span class="ti">KITACORE PUBLIC TOOLS · GITHUB PAGES</span>
       <span class="ti">NAME EDITOR V1 MANUAL — <span class="ot">LIVE</span></span>
       <span class="ti">SKI RANKING 2 GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">AI 7 POWERS GUIDE — <span class="ot">LIVE</span></span>
+      <span class="ti">MARKETING MECE MAP — <span class="ot">NEW</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
       <span class="ti">DEPLOYMENT: KITACORE-2026-ALPHA</span>
     </div>
@@ -266,7 +302,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <span class="h-t1">TOOLS &</span>
       <span class="h-t2 or">GUIDES</span>
     </h1>
-    <p class="hero-sub h-sub">note記事の補足ページ・取説・インタラクティブガイドを公開中。<br>ブラウザだけで動く。インストール不要。すべて無料。</p>
+    <p class="hero-sub h-sub">note記事の補足ページ・取説・ナレッジ棚卸しを公開中。<br>ブラウザだけで動く。インストール不要。すべて無料。</p>
     <div class="hero-cta h-cta">
       <a class="btn-pr" href="https://note.com/ktcrs1107" target="_blank" rel="noopener">→ noteで記事を読む</a>
       <a class="btn-gh" href="#tools">ツール一覧を見る ↓</a>
@@ -364,6 +400,45 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
+<!-- ナレッジ棚卸し (GRAY) -->
+<section class="sec-gy">
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="rv">
+      <span class="sec-label">ナレッジ棚卸し — KNOWLEDGE SHELF</span>
+      <h2 class="sec-title">KNOWLEDGE<br>SHELF</h2>
+      <p class="sec-sub">にーさんの頭の中身を体系的に棚卸ししたナレッジマップ。AI語彙帳としても使える。</p>
+    </div>
+    <div class="cards">
+      <a class="card-k rv" href="marketing-mece-map.html">
+        <div class="ct">
+          <span class="card-num">01</span>
+          <div>
+            <div class="card-status">MECE DESIGN<br>5 CHAPTERS</div>
+            <span class="live-badge">● NEW</span>
+          </div>
+        </div>
+        <div class="cb">
+          <span class="card-tag">SHELF · MARKETING</span>
+          <h3 class="card-title">マーケティング、<br>ワイの場合</h3>
+          <p class="card-hook">正解やないし、教科書でもない。KITAcoreがマーケをどう整理してるかの頭の中身を棚卸ししたもの。AIに効く語彙帳としても使える。</p>
+          <span class="card-get">読むと、AIへの聞き方が変わる</span>
+          <div class="card-chapters">
+            <span class="chp">WHY</span>
+            <span class="chp">WHO</span>
+            <span class="chp">WHAT</span>
+            <span class="chp">HOW</span>
+            <span class="chp">MEASURE</span>
+          </div>
+        </div>
+        <div class="cf">
+          <span class="card-date-k">2026.04 · MECE v3</span>
+          <span class="card-arr">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- 3 STEPS (WHITE) -->
 <section class="sec-wh">
   <div class="wrap">
@@ -421,12 +496,13 @@ if (seen) {
   const pct  = document.getElementById('bpct');
   const lines = [
     { t:'KITACORE PORTAL v2026 INITIALIZING...', c:'hi', d:0 },
-    { t:'LOADING: PUBLIC TOOLS & GUIDES',        c:'',   d:260 },
-    { t:'  [取説]      NAME EDITOR V1 MANUAL   ■', c:'or', d:500 },
-    { t:'  [補足 01]   SKI RANKING 2 GUIDE     ■', c:'or', d:680 },
-    { t:'  [補足 02]   AI 7 POWERS GUIDE       ■', c:'or', d:860 },
-    { t:'ALL SYSTEMS OPERATIONAL',               c:'hi', d:1060 },
-    { t:'LAUNCHING...',                          c:'hi cur', d:1200 },
+    { t:'LOADING: PUBLIC TOOLS & GUIDES',        c:'',   d:240 },
+    { t:'  [取説]      NAME EDITOR V1 MANUAL   ■', c:'or', d:440 },
+    { t:'  [補足 01]   SKI RANKING 2 GUIDE     ■', c:'or', d:600 },
+    { t:'  [補足 02]   AI 7 POWERS GUIDE       ■', c:'or', d:760 },
+    { t:'  [棚]        MARKETING MECE MAP      ■', c:'or', d:920 },
+    { t:'ALL SYSTEMS OPERATIONAL',               c:'hi', d:1120 },
+    { t:'LAUNCHING...',                          c:'hi cur', d:1260 },
   ];
   let max = 0;
   lines.forEach((l, i) => {
@@ -443,7 +519,7 @@ if (seen) {
     }, l.d);
     max = Math.max(max, l.d);
   });
-  setTimeout(finishBoot, max + 450);
+  setTimeout(finishBoot, max + 420);
 }
 
 const bar = document.getElementById('prog');
@@ -478,8 +554,8 @@ window.addEventListener('load', () => {
       requestAnimationFrame(f);
     }, delay);
   }
-  countUp('cnt-p', 3, 600);
-  countUp('cnt-c', 2, 700);
+  countUp('cnt-p', 4, 600);
+  countUp('cnt-c', 3, 700);
 });
 </script>
 </body>
