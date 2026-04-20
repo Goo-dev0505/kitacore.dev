@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マーケティング、ワイの場合 — KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #E9E9E9;
+  --surface:    #FFFFFF;
+  --surface-v:  #F4F4F2;
+  --text:       #111111;
+  --text-sub:   #333333;
+  --muted:      #6B6B6B;
+  --border:     #DDDDDD;
+  --accent:     #000000;
+  --accent-mid: #333333;
+  --font-display: 'Inter', sans-serif;
+  --font-body:    'Noto Sans JP', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+/* ───────────────── LAYOUT ───────────────── */
+.container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+/* ───────────────── HEADER ───────────────── */
+.site-header {
+  padding: 32px 24px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky; top: 0; z-index: 100;
+}
+.site-header .inner {
+  max-width: 720px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.brand {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+}
+.toc-toggle {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); background: none; border: none; cursor: pointer;
+  padding: 4px 0;
+}
+.toc-toggle:hover { color: var(--text); }
+
+/* ───────────────── HERO ───────────────── */
+.hero {
+  padding: 80px 24px 64px;
+  border-bottom: 1px solid var(--border);
+  max-width: 720px; margin: 0 auto;
+}
+.hero-label {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 24px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700; line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text); margin-bottom: 24px;
+}
+.hero-sub {
+  font-size: 16px; color: var(--text-sub);
+  max-width: 560px; line-height: 1.9;
+}
+.hero-meta {
+  margin-top: 32px;
+  display: flex; gap: 24px; flex-wrap: wrap;
+}
+.hero-meta span {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--muted); letter-spacing: 0.08em;
+}
+
+/* ───────────────── TOC ───────────────── */
+.toc-panel {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: none; padding: 32px 24px;
+}
+.toc-panel.open { display: block; }
+.toc-inner { max-width: 720px; margin: 0 auto; }
+.toc-title {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 16px;
+}
+.toc-list { list-style: none; }
+.toc-list li { border-bottom: 1px solid var(--border); }
+.toc-list li:last-child { border-bottom: none; }
+.toc-list a {
+  display: flex; gap: 16px; padding: 12px 0;
+  text-decoration: none; color: var(--text-sub);
+  font-size: 14px; align-items: baseline;
+  transition: color 150ms ease;
+}
+.toc-list a:hover { color: var(--text); }
+.toc-list a .num {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--muted); width: 24px; flex-shrink: 0;
+}
+
+/* ───────────────── ARTICLE BODY ───────────────── */
+.article-body { padding: 64px 24px; max-width: 720px; margin: 0 auto; }
+
+/* ───────────────── CHAPTER ───────────────── */
+.chapter { margin-bottom: 96px; }
+.chapter-nav {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.chapter h2 {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text); margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--accent);
+}
+
+/* ───────────────── SECTION ───────────────── */
+.section { margin-bottom: 48px; }
+.section h3 {
+  font-size: 17px; font-weight: 600;
+  color: var(--text); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section h3::before {
+  content: '';
+  display: inline-block; width: 3px; height: 17px;
+  background: var(--accent); flex-shrink: 0;
+}
+
+p { margin-bottom: 16px; color: var(--text-sub); }
+p:last-child { margin-bottom: 0; }
+strong { color: var(--text); font-weight: 600; }
+
+/* ───────────────── CALLOUT ───────────────── */
+.callout {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 2px;
+  padding: 20px 24px; margin: 24px 0;
+  font-size: 14px; color: var(--text-sub);
+}
+.callout strong { display: block; margin-bottom: 6px; color: var(--text); font-size: 13px; font-family: var(--font-mono); letter-spacing: 0.06em; }
+
+/* ───────────────── TABLE ───────────────── */
+.table-wrap { overflow-x: auto; margin: 24px 0; border: 1px solid var(--border); border-radius: 2px; }
+table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: 13px; }
+thead { background: var(--surface-v); }
+th {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); text-align: left;
+  padding: 12px 16px; font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 12px 16px; color: var(--text-sub);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface-v); }
+
+/* ───────────────── LAYER STACK ───────────────── */
+.layer-stack { margin: 24px 0; }
+.layer-item {
+  display: grid; grid-template-columns: 180px 1fr;
+  border: 1px solid var(--border);
+  border-radius: 2px; background: var(--surface);
+  margin-bottom: 8px; overflow: hidden;
+  transition: border-color 150ms ease;
+}
+.layer-item:hover { border-color: var(--accent-mid); }
+.layer-label {
+  padding: 16px 20px;
+  background: var(--surface-v);
+  border-right: 1px solid var(--border);
+}
+.layer-label .layer-num {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--muted); letter-spacing: 0.08em;
+  display: block; margin-bottom: 4px;
+}
+.layer-label .layer-name {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  display: block; margin-bottom: 2px;
+}
+.layer-label .layer-q {
+  font-size: 11px; color: var(--muted); font-style: italic;
+}
+.layer-content { padding: 16px 20px; }
+.layer-content .tools {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+}
+.tag {
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px; color: var(--muted);
+  background: var(--surface-v);
+  white-space: nowrap;
+}
+.tag.highlight {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--surface);
+}
+.layer-content p { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* ───────────────── FLOW DIAGRAM ───────────────── */
+.flow {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px; padding: 24px;
+  margin: 24px 0;
+}
+.flow-title {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px;
+}
+.flow-row {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; margin-bottom: 4px;
+}
+.flow-node {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  padding: 8px 16px; border: 1px solid var(--border);
+  border-radius: 2px; background: var(--surface-v);
+}
+.flow-arrow { color: var(--muted); font-size: 14px; }
+.flow-label { font-size: 11px; color: var(--muted); font-style: italic; }
+
+/* ───────────────── PERSON CARD ───────────────── */
+.person-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px; margin: 24px 0;
+}
+.person-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px; padding: 20px;
+}
+.person-name {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 700;
+  color: var(--text); margin-bottom: 4px;
+}
+.person-era {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--muted); margin-bottom: 12px;
+  letter-spacing: 0.06em;
+}
+.person-layers {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-bottom: 12px;
+}
+.person-desc { font-size: 13px; color: var(--text-sub); line-height: 1.7; }
+.person-card.fav { border-color: var(--accent); }
+.fav-badge {
+  display: inline-block;
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  background: var(--accent); color: #ffffff;
+  padding: 2px 8px; border-radius: 2px;
+  margin-bottom: 10px;
+}
+
+/* ───────────────── TIMELINE ───────────────── */
+.timeline { position: relative; padding-left: 24px; margin: 24px 0; }
+.timeline::before {
+  content: '';
+  position: absolute; left: 0; top: 8px; bottom: 8px;
+  width: 1px; background: var(--border);
+}
+.tl-item { position: relative; margin-bottom: 32px; }
+.tl-item::before {
+  content: '';
+  position: absolute; left: -28px; top: 6px;
+  width: 8px; height: 8px;
+  border: 1px solid var(--accent);
+  border-radius: 50%; background: var(--bg);
+}
+.tl-year {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--muted); letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.tl-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.tl-body { font-size: 13px; color: var(--text-sub); line-height: 1.75; }
+.tl-body .person { color: var(--text); font-weight: 500; }
+
+/* ───────────────── COMPARE ───────────────── */
+.compare-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0; border: 1px solid var(--border);
+  border-radius: 2px; overflow: hidden; margin: 24px 0;
+}
+.compare-col { background: var(--surface); padding: 24px; }
+.compare-col:first-child { border-right: 1px solid var(--border); }
+.compare-head {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 16px;
+}
+.compare-col h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.compare-col ul { list-style: none; }
+.compare-col ul li {
+  font-size: 13px; color: var(--text-sub);
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+  display: flex; gap: 8px;
+}
+.compare-col ul li:last-child { border-bottom: none; }
+.compare-col ul li::before { content: '—'; color: var(--muted); }
+
+/* ───────────────── NOTE APPLY ───────────────── */
+.apply-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin: 24px 0;
+}
+.apply-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px; padding: 20px;
+}
+.apply-layer {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.apply-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.apply-status .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.dot-strong { background: #111111; }
+.dot-mid    { background: #888888; }
+.dot-weak   { background: #CCCCCC; border: 1px solid #AAAAAA; }
+.apply-status span { font-size: 12px; font-weight: 600; color: var(--text); }
+.apply-card p { font-size: 13px; color: var(--text-sub); margin: 0; }
+
+/* ───────────────── KEY INSIGHT ───────────────── */
+.key-insight {
+  background: var(--accent);
+  color: #FFFFFF;
+  padding: 32px; margin: 32px 0;
+  border-radius: 2px;
+}
+.key-insight .ki-label {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5); margin-bottom: 12px;
+}
+.key-insight p { color: rgba(255,255,255,0.9); margin: 0; font-size: 16px; line-height: 1.85; }
+.key-insight strong { color: #FFFFFF; }
+
+/* ───────────────── AI UNLOCK ───────────────── */
+.ai-unlock {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 2px;
+  padding: 20px 24px;
+  margin: 32px 0;
+}
+.ai-unlock-label {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ai-unlock-label::before {
+  content: '⌘'; font-size: 12px; color: var(--accent);
+}
+.ai-unlock-title {
+  font-size: 13px; font-weight: 600;
+  color: var(--text); margin-bottom: 6px;
+}
+.ai-unlock-desc {
+  font-size: 13px; color: var(--text-sub);
+  margin-bottom: 16px; line-height: 1.75;
+}
+.ai-prompt-example {
+  background: var(--accent); color: #ffffff;
+  font-family: var(--font-mono); font-size: 12px;
+  padding: 12px 16px; border-radius: 2px;
+  line-height: 1.75; white-space: pre-wrap;
+}
+.ai-prompt-label {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); margin-bottom: 6px;
+  display: block;
+}
+
+/* ───────────────── VOCAB KEY INTRO ───────────────── */
+.vocab-key {
+  background: var(--accent); color: #ffffff;
+  padding: 40px; margin: 0 0 0 0;
+  border-radius: 2px;
+}
+.vocab-key .vk-label {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); margin-bottom: 16px;
+}
+.vocab-key h3 {
+  font-family: var(--font-display); font-size: 18px;
+  font-weight: 700; color: #ffffff; margin-bottom: 12px;
+}
+.vocab-key p {
+  font-size: 14px; color: rgba(255,255,255,0.85);
+  line-height: 1.85; margin-bottom: 0;
+}
+.vocab-key p strong { color: #ffffff; }
+
+/* ───────────────── FOOTER ───────────────── */
+.article-footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 24px; max-width: 720px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 24px;
+}
+.footer-brand { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+.footer-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-align: right; }
+
+/* ───────────────── RESPONSIVE ───────────────── */
+@media (max-width: 600px) {
+  .layer-item { grid-template-columns: 1fr; }
+  .layer-label { border-right: none; border-bottom: 1px solid var(--border); }
+  .compare-grid, .apply-grid { grid-template-columns: 1fr; }
+  .compare-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  .person-grid { grid-template-columns: 1fr; }
+}
+
+/* ═════════════════════════════════════════════════
+   ANIMATION & UX ENHANCEMENTS (v3)
+   ═════════════════════════════════════════════════ */
+
+/* Easing tokens */
+:root {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:    cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ─── SCROLL PROGRESS BAR ─── */
+.scroll-progress {
+  position: fixed; top: 0; left: 0;
+  height: 2px; width: 0%;
+  background: var(--accent);
+  z-index: 200;
+  transition: width 80ms linear;
+  pointer-events: none;
+}
+
+/* ─── HEADER SCROLL STATE ─── */
+.site-header {
+  transition: box-shadow 300ms var(--ease-out-quart),
+              backdrop-filter 300ms var(--ease-out-quart),
+              background-color 300ms var(--ease-out-quart);
+}
+.site-header.scrolled {
+  background: rgba(233, 233, 233, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(0,0,0,0.04);
+}
+
+/* ─── TOC PANEL SMOOTH OPEN ─── */
+.toc-panel {
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  transition: max-height 400ms var(--ease-out-quart),
+              padding 400ms var(--ease-out-quart),
+              opacity 300ms var(--ease-out-quart);
+}
+.toc-panel.open {
+  max-height: 600px;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  opacity: 1;
+}
+.toc-toggle { transition: color 150ms ease; }
+.toc-toggle .toggle-icon {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform 300ms var(--ease-out-quart);
+}
+.toc-toggle.open .toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* TOC list staggered entry when opened */
+.toc-panel.open .toc-list li {
+  animation: toc-item-in 400ms var(--ease-out-quart) both;
+}
+.toc-panel.open .toc-list li:nth-child(1) { animation-delay: 80ms; }
+.toc-panel.open .toc-list li:nth-child(2) { animation-delay: 140ms; }
+.toc-panel.open .toc-list li:nth-child(3) { animation-delay: 200ms; }
+.toc-panel.open .toc-list li:nth-child(4) { animation-delay: 260ms; }
+.toc-panel.open .toc-list li:nth-child(5) { animation-delay: 320ms; }
+@keyframes toc-item-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* TOC active state (scroll spy) */
+.toc-list a {
+  position: relative;
+  transition: color 200ms ease, padding-left 250ms var(--ease-out-quart);
+}
+.toc-list a::before {
+  content: '';
+  position: absolute; left: 0; top: 50%;
+  width: 0; height: 1px;
+  background: var(--accent);
+  transform: translateY(-50%);
+  transition: width 300ms var(--ease-out-quart);
+}
+.toc-list a.active {
+  color: var(--text);
+  padding-left: 12px;
+}
+.toc-list a.active::before { width: 8px; }
+.toc-list a.active .num { color: var(--text); font-weight: 600; }
+
+/* ─── HERO ENTRANCE ─── */
+.hero-label,
+.hero h1,
+.hero-sub,
+.hero-meta {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: hero-in 700ms var(--ease-out-expo) forwards;
+}
+.hero-label    { animation-delay: 80ms; }
+.hero h1       { animation-delay: 180ms; }
+.hero-sub      { animation-delay: 340ms; }
+.hero-meta     { animation-delay: 480ms; }
+@keyframes hero-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── FADE-UP (Intersection Observer) ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms var(--ease-out-quart),
+              transform 700ms var(--ease-out-quart);
+  will-change: opacity, transform;
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Stagger via nth-child for grids */
+.person-grid .reveal.in,
+.apply-grid .reveal.in,
+.layer-stack .reveal.in {
+  transition-delay: calc((var(--i, 0)) * 70ms);
+}
+
+/* ─── CHAPTER HEADING UNDERLINE SWEEP ─── */
+.chapter h2 {
+  position: relative;
+  border-bottom: none;
+  padding-bottom: 16px;
+}
+.chapter h2::after {
+  content: '';
+  position: absolute; left: 0; bottom: 0;
+  width: 0; height: 2px;
+  background: var(--accent);
+  transition: width 900ms var(--ease-out-expo) 200ms;
+}
+.chapter h2.in::after { width: 100%; }
+
+/* ─── LAYER STACK ENHANCEMENT ─── */
+.layer-item {
+  transition: border-color 250ms var(--ease-out-quart),
+              transform 300ms var(--ease-out-quart),
+              box-shadow 300ms var(--ease-out-quart);
+}
+.layer-item:hover {
+  border-color: var(--accent);
+  transform: translateX(2px);
+  box-shadow: -3px 0 0 var(--accent);
+}
+.layer-item .layer-num {
+  transition: color 200ms ease;
+}
+.layer-item:hover .layer-num { color: var(--accent); }
+
+/* Tag hover (tools inside layer & person card) */
+.tag {
+  transition: border-color 180ms ease,
+              color 180ms ease,
+              background 180ms ease,
+              transform 180ms var(--ease-out-quart);
+  cursor: default;
+}
+.tag:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+.tag.highlight:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ─── PERSON CARD LIFT ─── */
+.person-card {
+  transition: border-color 250ms var(--ease-out-quart),
+              transform 350ms var(--ease-out-quart),
+              box-shadow 350ms var(--ease-out-quart);
+}
+.person-card:hover {
+  border-color: var(--accent-mid);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+.person-card.fav {
+  position: relative;
+  animation: fav-glow 3.5s ease-in-out infinite;
+}
+@keyframes fav-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+  50%      { box-shadow: 0 0 0 4px rgba(0,0,0,0.035); }
+}
+
+/* ─── APPLY CARD + DOT PULSE ─── */
+.apply-card {
+  transition: border-color 250ms var(--ease-out-quart),
+              transform 300ms var(--ease-out-quart);
+}
+.apply-card:hover {
+  border-color: var(--accent-mid);
+  transform: translateY(-2px);
+}
+.apply-status .dot {
+  position: relative;
+}
+.apply-status .dot-strong::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0;
+  animation: dot-pulse 2s var(--ease-out-expo) infinite;
+}
+@keyframes dot-pulse {
+  0%   { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ─── TIMELINE DOT & REVEAL ─── */
+.tl-item {
+  transition: transform 400ms var(--ease-out-quart);
+}
+.tl-item::before {
+  transition: background 250ms ease,
+              border-color 250ms ease,
+              transform 350ms var(--ease-out-expo);
+}
+.tl-item:hover::before {
+  background: var(--accent);
+  transform: scale(1.3);
+}
+.tl-item:hover .tl-title { color: var(--accent); }
+.tl-title { transition: color 200ms ease; }
+
+/* ─── TABLE ROW ─── */
+tr td { transition: background 200ms ease; }
+
+/* ─── AI UNLOCK ENHANCEMENT ─── */
+.ai-unlock {
+  position: relative;
+  overflow: hidden;
+  transition: transform 350ms var(--ease-out-quart),
+              box-shadow 350ms var(--ease-out-quart);
+}
+.ai-unlock::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 0; height: 3px;
+  background: var(--accent);
+  transition: width 600ms var(--ease-out-expo);
+}
+.ai-unlock.in::before { width: 100%; }
+.ai-unlock:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+}
+
+/* Copy button */
+.ai-prompt-example {
+  position: relative;
+}
+.ai-copy-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 2px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+.ai-copy-btn:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.35);
+}
+.ai-copy-btn.copied {
+  color: #fff;
+  background: rgba(255,255,255,0.25);
+}
+
+/* ─── KEY INSIGHT ENTRY ─── */
+.key-insight {
+  transition: transform 400ms var(--ease-out-expo);
+}
+.key-insight.in { animation: ki-pop 800ms var(--ease-out-expo); }
+@keyframes ki-pop {
+  0%   { transform: scale(0.98); }
+  50%  { transform: scale(1.005); }
+  100% { transform: scale(1); }
+}
+
+/* ─── BACK TO TOP ─── */
+.back-to-top {
+  position: fixed;
+  bottom: 32px; right: 32px;
+  width: 44px; height: 44px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-family: var(--font-mono); font-size: 14px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 350ms var(--ease-out-quart),
+              transform 350ms var(--ease-out-quart),
+              background 200ms ease;
+  z-index: 90;
+  display: flex; align-items: center; justify-content: center;
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.back-to-top:hover {
+  background: var(--accent-mid);
+}
+.back-to-top:active { transform: translateY(2px); }
+
+/* ─── LINK INTERACTION ─── */
+a { transition: color 150ms ease; }
+
+/* ─── FOCUS RING ─── */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ═════════════════════════════════════════════════
+   PLAYFULNESS LAYER (v3.1)
+   ═════════════════════════════════════════════════ */
+
+/* ─── TEXT SELECTION ─── */
+::selection    { background: var(--accent); color: #fff; }
+::-moz-selection { background: var(--accent); color: #fff; }
+
+/* ─── CUSTOM CURSOR ─── */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+.cursor-dot {
+  width: 5px; height: 5px;
+  background: var(--accent);
+  border-radius: 50%;
+  transition: width 200ms var(--ease-out-quart),
+              height 200ms var(--ease-out-quart),
+              opacity 200ms ease;
+}
+.cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  mix-blend-mode: difference;
+  transition: width 300ms var(--ease-out-expo),
+              height 300ms var(--ease-out-expo),
+              border-width 200ms ease,
+              opacity 200ms ease;
+  opacity: 0.8;
+}
+.cursor-ring.hover {
+  width: 56px; height: 56px;
+  border-width: 1px;
+}
+.cursor-ring.click {
+  width: 22px; height: 22px;
+}
+.cursor-dot.hidden, .cursor-ring.hidden { opacity: 0; }
+
+/* Hide native cursor on fine-pointer devices when custom cursor active */
+body.has-custom-cursor { cursor: none; }
+body.has-custom-cursor a,
+body.has-custom-cursor button,
+body.has-custom-cursor .tag,
+body.has-custom-cursor .layer-item,
+body.has-custom-cursor input,
+body.has-custom-cursor textarea { cursor: none; }
+
+/* Only show on fine pointer + non-touch */
+@media (hover: none), (pointer: coarse) {
+  .cursor-dot, .cursor-ring { display: none !important; }
+  body.has-custom-cursor { cursor: auto; }
+}
+
+/* ─── GLOSSARY TOOLTIP ─── */
+.has-tooltip {
+  position: relative;
+  cursor: help;
+}
+.has-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  line-height: 1.55;
+  width: max-content;
+  max-width: 260px;
+  min-width: 140px;
+  z-index: 300;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms var(--ease-out-quart),
+              transform 200ms var(--ease-out-quart);
+  white-space: normal;
+}
+.has-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  border: 5px solid transparent;
+  border-top-color: var(--accent);
+  z-index: 300;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms var(--ease-out-quart),
+              transform 200ms var(--ease-out-quart);
+}
+.has-tooltip:hover::after,
+.has-tooltip:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ─── LAYER FOCUS MODE ─── */
+body.layer-focused .layer-item {
+  opacity: 0.22;
+  transition: opacity 300ms var(--ease-out-quart),
+              border-color 300ms ease,
+              transform 300ms var(--ease-out-quart);
+}
+body.layer-focused .layer-item.focused {
+  opacity: 1;
+  border-color: var(--accent);
+  transform: translateX(4px) scale(1.005);
+  box-shadow: -4px 0 0 var(--accent), 0 10px 30px rgba(0,0,0,0.08);
+}
+.layer-item { cursor: pointer; }
+.layer-focus-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 8px 0 0;
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+body.layer-focused .layer-focus-hint { opacity: 1; }
+
+/* ─── CHAPTER NUM SCRAMBLE ─── */
+.chapter-nav {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── KONAMI EGG ─── */
+.konami-overlay {
+  position: fixed; inset: 0;
+  background: #000;
+  z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms var(--ease-out-quart);
+}
+.konami-overlay.show { opacity: 1; }
+.konami-content {
+  text-align: center;
+  color: #fff;
+  transform: scale(0.92);
+  transition: transform 700ms var(--ease-out-expo);
+  padding: 0 24px;
+}
+.konami-overlay.show .konami-content { transform: scale(1); }
+.konami-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 32px;
+  text-transform: uppercase;
+}
+.konami-why {
+  font-family: var(--font-display);
+  font-size: clamp(88px, 18vw, 220px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  margin-bottom: 28px;
+  animation: why-pulse 2.6s ease-in-out infinite;
+  background: linear-gradient(180deg, #fff 0%, #888 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+@keyframes why-pulse {
+  0%, 100% { transform: scale(1); letter-spacing: -0.04em; }
+  50%      { transform: scale(1.015); letter-spacing: -0.035em; }
+}
+.konami-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.85;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.konami-sub strong { color: #fff; font-weight: 600; }
+.konami-credit {
+  margin-top: 40px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+}
+
+/* Footer badge after unlock */
+body.konami-unlocked .footer-meta::after {
+  content: ' · konami ✓';
+  color: var(--text);
+  font-weight: 600;
+  animation: badge-pop 500ms var(--ease-out-expo);
+}
+@keyframes badge-pop {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── FAV CARD (Sinek) CLICK REACTION ─── */
+.person-card.fav {
+  cursor: pointer;
+  overflow: visible;
+}
+.person-card.fav .fav-badge {
+  transition: transform 300ms var(--ease-out-expo);
+}
+.person-card.fav.bounced .fav-badge {
+  animation: fav-bounce 600ms var(--ease-out-expo);
+}
+@keyframes fav-bounce {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-12px) scale(1.15); }
+  60%  { transform: translateY(2px) scale(0.95); }
+  100% { transform: translateY(0) scale(1); }
+}
+.why-float {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  pointer-events: none;
+  animation: why-float 1200ms var(--ease-out-expo) forwards;
+  z-index: 50;
+}
+@keyframes why-float {
+  0%   { opacity: 0; transform: translateY(0) scale(0.8); }
+  20%  { opacity: 1; transform: translateY(-10px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(1); }
+}
+
+/* ─── REDUCED MOTION OVERRIDES FOR PLAYFULNESS ─── */
+@media (prefers-reduced-motion: reduce) {
+  .cursor-dot, .cursor-ring { display: none !important; }
+  body.has-custom-cursor { cursor: auto !important; }
+  .konami-why { animation: none; }
+}
+
+/* ═════════════════════════════════════════════════
+   CHAPTER RAIL (side navigation)
+   ═════════════════════════════════════════════════ */
+.chapter-rail {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 450ms var(--ease-out-quart);
+}
+.chapter-rail.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.rail-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 6px 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.rail-dot {
+  display: block;
+  width: 20px;
+  height: 1px;
+  background: var(--muted);
+  transition: width 350ms var(--ease-out-expo),
+              height 250ms var(--ease-out-quart),
+              background 250ms ease;
+}
+.rail-item:hover .rail-dot {
+  width: 28px;
+  background: var(--accent);
+}
+.rail-item.active .rail-dot {
+  width: 36px;
+  height: 2px;
+  background: var(--accent);
+}
+
+.rail-label {
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-radius: 2px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-50%) translateX(6px);
+  transition: opacity 250ms var(--ease-out-quart),
+              transform 250ms var(--ease-out-quart);
+  pointer-events: none;
+}
+.rail-label::after {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 4px solid transparent;
+  border-left-color: var(--accent);
+}
+.rail-item:hover .rail-label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Active item label hint (small persistent indicator) */
+.rail-item.active .rail-label-static {
+  display: block;
+}
+.rail-label-static {
+  display: none;
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.rail-item.active:hover .rail-label-static { opacity: 0; }
+
+/* Mobile: hide side rail, show compact top rail instead */
+@media (max-width: 768px) {
+  .chapter-rail { display: none; }
+}
+
+/* ═════════════════════════════════════════════════
+   MOBILE CHAPTER CHIPS (horizontal)
+   ═════════════════════════════════════════════════ */
+.chapter-chips {
+  display: none;
+  position: fixed;
+  top: 57px; /* just under sticky header */
+  left: 0; right: 0;
+  z-index: 90;
+  background: rgba(233, 233, 233, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 300ms var(--ease-out-quart),
+              transform 300ms var(--ease-out-quart);
+}
+.chapter-chips::-webkit-scrollbar { display: none; }
+.chapter-chips.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.chapter-chips-inner {
+  display: flex;
+  gap: 8px;
+  min-width: max-content;
+}
+.chip-item {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 6px 10px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 200ms ease;
+}
+.chip-item.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+@media (max-width: 768px) {
+  .chapter-chips { display: block; }
+}
+
+
+body.preloading { overflow: hidden; }
+
+.preloader {
+  position: fixed; inset: 0;
+  background: #000;
+  z-index: 10001;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: opacity 600ms var(--ease-out-quart);
+}
+.preloader.done {
+  opacity: 0;
+  pointer-events: none;
+}
+.preloader-inner {
+  width: 100%;
+  max-width: 420px;
+  padding: 0 32px;
+  color: #fff;
+}
+
+/* Brand label */
+.preloader-brand {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0;
+  animation: pre-fade 450ms var(--ease-out-quart) 80ms forwards;
+}
+
+/* Title */
+.preloader-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 5vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #fff;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: pre-fade 550ms var(--ease-out-expo) 180ms forwards;
+}
+
+/* Why / How / What lines */
+.preloader-lines {
+  margin-bottom: 48px;
+}
+.preloader-line {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 14px;
+  opacity: 0;
+  animation: pre-fade 400ms var(--ease-out-quart) forwards;
+}
+.preloader-line:nth-child(1) { animation-delay: 380ms; }
+.preloader-line:nth-child(2) { animation-delay: 560ms; }
+.preloader-line:nth-child(3) { animation-delay: 740ms; }
+
+.preloader-line .label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.preloader-line .bar {
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.14);
+  position: relative;
+  overflow: hidden;
+}
+.preloader-line .bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: 0;
+  background: #fff;
+  animation: pre-bar 650ms var(--ease-out-expo) forwards;
+}
+.preloader-line:nth-child(1) .bar::after { animation-delay: 430ms; }
+.preloader-line:nth-child(2) .bar::after { animation-delay: 610ms; }
+.preloader-line:nth-child(3) .bar::after { animation-delay: 790ms; }
+
+@keyframes pre-bar {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* Progress bar */
+.preloader-progress {
+  opacity: 0;
+  animation: pre-fade 400ms var(--ease-out-quart) 950ms forwards;
+}
+.preloader-progress-bar {
+  height: 2px;
+  background: rgba(255,255,255,0.1);
+  position: relative;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.preloader-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: 0;
+  background: #fff;
+  animation: pre-progress 750ms var(--ease-out-quart) 1050ms forwards;
+}
+@keyframes pre-progress {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+.preloader-status {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+.preloader-status .status-label::before {
+  content: '';
+  display: inline-block;
+  width: 5px; height: 5px;
+  background: #fff;
+  margin-right: 8px;
+  vertical-align: middle;
+  animation: pre-blink 1s ease-in-out infinite;
+}
+@keyframes pre-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
+
+/* Skip hint */
+.preloader-skip {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.25);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: pre-fade 500ms ease 1400ms forwards;
+}
+
+@keyframes pre-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Done state — status text change */
+.preloader.ready .status-label::before { animation: none; opacity: 1; }
+.preloader.ready .status-label span::after {
+  content: 'Ready';
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader *,
+  .preloader *::after,
+  .preloader *::before {
+    animation-duration: 100ms !important;
+    animation-delay: 0ms !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .preloader-inner { padding: 0 24px; }
+  .preloader-title { margin-bottom: 32px; }
+  .preloader-lines { margin-bottom: 36px; }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .hero-label, .hero h1, .hero-sub, .hero-meta { opacity: 1; transform: none; }
+  .chapter h2::after { width: 100%; }
+  .apply-status .dot-strong::after { display: none; }
+  .person-card.fav { animation: none; }
+}
+
+/* ─── MOBILE TWEAKS ─── */
+@media (max-width: 600px) {
+  .back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+}
+</style>
+</head>
+<body class="preloading">
+
+<!-- PRELOADER -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader-inner">
+    <div class="preloader-brand">KITAcore · Knowledge Shelf</div>
+    <div class="preloader-title">マーケティング、<br>ワイの場合。</div>
+    <div class="preloader-lines">
+      <div class="preloader-line"><span class="label">Why</span><span class="bar"></span></div>
+      <div class="preloader-line"><span class="label">How</span><span class="bar"></span></div>
+      <div class="preloader-line"><span class="label">What</span><span class="bar"></span></div>
+    </div>
+    <div class="preloader-progress">
+      <div class="preloader-progress-bar"></div>
+      <div class="preloader-status">
+        <span class="status-label">Loading</span>
+        <span class="status-count">5 chapters · 語彙 35+</span>
+      </div>
+    </div>
+  </div>
+  <div class="preloader-skip">click anywhere to skip</div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<!-- HEADER -->
+<header class="site-header" id="siteHeader">
+  <div class="inner">
+    <span class="brand">KITAcore — Knowledge Series</span>
+    <button class="toc-toggle" id="tocToggle" aria-expanded="false" aria-controls="tocPanel">
+      Contents <span class="toggle-icon">↓</span>
+    </button>
+  </div>
+</header>
+
+<!-- TOC -->
+<div class="toc-panel" id="tocPanel">
+  <div class="toc-inner">
+    <div class="toc-title">Table of Contents</div>
+    <ul class="toc-list">
+      <li><a href="#ch1"><span class="num">01</span>マーケティングとは何か — WHAT</a></li>
+      <li><a href="#ch2"><span class="num">02</span>なぜ生まれ、どう進化したか — WHY</a></li>
+      <li><a href="#ch3"><span class="num">03</span>現在の地図（5層 MECEフレーム）— HOW</a></li>
+      <li><a href="#ch4"><span class="num">04</span>主要流派と思想パッケージ — WHO</a></li>
+      <li><a href="#ch5"><span class="num">05</span>noteに適用する — APPLY</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- CHAPTER RAIL (desktop side navigation) -->
+<nav class="chapter-rail" id="chapterRail" aria-label="Chapter navigation">
+  <a class="rail-item" href="#top" data-target="top">
+    <span class="rail-label-static">00 · Intro</span>
+    <span class="rail-label">00 · イントロ</span>
+    <span class="rail-dot"></span>
+  </a>
+  <a class="rail-item" href="#ch1">
+    <span class="rail-label-static">01 · What</span>
+    <span class="rail-label">01 · マーケとは</span>
+    <span class="rail-dot"></span>
+  </a>
+  <a class="rail-item" href="#ch2">
+    <span class="rail-label-static">02 · Why</span>
+    <span class="rail-label">02 · 歴史</span>
+    <span class="rail-dot"></span>
+  </a>
+  <a class="rail-item" href="#ch3">
+    <span class="rail-label-static">03 · How</span>
+    <span class="rail-label">03 · 5層マップ</span>
+    <span class="rail-dot"></span>
+  </a>
+  <a class="rail-item" href="#ch4">
+    <span class="rail-label-static">04 · Who</span>
+    <span class="rail-label">04 · 流派</span>
+    <span class="rail-dot"></span>
+  </a>
+  <a class="rail-item" href="#ch5">
+    <span class="rail-label-static">05 · Apply</span>
+    <span class="rail-label">05 · noteに適用</span>
+    <span class="rail-dot"></span>
+  </a>
+</nav>
+
+<!-- CHAPTER CHIPS (mobile horizontal navigation) -->
+<nav class="chapter-chips" id="chapterChips" aria-label="Chapter navigation">
+  <div class="chapter-chips-inner">
+    <a class="chip-item" href="#top" data-target="top">00 · Intro</a>
+    <a class="chip-item" href="#ch1">01 · What</a>
+    <a class="chip-item" href="#ch2">02 · Why</a>
+    <a class="chip-item" href="#ch3">03 · How</a>
+    <a class="chip-item" href="#ch4">04 · Who</a>
+    <a class="chip-item" href="#ch5">05 · Apply</a>
+  </div>
+</nav>
+
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="hero-label">KITAcore — Knowledge Shelf</div>
+  <h1>マーケティング、<br>ワイの場合。</h1>
+  <p class="hero-sub">正解やないし、教科書でもない。<br>KITAcoreがマーケをどう整理してるかの頭の中身を棚卸ししたもの。<br>こういう風に考えてる、のか参考程度に。</p>
+  <div class="hero-meta">
+    <span>MECE設計（たぶん）</span>
+    <span>5 Chapters</span>
+    <span>AI語彙帳</span>
+    <span>@ktcrs1107</span>
+  </div>
+</div>
+
+<!-- VOCAB KEY INTRO -->
+<div class="container" style="padding-top:40px;padding-bottom:0">
+  <div class="vocab-key">
+    <div class="vk-label">Why This Document Exists</div>
+    <h3>AIは、知らない言葉を引き出せない</h3>
+    <p>「売上が上がらない、どうしたら？」と聞いた答えと、<strong>「JTBDフレームで顧客の課題を分析して」</strong>と聞いた答えは、質が全然違う。AIはすでに答えを持ってる。<br>でも聞き方を知らないと、その引き出しは永遠に開かない。<br>
+      このドキュメントはワイ自身の整理であり、同時に<strong>マーケの語彙をAIへのキーとして使うための下敷き</strong>にもなる。</p>
+  </div>
+</div>
+
+<!-- ARTICLE BODY -->
+<div class="article-body">
+
+  <!-- ─── CHAPTER 1 ─── -->
+  <section class="chapter" id="ch1">
+    <div class="chapter-nav">01 — WHAT</div>
+    <h2>マーケティングとは何か</h2>
+
+    <div class="section">
+      <h3>よくある誤解から入る</h3>
+      <p>「マーケティング＝広告」やと思ってる人、今でも多い。広告はマーケの<strong>一手段</strong>であって、本体やない。それどころか、マーケを正しく理解すると「広告しなくてもいいビジネス」が設計できるとわかってくる。</p>
+      <p>同様に「マーケ＝SNS運用」「マーケ＝SEO対策」という誤解もある。これらは<strong>実行レイヤーの施策</strong>であって、マーケティング全体の中の一部分にすぎへん。</p>
+    </div>
+
+    <div class="section">
+      <h3>定義：3人の言葉で整理する</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>人物</th><th>定義</th><th>キーワード</th></tr></thead>
+          <tbody>
+            <tr><td>Kotler（1967）</td><td>個人や組織が価値を創造・伝達・提供し、顧客との関係を通じて組織と利害関係者に利益をもたらすプロセス</td><td>価値・交換・関係</td></tr>
+            <tr><td>Levitt（1960）</td><td>顧客の問題を解決することを事業の起点に置く考え方。製品ではなく顧客の「目的」を売る</td><td>顧客志向・目的</td></tr>
+            <tr><td>Drucker（1954）</td><td>マーケティングの目的は販売を不要にすること。顧客を深く理解すれば、製品は自然と売れる</td><td>理解・需要創造</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>3つに共通するのは「<strong>顧客の価値を中心に置く</strong>」という視点。プロダクトやサービスを売ることが目的やなく、顧客が得る価値を設計することがマーケの本質や。</p>
+    </div>
+
+    <div class="ai-unlock">
+      <div class="ai-unlock-label">AI Unlock — 定義</div>
+      <div class="ai-unlock-title">この言葉を知ると引き出せること</div>
+      <div class="ai-unlock-desc">「マーケティング」という言葉を知るだけでは弱い。<strong>KotlerやLevitt、Druckerという固有名を添えると</strong>、AIは「どの視点から答えるべきか」を理解して、格段に精度の高い分析を返してくる。</div>
+      <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>私のnoteをKotlerとDruckerの視点でそれぞれ定義してください。Kotlerなら「価値・交換・関係」の観点で、Druckerなら「販売を不要にする顧客理解」の観点で教えてください。</div>
+    </div>
+
+    <div class="section">
+      <h3>1行定義</h3>
+      <div class="key-insight">
+        <div class="ki-label">Core Definition</div>
+        <p><strong>マーケティングとは、「誰に・何を・どう届けるか」を設計し、価値交換を継続的に成立させるための思考と実行の体系</strong>。広告もSEOもその一手段に過ぎない。</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>なぜ「体系」と呼ぶのか</h3>
+      <p>マーケが「体系」なのは、個別施策（SEO、SNS、広告）を単独で打つんじゃなく、<strong>調査→戦略→設計→実行→測定→改善</strong>という一連の意思決定プロセスとして動かすからや。どの施策をどのタイミングで使うか判断するには、全体の地図が要る。それを提供するのがマーケ理論の役割。</p>
+    </div>
+  </section>
+
+  <!-- ─── CHAPTER 2 ─── -->
+  <section class="chapter" id="ch2">
+    <div class="chapter-nav">02 — WHY</div>
+    <h2>なぜ生まれ、どう進化したか</h2>
+
+    <div class="section">
+      <h3>歴史は「課題×時代」で読む</h3>
+      <p>マーケ理論は「その時代の課題に対する答え」として登場してきた。だから時代背景と一緒に読まんと、なぜその理論が生まれたかがわからへん。</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">1900s–1950s</div>
+        <div class="tl-title">生産優位の時代</div>
+        <div class="tl-body">大量生産が可能になり「良いものを作れば売れる」時代。マーケはまだ「流通・販売の技術」として位置づけられてた。<span class="person">Fordの大量生産体制</span>がこの時代の象徴。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1960s</div>
+        <div class="tl-title">顧客志向へのパラダイムシフト</div>
+        <div class="tl-body"><span class="person">Levitt（1960）</span>が「マーケティング近視眼」を提唱。鉄道会社が「輸送業でなく鉄道業」と定義して衰退した例を挙げ、<strong>顧客の目的から逆算して事業を定義する</strong>重要性を説いた。<span class="person">Kotler</span>が初めてマーケを体系化したのもこの時代。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1980s</div>
+        <div class="tl-title">競争戦略の時代</div>
+        <div class="tl-body"><span class="person">Porter（1980）</span>が「競争の戦略」を発表。5 Forcesモデルで業界構造を分析し、コストリーダーシップ・差別化・集中という3つの基本戦略を提唱。「どこで戦うか」という<strong>ポジショニングの概念</strong>が重要になった。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1990s</div>
+        <div class="tl-title">ブランドと情緒価値の時代</div>
+        <div class="tl-body"><span class="person">Aaker</span>がブランドエクイティ理論を確立。製品の機能だけでなく、<strong>ブランドが持つ意味・信頼・ロイヤルティが資産</strong>になるという考え方が広まった。差別化が難しくなる中で「誰が作ったか」が価値を持つようになってきた時代。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2000s–2010s前半</div>
+        <div class="tl-title">デジタルと計測の革命</div>
+        <div class="tl-body">インターネットが普及し、マーケが初めて<strong>定量的に計測可能</strong>になった。Google Analytics・SEO・コンテンツマーケが台頭。<span class="person">HubSpot（Halligan）</span>がインバウンドマーケティングを体系化。「探されるマーケ」という発想の転換が起きた。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2011–2015</div>
+        <div class="tl-title">リーンとグロースの時代</div>
+        <div class="tl-body"><span class="person">Ries（2011）</span>が「リーン・スタートアップ」を出版。MVP・Build-Measure-Learnループが普及。<span class="person">McClure</span>のAARRRフレームと合わせて「<strong>仮説検証→高速改善</strong>」の思想がスタートアップから広がった。不確実性の高い市場でどう動くかの方法論が確立された。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2016–現在</div>
+        <div class="tl-title">AI・コミュニティ・個人の時代</div>
+        <div class="tl-body">プラットフォームの発達で個人がブランドを持てるようになった。<span class="person">Kotler（2021）</span>はMarketing 5.0でAI・人間共存のマーケを論じる。<strong>コミュニティ・ファン・パーミッション</strong>が新しい軸として浮上。1対1から1対Nの価値共創に移行している。</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>読むポイント</strong>
+      各時代の理論は「前の時代の限界への回答」として出てきた。コトラーの体系化は生産優位時代の終焉、リーンはデジタル計測時代の「それでも外れ仮説を減らせない」問題への回答や。だから理論同士は対立してるんやなく、<strong>問題が違う</strong>。
+    </div>
+  </section>
+
+  <!-- ─── CHAPTER 3 ─── -->
+  <section class="chapter" id="ch3">
+    <div class="chapter-nav">03 — HOW</div>
+    <h2>現在の地図（5層 MECEフレーム）</h2>
+
+    <div class="section">
+      <h3>なぜ5層で切るか</h3>
+      <p>マーケの概念を「SEO vs SNS」「古典 vs デジタル」で整理しようとすると必ず非MECEになる。なぜなら<strong>切り口が揃ってない</strong>から。</p>
+      <p>5層モデルは「<strong>意思決定の順序</strong>」で切ってる。何かを決めるとき、必ずこの順番でしか動けへん。だからMECEになる。判断の順序が異なる層同士は自然と被らへん。</p>
+    </div>
+
+    <div class="section">
+      <h3>5層マップ</h3>
+      <div class="layer-stack">
+
+        <div class="layer-item">
+          <div class="layer-label">
+            <span class="layer-num">L0</span>
+            <span class="layer-name">目的設定</span>
+            <span class="layer-q">なぜやるか</span>
+          </div>
+          <div class="layer-content">
+            <div class="tools">
+              <span class="tag">Mission / Vision</span>
+              <span class="tag">Goal</span>
+              <span class="tag">North Star Metric</span>
+              <span class="tag highlight">Golden Circle</span>
+            </div>
+            <p>事業・活動の存在理由を定義する。ここが揺れると全層がブレる。すべての判断の上位基準。Sinekの「Why→How→What」はこの層の核心を突いてる——<strong>Whyを持たない人は、何を売るかしか語れない。</strong></p>
+          </div>
+        </div>
+
+        <div class="layer-item">
+          <div class="layer-label">
+            <span class="layer-num">L1</span>
+            <span class="layer-name">環境・顧客理解</span>
+            <span class="layer-q">どこにいるか</span>
+          </div>
+          <div class="layer-content">
+            <div class="tools">
+              <span class="tag highlight">JTBD</span>
+              <span class="tag">Persona</span>
+              <span class="tag">3C</span>
+              <span class="tag">SWOT</span>
+              <span class="tag">PEST</span>
+              <span class="tag">5 Forces</span>
+              <span class="tag">TAM/SAM/SOM</span>
+              <span class="tag">Customer Journey</span>
+            </div>
+            <p>顧客・市場・競合・自社の事実を把握する。仮説の材料になる。リーンの「顧客開発」もこの層。</p>
+          </div>
+        </div>
+
+        <div class="layer-item">
+          <div class="layer-label">
+            <span class="layer-num">L2</span>
+            <span class="layer-name">戦略</span>
+            <span class="layer-q">どこで・誰に・どう勝つか</span>
+          </div>
+          <div class="layer-content">
+            <div class="tools">
+              <span class="tag highlight">STP</span>
+              <span class="tag">Ansoff Matrix</span>
+              <span class="tag">Porter 3 Generic</span>
+              <span class="tag">Blue Ocean</span>
+              <span class="tag">PMF</span>
+            </div>
+            <p>L1の事実から「どこで勝負するか」を決める。ここがずれると施策がいくら頑張っても効かへん。</p>
+          </div>
+        </div>
+
+        <div class="layer-item">
+          <div class="layer-label">
+            <span class="layer-num">L3</span>
+            <span class="layer-name">戦術設計</span>
+            <span class="layer-q">何を組むか</span>
+          </div>
+          <div class="layer-content">
+            <div class="tools">
+              <span class="tag highlight">4P</span>
+              <span class="tag highlight">4C</span>
+              <span class="tag">Brand Equity</span>
+              <span class="tag">Price Strategy</span>
+              <span class="tag">Distribution</span>
+            </div>
+            <p>Product / Price / Place / Promotion の組み合わせを設計する。コトラーが体系化した中核。</p>
+          </div>
+        </div>
+
+        <div class="layer-item">
+          <div class="layer-label">
+            <span class="layer-num">L4</span>
+            <span class="layer-name">実行・届ける</span>
+            <span class="layer-q">どのチャネルで動かすか</span>
+          </div>
+          <div class="layer-content">
+            <div class="tools">
+              <span class="tag">SEO</span>
+              <span class="tag">SNS</span>
+              <span class="tag">Content</span>
+              <span class="tag">Paid</span>
+              <span class="tag highlight">AISAS</span>
+              <span class="tag">Growth Loops</span>
+              <span class="tag">Community</span>
+            </div>
+            <p>L2〜L3の決定を実際に動かすフェーズ。「SEOをやる」はここ。チャネルは時代で変わる。</p>
+          </div>
+        </div>
+
+        <div class="layer-item">
+          <div class="layer-label">
+            <span class="layer-num">L5</span>
+            <span class="layer-name">測定・最適化</span>
+            <span class="layer-q">効いてるか・学べてるか</span>
+          </div>
+          <div class="layer-content">
+            <div class="tools">
+              <span class="tag highlight">AARRR</span>
+              <span class="tag">LTV / CAC</span>
+              <span class="tag">Cohort Analysis</span>
+              <span class="tag">A/B Test</span>
+              <span class="tag">KPI Tree</span>
+            </div>
+            <p>結果を数値で読んで、L1〜L4に学習を戻す。ここがループしてないと「やりっぱなし」になる。</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>層の判定基準</h3>
+      <p>「この概念はどの層に入るか」で迷ったときの判定基準はシンプルや。<strong>「この概念が答えようとしてる問いはどれか」</strong>で分ければいい。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>概念</th><th>答えてる問い</th><th>正しい層</th></tr></thead>
+          <tbody>
+            <tr><td>コンテンツマーケ</td><td>どのチャネルで届けるか</td><td>L4</td></tr>
+            <tr><td>ブランディング</td><td>どう勝つか（L2）＋どう実装するか（L4）</td><td>L2+L4 複合</td></tr>
+            <tr><td>LTV / CAC</td><td>経済的に持続するか</td><td>L5</td></tr>
+            <tr><td>JTBD</td><td>顧客が何を片付けたいか</td><td>L1</td></tr>
+            <tr><td>CRM</td><td>継続顧客を測定・実行する</td><td>L5+L4 複合</td></tr>
+            <tr><td>インフルエンサーマーケ</td><td>どのチャネルで届けるか</td><td>L4</td></tr>
+          </tbody>
+        </table>
+      </div>
+    <div class="ai-unlock">
+      <div class="ai-unlock-label">AI Unlock — 5層フレーム</div>
+      <div class="ai-unlock-title">この言葉を知ると引き出せること</div>
+      <div class="ai-unlock-desc">「L0〜L5」「L1（顧客理解）」「L3（戦術）」という層の名前をAIに渡すと、<strong>「あなたは今どの層が弱いか」を5層で診断してもらえる</strong>。フレーム名なしだと「いろいろやってみましょう」という答えが返ってくるが、フレームを指定すると構造的な分析に変わる。</div>
+      <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>私のnoteを5層フレーム（L0目的設定・L1顧客理解・L2戦略・L3戦術設計・L4実行・L5測定）で診断してください。現状の強い層・弱い層を整理し、次に手をつけるべき層を1つ教えてください。</div>
+    </div>
+    </div>
+  </section>
+
+  <!-- ─── CHAPTER 4 ─── -->
+  <section class="chapter" id="ch4">
+    <div class="chapter-nav">04 — WHO</div>
+    <h2>主要流派と思想パッケージ</h2>
+
+    <div class="section">
+      <h3>流派は「横軸」として理解する</h3>
+      <p>流派（コトラー、リーン、グロースハックなど）は<strong>5層の縦軸を横断する「アプローチの束」</strong>や。各流派が「どの層を重視するか」「どんな哲学で貫くか」が違うだけで、どれも5層のどこかにマッピングできる。</p>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-head">Kotler系（深化型）</div>
+        <h4>既知市場で勝つ</h4>
+        <ul>
+          <li>PMF以降が本領</li>
+          <li>L2〜L3が中核</li>
+          <li>STP・4Pが主要ツール</li>
+          <li>既存市場の前提</li>
+          <li>体系的・演繹的</li>
+        </ul>
+      </div>
+      <div class="compare-col">
+        <div class="compare-head">Lean系（探索型）</div>
+        <h4>未知市場を当てる</h4>
+        <ul>
+          <li>PMF到達前が本領</li>
+          <li>L1〜L2が中核</li>
+          <li>MVP・BMLループが主要ツール</li>
+          <li>不確実性の前提</li>
+          <li>仮説検証・帰納的</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Key Insight</strong>
+      コトラーとリーンは「対立」してるんやなく、<strong>時間軸上の前後関係</strong>や。PMF（Product-Market Fit）を境に使う道具が切り替わる。リーンでPMFを見つけ、コトラーでスケールする、が正しい順序。
+    </div>
+
+    <div class="section">
+      <h3>主要流派マッピング</h3>
+      <div class="person-grid">
+
+        <div class="person-card">
+          <div class="person-name">Kotler / Levitt</div>
+          <div class="person-era">1960s–現在 · 伝統的マーケ</div>
+          <div class="person-layers">
+            <span class="tag highlight">L2</span>
+            <span class="tag highlight">L3</span>
+          </div>
+          <div class="person-desc">STP・4Pを体系化したマーケの「骨格を作った人」。顧客志向・価値交換が中心思想。Marketing 1.0→5.0まで時代対応しながら進化し続けてる。</div>
+        </div>
+
+        <div class="person-card">
+          <div class="person-name">Porter</div>
+          <div class="person-era">1980s · 競争戦略派</div>
+          <div class="person-layers">
+            <span class="tag highlight">L1</span>
+            <span class="tag highlight">L2</span>
+          </div>
+          <div class="person-desc">5 Forces・3つの基本戦略・バリューチェーンで業界構造と競合優位を分析。「どこで戦うか」を決めるための道具。</div>
+        </div>
+
+        <div class="person-card">
+          <div class="person-name">Drucker</div>
+          <div class="person-era">1950s–2000s · 経営管理論</div>
+          <div class="person-layers">
+            <span class="tag highlight">L0</span>
+            <span class="tag highlight">L1</span>
+          </div>
+          <div class="person-desc">「マーケの目的は販売を不要にすること」「顧客の創造」が有名な発言。目的層（L0）から顧客理解（L1）を貫く哲学的な立場。</div>
+        </div>
+
+        <div class="person-card">
+          <div class="person-name">Christensen</div>
+          <div class="person-era">1990s–2010s · JTBD/破壊的革新</div>
+          <div class="person-layers">
+            <span class="tag highlight">L1</span>
+          </div>
+          <div class="person-desc">Jobs-to-be-Done理論と破壊的イノベーション論。顧客が「片付けたいJob」を軸に製品を定義する。Levittの「穴を買う」の現代版。</div>
+        </div>
+
+        <div class="person-card">
+          <div class="person-name">Ries / Blank</div>
+          <div class="person-era">2011s · Lean Startup</div>
+          <div class="person-layers">
+            <span class="tag highlight">L1</span>
+            <span class="tag highlight">L2</span>
+          </div>
+          <div class="person-desc">Build-Measure-Learnループ・MVP・Customer Developmentが主要概念。不確実性の高い市場での仮説検証方法論。PMF前の必修フレーム。</div>
+        </div>
+
+        <div class="person-card">
+          <div class="person-name">McClure / Ellis</div>
+          <div class="person-era">2007–2010s · Growth Hacking</div>
+          <div class="person-layers">
+            <span class="tag highlight">L4</span>
+            <span class="tag highlight">L5</span>
+          </div>
+          <div class="person-desc">AARRRファネル（獲得・活性・継続・収益・紹介）を定義。PMF後のスケール戦略。North Star Metricで組織の測定軸を統一する。</div>
+        </div>
+
+        <div class="person-card">
+          <div class="person-name">Aaker / Keller</div>
+          <div class="person-era">1990s · ブランド論</div>
+          <div class="person-layers">
+            <span class="tag highlight">L2</span>
+            <span class="tag highlight">L4</span>
+          </div>
+          <div class="person-desc">ブランドエクイティ・CBBEモデルを確立。ブランドが持つ認知・連想・ロイヤルティを「資産」として管理する考え方。差別化困難な市場での武器。</div>
+        </div>
+
+        <div class="person-card">
+          <div class="person-name">Godin / Kawasaki</div>
+          <div class="person-era">2000s–現在 · コミュニティ/ファン</div>
+          <div class="person-layers">
+            <span class="tag highlight">L4</span>
+            <span class="tag highlight">L5</span>
+          </div>
+          <div class="person-desc">Tribes（部族）・Permission Marketing・Purple Cow。規模より「ファンの熱量」を優先する発想。個人クリエイター・note運用に最も直接的に刺さる流派。</div>
+        </div>
+
+        <div class="person-card fav">
+          <div class="fav-badge">ワイの推し</div>
+          <div class="person-name">Simon Sinek</div>
+          <div class="person-era">2009– · Start With Why / ゴールデンサークル</div>
+          <div class="person-layers">
+            <span class="tag highlight">L0</span>
+          </div>
+          <div class="person-desc">Why（なぜやるか）→ How（どうやるか）→ What（何をするか）の順で語れ、という理論。多くの人はWhatから話す。でも人が動くのはWhyに共鳴するとき。TEDトーク「How great leaders inspire action」で有名。ワイがマーケを考えるとき、いつもここに戻ってくる。</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>流派の選び方</h3>
+      <p>「どの流派が正解か」という問いは間違ってる。<strong>自分が今どのフェーズにいるか</strong>で使う流派が変わる。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>フェーズ</th><th>使う流派</th><th>重視する層</th></tr></thead>
+          <tbody>
+            <tr><td>PMF前（何が当たるか不明）</td><td>Lean / JTBD / Christensen</td><td>L1 → L2</td></tr>
+            <tr><td>PMF発見〜検証中</td><td>Lean + Growth Hacking</td><td>L2 → L4 → L5</td></tr>
+            <tr><td>PMF後・スケール</td><td>Kotler / Porter / Aaker</td><td>L2〜L5 総動員</td></tr>
+            <tr><td>個人・小規模クリエイター</td><td>Godin / JTBD + Lean</td><td>L1 + L4 + L5</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ai-unlock">
+      <div class="ai-unlock-label">AI Unlock — 流派・フレームワーク名</div>
+      <div class="ai-unlock-title">この言葉を知ると引き出せること</div>
+      <div class="ai-unlock-desc">「JTBD」「PMF」「STP」「AARRR」——これらの固有名を知っていると、<strong>「自分の状況をその流派の文脈で分析してもらう」</strong>ことができる。流派名なしで聞くとAIは無難な一般論を返す。名前を渡すと、その思想体系の論理で答えてくれる。</div>
+      <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>私はPMF前のnoteクリエイターです。Lean Startupの「Build-Measure-Learn」ループとJTBD理論を使って、次の記事テーマの仮説を立てる方法を教えてください。また、Sinekのゴールデンサークルで「私のWhyは何か」を一緒に整理してください。</div>
+    </div>
+  </section>
+
+  <!-- ─── CHAPTER 5 ─── -->
+  <section class="chapter" id="ch5">
+    <div class="chapter-nav">05 — APPLY</div>
+    <h2>noteに適用する</h2>
+
+    <div class="section">
+      <h3>noteを5層で診断する</h3>
+      <p>5層マップを使ってnote運用を診断すると「自分がどの層に強く・どの層が空白か」が見えてくる。施策ベースで考えてると気づかへんギャップが浮上する。</p>
+    </div>
+
+    <div class="apply-grid">
+
+      <div class="apply-card">
+        <div class="apply-layer">L0 — 目的</div>
+        <div class="apply-status">
+          <div class="dot dot-mid"></div>
+          <span>要確認</span>
+        </div>
+        <p>「なぜnoteを書くか」が言語化されてるか。収益化・認知拡大・思考整理・ブランド構築、どれを軸に置くかで全施策が変わる。</p>
+      </div>
+
+      <div class="apply-card">
+        <div class="apply-layer">L1 — 顧客理解</div>
+        <div class="apply-status">
+          <div class="dot dot-mid"></div>
+          <span>部分的に実施</span>
+        </div>
+        <p>「スキをくれる人は誰か」「その人がどんなJobを持ってるか」のJTBD分析。スキ・ビュー・コメントのデータがL1の材料になる。</p>
+      </div>
+
+      <div class="apply-card">
+        <div class="apply-layer">L2 — 戦略</div>
+        <div class="apply-status">
+          <div class="dot dot-weak"></div>
+          <span>未整備が多い</span>
+        </div>
+        <p>「どの読者層に・どのポジションで・どのテーマで勝つか」のSTP設計。ここが曖昧だと記事が散乱して読者層が育たへん。</p>
+      </div>
+
+      <div class="apply-card">
+        <div class="apply-layer">L3 — 戦術設計</div>
+        <div class="apply-status">
+          <div class="dot dot-mid"></div>
+          <span>実践中</span>
+        </div>
+        <p>記事の価格設計（無料/有料/マガジン）・シリーズ構成・タイトル設計が4Pに相当。価格設計はここ。</p>
+      </div>
+
+      <div class="apply-card">
+        <div class="apply-layer">L4 — 実行</div>
+        <div class="apply-status">
+          <div class="dot dot-strong"></div>
+          <span>強い</span>
+        </div>
+        <p>記事量産・SNS連携・ハッシュタグ・タイトル最適化。ツールを作る/購入で実行できる層。Growth Loopsの設計（シリーズ化→ファン化→紹介）を組み込むと加速する。</p>
+      </div>
+
+      <div class="apply-card">
+        <div class="apply-layer">L5 — 測定・最適化</div>
+        <div class="apply-status">
+          <div class="dot dot-strong"></div>
+          <span>強い</span>
+        </div>
+        <p>スキ率・初速・遅延スキ・資産スコアの追跡。note-stats-trackerなどと組み合わせると自動収集化。この層が強いのはnoteクリエイターとしてかなりレアな強み。</p>
+      </div>
+
+    </div>
+
+    <div class="section">
+      <h3>noteに最も直接効く流派</h3>
+      <div class="flow" style="margin-bottom:0">
+        <div class="flow-title">推奨フレームの使い分け</div>
+        <div class="flow-row" style="margin-bottom:16px">
+          <div class="flow-node">JTBD</div>
+          <div class="flow-arrow">→</div>
+          <span style="font-size:13px;color:var(--text-sub)">読者の「片付けたいJob」を記事テーマ設定に使う。「なぜこの記事を読むのか」の仮説が立てやすくなる。</span>
+        </div>
+        <div class="flow-row" style="margin-bottom:16px">
+          <div class="flow-node">Lean Loop</div>
+          <div class="flow-arrow">→</div>
+          <span style="font-size:13px;color:var(--text-sub)">記事を「MVP」として仮説検証。スキ率が当たり判定。ピボット判断にもつながる。</span>
+        </div>
+        <div class="flow-row" style="margin-bottom:16px">
+          <div class="flow-node">STP（簡易）</div>
+          <div class="flow-arrow">→</div>
+          <span style="font-size:13px;color:var(--text-sub)">L5データを使って「どの読者が・どの記事に・なぜ反応してるか」を逆算してSTPを定義する。</span>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node">Godin / Tribe</div>
+          <div class="flow-arrow">→</div>
+          <span style="font-size:13px;color:var(--text-sub)">メンバーシップ・マガジン設計の哲学に使う。「1000人のファン」が資産になる発想。</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>整理から次のアクションへ</h3>
+      <p>5層診断で見えてくる「今やるべきこと」の優先順位はシンプルや。<strong>L5が強いうちに、L1（JTBD）とL2（STP）を言語化する</strong>のが最短経路。</p>
+      <p>なぜなら、L5のデータ（スキ率・資産スコア）が最高の顧客理解ツールとして機能してるから。「当たった記事に共通する読者像」を抽出して、JTBDに変換して、STPで整理する。このフローで地図が完成する。</p>
+
+      <div class="key-insight">
+        <div class="ki-label">Next Action</div>
+        <p>L5データを使って<strong>「当たり記事の読者像をJTBDで言語化」→「簡易STPを設計」</strong>。この2ステップで、全施策に一貫性が生まれる。</p>
+      </div>
+
+      <div class="ai-unlock">
+        <div class="ai-unlock-label">AI Unlock — このドキュメントを渡す</div>
+        <div class="ai-unlock-title">語彙を手に入れた後の使い方</div>
+        <div class="ai-unlock-desc">このドキュメントをそのままAIに読ませると、マーケティングの語彙・流派・5層フレームを共有した状態でコンサルを受けられる。「このドキュメントのフレームで私のnoteを分析して」——この一文だけで、語彙を知らない状態では絶対に出てこなかった答えが返ってくる。</div>
+        <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>このドキュメントの5層フレームと流派の知識を使って、私のnote（テーマ：AI活用・生成AI）のL1（JTBD）とL2（STP）を設計してください。現状の想定読者像と、狙うべきポジションを提案してください。</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /article-body -->
+
+<!-- FOOTER -->
+<footer class="article-footer">
+  <div class="footer-brand">
+    KITAcore Knowledge Shelf<br>
+    マーケティング、ワイの場合。
+  </div>
+  <div class="footer-meta">
+    5 Chapters · AI語彙帳 · MECE Design<br>
+    @ktcrs1107
+  </div>
+</footer>
+
+<!-- BACK TO TOP -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- SCRIPTS -->
+<script>
+(function() {
+  'use strict';
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ═══════════════════════════════════════════════
+  // PRELOADER (must run first)
+  // ═══════════════════════════════════════════════
+  const preloader = document.getElementById('preloader');
+  const MIN_DURATION = prefersReduced ? 300 : 1900; // ms
+  const loadStart = performance.now();
+  let preloaderFinished = false;
+
+  function dismissPreloader() {
+    if (preloaderFinished) return;
+    preloaderFinished = true;
+
+    const elapsed = performance.now() - loadStart;
+    const remaining = Math.max(0, MIN_DURATION - elapsed);
+
+    setTimeout(() => {
+      preloader.classList.add('done');
+      document.body.classList.remove('preloading');
+      setTimeout(() => {
+        if (preloader.parentNode) preloader.remove();
+      }, 700);
+    }, remaining);
+  }
+
+  // Wait for full load, then fire dismiss (which respects MIN_DURATION)
+  if (document.readyState === 'complete') {
+    dismissPreloader();
+  } else {
+    window.addEventListener('load', dismissPreloader);
+    // Safety fallback — never block longer than 4s
+    setTimeout(dismissPreloader, 4000);
+  }
+
+  // Click anywhere on preloader to skip
+  preloader.addEventListener('click', () => {
+    preloader.classList.add('done');
+    document.body.classList.remove('preloading');
+    setTimeout(() => {
+      if (preloader.parentNode) preloader.remove();
+    }, 500);
+    preloaderFinished = true;
+  });
+
+  // Escape / Enter / Space to skip
+  document.addEventListener('keydown', function skipHandler(e) {
+    if (preloaderFinished) {
+      document.removeEventListener('keydown', skipHandler);
+      return;
+    }
+    if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+      preloader.click();
+    }
+  });
+
+  // ═══════════════════════════════════════════════
+  // SCROLL PROGRESS BAR
+  // ═══════════════════════════════════════════════
+  const progressEl = document.getElementById('scrollProgress');
+  const header = document.getElementById('siteHeader');
+  const backToTop = document.getElementById('backToTop');
+  const chapterRail = document.getElementById('chapterRail');
+  const chapterChips = document.getElementById('chapterChips');
+
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressEl.style.width = pct + '%';
+
+      // Header scrolled state
+      if (scrollTop > 40) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+
+      // Back to top
+      if (scrollTop > 600) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+
+      // Chapter rail / chips visibility — show after scrolling a bit
+      if (scrollTop > 200) {
+        chapterRail.classList.add('visible');
+        chapterChips.classList.add('visible');
+      } else {
+        chapterRail.classList.remove('visible');
+        chapterChips.classList.remove('visible');
+      }
+
+      // Scroll spy (updates TOC + rail + chips)
+      updateActiveSection(scrollTop);
+
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ─── TOC TOGGLE (smooth) ───
+  const tocToggle = document.getElementById('tocToggle');
+  const tocPanel = document.getElementById('tocPanel');
+
+  tocToggle.addEventListener('click', () => {
+    const isOpen = tocPanel.classList.toggle('open');
+    tocToggle.classList.toggle('open', isOpen);
+    tocToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Close TOC when a link is clicked (mobile UX)
+  tocPanel.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      tocPanel.classList.remove('open');
+      tocToggle.classList.remove('open');
+      tocToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // ─── SCROLL SPY ───
+  const chapters = Array.from(document.querySelectorAll('section.chapter[id]'));
+  const tocLinks = Array.from(document.querySelectorAll('.toc-list a'));
+  const railItems = Array.from(document.querySelectorAll('.rail-item'));
+  const chipItems = Array.from(document.querySelectorAll('.chip-item'));
+
+  function updateActiveSection(scrollTop) {
+    if (!chapters.length) return;
+    const offset = 120; // header offset
+
+    // If near the very top, mark "top" as active
+    let currentId;
+    if (scrollTop < 200) {
+      currentId = 'top';
+    } else {
+      currentId = chapters[0].id;
+      for (const ch of chapters) {
+        if (ch.offsetTop - offset <= scrollTop) {
+          currentId = ch.id;
+        } else {
+          break;
+        }
+      }
+    }
+
+    const hash = '#' + currentId;
+
+    tocLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === hash);
+    });
+    railItems.forEach(item => {
+      item.classList.toggle('active', item.getAttribute('href') === hash);
+    });
+    chipItems.forEach(item => {
+      const isActive = item.getAttribute('href') === hash;
+      item.classList.toggle('active', isActive);
+      // Auto-scroll active chip into view on mobile
+      if (isActive && chapterChips.classList.contains('visible')) {
+        const itemLeft = item.offsetLeft;
+        const itemRight = itemLeft + item.offsetWidth;
+        const scrollLeft = chapterChips.scrollLeft;
+        const containerWidth = chapterChips.clientWidth;
+        if (itemLeft < scrollLeft + 16 || itemRight > scrollLeft + containerWidth - 16) {
+          chapterChips.scrollTo({
+            left: itemLeft - 16,
+            behavior: prefersReduced ? 'auto' : 'smooth'
+          });
+        }
+      }
+    });
+  }
+
+  // ─── INTERSECTION OBSERVER (reveal) ───
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    // Mark elements to reveal
+    const revealTargets = [
+      '.chapter h2',
+      '.section',
+      '.callout',
+      '.table-wrap',
+      '.flow',
+      '.timeline',
+      '.compare-grid',
+      '.vocab-key',
+      '.ai-unlock',
+      '.key-insight',
+      '.person-card',
+      '.apply-card',
+      '.layer-item',
+      '.tl-item'
+    ];
+
+    const elements = document.querySelectorAll(revealTargets.join(','));
+    elements.forEach((el, idx) => {
+      el.classList.add('reveal');
+      // For grid items, set staggered delay via CSS custom property
+      if (el.matches('.person-card, .apply-card, .layer-item, .tl-item')) {
+        const siblings = Array.from(el.parentElement.children).filter(c =>
+          c.matches('.person-card, .apply-card, .layer-item, .tl-item')
+        );
+        const i = siblings.indexOf(el);
+        if (i >= 0) el.style.setProperty('--i', i);
+      }
+    });
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: '0px 0px -60px 0px'
+    });
+
+    elements.forEach(el => io.observe(el));
+  } else {
+    // Fallback: show everything
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  // ─── BACK TO TOP ───
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: prefersReduced ? 'auto' : 'smooth'
+    });
+  });
+
+  // ─── AI PROMPT COPY BUTTON ───
+  document.querySelectorAll('.ai-prompt-example').forEach(box => {
+    const btn = document.createElement('button');
+    btn.className = 'ai-copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy prompt');
+
+    btn.addEventListener('click', async () => {
+      // Clone the box and strip out the label + button to get clean prompt text
+      const clone = box.cloneNode(true);
+      clone.querySelectorAll('.ai-prompt-label, .ai-copy-btn').forEach(el => el.remove());
+      const text = clone.textContent.trim();
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          // Fallback
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        btn.textContent = 'Copied ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1800);
+      } catch (err) {
+        btn.textContent = 'Failed';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+      }
+    });
+
+    box.appendChild(btn);
+  });
+
+  // ═══════════════════════════════════════════════
+  // PLAYFULNESS LAYER
+  // ═══════════════════════════════════════════════
+
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+  // ─── CUSTOM CURSOR ───
+  const cursorDot = document.getElementById('cursorDot');
+  const cursorRing = document.getElementById('cursorRing');
+
+  if (isFinePointer && !isTouch && !prefersReduced) {
+    document.body.classList.add('has-custom-cursor');
+
+    let mouseX = -100, mouseY = -100;
+    let dotX = -100, dotY = -100;
+    let ringX = -100, ringY = -100;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    }, { passive: true });
+
+    document.addEventListener('mousedown', () => cursorRing.classList.add('click'));
+    document.addEventListener('mouseup',   () => cursorRing.classList.remove('click'));
+    document.addEventListener('mouseleave', () => {
+      cursorDot.classList.add('hidden');
+      cursorRing.classList.add('hidden');
+    });
+    document.addEventListener('mouseenter', () => {
+      cursorDot.classList.remove('hidden');
+      cursorRing.classList.remove('hidden');
+    });
+
+    function cursorAnimate() {
+      // Dot follows immediately (light damping)
+      dotX += (mouseX - dotX) * 0.55;
+      dotY += (mouseY - dotY) * 0.55;
+      cursorDot.style.transform = `translate(${dotX}px, ${dotY}px) translate(-50%, -50%)`;
+
+      // Ring lags behind
+      ringX += (mouseX - ringX) * 0.14;
+      ringY += (mouseY - ringY) * 0.14;
+      cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+
+      requestAnimationFrame(cursorAnimate);
+    }
+    cursorAnimate();
+
+    // Hover magnetize on interactive elements
+    const hoverTargets = 'a, button, .tag, .layer-item, .person-card, .apply-card, .tl-item, input, textarea, select';
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(hoverTargets)) cursorRing.classList.add('hover');
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest(hoverTargets)) cursorRing.classList.remove('hover');
+    });
+  } else {
+    cursorDot.style.display = 'none';
+    cursorRing.style.display = 'none';
+  }
+
+  // ─── GLOSSARY TOOLTIPS ───
+  const glossary = {
+    'JTBD': 'Jobs-to-be-Done — 顧客が「片付けたい用事」で製品を選ぶ視点',
+    'STP': 'Segmentation / Targeting / Positioning — 誰に・どう位置取るか',
+    'PMF': 'Product-Market Fit — 製品と市場の適合点',
+    'AARRR': 'Acquisition / Activation / Retention / Revenue / Referral（海賊ファネル）',
+    '4P': 'Product / Price / Place / Promotion — 売り手視点のマーケミックス',
+    '4C': 'Customer / Cost / Convenience / Communication — 買い手視点',
+    '5 Forces': 'Porter 5 Forces — 競合・新規・代替・買い手・売り手の5つの圧力',
+    'SWOT': 'Strengths / Weaknesses / Opportunities / Threats',
+    'PEST': 'Political / Economic / Social / Technological な外部環境分析',
+    'TAM/SAM/SOM': 'Total / Serviceable / Serviceable Obtainable Market — 市場規模の3階層',
+    'Golden Circle': 'Why → How → What の順で語れ、というSinekのフレーム',
+    'Blue Ocean': '競争のない未開拓市場を切り開く戦略',
+    'North Star Metric': '組織の成長を1つに絞って示す指標',
+    'Ansoff Matrix': '既存/新規 × 市場/製品 の成長戦略マトリクス',
+    'Porter 3 Generic': 'コストリーダー / 差別化 / 集中 の3基本戦略',
+    '3C': 'Customer / Competitor / Company',
+    'Growth Loops': 'ユーザー獲得が次のユーザーを生むループ構造',
+    'Brand Equity': 'ブランドが持つ資産価値',
+    'Cohort Analysis': '同時期ユーザー群を時系列で追跡する分析',
+    'A/B Test': '2案を同時テストして勝者を決める手法',
+    'KPI Tree': '目標から施策まで指標を樹形に分解した構造',
+    'LTV / CAC': '顧客生涯価値 / 顧客獲得コスト',
+    'AISAS': 'Attention / Interest / Search / Action / Share（電通提唱）',
+    'Customer Journey': '顧客が認知から購買・継続に至る経路',
+    'Price Strategy': '価格戦略（ペネトレーション / スキミング 等）',
+    'Distribution': '流通・販路の設計',
+    'Persona': '具体化された代表顧客像',
+    'Mission / Vision': '使命と未来像',
+    'Goal': '達成すべき目標',
+    'SEO': 'Search Engine Optimization',
+    'SNS': 'Social Networking Service',
+    'Content': 'コンテンツマーケティング',
+    'Paid': '広告などの有料獲得施策',
+    'Community': 'ファンコミュニティ形成施策'
+  };
+
+  document.querySelectorAll('.tag').forEach(tag => {
+    const text = tag.textContent.trim();
+    if (glossary[text]) {
+      tag.setAttribute('data-tooltip', glossary[text]);
+      tag.classList.add('has-tooltip');
+    }
+  });
+
+  // ─── LAYER FOCUS MODE ───
+  const layerItems = document.querySelectorAll('.layer-item');
+  layerItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      // Don't trigger when clicking on tags (to preserve hover tooltip UX)
+      if (e.target.closest('.tag, a, button')) return;
+
+      const wasFocused = item.classList.contains('focused');
+      layerItems.forEach(i => i.classList.remove('focused'));
+
+      if (wasFocused) {
+        document.body.classList.remove('layer-focused');
+      } else {
+        document.body.classList.add('layer-focused');
+        item.classList.add('focused');
+      }
+    });
+  });
+
+  // Escape to clear layer focus
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.classList.contains('layer-focused')) {
+      document.body.classList.remove('layer-focused');
+      layerItems.forEach(i => i.classList.remove('focused'));
+    }
+  });
+
+  // Click outside to clear
+  document.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('layer-focused')) return;
+    if (!e.target.closest('.layer-item')) {
+      document.body.classList.remove('layer-focused');
+      layerItems.forEach(i => i.classList.remove('focused'));
+    }
+  });
+
+  // ─── CHAPTER NUMBER SCRAMBLE ───
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    document.querySelectorAll('.chapter-nav').forEach(nav => {
+      const originalText = nav.textContent;
+      // Match pattern like "01 — WHAT"
+      const match = originalText.match(/^(0)(\d)(.*)$/);
+      if (!match) return;
+      const prefix = match[1];
+      const targetDigit = match[2];
+      const suffix = match[3];
+
+      const obs = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        obs.unobserve(nav);
+
+        let tick = 0;
+        const maxTicks = 9;
+        const interval = setInterval(() => {
+          if (tick >= maxTicks) {
+            clearInterval(interval);
+            nav.textContent = originalText;
+            return;
+          }
+          const rand = Math.floor(Math.random() * 10);
+          nav.textContent = `${prefix}${rand}${suffix}`;
+          tick++;
+        }, 55);
+      }, { threshold: 0.6 });
+      obs.observe(nav);
+    });
+  }
+
+  // ─── KONAMI CODE EASTER EGG ───
+  const konamiSeq = ['arrowup','arrowup','arrowdown','arrowdown','arrowleft','arrowright','arrowleft','arrowright','b','a'];
+  let konamiIdx = 0;
+  let konamiUnlocked = false;
+
+  document.addEventListener('keydown', (e) => {
+    if (konamiUnlocked) return;
+    const key = e.key.toLowerCase();
+    if (key === konamiSeq[konamiIdx]) {
+      konamiIdx++;
+      if (konamiIdx === konamiSeq.length) {
+        activateKonami();
+        konamiUnlocked = true;
+        konamiIdx = 0;
+      }
+    } else {
+      // Reset, but allow re-starting if this key matches the first in sequence
+      konamiIdx = (key === konamiSeq[0]) ? 1 : 0;
+    }
+  });
+
+  function activateKonami() {
+    const overlay = document.createElement('div');
+    overlay.className = 'konami-overlay';
+    overlay.innerHTML = `
+      <div class="konami-content">
+        <div class="konami-label">KITAcore × Simon Sinek</div>
+        <div class="konami-why">WHY?</div>
+        <div class="konami-sub">なぜそれをやるのか。<br><strong>Whyから始めると、人は動く。</strong></div>
+        <div class="konami-credit">Konami Unlocked · @ktcrs1107</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    document.body.classList.add('konami-unlocked');
+
+    requestAnimationFrame(() => overlay.classList.add('show'));
+
+    const dismiss = () => {
+      overlay.classList.remove('show');
+      setTimeout(() => overlay.remove(), 500);
+      overlay.removeEventListener('click', dismiss);
+      document.removeEventListener('keydown', keyDismiss);
+    };
+    const keyDismiss = (e) => {
+      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') dismiss();
+    };
+    setTimeout(() => {
+      overlay.addEventListener('click', dismiss);
+      document.addEventListener('keydown', keyDismiss);
+    }, 100);
+    setTimeout(dismiss, 4500);
+  }
+
+  // ─── FAV CARD (SINEK) CLICK — WHY FLOAT ───
+  document.querySelectorAll('.person-card.fav').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Prevent multiple stacked animations
+      card.classList.remove('bounced');
+      void card.offsetWidth; // reflow
+      card.classList.add('bounced');
+
+      // Spawn floating "Why?" text at click position
+      const rect = card.getBoundingClientRect();
+      const why = document.createElement('span');
+      why.className = 'why-float';
+      why.textContent = 'Why?';
+      why.style.left = (e.clientX - rect.left) + 'px';
+      why.style.top  = (e.clientY - rect.top) + 'px';
+      card.appendChild(why);
+      setTimeout(() => why.remove(), 1300);
+    });
+  });
+
+
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (href.length <= 1) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      const headerH = header.offsetHeight + 16;
+      const y = target.getBoundingClientRect().top + window.scrollY - headerH;
+      window.scrollTo({
+        top: y,
+        behavior: prefersReduced ? 'auto' : 'smooth'
+      });
+      history.pushState(null, '', href);
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
