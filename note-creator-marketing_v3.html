@@ -1,0 +1,3001 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>note クリエイターのためのマーケティング知識図鑑</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #E9E9E9;
+    --surface:    #FFFFFF;
+    --surface-v:  #F4F4F2;
+    --text:       #111111;
+    --text-sub:   #333333;
+    --muted:      #6B6B6B;
+    --border:     #DDDDDD;
+    --accent:     #000000;
+    --accent-mid: #333333;
+    --or:         #FF4B1A;  /* ミリタリーオレンジ */
+    --bk:         #0C0C0C;  /* 最暗黒 */
+    --font-display: 'Inter', sans-serif;
+    --font-body:    'Noto Sans JP', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+    --font-mil:     'Anton', sans-serif;  /* ミリタリー見出し */
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+    cursor: crosshair;
+    padding-top: 26px;
+    padding-bottom: 24px;
+  }
+
+  a, button, summary, .toc-item { cursor: pointer; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--accent);
+    color: #FFFFFF;
+    padding: 80px 48px 72px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-nav {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #666666;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+  .hero-kw {
+    position: absolute;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: rgba(255,255,255,0.04);
+    pointer-events: none;
+    user-select: none;
+  }
+  .hero-kw.kw1 { font-size: 96px; top: -10px; right: -20px; }
+  .hero-kw.kw2 { font-size: 60px; top: 60px; right: 180px; }
+  .hero-kw.kw3 { font-size: 44px; bottom: 10px; left: 300px; }
+  .hero-kw.kw4 { font-size: 72px; bottom: -20px; left: -10px; }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .hero-sub {
+    font-size: 15px;
+    color: #AAAAAA;
+    max-width: 560px;
+    line-height: 1.8;
+  }
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid #444444;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    color: #888888;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+  .section { padding: 72px 48px; max-width: 1200px; margin: 0 auto; }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .section-title-jp {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 8px;
+  }
+
+  /* ── CARDS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 28px 24px;
+  }
+  .card-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .card-body { font-size: 13px; color: var(--text-sub); line-height: 1.8; }
+  .card-highlight {
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: var(--text-sub);
+  }
+
+  /* ── STEP BLOCKS ── */
+  .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+  .step {
+    padding: 28px 20px;
+    border: 1px solid var(--border);
+    border-right: none;
+    background: var(--surface);
+    position: relative;
+  }
+  .step:last-child { border-right: 1px solid var(--border); }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--bg);
+    line-height: 1;
+    margin-bottom: 12px;
+    -webkit-text-stroke: 1px var(--border);
+  }
+  .step-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .step-body { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+  /* ── KPI TABLE ── */
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; font-size: 13px; }
+  thead th { background: var(--surface-v); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); font-weight: 500; }
+  tbody td { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text-sub); vertical-align: top; line-height: 1.7; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--surface-v); }
+  .td-key { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; }
+  .td-num { font-family: var(--font-mono); text-align: right; color: var(--accent); font-weight: 500; }
+
+  /* ── FRAMEWORKS ── */
+  .fw-box { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .fw-header { background: var(--accent); color: #FFF; padding: 16px 24px; font-family: var(--font-display); font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+  .fw-header small { font-family: var(--font-mono); font-size: 10px; color: #888; font-weight: 400; letter-spacing: 0.1em; }
+  .fw-body { padding: 20px 24px; }
+  .fw-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .fw-item:last-child { border-bottom: none; }
+  .fw-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; background: var(--surface-v); border: 1px solid var(--border); padding: 3px 8px; border-radius: 2px; white-space: nowrap; margin-top: 2px; min-width: 40px; text-align: center; color: var(--text); }
+  .fw-text { font-size: 13px; color: var(--text-sub); line-height: 1.7; }
+  .fw-text strong { color: var(--text); }
+
+  /* ── MATRIX ── */
+  .matrix { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .matrix-cell { background: var(--surface); padding: 24px; }
+  .matrix-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+  .matrix-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .matrix-body { font-size: 12px; color: var(--text-sub); line-height: 1.7; }
+  .matrix-cell.hl { background: var(--accent); color: #FFF; }
+  .matrix-cell.hl .matrix-label { color: #666; }
+  .matrix-cell.hl .matrix-title { color: #FFF; }
+  .matrix-cell.hl .matrix-body { color: #AAAAAA; }
+
+  /* ── FORMULA ── */
+  .formula-block { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 32px; text-align: center; margin: 24px 0; }
+  .formula { font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; }
+  .formula-note { font-size: 12px; color: var(--muted); }
+
+  /* ── TAG LIST ── */
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .tag { font-family: var(--font-mono); font-size: 11px; background: var(--surface-v); border: 1px solid var(--border); padding: 4px 10px; border-radius: 2px; color: var(--text-sub); }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--border); max-width: 1200px; margin: 0 auto; }
+
+  /* ── FOOTER ── */
+  .footer { background: var(--accent); color: #444; padding: 40px 48px; font-family: var(--font-mono); font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-brand { color: #888; letter-spacing: 0.12em; }
+  .footer-date { color: #555; }
+
+  /* ── INSIGHT BOX ── */
+  .insight { background: var(--surface-v); border: 1px solid var(--border); border-radius: 4px; padding: 20px 24px; margin-top: 24px; font-size: 13px; color: var(--text-sub); line-height: 1.8; }
+  .insight-head { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+  /* ── FULL-WIDTH DARK SECTION ── */
+  .dark-section { background: #0A0E1A; color: #E2E8F0; padding: 72px 48px; }
+  .dark-section .section-num { color: #64748B; }
+  .dark-section .section-title { color: #E2E8F0; }
+  .dark-section .card { background: #111827; border-color: #1E293B; }
+  .dark-section .card-label { color: #64748B; }
+  .dark-section .card-title { color: #E2E8F0; }
+  .dark-section .card-body { color: #94A3B8; }
+  .dark-section .card-highlight { border-left-color: #00D4FF; color: #94A3B8; }
+  .dark-num { font-family: var(--font-display); font-size: 72px; font-weight: 700; color: #00D4FF; line-height: 1; margin-bottom: 8px; }
+  .dark-label { font-family: var(--font-mono); font-size: 10px; color: #64748B; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ── FUNNEL ── */
+  .funnel { display: flex; flex-direction: column; gap: 4px; }
+  .funnel-row { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .funnel-label { font-family: var(--font-display); font-size: 13px; font-weight: 700; }
+  .funnel-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+  .funnel-row:nth-child(1) { border-left: 4px solid var(--accent); }
+  .funnel-row:nth-child(2) { border-left: 4px solid #333; }
+  .funnel-row:nth-child(3) { border-left: 4px solid #555; }
+  .funnel-row:nth-child(4) { border-left: 4px solid #777; }
+  .funnel-row:nth-child(5) { border-left: 4px solid #999; }
+
+  /* ── PRICE CARDS ── */
+  .price-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .price-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 24px 20px; text-align: center; }
+  .price-num { font-family: var(--font-display); font-size: 36px; font-weight: 700; margin-bottom: 4px; }
+  .price-yen { font-size: 16px; font-weight: 400; color: var(--muted); }
+  .price-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+  .price-desc { font-size: 12px; color: var(--text-sub); line-height: 1.7; text-align: left; }
+  .price-card.featured { border-color: var(--accent); border-width: 2px; }
+  .price-card.featured .price-num { color: var(--accent); }
+
+  /* ── AI UNLOCK ── */
+  .ai-unlock {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 2px;
+    padding: 20px 28px;
+    margin: 32px 0 0;
+  }
+  .ai-unlock-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ai-unlock-label::before { content: '⌘'; font-size: 12px; color: var(--accent); }
+  .ai-unlock-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .ai-unlock-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 16px; line-height: 1.75; }
+  .ai-prompt-example {
+    background: var(--accent); color: #ffffff;
+    font-family: var(--font-mono); font-size: 12px;
+    padding: 12px 16px; border-radius: 2px;
+    line-height: 1.75; white-space: pre-wrap;
+  }
+  .ai-prompt-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: rgba(255,255,255,0.45); margin-bottom: 6px; display: block;
+  }
+  /* ── VOCAB KEY INTRO ── */
+  .vocab-key {
+    background: var(--surface-v);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 48px;
+  }
+  .vocab-key .vk-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px;
+  }
+  .vocab-key h3 {
+    font-family: var(--font-display); font-size: 17px;
+    font-weight: 700; color: var(--text); margin-bottom: 10px;
+  }
+  .vocab-key p { font-size: 14px; color: var(--text-sub); line-height: 1.85; max-width: 720px; }
+  .vocab-key p strong { color: var(--text); }
+
+  /* ══════════════════════════════════════════
+     MILITARY ANIMATIONS — dynamic-manual-kitacore
+     ══════════════════════════════════════════ */
+
+  /* ── STATUS BARS ── */
+  #top-status {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 26px;
+    background: var(--bk);
+    color: var(--or);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+    z-index: 9998;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  #top-status::before {
+    content: '●';
+    color: var(--or);
+    animation: statusBlink 1.4s step-end infinite;
+    font-size: 8px;
+  }
+  .ts-sep { color: #333; }
+  .ts-right { margin-left: auto; color: #444; }
+  @keyframes statusBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  #bot-status {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 24px;
+    background: var(--or);
+    color: var(--bk);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 9998;
+    gap: 24px;
+  }
+  .bs-right { margin-left: auto; opacity: 0.55; }
+
+  /* ── BOOT SEQUENCE ── */
+  #boot {
+    position: fixed;
+    inset: 0;
+    background: var(--bk);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  #boot.done {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease 0.2s;
+  }
+  #boot-inner { width: min(540px, 90vw); }
+  #boot-title {
+    font-family: var(--font-mil);
+    font-size: clamp(24px, 4vw, 44px);
+    color: #fff;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  #boot-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: #333;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  #boot-lines {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #2e2e2e;
+    line-height: 2;
+    min-height: 132px;
+    margin-bottom: 20px;
+  }
+  #boot-lines .bl-ok  { color: var(--or); }
+  #boot-lines .bl-cur { color: #555; }
+  #boot-bar-wrap {
+    height: 2px;
+    background: #1a1a1a;
+    overflow: hidden;
+  }
+  #boot-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--or);
+  }
+
+  /* ── GLITCH TEXT ── */
+  .glitch {
+    position: relative;
+    display: inline;
+  }
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-t);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    overflow: hidden;
+    opacity: 0;
+    white-space: nowrap;
+  }
+  .glitch::before {
+    color: var(--or);
+    animation: glitchT 6s infinite linear;
+    animation-delay: var(--gd, 0s);
+  }
+  .glitch::after {
+    color: #00e5ff;
+    mix-blend-mode: screen;
+    animation: glitchB 6s infinite linear;
+    animation-delay: var(--gd, 0s);
+  }
+  @keyframes glitchT {
+    0%,86%,100% { opacity:0; transform:none; clip-path:none; }
+    87% { opacity:.9; clip-path:inset(0 0 72% 0); transform:translate(-3px,-1px); }
+    89% { opacity:.9; clip-path:inset(25% 0 55% 0); transform:translate(3px,0); }
+    91% { opacity:0; }
+  }
+  @keyframes glitchB {
+    0%,88%,100% { opacity:0; transform:none; clip-path:none; }
+    89% { opacity:.7; clip-path:inset(62% 0 0 0); transform:translate(4px,1px); }
+    91% { opacity:.7; clip-path:inset(78% 0 0 0); transform:translate(-2px,0); }
+    93% { opacity:0; }
+  }
+
+  /* ── SCANLINE ── */
+  .scan-host {
+    position: relative;
+    overflow: hidden;
+  }
+  .scan-host::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: -5%;
+    height: 4px;
+    background: linear-gradient(transparent, rgba(255,75,26,0.15) 50%, transparent);
+    animation: scanDown var(--scan-dur, 7s) linear infinite;
+    animation-delay: var(--scan-delay, 0s);
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes scanDown {
+    from { top: -5%; }
+    to   { top: 106%; }
+  }
+
+  /* ── CROSSHAIR DECORATION ── */
+  .xh {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--or);
+    opacity: 0.15;
+    user-select: none;
+    pointer-events: none;
+    animation: xhPulse var(--xhd, 3s) ease-in-out infinite;
+    animation-delay: var(--xho, 0s);
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+  @keyframes xhPulse {
+    0%,100% { opacity:.08; transform:scale(1); }
+    50%     { opacity:.3;  transform:scale(1.2); }
+  }
+
+  /* ── HERO SCANLINE ── */
+  .hero { overflow: hidden; }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: -5%;
+    height: 3px;
+    background: linear-gradient(transparent, rgba(255,75,26,0.18) 50%, transparent);
+    animation: scanDown 9s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ── MILITARY OVERRIDES ── */
+  .section-num {
+    font-family: var(--font-mil) !important;
+    font-size: 22px !important;
+    color: var(--or) !important;
+    letter-spacing: 0.02em !important;
+  }
+  #progress-bar        { background: var(--or) !important; }
+  .card-highlight      { border-left-color: var(--or) !important; }
+  .funnel-row:nth-child(1) { border-left-color: var(--or) !important; }
+  .section-header.visible-line::after { background: var(--or) !important; }
+  #toc-toggle          { background: var(--or) !important; color: var(--bk) !important; }
+  #toc-toggle:hover    { background: #d93d10 !important; }
+  .toc-dot             { background: var(--bk) !important; }
+  #back-top            { background: var(--or) !important; }
+  #back-top:hover      { background: #d93d10 !important; }
+  .fw-header           { background: var(--or) !important; }
+  .matrix-cell.hl      { background: var(--or) !important; }
+  .td-num              { color: var(--or) !important; }
+  .ai-unlock           { border-top-color: var(--or) !important; }
+  .ai-unlock-label::before { color: var(--or) !important; }
+  .dark-num            { color: var(--or) !important; }
+
+  /* ── EASTER EGG ── */
+  @keyframes eggFlash {
+    0%  { background: var(--or); color: #000; transform: scale(1.05); }
+    40% { background: #000; color: var(--or); transform: scale(0.98); }
+    100%{ background: var(--or); color: #888; transform: scale(1); }
+  }
+  .egg-flash { animation: eggFlash 0.45s ease forwards !important; }
+
+  @media (max-width: 900px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 28px; }
+    .hero { padding: 48px 24px 56px; }
+    .section { padding: 48px 24px; }
+    .price-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0%;
+    background: var(--accent);
+    z-index: 9999;
+    transition: width 0.1s linear;
+  }
+
+  /* ── FLOATING TOC ── */
+  #toc {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  #toc-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    padding: 16px 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 0;
+    opacity: 0;
+    transition: width 0.25s ease, opacity 0.2s ease;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  #toc-panel::-webkit-scrollbar { width: 4px; }
+  #toc-panel::-webkit-scrollbar-thumb { background: var(--border); }
+  #toc:hover #toc-panel,
+  #toc.open #toc-panel {
+    width: 220px;
+    opacity: 1;
+  }
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+    color: inherit;
+    white-space: nowrap;
+  }
+  .toc-item:hover { background: var(--surface-v); }
+  .toc-item.active { background: var(--surface-v); }
+  .toc-item.active .toc-num { color: var(--accent); }
+  .toc-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    transition: color 0.15s;
+    min-width: 20px;
+  }
+  .toc-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-sub);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  #toc-toggle {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    width: 28px;
+    min-width: 28px;
+    height: 80px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border-radius: 4px 0 0 4px;
+    writing-mode: vertical-lr;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+    transition: background 0.15s;
+  }
+  #toc-toggle:hover { background: #111; }
+  #toc-toggle span {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+  }
+  .toc-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #555;
+    transition: background 0.15s;
+  }
+  #toc:hover .toc-dot { background: #999; }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.08s; }
+  .reveal-delay-2 { transition-delay: 0.16s; }
+  .reveal-delay-3 { transition-delay: 0.24s; }
+  .reveal-delay-4 { transition-delay: 0.32s; }
+
+  /* ── HERO ANIMATIONS ── */
+  @keyframes heroTitleIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes heroSubIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes kwFloat1 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-8px) rotate(0.5deg); }
+    66% { transform: translateY(4px) rotate(-0.3deg); }
+  }
+  @keyframes kwFloat2 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    40% { transform: translateY(10px) rotate(-0.6deg); }
+    70% { transform: translateY(-5px) rotate(0.4deg); }
+  }
+  @keyframes kwFloat3 {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px) rotate(0.3deg); }
+  }
+  @keyframes kwFloat4 {
+    0%, 100% { transform: translateY(0px); }
+    30% { transform: translateY(6px) rotate(-0.4deg); }
+    80% { transform: translateY(-8px) rotate(0.5deg); }
+  }
+  @keyframes badgePop {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .hero-kw.kw1 { animation: kwFloat1 9s ease-in-out infinite; animation-delay: 0s; }
+  .hero-kw.kw2 { animation: kwFloat2 11s ease-in-out infinite; animation-delay: -2s; }
+  .hero-kw.kw3 { animation: kwFloat3 13s ease-in-out infinite; animation-delay: -4s; }
+  .hero-kw.kw4 { animation: kwFloat4 10s ease-in-out infinite; animation-delay: -1s; }
+  .hero-badge {
+    animation: badgePop 0.4s ease both;
+    animation-delay: 0.2s;
+  }
+  .hero h1 {
+    animation: heroTitleIn 0.6s ease both;
+    animation-delay: 0.35s;
+  }
+  .hero-sub {
+    animation: heroSubIn 0.7s ease both;
+    animation-delay: 0.6s;
+  }
+  .hero-nav {
+    animation: heroSubIn 0.5s ease both;
+    animation-delay: 0.1s;
+  }
+
+  /* ── CARD / FW-BOX HOVER ── */
+  .card {
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover {
+    border-color: #BBBBBB;
+    transform: translateY(-2px);
+  }
+  .fw-box {
+    transition: border-color 0.15s ease;
+  }
+  .fw-box:hover {
+    border-color: #BBBBBB;
+  }
+  .step {
+    transition: background 0.15s ease;
+  }
+  .step:hover {
+    background: var(--surface-v);
+  }
+
+  /* ── SECTION HEADER LINE ANIMATE ── */
+  @keyframes lineGrow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+  .section-header {
+    border-bottom: 1px solid var(--border);
+    transform-origin: left;
+  }
+  .section-header.visible-line::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -1px; left: 0;
+    height: 1px;
+    width: 48px;
+    background: var(--accent);
+    animation: lineGrow 0.4s ease both;
+  }
+  .section-header { position: relative; }
+
+  /* ── SMOOTH SCROLL ── */
+  html { scroll-behavior: smooth; }
+
+  /* ── BACK TO TOP ── */
+  #back-top {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 900;
+  }
+  #back-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #back-top:hover { background: #222; }
+
+  @media (max-width: 900px) {
+    #toc { display: none; }
+    #back-top { bottom: 16px; right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar"></div>
+
+<!-- TOP STATUS BAR -->
+<div id="top-status">
+  <span>KITACORE / FIELD MANUAL VOL.2</span>
+  <span class="ts-sep">|</span>
+  <span>NOTE CREATOR MARKETING</span>
+  <span class="ts-right">SYS: OPERATIONAL — 2026.04</span>
+</div>
+
+<!-- BOTTOM STATUS BAR -->
+<div id="bot-status">
+  <span>MARKETING FOR NOTE CREATORS</span>
+  <span class="bs-right">CLEARANCE LVL 4 — 28 FRAMEWORKS LOADED</span>
+</div>
+
+<!-- BOOT SEQUENCE -->
+<div id="boot">
+  <div id="boot-inner">
+    <div id="boot-title">KITACORE</div>
+    <div id="boot-sub">FIELD MANUAL — NOTE CREATOR EDITION</div>
+    <div id="boot-lines"></div>
+    <div id="boot-bar-wrap"><div id="boot-bar"></div></div>
+  </div>
+</div>
+
+<!-- FLOATING TOC -->
+<div id="toc">
+  <div id="toc-panel">
+    <a class="toc-item" href="#sec-01"><span class="toc-num">01</span><span class="toc-label">Mindset</span></a>
+    <a class="toc-item" href="#sec-02"><span class="toc-num">02</span><span class="toc-label">Reader Discovery</span></a>
+    <a class="toc-item" href="#sec-03"><span class="toc-num">03</span><span class="toc-label">STP + Positioning</span></a>
+    <a class="toc-item" href="#sec-04"><span class="toc-num">04</span><span class="toc-label">RCF</span></a>
+    <a class="toc-item" href="#sec-05"><span class="toc-num">05</span><span class="toc-label">Launch Strategy</span></a>
+    <a class="toc-item" href="#sec-06"><span class="toc-num">06</span><span class="toc-label">Growth Metrics</span></a>
+    <a class="toc-item" href="#sec-07"><span class="toc-num">07</span><span class="toc-label">AARRR</span></a>
+    <a class="toc-item" href="#sec-08"><span class="toc-num">08</span><span class="toc-label">Content × Distrib.</span></a>
+    <a class="toc-item" href="#sec-09"><span class="toc-num">09</span><span class="toc-label">Pricing Strategy</span></a>
+    <a class="toc-item" href="#sec-10"><span class="toc-num">10</span><span class="toc-label">Data-Driven</span></a>
+    <a class="toc-item" href="#sec-11"><span class="toc-num">11</span><span class="toc-label">Quick Reference</span></a>
+    <a class="toc-item" href="#sec-12"><span class="toc-num">12</span><span class="toc-label">PEST分析</span></a>
+    <a class="toc-item" href="#sec-13"><span class="toc-num">13</span><span class="toc-label">SWOT → TOWS</span></a>
+    <a class="toc-item" href="#sec-14"><span class="toc-num">14</span><span class="toc-label">Lean Startup</span></a>
+    <a class="toc-item" href="#sec-15"><span class="toc-num">15</span><span class="toc-label">4P / 4C</span></a>
+    <a class="toc-item" href="#sec-16"><span class="toc-num">16</span><span class="toc-label">Porter's 5 Forces</span></a>
+    <a class="toc-item" href="#sec-17"><span class="toc-num">17</span><span class="toc-label">Article Portfolio</span></a>
+    <a class="toc-item" href="#sec-18"><span class="toc-num">18</span><span class="toc-label">AIDA / AISAS</span></a>
+    <a class="toc-item" href="#sec-19"><span class="toc-num">19</span><span class="toc-label">Brand Equity</span></a>
+    <a class="toc-item" href="#sec-20"><span class="toc-num">20</span><span class="toc-label">Strategy & Comms</span></a>
+    <a class="toc-item" href="#sec-21"><span class="toc-num">21</span><span class="toc-label">Reader Relationship</span></a>
+    <a class="toc-item" href="#sec-22"><span class="toc-num">22</span><span class="toc-label">Title Design</span></a>
+    <a class="toc-item" href="#sec-23"><span class="toc-num">23</span><span class="toc-label">Note SEO</span></a>
+    <a class="toc-item" href="#sec-24"><span class="toc-num">24</span><span class="toc-label">X × Note</span></a>
+    <a class="toc-item" href="#sec-25"><span class="toc-num">25</span><span class="toc-label">初速設計</span></a>
+    <a class="toc-item" href="#sec-26"><span class="toc-num">26</span><span class="toc-label">Content Calendar</span></a>
+    <a class="toc-item" href="#sec-27"><span class="toc-num">27</span><span class="toc-label">Reader Persona</span></a>
+    <a class="toc-item" href="#sec-28"><span class="toc-num">28</span><span class="toc-label">Knowledge Map</span></a>
+  </div>
+  <button id="toc-toggle" onclick="document.getElementById('toc').classList.toggle('open')" aria-label="目次を開く">
+    <span><div class="toc-dot"></div><div class="toc-dot"></div><div class="toc-dot"></div></span>
+  </button>
+</div>
+
+<!-- BACK TO TOP -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="トップへ戻る">↑</button>
+
+
+<div class="hero scan-host">
+  <span class="xh xh-tl" style="--xho:0s">+ +</span>
+  <span class="xh xh-tr" style="--xho:1.5s">+ +</span>
+  <span class="xh xh-bl" style="--xho:0.8s">+ +</span>
+  <span class="xh xh-br" style="--xho:2.2s">+ +</span>
+  <div class="hero-kw kw1">RCF</div>
+  <div class="hero-kw kw2">AISAS</div>
+  <div class="hero-kw kw3">GROWTH</div>
+  <div class="hero-kw kw4">JTBD</div>
+  <div class="hero-nav">KITAcore / Knowledge Shelf</div>
+  <div class="hero-badge">note × マーケ、ワイの場合</div>
+  <h1>Marketing for<br>note Creators</h1>
+  <p class="hero-sub">正解やないし、教科書でもない。noteで発信するワイが、マーケの概念をどうクリエイター文脈に翻訳して使ってるかの頭の中身。AIに渡すキーとして使ってほしい。</p>
+</div>
+
+<!-- VOCAB KEY INTRO -->
+<div class="vocab-key reveal">
+  <div class="vk-label">Why This Document Exists</div>
+  <h3>「スキが増えない」と聞くより、RCFで診断してと聞く</h3>
+  <p>「なんか読まれへん、どうしたらいい？」と聞いた答えと、<strong>「RCF（Reader-Content Fit）の観点で私のnoteを評価して」</strong>と聞いた答えは、解像度が全然違う。フレームワーク名はAIへのキー。このドキュメントはnoteクリエイター文脈に翻訳したマーケ語彙帳であり、<strong>AIをnote相談相手として使いこなすための下敷き</strong>でもある。</p>
+</div>
+
+
+<!-- 01 MINDSET -->
+<div class="section" id="sec-01">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">MINDSET <span class="section-title-jp">noteクリエイターにとってのマーケティング</span></span>
+  </div>
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-label">コンテンツを「売る」より先に</div>
+      <div class="card-title">読者を「理解する」</div>
+      <div class="card-body">
+        noteで収益を上げようとすると最初にやりがちな失敗が「いい記事を書いたのに読まれない」。原因の大半は<strong>誰に・何を・なぜ届けるかを定義していないこと</strong>。マーケティングはそこから始まる。
+      </div>
+      <div class="card-highlight">
+        書く前に「この記事は誰のどんな悩みを解消するか」を1文で言えなければ、書いてから考えても遅い。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">RCF = Reader-Content Fit</div>
+      <div class="card-title">読者がコンテンツを自然に求める状態</div>
+      <div class="card-body">
+        新規事業の PMF（Product-Market Fit）に相当するのが RCF。スキ率・フォロワー転換率・有料転換率が安定して上がりはじめたとき、RCF が取れたサイン。それまでは仮説検証のフェーズ。
+      </div>
+      <div class="card-highlight">
+        RCF 前：記事の方向性・読者像・テーマを探る実験フェーズ<br>
+        RCF 後：スケール・連載化・有料展開
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">The Only Real Metric</div>
+      <div class="card-title">真の指標はフォロワーの継続</div>
+      <div class="card-body">
+        PV は嘘をつく。バズった記事のPVが翌月ゼロになることは珍しくない。<strong>フォロワーが増え続け、有料購読が解約されない</strong>ことだけが、あなたのコンテンツに継続的な価値があることを証明する。
+      </div>
+      <div class="card-highlight">
+        「バズを狙う」のではなく「読み続けられるクリエイターになる」——そのための設計がnoteマーケティングの本質。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 02 READER DISCOVERY -->
+<div class="section" id="sec-02">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">READER DISCOVERY <span class="section-title-jp">読者理解のフレームワーク</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="fw-box">
+      <div class="fw-header">Jobs to Be Done (JTBD) <small>読者がnote記事を「雇う」理由</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">Core</div>
+          <div class="fw-text">読者は「記事」を読むのではなく、<strong>「何かを解決・実現する」ために</strong>記事を選んでいる。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">機能</div>
+          <div class="fw-text">実際に達成したいこと。「Pythonの使い方を知りたい」「副業の始め方を知りたい」</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">感情</div>
+          <div class="fw-text">読後に感じたい感覚。「賢くなった気がしたい」「勇気が出た」「スッキリした」</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">社会</div>
+          <div class="fw-text">他者の目線で得たいもの。「詳しい人に見られたい」「SNSで共有して反応をもらいたい」</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fw-box">
+      <div class="fw-header">Value Proposition Canvas <small>読者への価値提案設計</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">Gains</div>
+          <div class="fw-text">読者が望む<strong>嬉しい結果</strong>。「スキルが身につく」「時間が節約できる」「アイデアが湧く」</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Pains</div>
+          <div class="fw-text">読者が感じる<strong>痛み・不安</strong>。「何から始めればいいか分からない」「情報が多すぎて混乱」</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Jobs</div>
+          <div class="fw-text">読者が片付けようとしているタスク。機能・感情・社会の3層で把握する。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Fit</div>
+          <div class="fw-text">記事が読者のJobsに刺さったとき、スキ率・フォロワー転換率が跳ね上がる。= RCF の片鱗。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-head">読者インタビューの代替手段（note版）</div>
+    noteクリエイターは読者インタビューの機会が少ない。代替として有効なのが：①コメント欄の言葉を拾う（感情・Painが濃縮されている）、②X（Twitter）でのリプライ・引用RT内のキーワード分析、③スキした人のプロフィール観察（どんな人が読んでいるか）。これらを定期的に行うだけで「誰が読んでいるか」の解像度が格段に上がる。
+  </div>
+
+  <div class="ai-unlock">
+    <div class="ai-unlock-label">AI Unlock — JTBD（読者版）</div>
+    <div class="ai-unlock-title">この言葉を知ると引き出せること</div>
+    <div class="ai-unlock-desc">「読者のJTBD（機能的Job・感情的Job・社会的Job）」という切り口を渡すと、<strong>「この記事を読む人が本当に片付けたいことは何か」をAIが3層で言語化してくれる</strong>。「どんな人が読みますか？」という質問より圧倒的に具体的な読者像が出てくる。</div>
+    <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>私のnote記事（テーマ：生成AIの使い方）を読む読者のJTBDを3層で分析してください。機能的Job（何を達成したい）・感情的Job（どう感じたい）・社会的Job（どう見られたい）に分けて、最も強いJobはどれか教えてください。</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 03 STP + POSITIONING -->
+<div class="section" id="sec-03">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">STP + POSITIONING <span class="section-title-jp">読者セグメント・ターゲット読者・コンテンツポジション</span></span>
+  </div>
+
+  <div class="steps" style="grid-template-columns: repeat(3,1fr); margin-bottom: 32px;">
+    <div class="step" style="border-right: none;">
+      <div class="step-num">S</div>
+      <div class="step-title">SEGMENTATION</div>
+      <div class="step-body">note読者を意味ある軸で分ける。<br><br>· 職業・スキルレベル<br>· 悩みのフェーズ（入門/中級/実践）<br>· 消費動機（学習/共感/娯楽/課題解決）<br><br>「全員に読まれたい」はゼロ人に読まれる設計。</div>
+    </div>
+    <div class="step" style="border-right: none;">
+      <div class="step-num">T</div>
+      <div class="step-title">TARGETING</div>
+      <div class="step-body">最も刺さるセグメントに絞る。<br><br>· 自分が最も詳しく語れる層<br>· 競合クリエイターが薄いニッチ<br>· 有料コンテンツへの支払い意欲<br><br>最初のコアファン100人が全ての起点。</div>
+    </div>
+    <div class="step" style="border-right: 1px solid var(--border);">
+      <div class="step-num">P</div>
+      <div class="step-title">POSITIONING</div>
+      <div class="step-body">読者の頭の中に独自の場所を占める。<br><br>· 「〇〇と言えばこのクリエイター」を目指す<br>· 他クリエイターとの差異軸を2つ定義<br>· トーン・テーマ・頻度で一貫性を出す<br><br>ポジションは絞るほど記憶される。</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">TAM / SAM / SOM — note版</div>
+      <table>
+        <thead>
+          <tr><th>スケール</th><th>note文脈での定義</th><th>活用</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-key">TAM</td>
+            <td>noteの月間ユーザー数全体（数千万規模）</td>
+            <td style="font-size:12px; color:var(--muted);">市場の天井感を知る</td>
+          </tr>
+          <tr>
+            <td class="td-key">SAM</td>
+            <td>自分のテーマに興味を持つ読者層（数万〜数十万）</td>
+            <td style="font-size:12px; color:var(--muted);">現実的な攻略市場</td>
+          </tr>
+          <tr>
+            <td class="td-key">SOM</td>
+            <td>現フェーズで獲得できるフォロワー数（数百〜数千）</td>
+            <td style="font-size:12px; color:var(--muted);">目標設定の根拠</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">キャズム — コアファンからの橋渡し</div>
+      <div class="card">
+        <div class="card-label">Chasm Theory</div>
+        <div class="card-title">ニッチ→メジャーへの壁</div>
+        <div class="card-body">
+          noteでも「最初100人の熱狂的ファン」と「その後の大多数」の間に深い溝がある。<br><br>
+          <strong>渡り方：</strong>コアファンの声を記事化・スクリーンショット活用・他クリエイターとのコラボ。コアファンが「次のキャズム層」に紹介してくれる設計を作る。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 04 RCF -->
+<div class="section" id="sec-04">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">RCF <span class="section-title-jp">Reader-Content Fit ─ PMFのnote版</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 32px;">
+    <div>
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-label">RCF の定義</div>
+        <div class="card-title">読者がコンテンツを自然に求める状態</div>
+        <div class="card-body">
+          PMF（Product-Market Fit）をnote文脈に翻訳したもの。読者が「次の記事を待っている」「友達に紹介したい」と感じ始めたとき、RCFが取れたと判断できる。<br><br>
+          Sean Ellisテストの note 版：「このクリエイターが更新を止めたらどう感じますか？」→「とても残念」の回答が40%を超えたら RCF。
+        </div>
+      </div>
+
+      <div class="fw-box">
+        <div class="fw-header">RCF チェックリスト <small>3つの定量指標</small></div>
+        <div class="fw-body">
+          <div class="fw-item">
+            <div class="fw-tag">スキ率</div>
+            <div class="fw-text"><strong>PV対比スキ数</strong>。目安5〜10%以上が安定したRCFのサイン。ただしジャンルで基準値が異なる。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">フォロワー転換率</div>
+            <div class="fw-text"><strong>新規読者→フォロワーの割合</strong>。1記事公開ごとにフォロワーが増える状態が理想。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">有料転換率</div>
+            <div class="fw-text"><strong>フォロワー→有料購読者の割合</strong>。2〜5%で収益事業として成立する水準。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">RCF 到達フェーズ</div>
+      <div class="funnel">
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">Phase 0 — EXPLORE</div>
+            <div style="font-size:12px; color:var(--muted);">何を書くか・誰に書くかを探っている段階</div>
+          </div>
+          <div class="funnel-meta">スキ率不安定</div>
+        </div>
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">Phase 1 — SIGNAL</div>
+            <div style="font-size:12px; color:var(--muted);">特定のテーマで反応が出始める</div>
+          </div>
+          <div class="funnel-meta">スキ率 3%+</div>
+        </div>
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">Phase 2 — TRACTION</div>
+            <div style="font-size:12px; color:var(--muted);">フォロワーが毎記事後に増える</div>
+          </div>
+          <div class="funnel-meta">転換率 1%+</div>
+        </div>
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">Phase 3 — RCF ✓</div>
+            <div style="font-size:12px; color:var(--muted);">読者が次の記事を待っている状態</div>
+          </div>
+          <div class="funnel-meta">有料転換 2%+</div>
+        </div>
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">Phase 4 — SCALE</div>
+            <div style="font-size:12px; color:var(--muted);">連載・マガジン・メンバーシップで収益化</div>
+          </div>
+          <div class="funnel-meta">スケールへ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-unlock">
+    <div class="ai-unlock-label">AI Unlock — RCF（Reader-Content Fit）</div>
+    <div class="ai-unlock-title">この言葉を知ると引き出せること</div>
+    <div class="ai-unlock-desc">「RCF（Reader-Content Fit）」「スキ率」「フォロワー転換率」「有料転換率」という指標名と概念を渡すと、<strong>「自分のnoteがどのフェーズにいるか」をAIが数値で診断してくれる</strong>。「読まれない」という曖昧な相談から、「Phase 1〜4のどこに詰まっているか」という構造的な答えに変わる。</div>
+    <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>私のnoteをRCFフレームで診断してください。直近10記事の平均スキ率8%・フォロワー転換率0.3%・有料転換率0.5%のデータをもとに、現在のフェーズと次に改善すべき指標を教えてください。</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 05 GTM / CONTENT LAUNCH STRATEGY -->
+<div class="section" id="sec-05">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <span class="section-title">LAUNCH STRATEGY <span class="section-title-jp">記事ローンチ戦略 ─ GTMのnote版</span></span>
+  </div>
+
+  <div class="grid-3" style="margin-bottom: 24px;">
+    <div class="card">
+      <div class="card-label">PLG — Product-Led Growth</div>
+      <div class="card-title">記事自体が流入を生む</div>
+      <div class="card-body">
+        記事の質・タイトル・構成が口コミ・SEO・note内おすすめを通じて自然流入を作る。初速が落ち着いてもPVが維持・成長するのが理想。<strong>コンテンツ自体がマーケティングエンジン</strong>になる状態。
+      </div>
+      <div class="card-highlight">無料記事でファンを作り、有料記事で収益化するループ設計。</div>
+    </div>
+    <div class="card">
+      <div class="card-label">MLG — Marketing-Led Growth</div>
+      <div class="card-title">X（Twitter）が集客エンジン</div>
+      <div class="card-body">
+        noteのフォロワーを増やす最速手段がX連携。<strong>記事のティザー投稿→X流入→noteフォロー</strong>の経路を意図的に設計する。X投稿は「記事の結論1行」「読むと得られること」を先に渡すのが鉄則。
+      </div>
+      <div class="card-highlight">X×noteの同時更新がフォロワー成長の最速ルート。</div>
+    </div>
+    <div class="card">
+      <div class="card-label">SLG — Sales-Led Growth</div>
+      <div class="card-title">コラボ・紹介で読者層を拡張</div>
+      <div class="card-body">
+        他クリエイターとのコラボ記事・相互紹介・マガジン共同編集が「SLG」に相当。自分のSOMの外にいる読者に一気にリーチできる。<strong>相手の読者層と自分の読者層が被らない</strong>クリエイターを選ぶのが成功の鍵。
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="fw-box">
+      <div class="fw-header">記事ローンチ チェックリスト <small>公開前→公開→直後の動き</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">公開前</div>
+          <div class="fw-text">タイトルA/B候補を2〜3本作る。Xでの引きを脳内テスト。ハッシュタグ候補を決めておく。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">公開時</div>
+          <div class="fw-text">X投稿は記事公開直後に即時ポスト。平日朝7〜8時 or 夜21〜22時が最多リーチ帯。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">公開後</div>
+          <div class="fw-text">最初の1時間のスキ数・PVを記録。コメントには必ず返信（初速アルゴリズムに影響）。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">翌日</div>
+          <div class="fw-text">初速データを記録。良かったら引用RTで角度を変えて再投稿。スキ率を週次レポートに反映。</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">初速設計の重要性</div>
+      <div class="card-title">公開直後の反応がPVの未来を決める</div>
+      <div class="card-body">
+        noteのアルゴリズムは公開後数時間のスキ数・コメント・フォロワーからの反応を重視する。これが「おすすめ」への掲載を左右する。<br><br>
+        <strong>初速を上げる施策：</strong><br>
+        · 公開と同時にXでティザー投稿<br>
+        · フォロワーへの直接の呼びかけ（「読んだ感想教えて」）<br>
+        · コメント欄への著者コメントで反応を促す<br>
+        · メンバーシップ限定で「先行公開」して初速を作る
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 06 GROWTH METRICS -->
+<div class="section" id="sec-06">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <span class="section-title">GROWTH METRICS <span class="section-title-jp">読者生涯価値 / フォロワー獲得コスト</span></span>
+  </div>
+
+  <div class="grid-4" style="margin-bottom: 32px;">
+    <div class="card">
+      <div class="card-label">Reader LTV</div>
+      <div class="card-title" style="font-size:14px;">読者生涯価値</div>
+      <div class="card-body" style="font-size:12px;">
+        有料記事・マガジン・メンバーシップを通じて、1人の読者が生涯にわたってもたらす収益の期待値。継続購読が最もLTVを高める。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Follower CAC</div>
+      <div class="card-title" style="font-size:14px;">フォロワー獲得コスト</div>
+      <div class="card-body" style="font-size:12px;">
+        1フォロワーを獲得するために費やした時間・労力の換算値。記事制作時間を時給換算し、獲得フォロワー数で割る。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">MRR（月次収益）</div>
+      <div class="card-title" style="font-size:14px;">Monthly Recurring Revenue</div>
+      <div class="card-body" style="font-size:12px;">
+        メンバーシップ継続課金 + 定期購読マガジンの月次安定収益。単発有料記事と組み合わせて収益を設計する。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Churn Rate</div>
+      <div class="card-title" style="font-size:14px;">メンバー離脱率</div>
+      <div class="card-body" style="font-size:12px;">
+        月ごとのメンバーシップ解約率。5%以下が健全。離脱タイミングを分析し、更新頻度・コンテンツ品質を見直す。
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula">Reader LTV = 月次購読額 × 平均継続月数 + 有料記事購入額</div>
+    <div class="formula-note">例：980円 × 8ヶ月 + 1,000円（有料記事） = 8,840円 / 読者</div>
+  </div>
+
+  <div class="grid-2">
+    <table>
+      <thead>
+        <tr><th>指標</th><th>定義</th><th>目安</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="td-key">スキ率</td><td>スキ数 / PV</td><td class="td-num">5〜10%</td></tr>
+        <tr><td class="td-key">フォロワー転換率</td><td>新規フォロワー / 記事公開数</td><td class="td-num">10人/記事+</td></tr>
+        <tr><td class="td-key">有料転換率</td><td>有料購読者 / フォロワー数</td><td class="td-num">2〜5%</td></tr>
+        <tr><td class="td-key">メンバー継続率</td><td>1 - 月次解約率</td><td class="td-num">95%+</td></tr>
+        <tr><td class="td-key">MRR成長率</td><td>前月比MRR増減</td><td class="td-num">+5%/月+</td></tr>
+      </tbody>
+    </table>
+    <div class="card">
+      <div class="card-label">KITAcore 実践メモ</div>
+      <div class="card-title">Validated Learning で指標を育てる</div>
+      <div class="card-body">
+        数値はただ眺めるものではなく、<strong>「なぜこのスキ率か」の仮説を持ち、次の記事で検証する</strong>ために使う。フォロワー増加が止まったなら：テーマ変更・タイトル実験・投稿時間の変更を1変数ずつ試す。複数同時変更は原因を特定できなくする。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 07 AARRR -->
+<div class="section" id="sec-07">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <span class="section-title">AARRR <span class="section-title-jp">海賊指標 ─ noteクリエイターの成長ファネル</span></span>
+  </div>
+
+  <div class="steps" style="margin-bottom: 32px;">
+    <div class="step">
+      <div class="step-num">A</div>
+      <div class="step-title">ACQUISITION</div>
+      <div class="step-body">
+        <strong>流入獲得</strong><br>X投稿 / note検索 / Googleオーガニック / 他クリエイターの紹介<br><br>
+        指標：新規PV / 流入元比率<br>目標：記事公開毎に300PV+
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">A</div>
+      <div class="step-title">ACTIVATION</div>
+      <div class="step-body">
+        <strong>最初の体験</strong><br>初回読者がスキ・フォロー・コメントまで到達するか<br><br>
+        指標：スキ率 / フォロワー転換率<br>目標：スキ率5%+
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">R</div>
+      <div class="step-title">RETENTION</div>
+      <div class="step-body">
+        <strong>継続読者化</strong><br>フォロワーが次の記事も読む・有料購読まで継続するか<br><br>
+        指標：フォロワー開封率 / メンバー継続率<br>目標：Churn 5%以下
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">R</div>
+      <div class="step-title">REVENUE</div>
+      <div class="step-body">
+        <strong>収益化</strong><br>有料記事・マガジン・メンバーシップの購入<br><br>
+        指標：有料転換率 / MRR / ARPU<br>目標：有料転換2%+
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">R</div>
+      <div class="step-title">REFERRAL</div>
+      <div class="step-body">
+        <strong>口コミ・紹介</strong><br>読者がXでシェア・引用RT・他クリエイターへ紹介<br><br>
+        指標：シェア数 / 紹介元PV比率<br>目標：自然拡散の経路を1本以上
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-head">noteクリエイターが最も詰まるボトルネック</div>
+    多くのnoteクリエイターが詰まるのは <strong>Activation → Retention の間</strong>。「読んでスキはするがフォローしない」「フォローしたが次の記事を読まない」状態。改善策：①プロフィールページを「このクリエイターは何者か」が3秒で分かる設計に ②フォローした後も読み続けたくなる投稿頻度・テーマの一貫性 ③CTA（「フォローお願いします」）を毎記事末に明示。
+  </div>
+
+  <div class="ai-unlock">
+    <div class="ai-unlock-label">AI Unlock — AARRR（note版）</div>
+    <div class="ai-unlock-title">この言葉を知ると引き出せること</div>
+    <div class="ai-unlock-desc">「Activation（スキ率）」「Retention（フォロワーの継続読書率）」「Referral（X拡散率）」という5段階の言葉でnoteを語ると、<strong>「どのファネルにボトルネックがあるか」をAIが的確に特定してくれる</strong>。「フォロワーが増えない」と聞くより、どの段階で詰まっているかを渡すと施策が変わる。</div>
+    <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>私のnoteをAARRRで分析してください。Acquisition（月間PV 1,200）・Activation（スキ率6%）・Retention（フォロワー定着率40%推定）・Revenue（有料記事転換0.2%）・Referral（X経由PV 15%）のデータで、最優先で改善すべきファネルはどこか教えてください。</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 08 CONTENT × DISTRIBUTION -->
+<div class="section" id="sec-08">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <span class="section-title">CONTENT × DISTRIBUTION <span class="section-title-jp">コンテンツ段階設計 ─ 無料→有料→マガジン</span></span>
+  </div>
+
+  <div class="grid-3" style="margin-bottom: 24px;">
+    <div class="card">
+      <div class="card-label">TOFU — Top of Funnel</div>
+      <div class="card-title">集客記事（完全無料）</div>
+      <div class="card-body">
+        検索・X・おすすめから新規読者を呼び込む入口。<strong>コスパ最高のコンテンツを惜しみなく無料で渡す</strong>のが原則。「この人ただ者じゃない」という第一印象が次のフォローにつながる。
+      </div>
+      <div class="tag-list">
+        <span class="tag">入門解説</span><span class="tag">ノウハウまとめ</span><span class="tag">体験談</span><span class="tag">実験レポート</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">MOFU — Middle of Funnel</div>
+      <div class="card-title">育成コンテンツ（部分有料）</div>
+      <div class="card-body">
+        フォロワーになった読者をさらに深く理解してもらう段階。無料で出だしを読ませ、<strong>「続きが読みたい」と感じさせてから有料エリア</strong>に誘導する。マガジンへの誘導も有効。
+      </div>
+      <div class="tag-list">
+        <span class="tag">途中有料記事</span><span class="tag">深掘り解説</span><span class="tag">実践テンプレ</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">BOFU — Bottom of Funnel</div>
+      <div class="card-title">収益コンテンツ（完全有料）</div>
+      <div class="card-body">
+        完全有料・メンバーシップ限定のプレミアムコンテンツ。<strong>「これは自分のために作られた」と感じさせる</strong>深度と具体性が必要。汎用情報ではなく個人の知見・判断・生データを売る。
+      </div>
+      <div class="tag-list">
+        <span class="tag">完全有料記事</span><span class="tag">マガジン</span><span class="tag">メンバーシップ</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fw-box">
+    <div class="fw-header">収益グレードアップ設計 <small>無料 → 有料 → マガジン → メンバーシップ</small></div>
+    <div class="fw-body">
+      <div class="fw-item">
+        <div class="fw-tag">Lv.0</div>
+        <div class="fw-text"><strong>無料記事のみ</strong>：まずRCF検証フェーズ。読者が何に反応するかを実験する。収益≒0だが資産として蓄積。</div>
+      </div>
+      <div class="fw-item">
+        <div class="fw-tag">Lv.1</div>
+        <div class="fw-text"><strong>単発有料記事</strong>：特定テーマの深掘り。100〜500円帯。購入ハードル低く「初めての有料」を生む。</div>
+      </div>
+      <div class="fw-item">
+        <div class="fw-tag">Lv.2</div>
+        <div class="fw-text"><strong>マガジン（買い切り）</strong>：複数記事をセット販売。500〜1,980円帯。まとめ読みしたい読者のニーズに応える。</div>
+      </div>
+      <div class="fw-item">
+        <div class="fw-tag">Lv.3</div>
+        <div class="fw-text"><strong>メンバーシップ（月次継続）</strong>：MRR化。読者との関係を長期化し、LTVを最大化。コミュニティ設計がChurnを防ぐ。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 09 PRICING STRATEGY -->
+<div class="section" id="sec-09">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <span class="section-title">PRICING STRATEGY <span class="section-title-jp">note有料コンテンツの価格帯設計</span></span>
+  </div>
+
+  <div class="price-grid" style="margin-bottom: 32px;">
+    <div class="price-card">
+      <div class="price-label">Impulse Buy</div>
+      <div class="price-num">100<span class="price-yen">円</span></div>
+      <div class="price-desc">
+        <strong>「とりあえず買える」帯。</strong>検討コスト0。衝動買いを狙う価格。PV数が多く転換率が重要なコンテンツ向き。
+      </div>
+    </div>
+    <div class="price-card featured">
+      <div class="price-label">Sweet Spot ★</div>
+      <div class="price-num">300<span class="price-yen">円</span></div>
+      <div class="price-desc">
+        <strong>最も選ばれやすい有料価格。</strong>「コーヒー1杯分」の心理的ハードル。初回有料記事に最適。単価とボリュームのバランスが最良。
+      </div>
+    </div>
+    <div class="price-card featured">
+      <div class="price-label">Premium</div>
+      <div class="price-num">500<span class="price-yen">円</span></div>
+      <div class="price-desc">
+        <strong>専門性・実用性を訴求できる帯。</strong>「テンプレ付き」「実データ公開」などの付加価値があると自然に選ばれる。
+      </div>
+    </div>
+    <div class="price-card">
+      <div class="price-label">Flagship</div>
+      <div class="price-num">980<span class="price-yen">円</span></div>
+      <div class="price-desc">
+        <strong>「本1冊より安い」の比較優位。</strong>実績・事例・独自ノウハウが豊富なコンテンツに。購入後の満足度設計が解約防止の鍵。
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="fw-box">
+      <div class="fw-header">価格設定の3つの視点 <small>Cost / Value / Competition</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">コスト</div>
+          <div class="fw-text">制作時間 × 時給換算が最低ライン。ただしデジタルコンテンツのコストはほぼ固定費なので単価を下げすぎる必要はない。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">価値</div>
+          <div class="fw-text">読者が得られる価値（節約できる時間・解決できる課題・得られる知識）を金額換算。値付けはそれに見合っているか。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">競合</div>
+          <div class="fw-text">同ジャンルの競合クリエイターの価格帯を参考に。ただし差別化できていれば高くても売れる。</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">メンバーシップ月額の設計</div>
+      <div class="card-title">490 / 680 / 980円の心理戦</div>
+      <div class="card-body">
+        <strong>490円</strong>：「気軽に試せる」入門プラン。解約しやすいが入会しやすい。<br><br>
+        <strong>680円</strong>：中間帯。「続けやすい価格」で継続率が比較的高い。<br><br>
+        <strong>980円</strong>：「月1,000円未満」の心理的壁を下回る設定。コミュニティや限定コンテンツ付きで成立させる。<br><br>
+        複数プランを用意する場合、真ん中プランが最も選ばれやすい（<strong>松竹梅の竹効果</strong>）。
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-unlock">
+    <div class="ai-unlock-label">AI Unlock — Pricing Strategy / 松竹梅効果</div>
+    <div class="ai-unlock-title">この言葉を知ると引き出せること</div>
+    <div class="ai-unlock-desc">「コスト基準・価値基準・競合基準」「松竹梅の竹効果」「アンカリング」という価格設計の語彙を渡すと、<strong>「自分のコンテンツの適正価格とプラン構成」をAIが理由つきで設計してくれる</strong>。「いくらにすればいい？」という質問から「なぜその価格か」まで変わる。</div>
+    <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>私のnote有料記事（AI活用ノウハウ・読了20分・実装コード付き）の価格を設計してください。コスト基準・価値基準・競合基準の3視点で分析し、松竹梅効果を使ったメンバーシップ月額プランも提案してください。</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 10 DATA-DRIVEN -->
+<div class="section" id="sec-10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <span class="section-title">DATA-DRIVEN <span class="section-title-jp">スキ率・PV・フォロワー転換の計測と改善</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div>
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-label">A/Bテスト — note版</div>
+        <div class="card-title">タイトル実験が最も効果的</div>
+        <div class="card-body">
+          noteでは厳密なA/Bテストは難しいが、<strong>連続した記事でタイトルの型を変えて比較</strong>することは可能。実験する変数は1つだけ（タイトルの長さ・数字の有無・疑問文vs断言文）。複数変更すると何が効いたか分からなくなる。
+        </div>
+      </div>
+      <div class="fw-box">
+        <div class="fw-header">コホート分析 — note版 <small>時期別フォロワーの行動追跡</small></div>
+        <div class="fw-body">
+          <div class="fw-item">
+            <div class="fw-tag">月次</div>
+            <div class="fw-text">フォローした月ごとにグループ化し、<strong>継続してスキしているか・有料転換したか</strong>を追跡。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">記事</div>
+            <div class="fw-text">どの記事からフォローした読者のLTVが高いか。集客記事の質を判断する基準になる。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">流入元</div>
+            <div class="fw-text">X経由 vs note検索 vs Google経由で転換率や継続率が異なる。高品質流入を増やす施策に集中。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">KITAcore 週次ダッシュボード指標</div>
+      <table>
+        <thead>
+          <tr><th>指標</th><th>今週</th><th>先週比</th><th>判断</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-key">総PV</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="font-size:11px; color:var(--muted);">トレンド把握</td>
+          </tr>
+          <tr>
+            <td class="td-key">スキ率</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="font-size:11px; color:var(--muted);">5%基準</td>
+          </tr>
+          <tr>
+            <td class="td-key">新規フォロワー</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="font-size:11px; color:var(--muted);">成長率</td>
+          </tr>
+          <tr>
+            <td class="td-key">有料転換</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="font-size:11px; color:var(--muted);">2%目標</td>
+          </tr>
+          <tr>
+            <td class="td-key">MRR</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="font-size:11px; color:var(--muted);">+5%/月目標</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="insight" style="margin-top: 16px;">
+        <div class="insight-head">分析の落とし穴</div>
+        PVが多い記事が必ずしも「良い記事」ではない。バズった記事はPVが高くてもフォロワー転換率が低いことが多い。<strong>フォロワー転換率と有料転換率を最重視</strong>し、PVはあくまで参考値として扱う。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 11 QUICK REFERENCE CHECKLIST -->
+<div class="section" id="sec-11">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <span class="section-title">QUICK REFERENCE <span class="section-title-jp">noteクリエイター向けチェックリスト</span></span>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-label">記事公開前チェック</div>
+      <div class="card-title">書く前の設計が9割</div>
+      <div class="card-body" style="font-size:12px; line-height:2.2;">
+        □ 誰の・どんな悩みを解消するか言えるか<br>
+        □ タイトルは「得られること」が明確か<br>
+        □ リード文（冒頭3行）で読み続ける理由を渡せているか<br>
+        □ ハッシュタグは3〜5個（多すぎない）<br>
+        □ 有料記事なら「無料部分の引き」は十分か<br>
+        □ CTA（フォロー・購読ボタン）は末尾にあるか<br>
+        □ 投稿日時は予約設定したか（朝7時 or 夜21時）
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">週次ルーティン</div>
+      <div class="card-title">習慣が資産を作る</div>
+      <div class="card-body" style="font-size:12px; line-height:2.2;">
+        □ 前週の記事のスキ率・PVを記録<br>
+        □ フォロワー増減数を確認・原因仮説<br>
+        □ 今週公開する記事のタイトル候補を複数用意<br>
+        □ X投稿の反応から「読者が気にしていること」を拾う<br>
+        □ コメントへの返信を全件実施<br>
+        □ MRR・解約数を更新
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">月次レビュー</div>
+      <div class="card-title">Validated Learning の実践</div>
+      <div class="card-body" style="font-size:12px; line-height:2.2;">
+        □ 今月のBest記事・Worst記事を特定<br>
+        □ Best記事の「何が効いたか」を言語化<br>
+        □ フォロワー転換率の月次推移を記録<br>
+        □ 有料転換率の変化と原因仮説<br>
+        □ 翌月のコンテンツカレンダーを作成<br>
+        □ テーマ・フォーマット・頻度の見直し判断<br>
+        □ 収益（PL）の月次締め
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 12 PEST -->
+<div class="section" id="sec-12">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <span class="section-title">PEST分析 <span class="section-title-jp">noteクリエイターを取り巻くマクロ環境</span></span>
+  </div>
+
+  <div class="matrix">
+    <div class="matrix-cell">
+      <div class="matrix-label">P — Political / Platform Policy</div>
+      <div class="matrix-title">プラットフォーム政策</div>
+      <div class="matrix-body">
+        noteの利用規約変更・アルゴリズム改修・手数料率の変更。X（旧Twitter）のAPI制限・運営方針変更もnoteの流入に直結。プラットフォームに依存しすぎないマルチチャネル設計が重要。
+      </div>
+    </div>
+    <div class="matrix-cell">
+      <div class="matrix-label">E — Economic</div>
+      <div class="matrix-title">経済環境・可処分所得</div>
+      <div class="matrix-body">
+        読者の可処分所得・エンタメ消費への支払い意欲は景気に左右される。サブスクリプション疲れ（複数課金への抵抗感）も増大傾向。「月980円の価値があるか」を常に読者目線で問い直す。
+      </div>
+    </div>
+    <div class="matrix-cell">
+      <div class="matrix-label">S — Social</div>
+      <div class="matrix-title">読者の行動変容・クリエイター市場</div>
+      <div class="matrix-body">
+        クリエイターエコノミーの拡大によりnote競合クリエイターが増加。読者の可処分時間は有限で動画・音声との争奪戦。「読む体験」に優位性があるジャンルを見極める。
+      </div>
+    </div>
+    <div class="matrix-cell hl">
+      <div class="matrix-label">T — Technology</div>
+      <div class="matrix-title">AI・生成技術の台頭</div>
+      <div class="matrix-body">
+        ChatGPT等の生成AIが汎用情報の価値を希薄化。<strong>「AIが生成できない」個人の体験・判断・実績データ</strong>が差別化の核になる。AI活用を開示しながら「人間の視点」を売りにする方向へ転換する必要がある。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 13 SWOT → TOWS -->
+<div class="section" id="sec-13">
+  <div class="section-header">
+    <span class="section-num">13</span>
+    <span class="section-title">SWOT → TOWS <span class="section-title-jp">自分の強み弱み × note市場の機会脅威</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="matrix">
+      <div class="matrix-cell">
+        <div class="matrix-label">S — 強み（Strength）</div>
+        <div class="matrix-title">クリエイターの内部優位</div>
+        <div class="matrix-body">
+          独自の専門知識 / 実体験・失敗談 / 文章スタイルの個性 / 既存フォロワー / 継続力 / 他ジャンルの掛け合わせ（例：エンジニア×デザイン）
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-label">W — 弱み（Weakness）</div>
+        <div class="matrix-title">改善すべき内部課題</div>
+        <div class="matrix-body">
+          更新頻度の不安定さ / タイトル設計の弱さ / 特定テーマへの依存 / 収益化への心理的ハードル / SEO知識の不足
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-label">O — 機会（Opportunity）</div>
+        <div class="matrix-title">外部環境のポジティブ要因</div>
+        <div class="matrix-body">
+          クリエイターエコノミーの拡大 / 特定ニッチの競合不在 / AI活用でコンテンツ量産 / X連携による爆発的流入 / コラボクリエイターとの出会い
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-label">T — 脅威（Threat）</div>
+        <div class="matrix-title">外部環境のネガティブ要因</div>
+        <div class="matrix-body">
+          競合クリエイターの増加 / note手数料率変更 / X運営方針変更 / AI生成コンテンツの洪水 / 読者の可処分時間の減少
+        </div>
+      </div>
+    </div>
+
+    <div class="fw-box">
+      <div class="fw-header">TOWS 戦略導出 <small>SWOTから実行策へ</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">SO戦略</div>
+          <div class="fw-text"><strong>強み × 機会</strong>：独自専門知識 × ニッチ競合不在 → 特化型マガジンで差別化。AI活用を公開することで「AI時代のロールモデル」として認知獲得。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">ST戦略</div>
+          <div class="fw-text"><strong>強み × 脅威</strong>：体験・判断・実績データはAIが代替不可 → これを前面に押し出してAI汎用コンテンツと差別化。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">WO戦略</div>
+          <div class="fw-text"><strong>弱み × 機会</strong>：更新頻度の不安定さ → コンテンツカレンダーを設計してストック記事を積み、コラボで流入を補完。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">WT戦略</div>
+          <div class="fw-text"><strong>弱み × 脅威</strong>：プラットフォーム依存リスク × note頼みの流入 → メールマガジン・他SNS等のチャネルを1本追加してリスク分散。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 14 LEAN STARTUP BML -->
+<div class="section" id="sec-14">
+  <div class="section-header">
+    <span class="section-num">14</span>
+    <span class="section-title">LEAN STARTUP <span class="section-title-jp">Build-Measure-Learn ─ 記事公開→計測→仮説更新</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="steps" style="grid-template-columns: repeat(3,1fr); margin-bottom: 0;">
+      <div class="step" style="border-right: none;">
+        <div class="step-num">B</div>
+        <div class="step-title">BUILD</div>
+        <div class="step-body">
+          記事・マガジン・メンバーシップを公開する。<br><br>
+          最小単位でOK。完璧を目指さず「仮説を乗せた実験として」出す。<br><br>
+          MVP＝「仮説を検証できる最小の記事」
+        </div>
+      </div>
+      <div class="step" style="border-right: none;">
+        <div class="step-num">M</div>
+        <div class="step-title">MEASURE</div>
+        <div class="step-body">
+          スキ率・PV・フォロワー増減・有料転換数を計測。<br><br>
+          数値だけでなくコメント・Xの反応（定性）も収集。<br><br>
+          計測期間：公開から7日間
+        </div>
+      </div>
+      <div class="step" style="border-right: 1px solid var(--border);">
+        <div class="step-num">L</div>
+        <div class="step-title">LEARN</div>
+        <div class="step-body">
+          仮説が正しかったか判断。<br><br>
+          <strong>Persevere</strong>：同方向で深掘り継続<br>
+          <strong>Pivot</strong>：テーマ・対象読者・フォーマットを変更<br><br>
+          学習を次のBuildに反映。
+        </div>
+      </div>
+    </div>
+
+    <div class="fw-box">
+      <div class="fw-header">MVP（最小検証記事）の定義 <small>note版 Lean Startup</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">仮説</div>
+          <div class="fw-text">「〇〇に悩む△△読者に、□□の情報を届ければスキ率10%が取れる」を明示して書く。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">計測</div>
+          <div class="fw-text">1記事ごとにスキ率・フォロワー転換数を記録。感覚ではなく数値で判断する。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Pivot</div>
+          <div class="fw-text">3記事連続でスキ率3%未満→テーマ・対象読者の仮説を根本から見直す。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Persevere</div>
+          <div class="fw-text">スキ率5%+が2〜3回続いたら同テーマを深掘り・連載化・有料展開へ進む。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 15 4P / 4C -->
+<div class="section" id="sec-15">
+  <div class="section-header">
+    <span class="section-num">15</span>
+    <span class="section-title">4P / 4C <span class="section-title-jp">コンテンツ × 価格 × 流通 × プロモーション</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">4P — クリエイター視点のマーケティングミックス</div>
+      <div class="fw-box">
+        <div class="fw-header">4P（note版）</div>
+        <div class="fw-body">
+          <div class="fw-item">
+            <div class="fw-tag">Product</div>
+            <div class="fw-text"><strong>コンテンツ</strong>：記事・マガジン・メンバーシップ。品質・独自性・継続性が商品価値を決める。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Price</div>
+            <div class="fw-text"><strong>価格設定</strong>：無料〜980円の帯設計。心理的価格・競合比較・LTVを考慮して決める。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Place</div>
+            <div class="fw-text"><strong>流通チャネル</strong>：noteプラットフォーム・X連携・Google SEO・コラボ。マルチチャネル設計が安定成長の鍵。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Promotion</div>
+            <div class="fw-text"><strong>プロモーション</strong>：X投稿・ハッシュタグ・フォロワーへのCTA・メンバーシップ告知・コラボ記事。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">4C — 読者視点に翻訳する</div>
+      <div class="fw-box">
+        <div class="fw-header">4C（読者目線）</div>
+        <div class="fw-body">
+          <div class="fw-item">
+            <div class="fw-tag">Customer Value</div>
+            <div class="fw-text"><strong>読者が得る価値</strong>：「読後に何が変わるか」で記事を評価している。スキルアップ・共感・発見など。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Cost</div>
+            <div class="fw-text"><strong>読者の総コスト</strong>：価格＋時間（読む時間）＋心理コスト（支払いへの抵抗感）の総和。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Convenience</div>
+            <div class="fw-text"><strong>読みやすさ・見つけやすさ</strong>：タイトル・見出し・構成・ハッシュタグが発見と読了を助ける。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Communication</div>
+            <div class="fw-text"><strong>双方向のつながり</strong>：コメント返信・X上の交流・メンバーシップコミュニティが「関係」を生む。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 16 PORTER'S 5 FORCES -->
+<div class="section" id="sec-16">
+  <div class="section-header">
+    <span class="section-num">16</span>
+    <span class="section-title">PORTER'S 5 FORCES <span class="section-title-jp">クリエイター競争環境の分析</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="fw-box">
+      <div class="fw-header">5 Forces — note版 <small>競争優位の構造を理解する</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">既存競合</div>
+          <div class="fw-text"><strong>同ジャンルの競合クリエイター</strong>：同テーマで発信するnote・X・Substackのクリエイター。ポジション差別化で正面衝突を避ける。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">新規参入</div>
+          <div class="fw-text"><strong>新興クリエイターの参入</strong>：AIで記事生成コストが下がり参入障壁が低下。自分の「体験・実績・個性」が参入障壁になる。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">代替品</div>
+          <div class="fw-text"><strong>代替コンテンツ</strong>：YouTube・Podcast・書籍・ChatGPT直接回答。「読む体験」の強みを活かせるジャンルに集中。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">読者交渉力</div>
+          <div class="fw-text"><strong>読者の離脱容易性</strong>：フォロー解除・解約が1タップ。継続価値（コミュニティ・連載の続き）を提供して離脱コストを上げる。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">PF依存度</div>
+          <div class="fw-text"><strong>noteプラットフォーム依存</strong>：手数料率・アルゴリズム変更に左右される。X・メルマガなど代替チャネルを保持する。</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-label">3つの競争優位 — note版</div>
+        <div class="card-title">コスト・差別化・集中のどれで勝つか</div>
+        <div class="card-body">
+          <strong>コストリーダーシップ</strong>：同品質を最安値で提供（無料〜100円）。PVボリュームで広告収益を狙うモデル。<br><br>
+          <strong>差別化</strong>：他では読めない独自視点・体験・ノウハウで高単価（300〜980円）を正当化。<br><br>
+          <strong>集中（ニッチ特化）</strong>：特定の読者層・テーマに特化してそのジャンルの第一人者になる。競合が少なくLTVが高い。
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-head">KITAcore的推奨</div>
+        「差別化 × 集中」の組み合わせが個人クリエイターの最強戦略。汎用情報で戦うのではなく、「データエンジニアが分析する〇〇」「KITAcoreが実験した〇〇」という属人性のある切り口でポジションを確立する。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 17 ARTICLE PORTFOLIO (BCG + ANSOFF) -->
+<div class="section" id="sec-17">
+  <div class="section-header">
+    <span class="section-num">17</span>
+    <span class="section-title">ARTICLE PORTFOLIO <span class="section-title-jp">記事ポートフォリオ管理 ─ BCG Matrix + Ansoff</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">BCG Matrix — 記事資産の分類</div>
+      <div class="matrix">
+        <div class="matrix-cell hl">
+          <div class="matrix-label">高成長 × 高シェア</div>
+          <div class="matrix-title">⭐ Star 記事</div>
+          <div class="matrix-body">PVが伸び続け、フォロワー転換率も高い。深掘り・連載化・有料展開の最優先候補。</div>
+        </div>
+        <div class="matrix-cell">
+          <div class="matrix-label">低成長 × 高シェア</div>
+          <div class="matrix-title">💰 Cash Cow 記事</div>
+          <div class="matrix-body">PVは安定しているがフォロワー増加は鈍化。継続的に収益貢献。検索流入が安定している。</div>
+        </div>
+        <div class="matrix-cell">
+          <div class="matrix-label">高成長 × 低シェア</div>
+          <div class="matrix-title">❓ Question 記事</div>
+          <div class="matrix-body">伸び可能性はあるが現状のPVは低め。タイトル・配信チャネル改善で化ける可能性あり。</div>
+        </div>
+        <div class="matrix-cell">
+          <div class="matrix-label">低成長 × 低シェア</div>
+          <div class="matrix-title">🐕 Dog 記事</div>
+          <div class="matrix-body">PVも転換率も低い。方向性が読者に合っていない可能性。改稿 or 削除を検討。</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">Ansoff Matrix — テーマ拡張戦略</div>
+      <div class="matrix">
+        <div class="matrix-cell">
+          <div class="matrix-label">既存読者 × 既存テーマ</div>
+          <div class="matrix-title">市場浸透</div>
+          <div class="matrix-body">同じ読者層に同テーマを深掘り・連載化。最もリスクが低い。リテンション最優先期に選ぶ。</div>
+        </div>
+        <div class="matrix-cell hl">
+          <div class="matrix-label">新読者 × 既存テーマ</div>
+          <div class="matrix-title">市場開発</div>
+          <div class="matrix-body">コラボ・X拡大・SEO強化で同テーマへの新規読者を獲得。RCF確立後に狙う成長戦略。</div>
+        </div>
+        <div class="matrix-cell">
+          <div class="matrix-label">既存読者 × 新テーマ</div>
+          <div class="matrix-title">コンテンツ開発</div>
+          <div class="matrix-body">既存フォロワーに新テーマを提供。読者の期待から外れるリスクあり。少量試してから判断。</div>
+        </div>
+        <div class="matrix-cell">
+          <div class="matrix-label">新読者 × 新テーマ</div>
+          <div class="matrix-title">多角化</div>
+          <div class="matrix-body">最もリスクが高い。実績クリエイターの「第2ブランド」立ち上げ時にのみ検討する。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 18 AIDA / AISAS + CUSTOMER JOURNEY -->
+<div class="section" id="sec-18">
+  <div class="section-header">
+    <span class="section-num">18</span>
+    <span class="section-title">AIDA / AISAS <span class="section-title-jp">タイトル設計・リード文・CTA + カスタマージャーニー</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="fw-box">
+      <div class="fw-header">AISAS — note×X の購読導線設計</div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">Attention</div>
+          <div class="fw-text"><strong>タイトルで注意を引く</strong>。Xの投稿・noteのサムネイル・ハッシュタグが最初の接点。「読みたい」と思わせる0.5秒の設計。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Interest</div>
+          <div class="fw-text"><strong>リード文（冒頭3行）で興味を持続</strong>。「この記事を読めば○○が分かる」を冒頭で約束する。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Search</div>
+          <div class="fw-text"><strong>クリエイターを検索・調べる</strong>。プロフィール・他の記事・Xアカウントを確認する行動。プロフィールの設計が重要。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Action</div>
+          <div class="fw-text"><strong>スキ・フォロー・有料購入</strong>のどれかのアクション。CTA（行動喚起）を末尾に明示しなければ行動されない。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Share</div>
+          <div class="fw-text"><strong>XでシェアまたはRTする</strong>。「拡散したくなる体験」を記事内に仕込む（驚き・共感・実用性）。</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">カスタマージャーニー — note読者の旅</div>
+      <div class="funnel">
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">① SNS流入</div>
+            <div style="font-size:12px; color:var(--muted);">X投稿・RTで記事タイトルと出会う</div>
+          </div>
+          <div class="funnel-meta">Attention</div>
+        </div>
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">② 無料記事を読む</div>
+            <div style="font-size:12px; color:var(--muted);">「この人面白い」と感じてスキ</div>
+          </div>
+          <div class="funnel-meta">Interest → Action</div>
+        </div>
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">③ プロフィール確認 → フォロー</div>
+            <div style="font-size:12px; color:var(--muted);">他の記事も読んで「クリエイターを信頼」</div>
+          </div>
+          <div class="funnel-meta">Search → Follow</div>
+        </div>
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">④ 有料記事・マガジン購入</div>
+            <div style="font-size:12px; color:var(--muted);">「これは自分に必要」と確信して投資</div>
+          </div>
+          <div class="funnel-meta">Revenue</div>
+        </div>
+        <div class="funnel-row">
+          <div>
+            <div class="funnel-label">⑤ メンバーシップ → 紹介</div>
+            <div style="font-size:12px; color:var(--muted);">ファンとしてXで紹介・シェア</div>
+          </div>
+          <div class="funnel-meta">Referral</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">CTA設計の原則</div>
+    <div class="card-title">「行動してほしいこと」を1つだけ明示する</div>
+    <div class="card-body">
+      記事末尾のCTAは多すぎると逆効果。<strong>フェーズに応じて1つに絞る</strong>。<br>
+      RCF探索フェーズ：「フォローお願いします（次の記事を逃さないために）」→ フォロワーを増やす<br>
+      RCF到達後：「マガジンへはこちら」→ 有料転換を狙う<br>
+      メンバーシップ訴求時：「月〇〇円で〇〇が読み放題」と価値を具体的に伝える
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 19 PERSONAL BRAND EQUITY -->
+<div class="section" id="sec-19">
+  <div class="section-header">
+    <span class="section-num">19</span>
+    <span class="section-title">PERSONAL BRAND EQUITY <span class="section-title-jp">個人ブランド構築 ─ Aaker 5次元のnote版</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="fw-box">
+      <div class="fw-header">Aaker ブランドエクイティ — 個人版 <small>「KITAcoreといえば〇〇」を作る</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">認知</div>
+          <div class="fw-text"><strong>ブランド認知（Awareness）</strong>：「このクリエイターを知っている」状態。Xでの露出・note内おすすめが起点。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">連想</div>
+          <div class="fw-text"><strong>ブランド連想（Association）</strong>：名前を聞いて「データ×デザイン」「関西弁で分かりやすい」等の属性が浮かぶ状態。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">品質</div>
+          <div class="fw-text"><strong>知覚品質（Perceived Quality）</strong>：「この人の記事は外れがない」という信頼。継続的な品質維持が蓄積。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">ロイヤリティ</div>
+          <div class="fw-text"><strong>ブランドロイヤリティ</strong>：更新のたびに真っ先に読む読者。メンバーシップ継続・口コミ紹介が最高の指標。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">資産</div>
+          <div class="fw-text"><strong>その他資産</strong>：記事のアーカイブ・Xフォロワー・メンバーコミュニティ・他クリエイターとの関係性。</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-label">Core Identity / Extended Identity</div>
+        <div class="card-title">「変えないもの」を定義する</div>
+        <div class="card-body">
+          <strong>Core Identity（核心）</strong>：テーマが変わっても変えない本質的な価値観・発信の理由。例：「データで裏づけた発見を届ける」<br><br>
+          <strong>Extended Identity（拡張）</strong>：トーン・デザイン・更新頻度・呼称。変えてよい要素だが一貫性が大切。<br><br>
+          <strong>Brand Essence（本質）</strong>：1フレーズでブランドを表す。例：「Less, but better.」
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">note × ブランドエクイティ</div>
+        <div class="card-title">積み上げは突然消えない</div>
+        <div class="card-body" style="font-size: 12px; line-height: 1.9;">
+          記事数・フォロワー数は資産。ただしブランドエクイティの真の価値は「読者の頭の中にある連想」。記事を削除しても連想は消えない。一貫したトーン・テーマ・デザインで発信し続けることが、<strong>「次も読みたい」「信頼できる」という感覚の蓄積</strong>につながる。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 20 BLUE OCEAN + IMC -->
+<div class="section" id="sec-20">
+  <div class="section-header">
+    <span class="section-num">20</span>
+    <span class="section-title">STRATEGY & COMMS <span class="section-title-jp">ブルーオーシャン戦略 + IMC（PESO）</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">Blue Ocean Strategy — note版</div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-label">概念</div>
+        <div class="card-title">競合と被らないポジション設計</div>
+        <div class="card-body">同ジャンルのクリエイターが多い「レッドオーシャン」に飛び込まず、<strong>自分だけが語れる切り口・属性・体験の組み合わせ</strong>でブルーオーシャンを作る。「エンジニア × デザイン × 関西弁」のような複数要素の掛け合わせが最も参入障壁を高める。</div>
+      </div>
+      <div class="fw-box">
+        <div class="fw-header">ERRC — クリエイター版 <small>4つのアクション</small></div>
+        <div class="fw-body">
+          <div class="fw-item">
+            <div class="fw-tag">Eliminate</div>
+            <div class="fw-text"><strong>取り除く</strong>：業界の常識（毎日投稿・タメ口統一・広告収益狙い）の中で自分に合わないものを捨てる。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Reduce</div>
+            <div class="fw-text"><strong>減らす</strong>：汎用情報・長すぎる前置き・不要なまとめ記事を削ぎ落とす。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Raise</div>
+            <div class="fw-text"><strong>増やす</strong>：データの具体性・デザインクオリティ・読後の行動変容可能性を業界水準以上に引き上げる。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Create</div>
+            <div class="fw-text"><strong>創造する</strong>：他クリエイターが提供していないフォーマット・体験・コミュニティを生み出す。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">IMC（PESO）— noteクリエイターのメディア設計</div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-label">統合メディア戦略</div>
+        <div class="card-title">すべての接点で一貫したメッセージを</div>
+        <div class="card-body">noteクリエイターは複数のメディアを持つ。それぞれの役割を定義し、相互補完的に設計することで一貫したブランドメッセージを届ける。</div>
+      </div>
+      <div class="fw-box">
+        <div class="fw-header">PESO モデル（note版）</div>
+        <div class="fw-body">
+          <div class="fw-item">
+            <div class="fw-tag">Paid</div>
+            <div class="fw-text"><strong>基本は使わない</strong>：個人クリエイターのフェーズで広告費をかける必要はほぼない。有料note記事の「おすすめ」掲載が擬似Paid。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Owned</div>
+            <div class="fw-text"><strong>noteブログ（主戦場）</strong>：自分の城。記事・マガジン・メンバーシップの蓄積がブランド資産になる。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Earned</div>
+            <div class="fw-text"><strong>シェア・紹介・メディア掲載</strong>：読者のXシェア・他クリエイターの紹介。最も信頼性が高く、コンテンツ品質が源泉。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">Shared</div>
+            <div class="fw-text"><strong>X（Twitter）投稿</strong>：自分で発信するSNS。記事ティザー・読者との交流・ブランド構築の最前線。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 21 CRM + KOTLER -->
+<div class="section" id="sec-21">
+  <div class="section-header">
+    <span class="section-num">21</span>
+    <span class="section-title">READER RELATIONSHIP <span class="section-title-jp">読者との関係設計 ─ CRM + コトラー</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">CRM — 読者との関係設計</div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-label">哲学</div>
+        <div class="card-title">「PV」から「ファン」へ</div>
+        <div class="card-body">
+          1回読まれて終わりではなく、<strong>読み続けられる・応援してもらえる関係</strong>を設計する。新規フォロワーを増やすより既存フォロワーを大切にするほうが収益効率は高い。
+        </div>
+        <div class="card-highlight">読者LTVを最大化するには、有料転換後の「読者サクセス」設計が最も重要。</div>
+      </div>
+      <div class="fw-box">
+        <div class="fw-header">読者CRMの4ステージ</div>
+        <div class="fw-body">
+          <div class="fw-item">
+            <div class="fw-tag">獲得</div>
+            <div class="fw-text">新規読者 → フォロワーへの転換。TOFUコンテンツ・X投稿・コラボで入口を作る。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">育成</div>
+            <div class="fw-text">フォロワー → 有料読者へ。マガジン誘導・有料記事のサンプル公開・CTA設計で転換を後押し。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">維持</div>
+            <div class="fw-text">解約・アンフォロー防止。コンテンツの一貫性・更新頻度維持・コメント返信がChurnを下げる。</div>
+          </div>
+          <div class="fw-item">
+            <div class="fw-tag">復活</div>
+            <div class="fw-text">離脱読者の再獲得。解約者向け「期間限定戻りキャンペーン」や新テーマでの再アプローチ。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px;">コトラー Marketing 1.0 → 5.0 — note版</div>
+      <table style="margin-bottom: 16px;">
+        <thead>
+          <tr><th>世代</th><th>クリエイター版の解釈</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="td-key">1.0</td><td>「書いたものを売る」。コンテンツ中心、読者は均質に扱われる。</td></tr>
+          <tr><td class="td-key">2.0</td><td>「読者のニーズに応える」。ターゲット読者を設定し、悩みに答える記事へ。</td></tr>
+          <tr><td class="td-key">3.0</td><td>「価値観を共有する」。クリエイターの哲学・生き方に共感するファン形成。</td></tr>
+          <tr><td class="td-key">4.0</td><td>「X × note × コミュニティの統合」。オンラインとリアルを跨いだ関係設計。</td></tr>
+          <tr style="background: var(--surface-v);">
+            <td class="td-key" style="color: var(--accent);">5.0</td>
+            <td style="font-weight: 700;">「AIを活用しながら人間らしい体験を届ける」。生成AIで効率化しつつ個人の視点・感情・倫理を核に置く。</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="card">
+        <div class="card-label">Marketing 5.0 × note</div>
+        <div class="card-title">AIに奪われない価値を売る</div>
+        <div class="card-body" style="font-size: 12px; line-height: 2.0;">
+          <strong>Data-Driven</strong>：スキ率・フォロワー転換・MRRで意思決定<br>
+          <strong>Agile</strong>：小さく試し、素早く学び、即更新<br>
+          <strong>Human-Centric</strong>：体験・感情・判断はAIが代替できない<br>
+          <strong>Social Impact</strong>：読者の人生に何かポジティブな変化を残す
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 22 TITLE DESIGN -->
+<div class="section" id="sec-22">
+  <div class="section-header">
+    <span class="section-num">22</span>
+    <span class="section-title">TITLE DESIGN <span class="section-title-jp">タイトル設計の法則 ─ note専用概念</span></span>
+  </div>
+
+  <div class="grid-3" style="margin-bottom: 24px;">
+    <div class="card">
+      <div class="card-label">軸 1 — 検索最適化</div>
+      <div class="card-title">Google・note内検索で見つかる</div>
+      <div class="card-body">
+        読者が検索するキーワードをタイトルに含める。「〇〇とは」「〇〇のやり方」「〇〇 まとめ」は検索ボリュームが高い。ただし<strong>SEOのためだけのタイトルは感情的引力が弱い</strong>。
+      </div>
+      <div class="tag-list">
+        <span class="tag">キーワード含有</span><span class="tag">具体的な数字</span><span class="tag">完全一致狙い</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">軸 2 — 拡散力</div>
+      <div class="card-title">Xでシェアされる・RTされる</div>
+      <div class="card-body">
+        驚き・共感・反論が生まれるタイトルが拡散される。「〇〇という思い込みは間違いだった」「〇〇したら人生が変わった」のように感情が動くフレーズを入れる。
+      </div>
+      <div class="tag-list">
+        <span class="tag">感情的引力</span><span class="tag">意外性</span><span class="tag">逆説</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">軸 3 — 購買意欲</div>
+      <div class="card-title">「これは自分のために書かれた」と思わせる</div>
+      <div class="card-body">
+        有料記事のタイトルは「読後に得られる具体的な変化」を約束する。「〇〇が3倍になる設計」「実際に試した〇〇の全手順」のように<strong>買う理由が明確</strong>なタイトルが転換率を高める。
+      </div>
+      <div class="tag-list">
+        <span class="tag">具体的な便益</span><span class="tag">一人称体験</span><span class="tag">定量的成果</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fw-box">
+    <div class="fw-header">タイトル型カタログ <small>反応が高いパターン集</small></div>
+    <div class="fw-body">
+      <div class="fw-item">
+        <div class="fw-tag">数字型</div>
+        <div class="fw-text">「〇〇を増やした5つの方法」「3ヶ月で〇〇になった話」——具体的な数字が信頼感と期待値を生む。</div>
+      </div>
+      <div class="fw-item">
+        <div class="fw-tag">疑問型</div>
+        <div class="fw-text">「なぜ〇〇は△△なのか」「〇〇って実際どうなの？」——読者の疑問を代弁すると検索流入と共感拡散が同時に取れる。</div>
+      </div>
+      <div class="fw-item">
+        <div class="fw-tag">体験型</div>
+        <div class="fw-text">「〇〇を1年間やってみた正直な話」——実験・実体験のリアリティが「読まなければ知れない情報」感を出す。</div>
+      </div>
+      <div class="fw-item">
+        <div class="fw-tag">逆説型</div>
+        <div class="fw-text">「〇〇してはいけない理由」「〇〇という常識を捨てた結果」——意外性が即クリックを生む。ただし内容が伴わないとブランド毀損。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 23 NOTE SEO -->
+<div class="section" id="sec-23">
+  <div class="section-header">
+    <span class="section-num">23</span>
+    <span class="section-title">NOTE SEO <span class="section-title-jp">ハッシュタグ・記事タイトルの検索最適化</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="fw-box">
+      <div class="fw-header">note SEO の仕組み <small>2つの検索からの流入を設計する</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">note内検索</div>
+          <div class="fw-text"><strong>ハッシュタグ・タイトルキーワード</strong>が主な最適化対象。note内で「〇〇」と検索した読者が見つけるための設計。ハッシュタグは多すぎると逆効果（3〜5個が最適）。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">Google検索</div>
+          <div class="fw-text">noteのドメインパワーはSEOに有利。タイトル・見出し（h2/h3）に検索キーワードを自然に含める。「〇〇 note」で上位に来やすいジャンルが存在する。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">おすすめ表示</div>
+          <div class="fw-text">公開直後の初速（スキ数・コメント数）がnoteアルゴリズムの「おすすめ」掲載に影響。初速設計（Section 05参照）と連動。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">ハッシュタグ戦略</div>
+      <div class="card-title">ボリューム × 競合度のバランス</div>
+      <div class="card-body">
+        <strong>大ボリュームタグ（#マーケティング, #副業）</strong>：流入は多いが競合も多い。大ヒット記事でなければ埋もれる。<br><br>
+        <strong>ミドルタグ（#noteの書き方, #Pythonメモ）</strong>：競合が適度で持続的な流入が期待できる。<strong>狙い目</strong>。<br><br>
+        <strong>スモールタグ（#KITAcore, #データエンジニアの日常）</strong>：競合ほぼゼロ。ブランドタグとして個人認知を積み上げる。自分専用タグを1〜2個育てると読者が「タグフォロー」してくれる。
+      </div>
+      <div class="insight" style="margin-top: 16px;">
+        <div class="insight-head">推奨タグ構成</div>
+        大1 + ミドル2〜3 + ブランド1 = 合計4〜5個。最初は複数パターンを試して転換率が高い組み合わせを固定する。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 24 X × NOTE INTEGRATION -->
+<div class="section" id="sec-24">
+  <div class="section-header">
+    <span class="section-num">24</span>
+    <span class="section-title">X × NOTE 連携設計 <span class="section-title-jp">流入導線・ティザー投稿・CTA設計</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div>
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-label">X → note の流入設計</div>
+        <div class="card-title">ティザー投稿の構造</div>
+        <div class="card-body">
+          Xで記事の「結論の一部」を先出しし、「詳細はnoteで」と誘導する。<br><br>
+          <strong>効果的な構造：</strong><br>
+          1ツイート目：驚き or 共感を生む問い or 結論<br>
+          2ツイート目：「なぜか」の理由を1〜2文で<br>
+          3ツイート目：「全文はnoteで」+ 記事URL<br><br>
+          スレッド形式（3〜5ツイート）はリプライが集まりやすく、アルゴリズムに評価されやすい。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">X プロフィール設計</div>
+        <div class="card-title">note流入に最適化した自己紹介</div>
+        <div class="card-body">
+          Xのプロフィール → noteリンクの経路を短くする。<br><br>
+          <strong>プロフィール文の構成：</strong><br>
+          ① 「何者か」（肩書き・専門領域）<br>
+          ② 「何を発信しているか」（1行で）<br>
+          ③ 「noteへのCTA」（「詳しい解説はnoteで」等）<br>
+          ④ noteのURL（固定ツイートにも設定）
+        </div>
+      </div>
+    </div>
+
+    <div class="fw-box">
+      <div class="fw-header">X投稿の最適化パターン <small>曜日・時間・形式の設計</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">朝7〜8時</div>
+          <div class="fw-text"><strong>出勤前・通勤中の流入が最大</strong>。情報収集目的の読者が多く、スレッド形式のノウハウ系が最も反応が高い。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">昼12〜13時</div>
+          <div class="fw-text"><strong>昼休みの流入</strong>。短くまとまったコンテンツが好まれる。引用・感想系の軽い投稿向き。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">夜21〜22時</div>
+          <div class="fw-text"><strong>最も長く読まれる時間帯</strong>。じっくり読める長文スレッド・note誘導に最適。週1回の「note更新告知」はここで出す。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">月〜水</div>
+          <div class="fw-text"><strong>週前半が流入効率◎</strong>。週末はエンタメ系に流れやすい。ビジネス・ノウハウ系は月〜木が主戦場。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">固定ツイート</div>
+          <div class="fw-text"><strong>プロフィール訪問者への最強CTA</strong>。「一番読まれている記事」または「自己紹介note」を固定して流入を最大化。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 25 SPEED LAUNCH DESIGN -->
+<div class="dark-section" id="sec-25">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="section-header" style="border-color: #1E293B;">
+      <span class="section-num">25</span>
+      <span class="section-title">初速設計 <span class="section-title-jp">公開直後のスキ率が未来のPVを決める</span></span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+      <div>
+        <div class="dark-num">0〜1h</div>
+        <div class="dark-label">ゴールデンタイム</div>
+        <div style="font-size: 13px; color: #94A3B8; margin-top: 12px; line-height: 1.8;">
+          公開直後1時間のスキ数・コメント数がnoteアルゴリズムの「おすすめ」掲載を左右する最も重要な時間帯。ここで動かなければ後から動いても手遅れ。
+        </div>
+      </div>
+      <div>
+        <div class="dark-num">1〜24h</div>
+        <div class="dark-label">拡散フェーズ</div>
+        <div style="font-size: 13px; color: #94A3B8; margin-top: 12px; line-height: 1.8;">
+          おすすめ掲載 → 新規読者への到達。Xで角度を変えた追加投稿・コメントへの返信で継続的に熱量を保つ。
+        </div>
+      </div>
+      <div>
+        <div class="dark-num">7日後</div>
+        <div class="dark-label">データ確定</div>
+        <div style="font-size: 13px; color: #94A3B8; margin-top: 12px; line-height: 1.8;">
+          初速の結果が記録データとして確定。スキ率・フォロワー転換数をレポートに記録し、次の仮説設計に反映する。
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+      <div class="card">
+        <div class="card-label">初速を上げる7つの施策</div>
+        <div class="card-title">公開と同時にやること</div>
+        <div class="card-body" style="font-size:12px; line-height:2.2;">
+          ① 公開と同時にXでティザー投稿（時間差厳禁）<br>
+          ② メンバーシップで「先行公開」して初速を先に作る<br>
+          ③ 記事末尾に「コメントお待ちしています」と明記<br>
+          ④ 著者コメントを自分で最初に投稿して場を作る<br>
+          ⑤ 連携クリエイターに事前告知してシェアを依頼<br>
+          ⑥ 公開時間は朝7時 or 夜21時に合わせる<br>
+          ⑦ 翌朝にXで「読んだ人の反応」を引用RTで紹介
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">初速と記事アーカイブの関係</div>
+        <div class="card-title">ストック型 vs フロー型の設計</div>
+        <div class="card-body" style="font-size:12px; line-height:1.9;">
+          <strong>フロー型（初速依存）</strong>：時事・トレンド記事。公開直後が全盛期。初速設計が命。<br><br>
+          <strong>ストック型（長期流入）</strong>：ハウツー・フレームワーク解説・まとめ記事。Google SEOで長期的に読まれ続ける。初速が低くても資産として機能。<br><br>
+          理想の比率：ストック7割・フロー3割。両方のポートフォリオで収益を安定させる。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-unlock" style="background: #1a1a2e; border-color: #2a2a3e; border-top-color: #00D4FF; margin: 32px 0 0;">
+    <div class="ai-unlock-label" style="color: #64748B;">
+      <span style="color: #00D4FF;">⌘</span> AI Unlock — 初速設計 / アルゴリズム最適化
+    </div>
+    <div class="ai-unlock-title" style="color: #E2E8F0;">この言葉を知ると引き出せること</div>
+    <div class="ai-unlock-desc" style="color: #94A3B8;">「初速」「ゴールデンタイム（公開後1時間）」「ストック型 vs フロー型」「おすすめアルゴリズム」という概念を渡すと、<strong style="color: #E2E8F0;">「公開日の動き方を時系列でAIに設計してもらえる</strong>」。「バズらせるには？」という曖昧な質問から、具体的な初速設計スケジュールに変わる。</div>
+    <div class="ai-prompt-example" style="background: #0f172a; border: 1px solid #1e293b;"><span class="ai-prompt-label">Prompt Example</span>私のnote（テーマ：Claude活用ガイド・ストック型記事）の公開日初速設計を作ってください。公開0〜1時間・1〜24時間・2〜7日の3フェーズに分けて、X投稿タイミング・コメント戦略・フォロワーへのCTAを具体的に教えてください。</div>
+  </div>
+</div>
+<div class="section" id="sec-26">
+  <div class="section-header">
+    <span class="section-num">26</span>
+    <span class="section-title">CONTENT CALENDAR <span class="section-title-jp">コンテンツカレンダー設計 ─ 投稿頻度・ネタ管理</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="fw-box">
+      <div class="fw-header">投稿頻度の設計 <small>続けられる頻度が最善の頻度</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">週1〜2本</div>
+          <div class="fw-text"><strong>最も持続可能なペース。</strong>質を維持しながらフォロワーへの存在感を保てる。まず3ヶ月継続することを最優先目標に設定。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">週3〜5本</div>
+          <div class="fw-text"><strong>成長期の攻めのペース。</strong>初速・アルゴリズム評価・フォロワー獲得が早いが燃え尽き率も高い。ストック記事を積んでから増やす。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">月4本以下</div>
+          <div class="fw-text"><strong>質特化モデル。</strong>深掘り1本を丁寧に作り込む。スキ率・有料転換率で勝負。PVよりLTVを重視するフェーズで有効。</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-label">ネタのストック管理</div>
+        <div class="card-title">アイデアを枯渇させない仕組み</div>
+        <div class="card-body">
+          <strong>ネタ収集の4つのソース：</strong><br><br>
+          ① <strong>コメント・質問</strong>：読者から来た質問が最高のネタ。「これを記事にします」と宣言するだけで需要が確認できる。<br><br>
+          ② <strong>X上の「誰も答えていない疑問」</strong>：検索しても出てこない情報がブルーオーシャン。<br><br>
+          ③ <strong>自分の実験・失敗</strong>：AIが生成できない唯一のオリジナルソース。<br><br>
+          ④ <strong>既存記事の深掘り・続編</strong>：スキ率が高かった記事の角度を変えて再利用。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-label">週次テンプレート（週1本モデル）</div>
+      <div class="card-title">月・火・水・木・金の動き</div>
+      <div class="card-body" style="font-size:12px; line-height:2.2;">
+        月：先週のデータ確認・今週テーマ決定<br>
+        火：構成案・タイトル候補作成<br>
+        水：本文執筆<br>
+        木：編集・推敲・CTA最終確認<br>
+        金（公開）：X投稿 → note公開 → コメント対応
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">連載 vs 単発の使い分け</div>
+      <div class="card-title">LTVへの影響を考える</div>
+      <div class="card-body" style="font-size:12px; line-height:2.0;">
+        <strong>連載記事</strong>：「続きが読みたい」がフォロー・継続購読の強力な動機になる。RCF後に始めると効果的。マガジン化して定価設定しやすい。<br><br>
+        <strong>単発記事</strong>：検索・SNS流入で新規読者を取りやすい。ストック型になりやすくSEO効果が長続きする。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">ネタ切れ対処法</div>
+      <div class="card-title">0から作ろうとしない</div>
+      <div class="card-body" style="font-size:12px; line-height:2.0;">
+        · Best記事を「〇ヶ月後に読み返すと気づいた追記」<br>
+        · 読者から来た質問に1記事丸ごと答える<br>
+        · 「失敗した実験」レポートをそのまま出す<br>
+        · 他ジャンルのフレームワークを自分の専門に当てはめる<br>
+        · 過去記事の「間違いだったこと」を訂正記事に
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 27 READER PERSONA -->
+<div class="section" id="sec-27">
+  <div class="section-header">
+    <span class="section-num">27</span>
+    <span class="section-title">READER PERSONA <span class="section-title-jp">note読者特有の行動パターンと設計への応用</span></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="fw-box">
+      <div class="fw-header">note読者の行動パターン <small>一般的なWebメディア読者との違い</small></div>
+      <div class="fw-body">
+        <div class="fw-item">
+          <div class="fw-tag">消費動機</div>
+          <div class="fw-text">情報収集だけでなく<strong>「共感」「体験の追体験」「クリエイターへの応援」</strong>が購読・購入の大きな動機。エモーションを動かすコンテンツが有料転換率を高める。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">クリエイター信頼</div>
+          <div class="fw-text">法人メディアより<strong>「個人の体験・失敗・本音」</strong>を評価する傾向が強い。顔の見えるクリエイターからの情報は信頼度が高く、有料転換率も高い。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">長文受容性</div>
+          <div class="fw-text">note読者はSNSより<strong>長文を読む心理的準備</strong>がある。2,000〜5,000字の深掘り記事が最もスキ率・有料転換率の相関が高い傾向。</div>
+        </div>
+        <div class="fw-item">
+          <div class="fw-tag">支払い意欲</div>
+          <div class="fw-text">「好きなクリエイターを支援したい」心理が働く。<strong>品質よりも「応援」が購入動機</strong>になる場合も多い。コミュニティ感・継続性への投資感を訴求する。</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-label">ペルソナ設計テンプレート</div>
+        <div class="card-title">「この1人のために書く」</div>
+        <div class="card-body">
+          <strong>設定すべき項目：</strong><br><br>
+          · 職業・年齢・生活パターン<br>
+          · 「なぜnoteを読むか」（主な動機）<br>
+          · 今抱えている具体的な悩み（JTBD）<br>
+          · 読後に「どう変わりたいか」（Gains）<br>
+          · 有料コンテンツに月いくら使えるか<br>
+          · どこから記事に辿り着くか（流入経路）<br><br>
+          ペルソナは「実在する読者1人」をモデルにすると精度が上がる。コメントした読者・フォロワーのプロフィールを観察する。
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-head">ペルソナの罠</div>
+        「ペルソナを作って満足」は最悪のパターン。ペルソナは<strong>記事を書くたびに「この人に読んでほしいか？」を確認するためのチェックツール</strong>。3ヶ月ごとにデータと照合して更新する。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- 28 KNOWLEDGE MAP -->
+<div class="section" id="sec-28" style="padding-bottom: 80px;">
+  <div class="section-header">
+    <span class="section-num">28</span>
+    <span class="section-title">KNOWLEDGE MAP <span class="section-title-jp">全フレームワーク使いどころ整理 ─ note版</span></span>
+  </div>
+
+  <div class="grid-3" style="margin-bottom: 32px;">
+    <div class="card">
+      <div class="card-label">フェーズ 1 — RCF探索期</div>
+      <div class="card-title">誰に・何を・なぜを定義する</div>
+      <div class="card-body" style="font-size:12px; line-height:2.2;">
+        JTBD → 読者の仕事を理解する<br>
+        VPC → 価値提案を設計する<br>
+        STP → 読者・テーマ・ポジションを決める<br>
+        PEST → 外部環境を把握する<br>
+        SWOT/TOWS → 自分の戦略を導出する<br>
+        Lean Startup BML → 仮説検証ループを回す
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">フェーズ 2 — RCF到達〜成長期</div>
+      <div class="card-title">読者を育てて収益につなげる</div>
+      <div class="card-body" style="font-size:12px; line-height:2.2;">
+        RCF指標 → 3指標ファネルを計測<br>
+        AARRR → 成長ボトルネックを特定<br>
+        Launch Strategy → GTM設計<br>
+        AIDA/AISAS → 購読導線を設計<br>
+        Pricing → 価格帯・プラン設計<br>
+        Content × Distribution → TOFUからBOFUへ
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">フェーズ 3 — スケール期</div>
+      <div class="card-title">ブランドと収益基盤を固める</div>
+      <div class="card-body" style="font-size:12px; line-height:2.2;">
+        Article Portfolio（BCG/Ansoff） → 記事資産管理<br>
+        Personal Brand Equity → 「KITAcoreといえば」を作る<br>
+        Blue Ocean + IMC → ポジション×メディア設計<br>
+        Reader CRM → 読者LTVを最大化<br>
+        Content Calendar → 持続可能な運営<br>
+        Growth Metrics → MRR・Churnを管理
+      </div>
+    </div>
+  </div>
+
+  <!-- 総まとめ DARK BLOCK -->
+  <div style="background: var(--accent); border-radius: 4px; padding: 40px; color: #fff;">
+    <div style="font-family: var(--font-mono); font-size: 10px; color: #CCCCCC; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 24px;">KNOWLEDGE MAP — note専用概念（Sec.22〜27）の使いどころ</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px;">
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: #CCCCCC; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">コンテンツ設計</div>
+        <div style="font-size: 12px; color: #888; line-height: 2.4;">
+          Title Design → 集客・拡散・購買の3軸<br>
+          Note SEO → 検索・ハッシュタグ最適化<br>
+          Content Calendar → 継続と品質の両立<br>
+          初速設計 → 公開直後の熱量設計
+        </div>
+      </div>
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: #CCCCCC; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">流入・拡散</div>
+        <div style="font-size: 12px; color: #888; line-height: 2.4;">
+          X × note 連携設計 → 最速の流入経路<br>
+          IMC（PESO） → 自分のメディア設計<br>
+          Referral（AARRR） → 口コミ・シェア設計<br>
+          Launch Strategy → MLG・PLG・SLGの選択
+        </div>
+      </div>
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: #CCCCCC; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">読者理解・関係</div>
+        <div style="font-size: 12px; color: #888; line-height: 2.4;">
+          Reader Persona → 「1人のために書く」<br>
+          Reader CRM → 獲得→育成→維持→復活<br>
+          Personal Brand Equity → ロイヤリティ設計<br>
+          Reader LTV → 収益の設計思想
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px; padding-top: 32px; border-top: 1px solid #222;">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: #444; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px;">CORE PRINCIPLE</div>
+      <div style="font-family: var(--font-display); font-size: 20px; font-weight: 700; color: #fff; line-height: 1.4;">
+        書く前に、誰のどんな仕事を片付けるか言えるか。<br>
+        書いた後に、何が変わったか計測しているか。<br>
+        それだけで、noteでの成長は決まる。
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-brand">KITACORE / NOTE CREATOR MARKETING — 2026.04 — LESS, BUT BETTER.</div>
+  <div class="footer-date">Vol. 2 of 2</div>
+</div>
+
+<script>
+(function() {
+
+  /* ── BOOT SEQUENCE ── */
+  const bootEl  = document.getElementById('boot');
+  const bootBar = document.getElementById('boot-bar');
+  const bootLines = document.getElementById('boot-lines');
+
+  const BOOT_MSGS = [
+    ['LOADING FRAMEWORK DATABASE', 'ok'],
+    ['JTBD MODULE................. OK', 'ok'],
+    ['RCF ENGINE.................. OK', 'ok'],
+    ['AARRR FUNNEL................ OK', 'ok'],
+    ['READER CRM.................. OK', 'ok'],
+    ['BRAND EQUITY MODULE......... OK', 'ok'],
+    ['28 FRAMEWORKS INDEXED....... OK', 'ok'],
+    ['INITIALIZING INTERFACE', 'cur'],
+  ];
+
+  let msgIdx = 0;
+  let progress = 0;
+  const totalMsgs = BOOT_MSGS.length;
+
+  function addLine(text, cls) {
+    const span = document.createElement('div');
+    span.innerHTML = `<span class="bl-${cls}">&gt; ${text}</span>`;
+    bootLines.appendChild(span);
+  }
+
+  function bootStep() {
+    if (msgIdx < BOOT_MSGS.length) {
+      const [msg, cls] = BOOT_MSGS[msgIdx];
+      addLine(msg, cls);
+      msgIdx++;
+      progress = Math.round((msgIdx / totalMsgs) * 100);
+      bootBar.style.width = progress + '%';
+      const delay = msgIdx < totalMsgs - 1 ? 200 : 600;
+      setTimeout(bootStep, delay);
+    } else {
+      setTimeout(() => {
+        bootEl.classList.add('done');
+        setTimeout(() => bootEl.remove(), 1000);
+      }, 400);
+    }
+  }
+
+  // Start boot after small delay
+  setTimeout(bootStep, 300);
+
+  /* ── GLITCH — apply to all section titles ── */
+  document.querySelectorAll('.section-title').forEach((el, i) => {
+    // Extract first word (English title) as glitch text
+    const text = el.childNodes[0]?.textContent?.trim() || el.textContent.trim();
+    if (text) {
+      const wrapper = document.createElement('span');
+      wrapper.className = 'glitch';
+      wrapper.setAttribute('data-t', text);
+      wrapper.style.setProperty('--gd', (i * 0.7 % 4) + 's');
+      // Wrap just the text node
+      el.childNodes[0].replaceWith(wrapper);
+      wrapper.textContent = text;
+    }
+  });
+
+  /* ── SCANLINE — add to all sections ── */
+  document.querySelectorAll('.section, .dark-section, .vocab-key').forEach((sec, i) => {
+    sec.classList.add('scan-host');
+    const dur = 6 + (i % 5);
+    const del = -(i * 1.3 % 8);
+    sec.style.setProperty('--scan-dur', dur + 's');
+    sec.style.setProperty('--scan-delay', del + 's');
+  });
+
+  /* ── CROSSHAIRS — add to sections ── */
+  document.querySelectorAll('.section, .dark-section').forEach((sec, i) => {
+    if (i % 3 === 0) {
+      const xh = document.createElement('span');
+      xh.className = 'xh';
+      xh.textContent = '+ +';
+      xh.style.setProperty('--xho', (i * 0.6 % 3) + 's');
+      // Place randomly in corner
+      const corners = ['xh-tl','xh-tr','xh-bl','xh-br'];
+      xh.classList.add(corners[i % 4]);
+      sec.style.position = 'relative';
+      sec.appendChild(xh);
+    }
+  });
+
+  /* ── EASTER EGG — hero-badge click ── */
+  const badge = document.querySelector('.hero-badge');
+  if (badge) {
+    badge.style.cursor = 'pointer';
+    badge.addEventListener('click', () => {
+      badge.classList.remove('egg-flash');
+      void badge.offsetWidth;
+      badge.classList.add('egg-flash');
+    });
+  }
+
+  /* ── PROGRESS BAR ── */
+  const bar = document.getElementById('progress-bar');
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (docHeight > 0 ? scrollTop / docHeight * 100 : 0) + '%';
+  }
+
+  /* ── BACK TO TOP ── */
+  const backTop = document.getElementById('back-top');
+  function updateBackTop() {
+    backTop.classList.toggle('visible', window.scrollY > 400);
+  }
+
+  /* ── TOC ACTIVE STATE ── */
+  const tocItems = document.querySelectorAll('.toc-item');
+  const sections = document.querySelectorAll('[id^="sec-"]');
+
+  function updateTOC() {
+    let current = '';
+    sections.forEach(sec => {
+      if (sec.getBoundingClientRect().top <= 120) current = sec.id;
+    });
+    tocItems.forEach(item => {
+      const href = item.getAttribute('href').replace('#', '');
+      item.classList.toggle('active', href === current);
+    });
+  }
+
+  /* ── TOC PROGRESS DOTS ── */
+  const toggle = document.getElementById('toc-toggle');
+  function updateTOCProgress() {
+    let current = 0;
+    sections.forEach((sec, i) => {
+      if (sec.getBoundingClientRect().top <= 120) current = i + 1;
+    });
+    const dots = toggle.querySelectorAll('.toc-dot');
+    const pct = sections.length > 0 ? current / sections.length : 0;
+    dots.forEach((d, i) => { d.style.opacity = pct > i / dots.length ? '1' : '0.2'; });
+    toggle.setAttribute('title', `${current} / ${sections.length}`);
+  }
+
+  /* ── SCROLL REVEAL ── */
+  const revealEls = document.querySelectorAll(
+    '.card, .fw-box, .step, .matrix-cell, .funnel-row, .price-card, .insight, .ai-unlock, .formula-block, .tag-list, table, .vocab-key'
+  );
+  revealEls.forEach(el => {
+    el.classList.add('reveal');
+    const siblings = [...(el.parentElement?.children || [])].filter(c => c.classList.contains(el.classList[0]));
+    const idx = siblings.indexOf(el);
+    if (idx === 1) el.classList.add('reveal-delay-1');
+    else if (idx === 2) el.classList.add('reveal-delay-2');
+    else if (idx === 3) el.classList.add('reveal-delay-3');
+    else if (idx >= 4) el.classList.add('reveal-delay-4');
+  });
+  document.querySelectorAll('.section-header').forEach(el => el.classList.add('reveal'));
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        if (entry.target.classList.contains('section-header')) {
+          entry.target.classList.add('visible-line');
+        }
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── COMBINED SCROLL HANDLER ── */
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateProgress();
+        updateBackTop();
+        updateTOC();
+        updateTOCProgress();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  updateProgress(); updateBackTop(); updateTOC(); updateTOCProgress();
+
+  /* ── TOC SMOOTH SCROLL ── */
+  tocItems.forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(item.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('toc').classList.remove('open');
+      }
+    });
+  });
+
+  /* ── CLOSE TOC ON OUTSIDE CLICK ── */
+  document.addEventListener('click', e => {
+    const toc = document.getElementById('toc');
+    if (!toc.contains(e.target)) toc.classList.remove('open');
+  });
+
+})();
+</script>
+
+</body>
+</html>
