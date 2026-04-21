@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midjourney V7/V8.1 パラメータ備忘録 — KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #E9E9E9;
+  --surface:    #FFFFFF;
+  --surface-v:  #F4F4F2;
+  --text:       #111111;
+  --text-sub:   #333333;
+  --muted:      #6B6B6B;
+  --border:     #DDDDDD;
+  --accent:     #000000;
+  --accent-mid: #333333;
+  --font-display: 'Inter', sans-serif;
+  --font-body:    'Noto Sans JP', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+/* ── LAYOUT ── */
+.container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+/* ── HEADER ── */
+.site-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky; top: 0; z-index: 100;
+  transition: padding 300ms cubic-bezier(0.25,1,0.5,1), box-shadow 300ms, backdrop-filter 300ms, background-color 300ms;
+}
+.site-header .inner {
+  max-width: 720px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.brand { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.toc-toggle {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); background: none; border: none; cursor: pointer; padding: 6px 12px;
+  border: 1px solid var(--border); border-radius: 2px; background: var(--surface);
+  transition: all 150ms ease;
+}
+.toc-toggle:hover { color: var(--text); border-color: var(--accent-mid); }
+.toc-toggle.open { color: var(--text); background: var(--accent); color: #fff; border-color: var(--accent); }
+.site-header.scrolled {
+  padding: 10px 24px;
+  background: rgba(233,233,233,0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 var(--border), 0 4px 24px rgba(0,0,0,0.05);
+}
+
+/* ── TOC ── */
+.toc-panel {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: block; max-height: 0; overflow: hidden;
+  padding-top: 0; padding-bottom: 0; opacity: 0;
+  transition: max-height 400ms cubic-bezier(0.25,1,0.5,1), padding 400ms cubic-bezier(0.25,1,0.5,1), opacity 300ms;
+}
+.toc-panel.open { max-height: 600px; padding: 32px 24px; opacity: 1; }
+.toc-inner { max-width: 720px; margin: 0 auto; }
+.toc-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.toc-list { list-style: none; }
+.toc-list li { border-bottom: 1px solid var(--border); }
+.toc-list li:last-child { border-bottom: none; }
+.toc-list a {
+  display: flex; gap: 16px; padding: 12px 0;
+  text-decoration: none; color: var(--text-sub); font-size: 14px; align-items: baseline;
+  transition: color 200ms ease, padding-left 250ms cubic-bezier(0.25,1,0.5,1);
+  position: relative;
+}
+.toc-list a::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  width: 0; height: 1px; background: var(--accent);
+  transform: translateY(-50%);
+  transition: width 300ms cubic-bezier(0.25,1,0.5,1);
+}
+.toc-list a:hover { color: var(--text); }
+.toc-list a.active { color: var(--text); padding-left: 12px; }
+.toc-list a.active::before { width: 8px; }
+.toc-list a.active .num { color: var(--text); font-weight: 600; }
+.toc-list a .num { font-family: var(--font-mono); font-size: 11px; color: var(--muted); width: 24px; flex-shrink: 0; }
+.toc-toggle .toggle-icon { display: inline-block; margin-left: 4px; transition: transform 300ms; }
+.toc-toggle.open .toggle-icon { transform: rotate(180deg); }
+.toc-panel.open .toc-list li { animation: toc-item-in 400ms cubic-bezier(0.25,1,0.5,1) both; }
+.toc-panel.open .toc-list li:nth-child(1) { animation-delay: 80ms; }
+.toc-panel.open .toc-list li:nth-child(2) { animation-delay: 140ms; }
+.toc-panel.open .toc-list li:nth-child(3) { animation-delay: 200ms; }
+.toc-panel.open .toc-list li:nth-child(4) { animation-delay: 260ms; }
+.toc-panel.open .toc-list li:nth-child(5) { animation-delay: 320ms; }
+.toc-panel.open .toc-list li:nth-child(6) { animation-delay: 380ms; }
+.toc-panel.open .toc-list li:nth-child(7) { animation-delay: 440ms; }
+.toc-panel.open .toc-list li:nth-child(8) { animation-delay: 500ms; }
+.toc-panel.open .toc-list li:nth-child(9) { animation-delay: 560ms; }
+@keyframes toc-item-in { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
+
+/* ── HERO ── */
+.hero { padding: 80px 24px 64px; border-bottom: 1px solid var(--border); max-width: 720px; margin: 0 auto; }
+.hero-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+.hero h1 { font-family: var(--font-display); font-size: clamp(32px,5vw,52px); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: var(--text); margin-bottom: 24px; }
+.hero-sub { font-size: 16px; color: var(--text-sub); max-width: 560px; line-height: 1.9; }
+.hero-meta { margin-top: 32px; display: flex; gap: 24px; flex-wrap: wrap; }
+.hero-meta span { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+.hero-label, .hero h1, .hero-sub, .hero-meta {
+  opacity: 0; transform: translateY(16px);
+  animation: hero-in 700ms cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.hero-label    { animation-delay: 80ms; }
+.hero h1       { animation-delay: 180ms; }
+.hero-sub      { animation-delay: 340ms; }
+.hero-meta     { animation-delay: 480ms; }
+@keyframes hero-in { to { opacity:1; transform:translateY(0); } }
+
+/* ── ARTICLE BODY ── */
+.article-body { padding: 64px 24px; max-width: 720px; margin: 0 auto; }
+
+/* ── CHAPTER ── */
+.chapter { margin-bottom: 96px; }
+.chapter-nav { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.chapter h2 {
+  font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: -0.01em;
+  color: var(--text); margin-bottom: 32px; padding-bottom: 16px;
+  position: relative; border-bottom: none;
+}
+.chapter h2::after {
+  content: ''; position: absolute; left: 0; bottom: 0;
+  width: 0; height: 2px; background: var(--accent);
+  transition: width 900ms cubic-bezier(0.16,1,0.3,1) 200ms;
+}
+.chapter h2.in::after { width: 100%; }
+
+/* ── SECTION ── */
+.section { margin-bottom: 48px; }
+.section h3 { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.section h3::before { content: ''; display: inline-block; width: 3px; height: 17px; background: var(--accent); flex-shrink: 0; }
+p { margin-bottom: 16px; color: var(--text-sub); }
+p:last-child { margin-bottom: 0; }
+strong { color: var(--text); font-weight: 600; }
+
+/* ── CALLOUT ── */
+.callout {
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: 2px; padding: 20px 24px; margin: 24px 0; font-size: 14px; color: var(--text-sub);
+}
+.callout strong { display: block; margin-bottom: 6px; color: var(--text); font-size: 13px; font-family: var(--font-mono); letter-spacing: 0.06em; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; margin: 24px 0; border: 1px solid var(--border); border-radius: 2px; }
+table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: 13px; }
+thead { background: var(--surface-v); position: sticky; top: 0; z-index: 2; }
+th { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 12px 16px; font-weight: 500; border-bottom: 2px solid var(--border); }
+td { padding: 10px 16px; color: var(--text-sub); border-bottom: 1px solid var(--border); vertical-align: middle; line-height: 1.55; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface-v); transition: background 150ms ease; }
+@media (max-width: 600px) { .spell-table .col-yomi { display: none; } }
+code { font-family: var(--font-mono); font-size: 12px; background: var(--surface-v); border: 1px solid var(--border); padding: 2px 6px; border-radius: 2px; color: var(--text); cursor: text; transition: background 150ms; }
+code:hover { background: #e4e4e4; border-color: var(--accent-mid); }
+/* code inside dark/black blocks */
+.key-insight code { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); color: #fff; }
+.ai-prompt-example code { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); color: #fff; }
+
+/* ── KEY INSIGHT ── */
+.key-insight { background: var(--accent); color: #FFF; padding: 32px; margin: 32px 0; border-radius: 2px; }
+.key-insight .ki-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+.key-insight p { color: rgba(255,255,255,0.9); margin: 0; font-size: 16px; line-height: 1.85; }
+.key-insight strong { color: #FFF; }
+
+/* ── AI UNLOCK ── */
+.ai-unlock {
+  background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent);
+  border-radius: 2px; padding: 20px 24px; margin: 32px 0;
+  position: relative; overflow: hidden;
+  transition: transform 350ms, box-shadow 350ms;
+}
+.ai-unlock::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 0; height: 3px; background: var(--accent);
+  transition: width 600ms cubic-bezier(0.16,1,0.3,1);
+}
+.ai-unlock.in::before { width: 100%; }
+.ai-unlock:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.06); }
+.ai-unlock-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.ai-unlock-label::before { content: '⌘'; font-size: 12px; color: var(--accent); }
+.ai-unlock-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.ai-unlock-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 16px; line-height: 1.75; }
+.ai-prompt-example { background: var(--accent); color: #FFF; font-family: var(--font-mono); font-size: 12px; padding: 12px 16px; border-radius: 2px; line-height: 1.75; white-space: pre-wrap; position: relative; }
+.ai-prompt-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 6px; display: block; }
+.ai-copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 2px; padding: 4px 8px;
+  cursor: pointer; transition: all 200ms ease;
+}
+.ai-copy-btn:hover { color: #FFF; background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.35); }
+.ai-copy-btn.copied { color: #FFF; background: rgba(255,255,255,0.25); }
+
+/* ── PARAM GRID ── */
+.param-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 16px; margin: 24px 0; }
+.param-card {
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid transparent;
+  border-radius: 2px; padding: 20px;
+  transition: border-left-color 250ms, transform 250ms, box-shadow 250ms;
+}
+.param-card:hover { border-left-color: var(--accent); transform: translateX(2px); box-shadow: -3px 0 0 var(--accent), 0 4px 16px rgba(0,0,0,0.05); }
+.param-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; background: var(--surface-v); display: inline-block; padding: 2px 7px; border-radius: 2px; border: 1px solid var(--border); }
+.param-name { font-family: var(--font-mono); font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.param-desc { font-size: 13px; color: var(--text-sub); line-height: 1.65; }
+
+/* ── USE-CASE GRID ── */
+.case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 16px; margin: 24px 0; }
+.case-card {
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: 2px; padding: 20px;
+  transition: border-color 250ms, transform 300ms, box-shadow 300ms;
+}
+.case-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.07); }
+.case-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.case-code-wrap { position: relative; margin-bottom: 12px; }
+.case-code { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--text); background: var(--surface-v); border: 1px solid var(--border); padding: 8px 52px 8px 12px; border-radius: 2px; display: block; word-break: break-all; }
+.case-copy-btn { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 3px 7px; cursor: pointer; transition: all 180ms ease; white-space: nowrap; }
+.case-copy-btn:hover { color: var(--text); border-color: var(--accent-mid); }
+.case-copy-btn.copied { color: #fff; background: var(--accent); border-color: var(--accent); }
+.case-notes { list-style: none; }
+.case-notes li { font-size: 13px; color: var(--text-sub); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+.case-notes li:last-child { border-bottom: none; }
+.case-notes li::before { content: '→'; color: var(--muted); flex-shrink: 0; }
+
+/* ── SPELL CAT LABEL ── */
+.spell-cat-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 40px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.spell-cat-label .cat-count { font-size: 10px; opacity: 0.6; }
+
+/* ── SPELL SEARCH ── */
+.spell-search-wrap { margin: 24px 0 0; position: relative; }
+.spell-search-input { width: 100%; font-family: var(--font-mono); font-size: 13px; padding: 11px 80px 11px 40px; border: 1px solid var(--border); border-radius: 2px; background: var(--surface); color: var(--text); outline: none; transition: border-color 200ms, box-shadow 200ms; }
+.spell-search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+.spell-search-input::placeholder { color: var(--muted); }
+.spell-search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; line-height: 1; }
+.spell-search-kbd { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 10px; color: var(--muted); background: var(--surface-v); border: 1px solid var(--border); padding: 2px 6px; border-radius: 2px; pointer-events: none; }
+.spell-search-count { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 8px; letter-spacing: 0.06em; min-height: 16px; }
+.spell-cat-jump { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 0; }
+.spell-cat-jump a { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 2px; background: var(--surface); transition: all 180ms ease; }
+.spell-cat-jump a:hover { color: var(--text); border-color: var(--accent-mid); background: var(--surface-v); }
+tr.spell-hidden { display: none; }
+
+
+/* copy toast */
+#copy-toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(10px);
+  background: var(--accent); color: #FFF; font-family: var(--font-mono); font-size: 11px;
+  padding: 8px 18px; border-radius: 2px; letter-spacing: 0.08em; max-width: 90vw;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  opacity: 0; transition: opacity 200ms, transform 200ms; pointer-events: none; z-index: 500;
+}
+#copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── DOUBLE GRID ── */
+.double-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+.double-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 24px;
+  transition: border-color 250ms, transform 300ms, box-shadow 300ms;
+}
+.double-card:hover { border-color: var(--accent-mid); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+.double-card-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.double-card-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+.double-card-desc { font-size: 13px; color: var(--text-sub); line-height: 1.7; margin-bottom: 10px; }
+.double-card-type { font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding: 4px 10px; background: var(--surface-v); border: 1px solid var(--border); border-radius: 2px; display: inline-block; }
+
+/* ── TIP GRID ── */
+.tip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 16px; margin: 24px 0; }
+.tip-card { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 20px; transition: border-color 250ms, transform 300ms; }
+.tip-card:hover { border-color: var(--accent-mid); transform: translateY(-2px); }
+.tip-icon { font-size: 20px; margin-bottom: 10px; }
+.tip-title { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); margin-bottom: 6px; }
+.tip-code { font-family: var(--font-mono); font-size: 12px; background: var(--surface-v); border: 1px solid var(--border); padding: 6px 10px; border-radius: 2px; margin: 8px 0; color: var(--text); }
+.tip-code-wrap { position: relative; margin: 8px 0; }
+.tip-code { font-family: var(--font-mono); font-size: 12px; background: var(--surface-v); border: 1px solid var(--border); padding: 6px 44px 6px 10px; border-radius: 2px; color: var(--text); display: block; }
+.tip-copy-btn { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 9px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 2px 6px; cursor: pointer; transition: all 180ms ease; }
+.tip-copy-btn:hover { color: var(--text); border-color: var(--accent-mid); }
+.tip-copy-btn.copied { color: #fff; background: var(--accent); border-color: var(--accent); }
+.tip-desc { font-size: 13px; color: var(--text-sub); line-height: 1.65; }
+
+/* ── TEMPLATE BLOCK ── */
+.template-block {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px;
+  padding: 20px 24px; margin: 24px 0; font-family: var(--font-mono); font-size: 12px; line-height: 2;
+}
+.template-block .t-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.t-subject { color: var(--text); font-weight: 600; }
+.t-style   { color: #555; }
+.t-mood    { color: #888; }
+.t-mat     { color: #444; }
+.t-light   { color: var(--muted); }
+
+/* ── TAG ── */
+.tag {
+  font-family: var(--font-mono); font-size: 11px; padding: 3px 8px;
+  border: 1px solid var(--border); border-radius: 2px; color: var(--muted);
+  background: var(--surface-v); white-space: nowrap; display: inline-block;
+  transition: border-color 180ms, color 180ms, transform 180ms;
+  cursor: default;
+}
+.tag:hover { border-color: var(--accent); color: var(--text); transform: translateY(-1px); }
+.tag.hl { border-color: var(--accent); color: var(--text); background: var(--surface); }
+
+/* ── CHAPTER RAIL ── */
+.chapter-rail {
+  position: fixed; right: 24px; top: 50%; transform: translateY(-50%);
+  z-index: 80; display: flex; flex-direction: column; gap: 14px; padding: 12px 0;
+  opacity: 0; pointer-events: none; transition: opacity 450ms;
+}
+.chapter-rail.visible { opacity: 1; pointer-events: auto; }
+.rail-item { position: relative; display: flex; align-items: center; justify-content: flex-end; padding: 6px 0; text-decoration: none; color: inherit; }
+.rail-dot { display: block; width: 20px; height: 1px; background: var(--muted); transition: width 350ms, height 250ms, background 250ms; }
+.rail-item:hover .rail-dot { width: 28px; background: var(--accent); }
+.rail-item.active .rail-dot { width: 36px; height: 2px; background: var(--accent); }
+.rail-label {
+  position: absolute; right: calc(100% + 14px); top: 50%;
+  background: var(--accent); color: #FFF; font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 10px; border-radius: 2px;
+  white-space: nowrap; opacity: 0; transform: translateY(-50%) translateX(6px);
+  transition: opacity 250ms, transform 250ms; pointer-events: none;
+}
+.rail-label::after { content: ''; position: absolute; left: 100%; top: 50%; transform: translateY(-50%); border: 4px solid transparent; border-left-color: var(--accent); }
+.rail-item:hover .rail-label { opacity: 1; transform: translateY(-50%) translateX(0); }
+.rail-label-static { display: none; position: absolute; right: calc(100% + 14px); top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; opacity: 0.55; pointer-events: none; }
+.rail-item.active .rail-label-static { display: block; }
+.rail-item.active:hover .rail-label-static { opacity: 0; }
+@media (max-width: 768px) { .chapter-rail { display: none; } }
+
+/* ── MOBILE CHIPS ── */
+.chapter-chips {
+  display: none; position: fixed; top: 57px; left: 0; right: 0; z-index: 90;
+  background: rgba(233,233,233,0.92); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border); padding: 10px 16px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  opacity: 0; transform: translateY(-8px); pointer-events: none;
+  transition: opacity 300ms, transform 300ms;
+}
+.chapter-chips::-webkit-scrollbar { display: none; }
+.chapter-chips.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.chapter-chips-inner { display: flex; gap: 8px; min-width: max-content; }
+.chip-item { flex-shrink: 0; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 6px 10px; text-decoration: none; white-space: nowrap; transition: all 200ms; }
+.chip-item.active { background: var(--accent); color: #FFF; border-color: var(--accent); }
+@media (max-width: 768px) { .chapter-chips { display: block; } }
+
+/* ── SCROLL PROGRESS ── */
+.scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: var(--accent); z-index: 200; transition: width 80ms linear; pointer-events: none; }
+
+/* ── BACK TO TOP ── */
+.back-to-top {
+  position: fixed; bottom: 32px; right: 32px; width: 44px; height: 44px;
+  background: var(--accent); color: #FFF; border: none; border-radius: 2px;
+  font-family: var(--font-mono); font-size: 14px; cursor: pointer;
+  opacity: 0; transform: translateY(16px); pointer-events: none;
+  transition: opacity 350ms, transform 350ms, background 200ms; z-index: 90;
+  display: flex; align-items: center; justify-content: center;
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.back-to-top:hover { background: var(--accent-mid); }
+.back-to-top:active { transform: translateY(2px); }
+@media (max-width: 600px) { .back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; } }
+
+/* ── CUSTOM CURSOR ── */
+.cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); will-change: transform; }
+.cursor-dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; transition: width 200ms, height 200ms, opacity 200ms; }
+.cursor-ring { width: 32px; height: 32px; border: 1px solid var(--accent); border-radius: 50%; mix-blend-mode: difference; transition: width 300ms, height 300ms, opacity 200ms; opacity: 0.8; }
+.cursor-ring.hover { width: 56px; height: 56px; }
+.cursor-ring.click { width: 22px; height: 22px; }
+.cursor-dot.hidden, .cursor-ring.hidden { opacity: 0; }
+body.has-custom-cursor { cursor: none; }
+body.has-custom-cursor a, body.has-custom-cursor button, body.has-custom-cursor .pill, body.has-custom-cursor .param-card, body.has-custom-cursor .case-card { cursor: none; }
+@media (hover: none), (pointer: coarse) { .cursor-dot, .cursor-ring { display: none !important; } body.has-custom-cursor { cursor: auto; } }
+
+/* ── FOOTER ── */
+.article-footer { border-top: 1px solid var(--border); padding: 48px 24px; max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px; }
+.footer-brand { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+.footer-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-align: right; }
+
+/* ── NEW BADGE ── */
+.param-tag[class*="NEW"], td strong { }
+tr td strong { font-weight: 600; color: var(--text); }
+.param-tag { position: relative; }
+
+/* ── VERSION BADGES ── */
+.v81-badge {
+  display: inline-block; font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 0.08em; font-weight: 600; text-transform: uppercase;
+  background: var(--accent); color: #fff;
+  padding: 1px 6px; border-radius: 2px;
+  vertical-align: middle; margin-right: 5px; flex-shrink: 0;
+}
+.x-badge {
+  display: inline-block; font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 0.08em; font-weight: 600; text-transform: uppercase;
+  background: #1a1a1a; color: #fff;
+  padding: 1px 6px; border-radius: 2px;
+  vertical-align: middle; margin-right: 5px; flex-shrink: 0;
+}
+/* param-card with V8.1 tag gets a subtle accent */
+.param-card:has(.param-tag-v81) { border-left: 3px solid var(--accent); }
+
+/* ── REVEAL ── */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 700ms cubic-bezier(0.25,1,0.5,1), transform 700ms cubic-bezier(0.25,1,0.5,1); will-change: opacity, transform; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* ── SELECTION ── */
+::selection { background: var(--accent); color: #FFF; }
+::-moz-selection { background: var(--accent); color: #FFF; }
+
+/* ── FOCUS ── */
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+a { transition: color 150ms ease; }
+
+/* ── PRELOADER ── */
+body.preloading { overflow: hidden; }
+.preloader {
+  position: fixed; inset: 0; background: #000; z-index: 10001;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: opacity 600ms cubic-bezier(0.25,1,0.5,1);
+}
+.preloader.done { opacity: 0; pointer-events: none; }
+.preloader-inner { width: 100%; max-width: 420px; padding: 0 32px; color: #FFF; }
+.preloader-brand { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.28em; color: rgba(255,255,255,0.45); text-transform: uppercase; margin-bottom: 10px; opacity: 0; animation: pre-fade 450ms cubic-bezier(0.16,1,0.3,1) 80ms forwards; }
+.preloader-title { font-family: var(--font-display); font-size: clamp(24px,5vw,32px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; color: #FFF; margin-bottom: 40px; opacity: 0; animation: pre-fade 550ms cubic-bezier(0.16,1,0.3,1) 180ms forwards; }
+.preloader-lines { margin-bottom: 48px; }
+.preloader-line { display: flex; align-items: center; gap: 20px; margin-bottom: 14px; opacity: 0; animation: pre-fade 400ms forwards; }
+.preloader-line:nth-child(1) { animation-delay: 380ms; }
+.preloader-line:nth-child(2) { animation-delay: 560ms; }
+.preloader-line:nth-child(3) { animation-delay: 740ms; }
+.preloader-line .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; color: rgba(255,255,255,0.55); text-transform: uppercase; width: 60px; flex-shrink: 0; }
+.preloader-line .bar { flex: 1; height: 1px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+.preloader-line .bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 0; background: #FFF; animation: pre-bar 650ms cubic-bezier(0.16,1,0.3,1) forwards; }
+.preloader-line:nth-child(1) .bar::after { animation-delay: 430ms; }
+.preloader-line:nth-child(2) .bar::after { animation-delay: 610ms; }
+.preloader-line:nth-child(3) .bar::after { animation-delay: 790ms; }
+@keyframes pre-bar { from { width:0; } to { width:100%; } }
+.preloader-progress { opacity: 0; animation: pre-fade 400ms forwards 950ms; }
+.preloader-progress-bar { height: 2px; background: rgba(255,255,255,0.1); position: relative; margin-bottom: 10px; overflow: hidden; }
+.preloader-progress-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 0; background: #FFF; animation: pre-progress 750ms cubic-bezier(0.25,1,0.5,1) 1050ms forwards; }
+@keyframes pre-progress { from { width:0; } to { width:100%; } }
+.preloader-status { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+.preloader-status .status-label::before { content: ''; display: inline-block; width: 5px; height: 5px; background: #FFF; margin-right: 8px; vertical-align: middle; animation: pre-blink 1s ease-in-out infinite; }
+@keyframes pre-blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+.preloader-skip { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em; color: rgba(255,255,255,0.25); text-transform: uppercase; opacity: 0; animation: pre-fade 500ms ease 1400ms forwards; }
+@keyframes pre-fade { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .double-grid { grid-template-columns: 1fr; }
+  .param-grid, .case-grid, .tip-grid { grid-template-columns: 1fr; }
+  .preloader-inner { padding: 0 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .reveal { opacity: 1; transform: none; }
+  .hero-label, .hero h1, .hero-sub, .hero-meta { opacity: 1; transform: none; }
+  .chapter h2::after { width: 100%; }
+  .cursor-dot, .cursor-ring { display: none !important; }
+}
+</style>
+</head>
+<body class="preloading">
+
+<!-- PRELOADER -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader-inner">
+    <div class="preloader-brand">KITAcore · Knowledge Shelf</div>
+    <div class="preloader-title">Midjourney V7/V8.1<br>パラメータ備忘録。</div>
+    <div class="preloader-lines">
+      <div class="preloader-line"><span class="label">Params</span><span class="bar"></span></div>
+      <div class="preloader-line"><span class="label">Spells</span><span class="bar"></span></div>
+      <div class="preloader-line"><span class="label">Tips</span><span class="bar"></span></div>
+    </div>
+    <div class="preloader-progress">
+      <div class="preloader-progress-bar"></div>
+      <div class="preloader-status">
+        <span class="status-label">Loading</span>
+        <span class="status-count">9 Chapters · SREF 34コード · Hidden Gems収録</span>
+      </div>
+    </div>
+  </div>
+  <div class="preloader-skip">click anywhere to skip</div>
+</div>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+<div id="copy-toast">COPIED ✓</div>
+
+<!-- HEADER -->
+<header class="site-header" id="siteHeader">
+  <div class="inner">
+    <span class="brand">KITAcore — Knowledge Shelf</span>
+    <button class="toc-toggle" id="tocToggle" aria-expanded="false" aria-controls="tocPanel">
+      Contents <span class="toggle-icon">↓</span>
+    </button>
+  </div>
+</header>
+
+<!-- TOC -->
+<div class="toc-panel" id="tocPanel">
+  <div class="toc-inner">
+    <div class="toc-title">Table of Contents</div>
+    <ul class="toc-list">
+      <li><a href="#ch1"><span class="num">01</span>基本設定・画像構成 — BASIC</a></li>
+      <li><a href="#ch2"><span class="num">02</span>スタイル・表現の調整 — STYLE</a></li>
+      <li><a href="#ch3"><span class="num">03</span>ランダム性・再現性 — RANDOM</a></li>
+      <li><a href="#ch4"><span class="num">04</span>参照・一貫性 — REFERENCE</a></li>
+      <li><a href="#ch5"><span class="num">05</span>処理モード — MODE</a></li>
+      <li><a href="#ch6"><span class="num">06</span>活用例レシピ — RECIPE</a></li>
+      <li><a href="#ch7"><span class="num">07</span>画風プロンプト呪文リスト — SPELLS</a></li>
+      <li><a href="#cat-sref"><span class="num">  </span>&nbsp;&nbsp;★ 即効SREFコード集</a></li>
+      <li><a href="#cat-hidden-gems"><span class="num">  </span>&nbsp;&nbsp;🔍 Hidden Gems 25コード</a></li>
+      <li><a href="#ch8"><span class="num">08</span>構図（Double系）— COMPOSITION</a></li>
+      <li><a href="#ch9"><span class="num">09</span>ちょっとした技 — TIPS</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- CHAPTER RAIL -->
+<nav class="chapter-rail" id="chapterRail" aria-label="Chapter navigation">
+  <a class="rail-item" href="#top" data-target="top">
+    <span class="rail-label-static">00 · Intro</span>
+    <span class="rail-label">00 · イントロ</span>
+    <span class="rail-dot"></span>
+  </a>
+  <a class="rail-item" href="#ch1"><span class="rail-label-static">01 · Basic</span><span class="rail-label">01 · 基本設定</span><span class="rail-dot"></span></a>
+  <a class="rail-item" href="#ch2"><span class="rail-label-static">02 · Style</span><span class="rail-label">02 · スタイル</span><span class="rail-dot"></span></a>
+  <a class="rail-item" href="#ch3"><span class="rail-label-static">03 · Random</span><span class="rail-label">03 · ランダム</span><span class="rail-dot"></span></a>
+  <a class="rail-item" href="#ch4"><span class="rail-label-static">04 · Ref</span><span class="rail-label">04 · 参照</span><span class="rail-dot"></span></a>
+  <a class="rail-item" href="#ch5"><span class="rail-label-static">05 · Mode</span><span class="rail-label">05 · モード</span><span class="rail-dot"></span></a>
+  <a class="rail-item" href="#ch6"><span class="rail-label-static">06 · Recipe</span><span class="rail-label">06 · 活用例</span><span class="rail-dot"></span></a>
+  <a class="rail-item" href="#ch7"><span class="rail-label-static">07 · Spells</span><span class="rail-label">07 · 呪文</span><span class="rail-dot"></span></a>
+  <a class="rail-item" href="#ch8"><span class="rail-label-static">08 · Comp</span><span class="rail-label">08 · 構図</span><span class="rail-dot"></span></a>
+  <a class="rail-item" href="#ch9"><span class="rail-label-static">09 · Tips</span><span class="rail-label">09 · テクニック</span><span class="rail-dot"></span></a>
+</nav>
+
+<!-- MOBILE CHIPS -->
+<nav class="chapter-chips" id="chapterChips">
+  <div class="chapter-chips-inner">
+    <a class="chip-item" href="#top">00 · Intro</a>
+    <a class="chip-item" href="#ch1">01 · Basic</a>
+    <a class="chip-item" href="#ch2">02 · Style</a>
+    <a class="chip-item" href="#ch3">03 · Random</a>
+    <a class="chip-item" href="#ch4">04 · Ref</a>
+    <a class="chip-item" href="#ch5">05 · Mode</a>
+    <a class="chip-item" href="#ch6">06 · Recipe</a>
+    <a class="chip-item" href="#ch7">07 · Spells</a>
+    <a class="chip-item" href="#ch8">08 · Comp</a>
+    <a class="chip-item" href="#ch9">09 · Tips</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="hero-label">KITAcore — Knowledge Shelf</div>
+  <h1>Midjourney V7/V8.1<br>パラメータ備忘録。</h1>
+  <p class="hero-sub">「あれどこやったっけ？」って毎回探すのがダルいから、自分用にまとめてそのまま公開したやつ。<br>必要なやつだけカテゴリ別にズバッと並べてる。呪文はドラッグで選択・即コピー、SREFコードも完備。</p>
+  <div class="hero-meta">
+    <span>9 Chapters</span>
+    <span>呪文 115+</span>
+    <span>活用レシピ 5例</span>
+    <span>V8.1対応</span>
+    <span>@ktcrs1107</span>
+  </div>
+</div>
+
+<!-- INTRO CALLOUT -->
+<div class="container" style="padding-top:40px;padding-bottom:0">
+  <div class="callout" style="border-left-color: var(--accent); background: var(--accent); color: rgba(255,255,255,0.9); border-color: var(--accent);">
+    <strong style="color:#fff; font-family: var(--font-mono);">🗝️ 呪文 vs パラメータ — V7/V8.1対応版</strong>
+    <span style="color:rgba(255,255,255,0.85)">V7の<strong style="color:#fff">パラメータ</strong>は仕上がりを寄せる"つまみ"。世界観そのものを呼び出すのは<strong style="color:#fff">語彙（Style/Mood）＝"鍵"</strong>。
+    迷ったら「Style（様式）」→「Mood（空気感）」→最後にパラメータで微調整する順番で組み立てると整理しやすい。</span>
+  </div>
+</div>
+
+<!-- ARTICLE BODY -->
+<div class="article-body">
+
+  <!-- ─── CH1: 基本設定 ─── -->
+  <section class="chapter" id="ch1">
+    <div class="chapter-nav">01 — BASIC</div>
+    <h2>基本設定・画像構成</h2>
+
+    <div class="section">
+      <h3>土台になるパラメータ群</h3>
+      <p>まず入れとくべき設定。ここを理解してないと、どんな呪文を書いてもイメージと違うものが出てくる。</p>
+    </div>
+
+    <div class="param-grid">
+      <div class="param-card reveal">
+        <div class="param-tag">ASPECT RATIO</div>
+        <div class="param-name">--ar / --aspect</div>
+        <div class="param-desc">アスペクト比。<code>--ar 16:9</code> <code>--ar 3:2</code> <code>--ar 1:1</code>。スマホ縦は9:16、横長動画は16:9、カメラ写真風は3:2が定番。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">VERSION</div>
+        <div class="param-name">--v</div>
+        <div class="param-desc">バージョン指定。<code>--v 7</code> で最新V7を明示。省略するとデフォルトモデルが使われる。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">NIJI</div>
+        <div class="param-name">--niji</div>
+        <div class="param-desc">アニメ・マンガ特化のNiji Journeyモードへ切り替え。<code>--niji 6</code> など。人物・キャラクター系に強い。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">TILE</div>
+        <div class="param-name">--tile</div>
+        <div class="param-desc">シームレスパターンを生成。テクスチャや壁紙、繰り返し柄が必要なときに。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">PROFILE</div>
+        <div class="param-name">--p / --profile</div>
+        <div class="param-desc">自分のMidjourneyプロファイル設定を反映させる。独自スタイルの保存と呼び出しに使う。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">DRAFT</div>
+        <div class="param-name">--draft</div>
+        <div class="param-desc">下書きモード。高速・低コストで構図確認。本番生成の前の下見に使う。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">EXCLUDE</div>
+        <div class="param-name">--no</div>
+        <div class="param-desc">除外指定。<code>--no text, watermark</code> でテキストや透かしを排除。後述の「ちょっとした技」も参照。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">QUALITY ※V7非推奨</div>
+        <div class="param-name">--q / --quality</div>
+        <div class="param-desc">品質設定。<strong>V7ではデフォルトが最高品質のため不要</strong>。V6以前との互換で残っている。<br><span class="v81-badge">V8.1</span> --q 4 で一貫性が超強化される。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag param-tag-v81">V8.1</div>
+        <div class="param-name">--hd</div>
+        <div class="param-desc">ネイティブ2K解像度で生成。<span class="v81-badge">V8.1</span> デフォルトで適用される。高精細な出力が必要なすべてのシーンで有効。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CH2: スタイル調整 ─── -->
+  <section class="chapter" id="ch2">
+    <div class="chapter-nav">02 — STYLE</div>
+    <h2>スタイル・表現の調整</h2>
+
+    <div class="section">
+      <h3>AIの"解釈"をどこまで許すか</h3>
+      <p>数値一つで全体の雰囲気ガラッと変わる。写真寄りにしたいのかポップにしたいのかによって全然違う設定になる。</p>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr><th>パラメータ</th><th>範囲</th><th>効果と使いどき</th><th>目安値</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>--s</code> / <code>--stylize</code></td>
+            <td>0–1000</td>
+            <td>標準は100。上げるとAIが芸術的に暴走しだす。下げると素直な出力に近づく。</td>
+            <td>写真:50 / ポップ:700</td>
+          </tr>
+          <tr>
+            <td><code>--style raw</code> / <code>--raw</code></td>
+            <td>ON/OFF</td>
+            <td>AIの"勝手な補正・演出"を切る。余計な加工なしで写真リアル系向き。</td>
+            <td>写真系には必須</td>
+          </tr>
+          <tr>
+            <td><code>--w</code> / <code>--weird</code></td>
+            <td>0–3000</td>
+            <td>奇抜さのつまみ。変な絵を意図的に出したいときに。上げすぎると崩壊するので注意。</td>
+            <td>ポップ感:200</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout reveal">
+      <strong>読むポイント</strong>
+      <code>--stylize</code> と <code>--weird</code> は別軸。stylizeはAIの「芸術的解釈の強さ」、weirdは「非常識な方向への引っ張り具合」。両方上げると予測不能な面白い出力が出ることもある。
+    </div>
+  </section>
+
+  <!-- ─── CH3: ランダム性 ─── -->
+  <section class="chapter" id="ch3">
+    <div class="chapter-nav">03 — RANDOM</div>
+    <h2>ランダム性・再現性</h2>
+
+    <div class="section">
+      <h3>同じ絵をもう一回出したいか、毎回違うものが欲しいか</h3>
+      <p>用途で使い分けるパラメータ群。再現性が必要なプロジェクトと、バリエーション探索では設定が真逆になる。</p>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr><th>パラメータ</th><th>値</th><th>効果</th><th>使いどき</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>--seed</code></td>
+            <td>任意の整数</td>
+            <td>ランダム種を固定。同じseedなら同じ条件で近い絵が出る。</td>
+            <td>シリーズ制作・再現が必要なとき</td>
+          </tr>
+          <tr>
+            <td><code>--chaos</code> / <code>--c</code></td>
+            <td>0–100</td>
+            <td>構図・色のランダム性。0で安定、100で毎回バラバラな構図に。</td>
+            <td>探索:20 / ミニマル:0</td>
+          </tr>
+          <tr>
+            <td><code>--stop</code></td>
+            <td>10–100</td>
+            <td>生成を途中で止める。80で止めるとラフ感・スケッチ調になる。</td>
+            <td>描き込みすぎを防ぎたいとき</td>
+          </tr>
+          <tr>
+            <td><code>プロンプト重み ::</code></td>
+            <td>数値</td>
+            <td>要素の比重を変える。<code>cat::2 dog::1</code> で猫要素を2倍に。</td>
+            <td>要素のバランス調整</td>
+          </tr>
+          <tr>
+            <td><code>--r</code> / <code>--repeat</code></td>
+            <td>2–40</td>
+            <td>同じプロンプトで複数回まとめて生成。バリエーションが一気に欲しいとき。</td>
+            <td>候補出し・比較</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── CH4: 参照 ─── -->
+  <section class="chapter" id="ch4">
+    <div class="chapter-nav">04 — REFERENCE</div>
+    <h2>参照・一貫性</h2>
+
+    <div class="section">
+      <h3>「この画風で」「この顔で」を画像URLで伝える</h3>
+      <p>参照系パラメータはウェイト調整が肝。数値の意味を把握してないとイメージ通りに動かせへん。</p>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr><th>パラメータ</th><th>ウェイト</th><th>用途</th><th>コツ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>--sref URL</code></td>
+            <td><code>--sw 0–1000</code></td>
+            <td>画風・スタイルをURLで参照。「この雰囲気で描いて」を画像で伝える。</td>
+            <td>--sw 500が標準。低くすると薄い参照になる。</td>
+          </tr>
+          <tr>
+            <td><code>--sref random</code></td>
+            <td>—</td>
+            <td>ランダムなスタイルコードを当てる。宝くじ感覚で使う。</td>
+            <td>当たると神スタイルが出る。</td>
+          </tr>
+          <tr>
+            <td><code>--cref URL</code></td>
+            <td><code>--cw 0–100</code></td>
+            <td>キャラクター顔参照。「この顔で描いて」を画像で伝える。</td>
+            <td>--cw 0にすると顔だけ似せる。全身は似せない。</td>
+          </tr>
+          <tr>
+            <td><code>--oref URL</code></td>
+            <td><code>--ow 1–1000</code></td>
+            <td>万能な要素参照。顔以外の特徴も含めて反映させる。</td>
+            <td>srefとcrefの中間的な挙動。</td>
+          </tr>
+          <tr>
+            <td><code>--iw</code></td>
+            <td>0–3</td>
+            <td>画像プロンプト全体の影響度を調整する。<span class="v81-badge">V8.1</span> 復活・精度向上。</td>
+            <td>--iw 2でほどよく強い影響に。</td>
+          </tr>
+          <tr>
+            <td><code>--sv 7</code></td>
+            <td>固定値</td>
+            <td><span class="v81-badge">V8.1</span> スタイル参照バージョン7。従来比4倍の安定性。--sref使用時に必ず追加すると効果が安定する。</td>
+            <td>--sref との組み合わせ必須</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="key-insight reveal">
+      <div class="ki-label">顔だけ参照の最強コンボ</div>
+      <p>全身を似せたくないとき・顔中心のキャラ再現には <code style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:2px">--cref URL --cw 20 --iw 2</code> の組み合わせが最も効く。<strong>--cw 20で顔中心に絞り、--iw 2で参照強度を上げる</strong>。このセットは覚えといて損なし。</p>
+    </div>
+
+    <div class="ai-unlock reveal">
+      <div class="ai-unlock-label">AI Unlock — 参照パラメータ</div>
+      <div class="ai-unlock-title">この言葉を知ると引き出せること</div>
+      <div class="ai-unlock-desc">「--sref」「--cref」「--oref」の違いを理解したうえでAIに聞くと、<strong>ユースケース別の最適なウェイト設定を提案してもらえる</strong>。「参照ってどうやるの？」ではなく固有名で質問するのが精度を上げるコツ。</div>
+      <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>MidjourneyのV7で、--crefと--srefを同時に使うとき、顔の類似度を最優先にしつつ画風も参照したい場合のウェイト設定（--cw / --sw）の推奨値と、その理由を教えてください。</div>
+    </div>
+  </section>
+
+  <!-- ─── CH5: 処理モード ─── -->
+  <section class="chapter" id="ch5">
+    <div class="chapter-nav">05 — MODE</div>
+    <h2>処理モード</h2>
+
+    <div class="section">
+      <h3>速さ・コスト・公開設定のフラグ</h3>
+      <p>生成の優先度とプライバシーを制御する。用途によって使い分けると無駄なGPU消費を抑えられる。</p>
+    </div>
+
+    <div class="param-grid">
+      <div class="param-card reveal">
+        <div class="param-tag">STANDARD</div>
+        <div class="param-name">--fast</div>
+        <div class="param-desc">高速モード。通常の優先度で生成。基本はこれ。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">ECONOMY</div>
+        <div class="param-name">--relax</div>
+        <div class="param-desc">低優先モード。待ち時間は伸びるがGPU消費を抑えられる。急いでない一括生成向き。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">PREMIUM</div>
+        <div class="param-name">--turbo</div>
+        <div class="param-desc">超高速モード。コスト2倍だが圧倒的に速い。締め切りがあるときに。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">PRIVATE (Pro限定)</div>
+        <div class="param-name">--stealth</div>
+        <div class="param-desc">非公開モード。ギャラリーや他ユーザーのフィードに出ない。商用・クライアント案件向き。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag">PUBLIC</div>
+        <div class="param-name">--public</div>
+        <div class="param-desc">stealth解除。公開状態に戻す。</div>
+      </div>
+      <div class="param-card reveal">
+        <div class="param-tag param-tag-v81">V8.1</div>
+        <div class="param-name">Prompt Shortener</div>
+        <div class="param-desc">長すぎるプロンプトをMJが自動で短縮する機能。V8.1から搭載。<code>/shorten</code> コマンドで重要語彙だけ残した最適化プロンプトを提案してくれる。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CH6: 活用例 ─── -->
+  <section class="chapter" id="ch6">
+    <div class="chapter-nav">06 — RECIPE</div>
+    <h2>活用例レシピ</h2>
+
+    <div class="section">
+      <h3>「なぜこれを入れるのか」まで書いたコピペレシピ</h3>
+      <p>設定値だけ見ても意味がわからへんから、判断の根拠まで書いてる。そのまま末尾に貼って使えばOK。</p>
+    </div>
+
+    <div class="case-grid">
+      <div class="case-card reveal">
+        <div class="case-title">📷 光多めの写真風</div>
+        <div class="case-code-wrap"><span class="case-code">--ar 3:2 --raw --s 50 --hd</span><button class="case-copy-btn" data-copy="--ar 3:2 --raw --s 50 --hd">Copy</button></div>
+        <ul class="case-notes">
+          <li>--rawでAI補正をオフにして写真に近づける</li>
+          <li>--s 50でアート性を抑えて自然な質感を残す</li>
+          <li>3:2はカメラ的な定番比率</li>
+        </ul>
+      </div>
+      <div class="case-card reveal">
+        <div class="case-title">🎨 色強めのポップアート調</div>
+        <div class="case-code-wrap"><span class="case-code">--s 700 --c 20 --w 200 --hd --sv 7</span><button class="case-copy-btn" data-copy="--s 700 --c 20 --w 200 --hd --sv 7">Copy</button></div>
+        <ul class="case-notes">
+          <li>--s 700で大胆で派手な色使いを解放</li>
+          <li>--c 20で適度に構図を崩してポップ感を出す</li>
+          <li>--w 200で少し奇抜さを足して"ポップ感"を増す</li>
+        </ul>
+      </div>
+      <div class="case-card reveal">
+        <div class="case-title">🌫️ 背景だけ柔らかく</div>
+        <div class="case-code-wrap"><span class="case-code">--s 300 --chaos 10 --hd</span><button class="case-copy-btn" data-copy="--s 300 --chaos 10 --hd">Copy</button></div>
+        <ul class="case-notes">
+          <li>--s 300で柔らかい描写になる中間値</li>
+          <li>--chaos 10でちょい揺らぎのナチュラルなボケ感</li>
+          <li>主題を壊さず背景の空気感だけ変えたいとき</li>
+        </ul>
+      </div>
+      <div class="case-card reveal">
+        <div class="case-title">👤 顔だけ参照を強める</div>
+        <div class="case-code-wrap"><span class="case-code">--cref URL --cw 20 --iw 2 --sv 7</span><button class="case-copy-btn" data-copy="--cref URL --cw 20 --iw 2 --sv 7">Copy</button></div>
+        <ul class="case-notes">
+          <li>--cw 20で低めにして顔中心の反映に絞る</li>
+          <li>--iw 2で参照画像の影響をほどよく強くする</li>
+          <li>全身を似せたくないときの最強の組み合わせ</li>
+        </ul>
+      </div>
+      <div class="case-card reveal">
+        <div class="case-title">🔲 シンプルなミニマル構図</div>
+        <div class="case-code-wrap"><span class="case-code">--s 80 --c 0 --stop 80 --hd</span><button class="case-copy-btn" data-copy="--s 80 --c 0 --stop 80 --hd">Copy</button></div>
+        <ul class="case-notes">
+          <li>--s 80で控えめな描写にして余白を生かす</li>
+          <li>--c 0で構図が乱れずミニマルな静けさが出る</li>
+          <li>--stop 80で描き込みすぎる前に止めてスッキリ感確保</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="template-block reveal">
+      <div class="t-label">📐 プロンプト構成テンプレ（迷子防止）</div>
+      <div>
+        <span class="t-subject">[Subject]</span> + <span class="t-style">[Style]</span> + <span class="t-mood">[Mood]</span> + <span class="t-mat">[Material/Technique]</span> + <span class="t-light">[Lighting/Color]</span> + <code>--hd --sv 7 --params</code>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted)">呪文は"鍵"、パラメータは"つまみ"。Style → Mood → パラメータの順で整理すると組み立てやすい。</div>
+    </div>
+  </section>
+
+  <!-- ─── CH7: 呪文リスト ─── -->
+  <section class="chapter" id="ch7">
+    <div class="chapter-nav">07 — SPELLS</div>
+    <h2>画風プロンプト呪文リスト</h2>
+
+    <div class="section">
+      <h3>末尾に1〜2語足すだけで世界観がガラッと変わる</h3>
+      <p>英語プロンプトの末尾に追加するだけで効く。キーワードは<strong>ドラッグで選択してコピー</strong>できる。</p>
+    </div>
+
+    <!-- 🖌️ 画材・テクニック系 -->
+    <div class="spell-search-wrap">
+      <span class="spell-search-icon">⌕</span>
+      <input class="spell-search-input" id="spellSearch" type="search" placeholder="キーワードや読みで絞り込む..." autocomplete="off" spellcheck="false">
+      <span class="spell-search-kbd">/ で検索</span>
+    </div>
+    <div class="spell-search-count" id="spellCount"></div>
+    <div class="spell-cat-jump">
+      <a href="#cat-material">🖌️ 画材・テクニック</a>
+      <a href="#cat-style">🎨 アートスタイル</a>
+      <a href="#cat-design">🏛️ デザイン史</a>
+      <a href="#cat-mood">🌫️ ムード</a>
+      <a href="#cat-sref">★ SREF即効</a>
+      <a href="#cat-hidden-gems">🔍 Hidden Gems</a>
+    </div>
+
+    <div class="spell-cat-label reveal" id="cat-material">🖌️ 画材・テクニック系 <span class="cat-count" data-cat="material"></span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead><tr><th>キーワード</th><th class="col-yomi">読み</th><th>効果・特徴</th></tr></thead>
+        <tbody>
+          <tr><td><code>watercolor style</code></td><td>水彩画</td><td>やわらかいグラデ・透け感</td></tr>
+          <tr><td><code>splatter watercolor</code></td><td>スプラッター水彩</td><td>飛沫・流動的・抽象</td></tr>
+          <tr><td><code>gouache painting</code></td><td>グアッシュ</td><td>厚塗り・マット質感</td></tr>
+          <tr><td><code>Chinese watercolor painting</code></td><td>中国水彩</td><td>繊細筆致・淡彩・余白</td></tr>
+          <tr><td><code>oil painting style</code></td><td>油絵風</td><td>厚み・光沢・重厚な陰影</td></tr>
+          <tr><td><code>oil pastel</code></td><td>オイルパステル</td><td>パステル調・厚み</td></tr>
+          <tr><td><code>palette knife</code></td><td>パレットナイフ</td><td>荒い厚塗り・立体感</td></tr>
+          <tr><td><code>marker painting</code></td><td>マーカー塗り</td><td>はっきり彩色・ペン感</td></tr>
+          <tr><td><code>alcohol marker</code></td><td>アルコールマーカー</td><td>滑らかブレンド・鮮やか</td></tr>
+          <tr><td><code>ballpoint pen drawing</code></td><td>ボールペン画</td><td>細密線画・ハッチング</td></tr>
+          <tr><td><code>ink drawing</code></td><td>インク描画</td><td>シャープ線・強いコントラスト</td></tr>
+          <tr><td><code>ink wash painting</code></td><td>墨絵</td><td>濃淡モノクロ・簡素で優雅</td></tr>
+          <tr><td><code>pencil sketch</code></td><td>鉛筆画</td><td>繊細な線・陰影</td></tr>
+          <tr><td><code>color pencil drawing</code></td><td>色鉛筆</td><td>柔らか・重ね塗りグラデ</td></tr>
+          <tr><td><code>charcoal sketch</code></td><td>木炭画</td><td>強い陰影・ざらつき</td></tr>
+          <tr><td><code>crayon drawing</code></td><td>クレヨン</td><td>太い線・ザラ質感</td></tr>
+          <tr><td><code>digital painting</code></td><td>デジタル厚塗り</td><td>デジタル特有の厚塗り感</td></tr>
+          <tr><td><code>acrylic painting</code></td><td>アクリル画</td><td>鮮やかな発色・速乾性の絵の具感</td></tr>
+          <tr><td><code>chalk drawing</code></td><td>チョーク画</td><td>ざらざらした質感・粉っぽさ</td></tr>
+          <tr><td><code>pastel painting</code></td><td>パステル画</td><td>柔らかく粉っぽい質感・淡い色合い</td></tr>
+          <tr><td><code>digital watercolor</code></td><td>デジタル水彩</td><td>水彩の流動性＋デジタルの精密さ</td></tr>
+          <tr><td><code>airbrush</code></td><td>エアブラシ</td><td>霧状の塗料・滑らかなグラデーション</td></tr>
+          <tr><td><code>linocut / block print</code></td><td>リノカット / 版画</td><td>強い輪郭線・ベタ塗り・版画的テクスチャ</td></tr>
+          <tr><td><code>crosshatching</code></td><td>ハッチング</td><td>交差する線で陰影を表現</td></tr>
+          <tr><td><code>stippling / dot art</code></td><td>点描 / ドットアート</td><td>点の集合で色や陰影を表現</td></tr>
+          <tr><td><code>etching</code></td><td>エッチング / 銅版画</td><td>細密な線と深いコントラスト</td></tr>
+          <tr><td><code>cyanotype</code></td><td>シアノタイプ</td><td>青い色調が特徴の青写真技法</td></tr>
+          <tr><td><code>risograph</code></td><td>リソグラフ</td><td>レトロな孔版印刷風・版ズレ・ザラつきがエモい</td></tr>
+          <tr><td><code>double exposure</code></td><td>二重露光</td><td>シルエットに風景を重ねる幻想的な合成</td></tr>
+          <tr><td><code>cut paper / paper art</code></td><td>切り絵 / ペーパーアート</td><td>紙を切り貼りした立体的な質感</td></tr>
+          <tr><td><code>mosaic</code></td><td>モザイク</td><td>小さなピースを組み合わせた視覚効果</td></tr>
+          <tr><td><code>neural rendering</code></td><td>ニューラルレンダリング</td><td><span class="v81-badge">V8.1</span>AI由来の滑らかさ・有機的なディテール</td></tr>
+          <tr><td><code>volumetric lighting</code></td><td>ボリュームライティング</td><td><span class="v81-badge">V8.1</span>光の粒子感・霧中の光線・大気散乱</td></tr>
+          <tr><td><code>subsurface scattering</code></td><td>サブサーフェス散乱</td><td><span class="v81-badge">V8.1</span>肌や蝋燭など内部から光が透過する質感</td></tr>
+          <tr><td><code>transparent nanobot</code></td><td>透明ナノボット</td><td><span class="x-badge">X</span>透明素材×極小機械×近未来感。--sref 1349010230 との組み合わせで実績あり（@jothekkatelie）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 🎨 アートスタイル・世界観 -->
+    <div class="spell-cat-label reveal" id="cat-style">🎨 アートスタイル・世界観 <span class="cat-count" data-cat="style"></span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead><tr><th>キーワード</th><th class="col-yomi">読み</th><th>効果・特徴</th></tr></thead>
+        <tbody>
+          <tr><td><code>hyperrealism</code></td><td>ハイパーリアル</td><td>超精緻・リアル志向</td></tr>
+          <tr><td><code>comic book style</code></td><td>コミック</td><td>強輪郭・カラフル</td></tr>
+          <tr><td><code>anime style</code></td><td>アニメ</td><td>2D/3D風の幅広いアニメ調</td></tr>
+          <tr><td><code>chibi style</code></td><td>ちびキャラ</td><td>頭大きめ・体小さめ</td></tr>
+          <tr><td><code>sketchy style</code></td><td>ラフスケッチ</td><td>荒々しい描写・未完成感</td></tr>
+          <tr><td><code>line art</code></td><td>線画</td><td>線のみ・シンプル</td></tr>
+          <tr><td><code>pop art</code></td><td>ポップアート</td><td>ベタ塗り・鮮やか・大衆文化</td></tr>
+          <tr><td><code>flat design</code></td><td>フラット</td><td>平面的・ミニマル</td></tr>
+          <tr><td><code>knolling</code></td><td>ノリング</td><td>持ち物を直角整列させて真上から撮った図</td></tr>
+          <tr><td><code>vintage poster</code></td><td>ヴィンテージポスター</td><td>レトロ調・紙質感</td></tr>
+          <tr><td><code>retro 80s</code></td><td>80年代レトロ</td><td>ネオン/シンセ的レトロ</td></tr>
+          <tr><td><code>ukiyo-e</code></td><td>浮世絵</td><td>和風版画・平面的彩色</td></tr>
+          <tr><td><code>cyberpunk</code></td><td>サイバーパンク</td><td>暗い都会＋ネオン</td></tr>
+          <tr><td><code>steampunk</code></td><td>スチームパンク</td><td>歯車・蒸気・ヴィクトリア調</td></tr>
+          <tr><td><code>gothic style</code></td><td>ゴシック</td><td>重厚・神秘・黒基調</td></tr>
+          <tr><td><code>sci-fi concept art</code></td><td>SFコンセプト</td><td>未来・宇宙・テック</td></tr>
+          <tr><td><code>fantasy art</code></td><td>ファンタジー</td><td>神話・魔法・冒険</td></tr>
+          <tr><td><code>dark fantasy</code></td><td>ダークファンタジー</td><td>重暗・神秘・ホラー寄り</td></tr>
+          <tr><td><code>graffiti</code></td><td>グラフィティ</td><td>ストリート・大胆色彩</td></tr>
+          <tr><td><code>psychedelic art</code></td><td>サイケ</td><td>極彩色・複雑パターン</td></tr>
+          <tr><td><code>biomechanical</code></td><td>バイオメカ</td><td>生体×機械融合</td></tr>
+          <tr><td><code>tribal art</code></td><td>トライバル</td><td>部族模様・シンボリック</td></tr>
+          <tr><td><code>stained glass</code></td><td>ステンドグラス</td><td>色ガラス風・リード線</td></tr>
+          <tr><td><code>retro futurism</code></td><td>レトロフューチャー</td><td>古い未来像・ノスタルジック</td></tr>
+          <tr><td><code>dreamlike</code></td><td>夢幻</td><td>柔らか・ぼんやり・非現実</td></tr>
+          <tr><td><code>geometric abstraction</code></td><td>幾何抽象</td><td>図形で抽象表現</td></tr>
+          <tr><td><code>pop surrealism</code></td><td>ポップ超現実</td><td>カラフルで奇妙</td></tr>
+          <tr><td><code>impressionist</code></td><td>印象派</td><td>光と色の印象重視</td></tr>
+          <tr><td><code>cubism</code></td><td>キュビズム</td><td>多視点で分解・再構成</td></tr>
+          <tr><td><code>baroque style</code></td><td>バロック</td><td>豪奢装飾・劇的明暗</td></tr>
+          <tr><td><code>vaporwave</code></td><td>ヴェイパーウェーブ</td><td>80–90sデジタル懐古</td></tr>
+          <tr><td><code>art nouveau</code></td><td>アール・ヌーヴォー</td><td>流線・植物モチーフ</td></tr>
+          <tr><td><code>surrealism</code></td><td>シュルレアリスム</td><td>夢・潜在意識・不条理</td></tr>
+          <tr><td><code>noir</code></td><td>ノワール</td><td>高コントラスト・退廃的ムード</td></tr>
+          <tr><td><code>glitch art</code></td><td>グリッチ</td><td>ノイズ/崩れ/歪み</td></tr>
+          <tr><td><code>fauvism</code></td><td>フォービズム</td><td>原色的・大胆な色面</td></tr>
+          <tr><td><code>futuristic</code></td><td>未来的</td><td>クリーンで先進的</td></tr>
+          <tr><td><code>low poly</code></td><td>ローポリ</td><td>少ポリゴンの面構成</td></tr>
+          <tr><td><code>8 bit pixel art</code></td><td>8ビットピクセル</td><td>低解像度ピクセル</td></tr>
+          <tr><td><code>voxel art</code></td><td>ボクセル</td><td>立方体ブロック造形</td></tr>
+          <tr><td><code>art deco</code></td><td>アール・デコ</td><td>幾何学模様・対称性・豪華な装飾</td></tr>
+          <tr><td><code>rococo</code></td><td>ロココ</td><td>繊細で優雅な曲線・明るい色彩・宮廷美術</td></tr>
+          <tr><td><code>minimalism</code></td><td>ミニマリズム</td><td>要素を極限まで減らしたシンプルな美</td></tr>
+          <tr><td><code>isometric art</code></td><td>アイソメトリック</td><td>等角投影図法・ゲームや図解で使う立体的表現</td></tr>
+          <tr><td><code>op art</code></td><td>オプ・アート</td><td>視覚的な錯覚や動きを生む抽象パターン</td></tr>
+          <tr><td><code>pointillism</code></td><td>点描</td><td>多数の点で色面形成</td></tr>
+          <tr><td><code>woodblock print</code></td><td>木版画</td><td>版画的フラット・強線</td></tr>
+          <tr><td><code>plastic figure</code></td><td>プラフィギュア</td><td>光沢3D・玩具質感</td></tr>
+          <tr><td><code>abstract expressionism</code></td><td>抽象表現主義</td><td>感情的で自由な筆致・非具象</td></tr>
+          <tr><td><code>neon noir</code></td><td>ネオンノワール</td><td><span class="v81-badge">V8.1</span>2026流行・ムーディーなサイバーパンク＋高コントラスト</td></tr>
+          <tr><td><code>y3k aesthetic</code></td><td>Y3K</td><td><span class="v81-badge">V8.1</span>Y2K次世代・メタリック銀色の超未来感</td></tr>
+          <tr><td><code>liminal space</code></td><td>リミナルスペース</td><td><span class="v81-badge">V8.1</span>不気味な中間領域・誰もいない空間・夢の残像感</td></tr>
+          <tr><td><code>bioluminescent tech</code></td><td>バイオルミネッセントテック</td><td><span class="x-badge">X</span>生物発光×テクノロジー。--sref 322872652 --sv 6 で再現可能（@SrefCodeAi）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 🏛️ デザイン史・様式タグ -->
+    <div class="spell-cat-label reveal" id="cat-design">🏛️ デザイン史・様式タグ <span class="cat-count" data-cat="design"></span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead><tr><th>キーワード</th><th class="col-yomi">読み</th><th>効果・特徴</th></tr></thead>
+        <tbody>
+          <tr><td><code>Swiss Style</code></td><td>スイス・タイポ</td><td>グリッド・整然・客観的・洗練</td></tr>
+          <tr><td><code>Bauhaus</code></td><td>バウハウス</td><td>機能主義・ミニマル・幾何学・合理的</td></tr>
+          <tr><td><code>De Stijl</code></td><td>デ・ステイル</td><td>水平垂直・三原色・抽象構成</td></tr>
+          <tr><td><code>Russian Constructivism</code></td><td>ロシア構成主義</td><td>赤黒白・斜め構図・強いタイポ・プロパガンダ感</td></tr>
+          <tr><td><code>Mid-century modern</code></td><td>ミッドセンチュリー</td><td>戦後の明るさ・丸み・温かいモダン</td></tr>
+          <tr><td><code>brutalism</code></td><td>ブルータリズム</td><td>素材感・ゴツさ・構造強調（建築/グラフィック両方）</td></tr>
+          <tr><td><code>memphis design</code></td><td>メンフィス</td><td>ポップ・幾何学・パステル・遊び心（80s）</td></tr>
+          <tr><td><code>postmodern design</code></td><td>ポストモダン</td><td>引用・装飾・ユーモア・型破り</td></tr>
+          <tr><td><code>grunge design</code></td><td>グランジ</td><td>汚し・ざらつき・崩し・90sストリート</td></tr>
+          <tr><td><code>skeuomorphism</code></td><td>スキューモーフィズム</td><td>革/木/金属っぽい"現実模倣"UI質感</td></tr>
+          <tr><td><code>Y2K aesthetic</code></td><td>Y2K</td><td>メタリック・近未来・初期インターネット感・ギラギラ</td></tr>
+          <tr><td><code>Frutiger Aero</code></td><td>フルティガーエアロ</td><td>光沢・水滴・草原・クリーンな希望的未来</td></tr>
+          <tr><td><code>material design</code></td><td>マテリアル</td><td>紙っぽいレイヤー・影・物理法則っぽいUI感</td></tr>
+          <tr><td><code>corporate memphis</code></td><td>コーポレート・メンフィス</td><td>フラット量産イラスト・ビッグテック資料っぽさ</td></tr>
+          <tr><td><code>glassmorphism</code></td><td>グラスモーフィズム</td><td>すりガラス・半透明・ぼかしレイヤー</td></tr>
+          <tr><td><code>neo-brutalism</code></td><td>ネオ・ブルータリズム</td><td>原色・太線・デフォルメ感・UIも強い</td></tr>
+          <tr><td><code>claymorphism</code></td><td>クレイモーフィズム</td><td>粘土みたいな丸い3D・やわらか質感</td></tr>
+          <tr><td><code>bento grid layout</code></td><td>弁当グリッド</td><td>情報を箱で区切るUI・整理整頓感</td></tr>
+          <tr><td><code>anti-design</code></td><td>アンチデザイン</td><td>あえて不快/読みにくさで違和感を作る</td></tr>
+          <tr><td><code>maximalism</code></td><td>マキシマリズム</td><td>盛る・埋める・情報量で圧倒する</td></tr>
+          <tr><td><code>solarpunk</code></td><td>ソーラーパンク</td><td>自然×テック共生の希望的未来（緑・光・クリーン）</td></tr>
+          <tr><td><code>y3k design</code></td><td>Y3Kデザイン</td><td><span class="v81-badge">V8.1</span>銀色メタル新未来主義・液体金属感</td></tr>
+          <tr><td><code>cybercore</code></td><td>サイバーコア</td><td><span class="v81-badge">V8.1</span>デジタル回路・データ視覚化・テックオーラ</td></tr>
+          <tr><td><code>glitchcore</code></td><td>グリッチコア</td><td><span class="v81-badge">V8.1</span>意図的な画像破綻・デジタルノイズを美学にする</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 🌫️ ムード語彙 -->
+    <div class="spell-cat-label reveal" id="cat-mood">🌫️ ムード語彙 — Styleの後ろに1語足す"温度つまみ" <span class="cat-count" data-cat="mood"></span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead><tr><th>キーワード</th><th class="col-yomi">読み</th><th>効果・特徴</th></tr></thead>
+        <tbody>
+          <tr><td><code>ethereal</code></td><td>エーテリアル</td><td>透明感・神秘・グロー・柔い光</td></tr>
+          <tr><td><code>dreamy</code></td><td>ドリーミー</td><td>霞・ソフトフォーカス・ふわっと非現実</td></tr>
+          <tr><td><code>whimsical</code></td><td>ウィムジカル</td><td>不思議・遊び心・手書きっぽい軽さ</td></tr>
+          <tr><td><code>celestial</code></td><td>セレスティアル</td><td>星/月/宇宙・濃紺/紫・神々しさ</td></tr>
+          <tr><td><code>moody</code></td><td>ムーディ</td><td>陰影強め・ローキー・映画のワンシーン感</td></tr>
+          <tr><td><code>melancholic</code></td><td>メランコリック</td><td>切なさ・彩度低め・静かな余韻</td></tr>
+          <tr><td><code>nostalgic</code></td><td>ノスタルジック</td><td>色あせ・フィルム粒子・懐かしさ</td></tr>
+          <tr><td><code>serene</code></td><td>セリーン</td><td>静けさ・余白・穏やか・自然光</td></tr>
+          <tr><td><code>vibrant</code></td><td>ヴァイブラント</td><td>高彩度・元気・ポップ</td></tr>
+          <tr><td><code>eclectic</code></td><td>エクレクティック</td><td>異種ミックス・雑多だけどセンス良い</td></tr>
+          <tr><td><code>kitsch</code></td><td>キッチュ</td><td>ダサかわ・チープを"味"にする</td></tr>
+          <tr><td><code>bold</code></td><td>ボールド</td><td>強い・太い・ドーンと押す</td></tr>
+          <tr><td><code>sophisticated</code></td><td>ソフィスティケイテッド</td><td>洗練・上質・都会的</td></tr>
+          <tr><td><code>gritty</code></td><td>グリッティ</td><td>ざらつき・現場感・汚れ・リアル</td></tr>
+          <tr><td><code>sleek</code></td><td>スリーク</td><td>ツルッと・継ぎ目ない・近未来の高級感</td></tr>
+          <tr><td><code>liminal</code></td><td>リミナル</td><td><span class="v81-badge">V8.1</span>現実と非現実の狭間・時間が止まった感覚</td></tr>
+          <tr><td><code>bioluminescent</code></td><td>バイオルミネッセント</td><td><span class="v81-badge">V8.1</span>生物発光・青緑の幻想的な光・深海感</td></tr>
+          <tr><td><code>hyper-nostalgic</code></td><td>ハイパーノスタルジック</td><td><span class="v81-badge">V8.1</span>デジタル懐かしさ全開・フィルム劣化を意図的に強調</td></tr>
+          <tr><td><code>ethereal cyber</code></td><td>エーテリアルサイバー</td><td><span class="v81-badge">V8.1</span>神秘的×近未来・透明感とテクノロジーの融合</td></tr>
+          <tr><td><code>bold colors</code></td><td>ボールドカラー</td><td><span class="x-badge">X</span>大胆な高彩度カラー。--sref 3968076707 などと組み合わせて使われている（@AllaAisling）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- ★ SREF コード集 -->
+    <div class="spell-cat-label reveal" id="cat-sref">★ Xでバズってる即効SREFコード <span class="cat-count">2026/4月最新 · V8.1対応</span></div>
+    <p class="reveal" style="font-size:13px;color:var(--text-sub);margin:0 0 16px">
+      <code>--sref 数字 --sv 7 --sw 500</code> を末尾に足すだけで即世界観が変わる。下表のコードをコピーしてそのまま使える。
+    </p>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead>
+          <tr>
+            <th>SREFコード</th>
+            <th class="col-yomi">効果・世界観</th>
+            <th>ソース</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>--sref 322872652 --sv 6</code></td>
+            <td class="col-yomi">Bioluminescent Tech — 光るテック系・生物発光</td>
+            <td style="white-space:nowrap;font-size:12px">@SrefCodeAi</td>
+          </tr>
+          <tr>
+            <td><code>--sref 3720162252</code></td>
+            <td class="col-yomi">Portrait — ポートレート超安定・顔出力品質向上</td>
+            <td style="white-space:nowrap;font-size:12px">—</td>
+          </tr>
+          <tr>
+            <td><code>--sref 3192022089</code></td>
+            <td class="col-yomi">Portrait Srefs A — @AllaAisling推奨</td>
+            <td style="white-space:nowrap;font-size:12px">@AllaAisling</td>
+          </tr>
+          <tr>
+            <td><code>--sref 3801786147</code></td>
+            <td class="col-yomi">Portrait Srefs B — @AllaAisling推奨</td>
+            <td style="white-space:nowrap;font-size:12px">@AllaAisling</td>
+          </tr>
+          <tr>
+            <td><code>--sref 4165715783</code></td>
+            <td class="col-yomi">Portrait Srefs C — @AllaAisling推奨</td>
+            <td style="white-space:nowrap;font-size:12px">@AllaAisling</td>
+          </tr>
+          <tr>
+            <td><code>--sref 3968076707</code></td>
+            <td class="col-yomi">Bold Colors A — 派手色・高彩度ポップ</td>
+            <td style="white-space:nowrap;font-size:12px">@AllaAisling</td>
+          </tr>
+          <tr>
+            <td><code>--sref 2796343186</code></td>
+            <td class="col-yomi">Bold Colors B — 派手色・高彩度ポップ</td>
+            <td style="white-space:nowrap;font-size:12px">@AllaAisling</td>
+          </tr>
+          <tr>
+            <td><code>--sref 1753881624</code></td>
+            <td class="col-yomi">Bold Colors C — 派手色・高彩度ポップ</td>
+            <td style="white-space:nowrap;font-size:12px">@AllaAisling</td>
+          </tr>
+          <tr>
+            <td><code>--sref 1349010230 4180108143</code></td>
+            <td class="col-yomi">Transparent Nanobot Battle Crab — 2コード同時指定例</td>
+            <td style="white-space:nowrap;font-size:12px">@jothekkatelie</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 実例プロンプト -->
+    <div class="ai-unlock reveal">
+      <div class="ai-unlock-label">実例プロンプト — Xより（V7 vs V8.1 比較）</div>
+      <div class="ai-unlock-title">@promptsref 投稿：V8.1の方がリアルで審美性が高い</div>
+      <div class="ai-unlock-desc">V7とV8.1で同じプロンプトを比較した投稿。V8.1の方がリアリティと審美性で上という実例。4パネル構成で顔・体の一貫性も向上している。</div>
+      <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example (@promptsref)</span>A 4 panel photo collage of a slender woman in sheer lingerie, posing on a bed --ar 2:3 --v 8.1</div>
+    </div>
+
+
+    <!-- ★ Hidden Gems SREF 調査報告 -->
+    <div class="spell-cat-label reveal" id="cat-hidden-gems">🔍 Hidden Gems SREFコード — 2026/4 調査報告 <span class="cat-count">25コード · 5カテゴリ</span></div>
+
+    <div class="callout reveal" style="margin-bottom:24px">
+      <strong>選定基準</strong>
+      定番コードは除外し「画風の芯が複数被写体でも崩れにくい」コードを優先選定。V7・V8.1 Alpha 両対応。Optimal --sw は公開 prompt 実例と community report を重ねた実務推定レンジで、固定の正解値ではなく「まずこの帯から入ると崩れにくい」という目安として読む。<br><br>
+      <strong>まず外さない鉄板：</strong>Photorealistic → <code>913377683</code> / <code>2082925974</code>　Retro → <code>1378340489</code> / <code>2434720771</code>　Anime → <code>2942895933</code> / <code>121844099</code>　Material → <code>694725456</code> / <code>342204327</code>　Minimal → <code>1677920710</code> / <code>2372558512</code>
+    </div>
+
+    <!-- Photorealistic -->
+    <div class="spell-cat-label reveal" style="margin-top:16px">📷 Photorealistic <span class="cat-count">5コード · optimal --sw 150–500</span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead>
+          <tr><th>コード</th><th>別名</th><th class="col-yomi">ビジュアル特性</th><th>Optimal --sw</th><th class="col-yomi">カラー傾向</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>913377683</code></td>
+            <td>Elegant Still Life</td>
+            <td class="col-yomi">editorial still-life / controlled lighting / clean realism</td>
+            <td><code>250–450</code></td>
+            <td class="col-yomi">soft neutrals / glass blue / fruit red</td>
+          </tr>
+          <tr>
+            <td><code>2082925974</code></td>
+            <td>Moody Artistic Vignettes</td>
+            <td class="col-yomi">moody photography / painterly shadows / editorial narrative</td>
+            <td><code>300–500</code></td>
+            <td class="col-yomi">charcoal / olive / muted amber</td>
+          </tr>
+          <tr>
+            <td><code>2376998380</code></td>
+            <td>Radionic Harmony</td>
+            <td class="col-yomi">cinematic neon / high contrast / sci-fi realism</td>
+            <td><code>150–300</code></td>
+            <td class="col-yomi">electric cyan / magenta / noir black</td>
+          </tr>
+          <tr>
+            <td><code>2476944343</code></td>
+            <td>Monochrome Arcana Pavilion</td>
+            <td class="col-yomi">monochrome cinema / architectural framing / dramatic tonality</td>
+            <td><code>150–300</code></td>
+            <td class="col-yomi">graphite / silver / off-white</td>
+          </tr>
+          <tr>
+            <td><code>3094236681</code></td>
+            <td>Retro-Futuristic Machinescape</td>
+            <td class="col-yomi">retro-sci-fi photo / industrial depth / cinematic scale</td>
+            <td><code>200–350</code></td>
+            <td class="col-yomi">steel blue / sepia gray / red accents</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Nostalgic / Retro -->
+    <div class="spell-cat-label reveal">🎞️ Nostalgic / Retro <span class="cat-count">5コード · optimal --sw 200–500</span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead>
+          <tr><th>コード</th><th>別名</th><th class="col-yomi">ビジュアル特性</th><th>Optimal --sw</th><th class="col-yomi">カラー傾向</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>1378340489</code></td>
+            <td>Vintage Ethereal Moods</td>
+            <td class="col-yomi">film grain / soft bloom / period portrait</td>
+            <td><code>250–450</code></td>
+            <td class="col-yomi">warm beige / faded gold / dusty rose</td>
+          </tr>
+          <tr>
+            <td><code>2434720771</code></td>
+            <td>Vintage Sepia Passage</td>
+            <td class="col-yomi">sepia photo / archival texture / old-paper tone</td>
+            <td><code>250–450</code></td>
+            <td class="col-yomi">sepia brown / cream / tobacco</td>
+          </tr>
+          <tr>
+            <td><code>181103373</code></td>
+            <td>Atomic Wright Revival</td>
+            <td class="col-yomi">mid-century ad / retro geometry / clean nostalgia</td>
+            <td><code>300–500</code></td>
+            <td class="col-yomi">mint / coral / cream</td>
+          </tr>
+          <tr>
+            <td><code>1691777625</code></td>
+            <td>Nostalgic Retrovisions</td>
+            <td class="col-yomi">analog snapshot / light leak / soft focus</td>
+            <td><code>250–450</code></td>
+            <td class="col-yomi">faded teal / pink / warm beige</td>
+          </tr>
+          <tr>
+            <td><code>1023471748</code></td>
+            <td>Timeless Monochrome</td>
+            <td class="col-yomi">silver gelatin / high tonal range / classic portrait</td>
+            <td><code>200–400</code></td>
+            <td class="col-yomi">black / white / silver gray</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Illustrative / Anime -->
+    <div class="spell-cat-label reveal">🎌 Illustrative / Anime <span class="cat-count">5コード · optimal --sw 350–700</span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead>
+          <tr><th>コード</th><th>別名</th><th class="col-yomi">ビジュアル特性</th><th>Optimal --sw</th><th class="col-yomi">カラー傾向</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>2942895933</code></td>
+            <td>Neonflux Chronicles</td>
+            <td class="col-yomi">cyberpunk manga / glow accents / energetic panels</td>
+            <td><code>350–650</code></td>
+            <td class="col-yomi">neon purple / cyan / hot pink</td>
+          </tr>
+          <tr>
+            <td><code>121844099</code></td>
+            <td>Dynamic Future Expressionism</td>
+            <td class="col-yomi">dynamic manga / steampunk energy / bold linework</td>
+            <td><code>350–650</code></td>
+            <td class="col-yomi">deep blue / crimson / metallic gray</td>
+          </tr>
+          <tr>
+            <td><code>3908994546</code></td>
+            <td>Simple Life Illustrations</td>
+            <td class="col-yomi">anime vector / flat shading / clean silhouettes</td>
+            <td><code>350–550</code></td>
+            <td class="col-yomi">cream / muted blue / warm red</td>
+          </tr>
+          <tr>
+            <td><code>3193937836</code></td>
+            <td>Vintage Line Drawings</td>
+            <td class="col-yomi">retro anime / line-centric / storybook charm</td>
+            <td><code>400–700</code></td>
+            <td class="col-yomi">aged paper / rust red / moss green</td>
+          </tr>
+          <tr>
+            <td><code>2612123870</code></td>
+            <td>Cosmic Frontier</td>
+            <td class="col-yomi">futuristic anime / space opera / graphic glow</td>
+            <td><code>350–650</code></td>
+            <td class="col-yomi">indigo / teal / magenta</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Material / Texture -->
+    <div class="spell-cat-label reveal">🧊 Material / Texture <span class="cat-count">5コード · optimal --sw 350–700</span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead>
+          <tr><th>コード</th><th>別名</th><th class="col-yomi">ビジュアル特性</th><th>Optimal --sw</th><th class="col-yomi">カラー傾向</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>3855741690</code></td>
+            <td>Knitted-Texture Surreal Paintings</td>
+            <td class="col-yomi">knit texture / woven depth / surreal softness</td>
+            <td><code>450–650</code></td>
+            <td class="col-yomi">cobalt / navy / fabric white</td>
+          </tr>
+          <tr>
+            <td><code>694725456</code></td>
+            <td>Dreamy Pastel Objects</td>
+            <td class="col-yomi">translucent objects / soft glow / wrapped surfaces</td>
+            <td><code>400–600</code></td>
+            <td class="col-yomi">candy pink / baby blue / mint</td>
+          </tr>
+          <tr>
+            <td><code>342204327</code></td>
+            <td>Surreal Glossy Forms</td>
+            <td class="col-yomi">glossy biomorph / reflective plastic / fluid curves</td>
+            <td><code>400–700</code></td>
+            <td class="col-yomi">cool blue / lilac / chrome pink</td>
+          </tr>
+          <tr>
+            <td><code>3869808371</code></td>
+            <td>3D Character Illustrations</td>
+            <td class="col-yomi">plush texture / soft 3D / toy finish</td>
+            <td><code>350–600</code></td>
+            <td class="col-yomi">pastel pink / cream / bubblegum</td>
+          </tr>
+          <tr>
+            <td><code>1555769748</code></td>
+            <td>Holographic Heroes</td>
+            <td class="col-yomi">iridescent surfaces / holographic sheen / digital gloss</td>
+            <td><code>400–700</code></td>
+            <td class="col-yomi">cyan / violet / chrome</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Minimalism / UI -->
+    <div class="spell-cat-label reveal">⬜ Minimalism / UI <span class="cat-count">5コード · optimal --sw 200–450</span></div>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead>
+          <tr><th>コード</th><th>別名</th><th class="col-yomi">ビジュアル特性</th><th>Optimal --sw</th><th class="col-yomi">カラー傾向</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>2372558512</code></td>
+            <td>Rapture Pop Fusion</td>
+            <td class="col-yomi">ultra minimal / poster blocks / clean geometry</td>
+            <td><code>250–400</code></td>
+            <td class="col-yomi">white / black / primary accents</td>
+          </tr>
+          <tr>
+            <td><code>1677920710</code></td>
+            <td>Minimalist Monochrome Architecture</td>
+            <td class="col-yomi">architectural minimal / monochrome grid / tech clean</td>
+            <td><code>200–350</code></td>
+            <td class="col-yomi">white / charcoal / steel gray</td>
+          </tr>
+          <tr>
+            <td><code>2826667815</code></td>
+            <td>Gentlesoft Geometric Ethos</td>
+            <td class="col-yomi">gentle geometry / soft UI feel / rounded minimalism</td>
+            <td><code>250–400</code></td>
+            <td class="col-yomi">beige / sage / pastel gray</td>
+          </tr>
+          <tr>
+            <td><code>4135597898</code></td>
+            <td>Ethereal Minimal Reference</td>
+            <td class="col-yomi">airy minimal / editorial whitespace / subtle forms</td>
+            <td><code>250–450</code></td>
+            <td class="col-yomi">ivory / cloud gray / blush</td>
+          </tr>
+          <tr>
+            <td><code>395151849</code></td>
+            <td>Monochrome Visionary</td>
+            <td class="col-yomi">strict minimal / bold silhouettes / UI-poster hybrid</td>
+            <td><code>200–350</code></td>
+            <td class="col-yomi">black / white / graphite</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 補助パラメータ -->
+    <div class="spell-cat-label reveal">⚙️ 補助パラメータ（--p 組み合わせ） <span class="cat-count">10パターン</span></div>
+    <p class="reveal" style="font-size:13px;color:var(--text-sub);margin:0 0 16px"><code>--p</code> はPersonalization ID。コードと組み合わせることで「自分の好みのフィルター越しにスタイルを通す」効果がある。</p>
+    <div class="table-wrap reveal">
+      <table class="spell-table">
+        <thead>
+          <tr><th>SREFコード</th><th class="col-yomi">推奨コンボ</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>633578296</code></td><td class="col-yomi"><code>--p c6so3sz --sw 500 --stylize 500</code></td><td>bold wildlife vector / poster</td></tr>
+          <tr><td><code>2082925974</code></td><td class="col-yomi"><code>--p c6so3sz --sw 500 --stylize 500</code></td><td>moody editorial photo</td></tr>
+          <tr><td><code>931432879</code></td><td class="col-yomi"><code>--p tckem44 --sw 500 --stylize 500</code></td><td>storybook texture / illustrated books</td></tr>
+          <tr><td><code>694725456</code></td><td class="col-yomi"><code>--p tckem44 --sw 500 --stylize 500</code></td><td>translucent objects / soft industrial design</td></tr>
+          <tr><td><code>2489266559</code></td><td class="col-yomi"><code>--p tckem44 --sw 300 --stylize 300</code></td><td>minimal 3D icons / small product objects</td></tr>
+          <tr><td><code>1719177646</code></td><td class="col-yomi"><code>--p 3kdwpdy --stylize 800</code></td><td>toy / doll / collectible aesthetics</td></tr>
+          <tr><td><code>3869808371</code></td><td class="col-yomi"><code>--p 3kdwpdy --stylize 800</code></td><td>plush 3D characters / soft mascots</td></tr>
+          <tr><td><code>1555769748</code></td><td class="col-yomi"><code>--p r4vd5m3 --sw 500 --stylize 1000</code></td><td>holographic surfaces / VFX concept frames</td></tr>
+          <tr><td><code>1790255595</code></td><td class="col-yomi"><code>--p l3h4vio --sw 500 --stylize 500</code></td><td>ethereal vintage painting / dreamy editorial</td></tr>
+          <tr><td><code>24000022</code></td><td class="col-yomi"><code>--p yxfwp46 --stylize 500</code></td><td>illustrative hybrid / chibi-friendly</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- V8.1使用時の注意 -->
+    <div class="callout reveal">
+      <strong>V8.1 Alpha で使うときの3原則</strong>
+      ① V7 と同じ見た目を期待しない。同じコードでも挙動は変わる。<br>
+      ② prompt を短く保ち、--sw を 50〜150 ずつ上げて調整する。<br>
+      ③ style drift が見えたら --sv 4 や旧系を試すか V7 に戻して比較する。
+    </div>
+    <div class="callout reveal">
+      <strong>入れ込み位置のおすすめ</strong>
+      🎨アートスタイル（Style）の直後に 🏛️様式タグ → 🌫️ムード の順で並べると自然なプロンプトになる。同じ様式でもムード語を変えるだけで全然違う雰囲気になる。
+    </div>
+  </section>
+
+  <!-- ─── CH8: 構図 ─── -->
+  <section class="chapter" id="ch8">
+    <div class="chapter-nav">08 — COMPOSITION</div>
+    <h2>構図（Double系）</h2>
+
+    <div class="section">
+      <h3>二つのイメージを使った特殊構図</h3>
+      <p>演出の幅をグッと広げる構図技法。プロンプトに組み込むことで独特の視覚効果が出せる。</p>
+    </div>
+
+    <div class="double-grid">
+      <div class="double-card reveal">
+        <div class="double-card-label">08-1</div>
+        <div class="double-card-title">Double Exposure</div>
+        <div class="double-card-desc">二つのイメージを重ねて混ぜる構図。顔×風景、シルエット×夜景など。内側の世界と外側の世界を溶かすような見せ方が特徴。</div>
+        <div class="double-card-type">Overlay型 — 透かして重ねる</div>
+      </div>
+      <div class="double-card reveal">
+        <div class="double-card-label">08-2</div>
+        <div class="double-card-title">Double Frame / Split Frame</div>
+        <div class="double-card-desc">一枚の中を2コマに分割して並べて見せる構図。左：全身 / 右：顔アップ、Before / Afterなど。比較したい・二つの視点を同時に見せたいときに使う。</div>
+        <div class="double-card-type">Side-by-side型 — 横に並べる</div>
+      </div>
+      <div class="double-card reveal">
+        <div class="double-card-label">08-3</div>
+        <div class="double-card-title">Triple Frame / Multi Panel <span class="v81-badge">V8.1</span></div>
+        <div class="double-card-desc">3分割グリッド構図。V8.1のGrid Modeと相性抜群。ビフォーアフターや3段階変化、コンタクトシート風の見せ方ができる。</div>
+        <div class="double-card-type">Grid型 — 3列・多面構成</div>
+      </div>
+      <div class="double-card reveal">
+        <div class="double-card-label">08-4</div>
+        <div class="double-card-title">Liminal Overlay <span class="v81-badge">V8.1</span></div>
+        <div class="double-card-desc">リミナルスペース（誰もいない不気味な中間空間）にダブルエクスポージャーを重ねた構図。現実と非現実が溶け合う独特のムードになる。</div>
+        <div class="double-card-type">Liminal + Overlay型 — 中間世界</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CH9: テクニック ─── -->
+  <section class="chapter" id="ch9">
+    <div class="chapter-nav">09 — TIPS</div>
+    <h2>ちょっとした技</h2>
+
+    <div class="section">
+      <h3>--no を使った「出したくないもの」の封印術</h3>
+      <p>これを知ってると出力の制御が格段に上がる。特にNSFW・著作権キャラの混入を防ぐのに有効。</p>
+    </div>
+
+    <div class="tip-grid">
+      <div class="tip-card reveal">
+        <div class="tip-icon">🔞</div>
+        <div class="tip-title">エッチなのを封印</div>
+        <div class="tip-code-wrap"><span class="tip-code">--no nsfw, nude</span><button class="tip-copy-btn" data-copy="--no nsfw, nude">Copy</button></div>
+        <div class="tip-desc">MJは標準でブロックされるが、際どい肌色を減らしたいときに追加で入れると効果的。<span class="v81-badge">V8.1</span> --noの効きがさらに強化された。</div>
+      </div>
+      <div class="tip-card reveal">
+        <div class="tip-icon">⚔️</div>
+        <div class="tip-title">暴力を控えめに</div>
+        <div class="tip-code-wrap"><span class="tip-code">--no blood, gore, violence</span><button class="tip-copy-btn" data-copy="--no blood, gore, violence">Copy</button></div>
+        <div class="tip-desc">アクション映画レベルに抑えたいときに有効。<span class="v81-badge">V8.1</span> より精度が高い。</div>
+      </div>
+      <div class="tip-card reveal">
+        <div class="tip-icon">©️</div>
+        <div class="tip-title">版権キャラを排除</div>
+        <div class="tip-code-wrap"><span class="tip-code">--no copyright, trademark</span><button class="tip-copy-btn" data-copy="--no copyright, trademark">Copy</button></div>
+        <div class="tip-desc">「ミッキーっぽさ」が勝手に混ざるのを防ぐ。キャラ名も入れると更に効果的。<span class="v81-badge">V8.1</span> NSFW・版権対策が最強レベルに強化された。</div>
+      </div>
+    </div>
+
+    <div class="ai-unlock reveal">
+      <div class="ai-unlock-label">AI Unlock — このメモを渡す</div>
+      <div class="ai-unlock-title">語彙を手に入れた後の使い方</div>
+      <div class="ai-unlock-desc">このドキュメントをAIに渡すと、パラメータ語彙・呪文リスト・構図タイプを共有した状態でアドバイスが受けられる。<strong>「このドキュメントのパラメータを使って私がやりたいイメージを実現するプロンプトを組んで」</strong>——この一文で、知識のないAIとは全然違う回答が返ってくる。</div>
+      <div class="ai-prompt-example"><span class="ai-prompt-label">Prompt Example</span>このドキュメントのパラメータと呪文リストを参考に、「夕暮れの都市を歩く女性、フィルム写真風で少し憂鬱な雰囲気」を表現するMidjourney V7プロンプトを組んでください。スタイル・ムード・画材・パラメータを含めて。</div>
+    </div>
+
+    <div class="key-insight reveal">
+      <div class="ki-label">まとめ：迷ったときの優先順位</div>
+      <p><strong>① Subject（何を描くか）→ ② Style（様式）→ ③ Mood（雰囲気）→ ④ Material（画材）→ ⑤ Params（つまみ）</strong>。この順番で組み立てれば、パラメータ迷子にはならへん。</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="article-footer">
+  <div class="footer-brand">
+    KITAcore Knowledge Shelf<br>
+    Midjourney V7/V8.1 パラメータ全録。
+  </div>
+  <div class="footer-meta">
+    9 Chapters · 呪文 115+ · SREF 34コード · 随時更新<br>
+    @ktcrs1107
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script>
+(function () {
+  'use strict';
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── PRELOADER ── */
+  const preloader = document.getElementById('preloader');
+  const MIN_DURATION = prefersReduced ? 300 : 1900;
+  const loadStart = performance.now();
+  let preloaderFinished = false;
+
+  function dismissPreloader() {
+    if (preloaderFinished) return;
+    preloaderFinished = true;
+    const elapsed = performance.now() - loadStart;
+    const remaining = Math.max(0, MIN_DURATION - elapsed);
+    setTimeout(() => {
+      preloader.classList.add('done');
+      document.body.classList.remove('preloading');
+      setTimeout(() => { if (preloader.parentNode) preloader.remove(); }, 700);
+    }, remaining);
+  }
+  if (document.readyState === 'complete') { dismissPreloader(); }
+  else { window.addEventListener('load', dismissPreloader); setTimeout(dismissPreloader, 4000); }
+  preloader.addEventListener('click', () => {
+    preloader.classList.add('done');
+    document.body.classList.remove('preloading');
+    setTimeout(() => { if (preloader.parentNode) preloader.remove(); }, 500);
+    preloaderFinished = true;
+  });
+  document.addEventListener('keydown', function skipHandler(e) {
+    if (preloaderFinished) { document.removeEventListener('keydown', skipHandler); return; }
+    if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') preloader.click();
+  });
+
+  /* ── SCROLL ── */
+  const progressEl = document.getElementById('scrollProgress');
+  const header = document.getElementById('siteHeader');
+  const backToTop = document.getElementById('backToTop');
+  const chapterRail = document.getElementById('chapterRail');
+  const chapterChips = document.getElementById('chapterChips');
+  let ticking = false;
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const scrollTop = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      progressEl.style.width = (docH > 0 ? scrollTop / docH * 100 : 0) + '%';
+      header.classList.toggle('scrolled', scrollTop > 40);
+      backToTop.classList.toggle('visible', scrollTop > 600);
+      const railVis = scrollTop > 200;
+      chapterRail.classList.toggle('visible', railVis);
+      chapterChips.classList.toggle('visible', railVis);
+      updateActiveSection(scrollTop);
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ── TOC ── */
+  const tocToggle = document.getElementById('tocToggle');
+  const tocPanel = document.getElementById('tocPanel');
+  tocToggle.addEventListener('click', () => {
+    const isOpen = tocPanel.classList.toggle('open');
+    tocToggle.classList.toggle('open', isOpen);
+    tocToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  tocPanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    tocPanel.classList.remove('open');
+    tocToggle.classList.remove('open');
+    tocToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  /* ── SCROLL SPY ── */
+  const chapters = Array.from(document.querySelectorAll('section.chapter[id]'));
+  const tocLinks = Array.from(document.querySelectorAll('.toc-list a'));
+  const railItems = Array.from(document.querySelectorAll('.rail-item'));
+  const chipItems = Array.from(document.querySelectorAll('.chip-item'));
+
+  function updateActiveSection(scrollTop) {
+    let currentId;
+    if (scrollTop < 200) { currentId = 'top'; }
+    else {
+      currentId = chapters[0]?.id;
+      for (const ch of chapters) {
+        if (ch.offsetTop - 120 <= scrollTop) currentId = ch.id;
+        else break;
+      }
+    }
+    const hash = '#' + currentId;
+    tocLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === hash));
+    railItems.forEach(i => i.classList.toggle('active', i.getAttribute('href') === hash));
+    chipItems.forEach(i => {
+      const isActive = i.getAttribute('href') === hash;
+      i.classList.toggle('active', isActive);
+      if (isActive && chapterChips.classList.contains('visible')) {
+        const il = i.offsetLeft, ir = il + i.offsetWidth, sl = chapterChips.scrollLeft, cw = chapterChips.clientWidth;
+        if (il < sl + 16 || ir > sl + cw - 16) chapterChips.scrollTo({ left: il - 16, behavior: prefersReduced ? 'auto' : 'smooth' });
+      }
+    });
+  }
+
+  /* ── REVEAL ── */
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+    document.querySelectorAll('.chapter h2, .section, .callout, .table-wrap, .key-insight, .ai-unlock, .param-card, .case-card, .double-card, .tip-card, .template-block, .pill-section').forEach(el => {
+      el.classList.add('reveal');
+      io.observe(el);
+    });
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  /* ── CHAPTER H2 UNDERLINE ── */
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    const h2io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); h2io.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.chapter h2').forEach(h => h2io.observe(h));
+  } else {
+    document.querySelectorAll('.chapter h2').forEach(h => h.classList.add('in'));
+  }
+
+  /* ── BACK TO TOP ── */
+  backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' }));
+
+  /* ── CASE & TIP COPY BUTTONS ── */
+  function makeCopyBtn(selector, btnClass) {
+    document.querySelectorAll(selector).forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.dataset.copy;
+        copyText(text)
+          .then(() => {
+            btn.textContent = '✓';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+          })
+          .catch(() => { btn.textContent = 'Failed'; setTimeout(() => btn.textContent = 'Copy', 1500); });
+      });
+    });
+  }
+  makeCopyBtn('.case-copy-btn');
+  makeCopyBtn('.tip-copy-btn');
+
+  /* ── SPELL SEARCH ── */
+  const spellSearch = document.getElementById('spellSearch');
+  const spellCount  = document.getElementById('spellCount');
+
+  function updateSpellCount() {
+    const tables = document.querySelectorAll('.spell-table');
+    let total = 0, visible = 0;
+    tables.forEach(t => {
+      t.querySelectorAll('tbody tr').forEach(tr => {
+        total++;
+        if (!tr.classList.contains('spell-hidden')) visible++;
+      });
+    });
+    if (spellSearch && spellSearch.value.trim()) {
+      spellCount.textContent = `${visible} / ${total} 件表示`;
+    } else {
+      spellCount.textContent = '';
+    }
+  }
+
+  if (spellSearch) {
+    spellSearch.addEventListener('input', () => {
+      const q = spellSearch.value.trim().toLowerCase();
+      document.querySelectorAll('.spell-table tbody tr').forEach(tr => {
+        const text = tr.textContent.toLowerCase();
+        tr.classList.toggle('spell-hidden', q.length > 0 && !text.includes(q));
+      });
+      updateSpellCount();
+    });
+
+    // Keyboard shortcut: "/" to focus search
+    document.addEventListener('keydown', e => {
+      if (e.key === '/' && document.activeElement !== spellSearch) {
+        const rect = spellSearch.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > window.innerHeight) {
+          spellSearch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        e.preventDefault();
+        spellSearch.focus();
+      }
+      if (e.key === 'Escape' && document.activeElement === spellSearch) {
+        spellSearch.value = '';
+        spellSearch.dispatchEvent(new Event('input'));
+        spellSearch.blur();
+      }
+    });
+  }
+
+  /* ── PILL COPY ── */
+  const toast = document.getElementById('copy-toast');
+  let toastTimer;
+
+  function copyText(text) {
+    // Try modern clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    // Fallback: execCommand
+    return new Promise((resolve, reject) => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        ok ? resolve() : reject(new Error('execCommand failed'));
+      } catch (e) {
+        document.body.removeChild(ta);
+        reject(e);
+      }
+    });
+  }
+
+  function showToast(text) {
+    toast.textContent = `COPIED: ${text}`;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  document.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+      const word = p.textContent.trim();
+      copyText(word)
+        .then(() => showToast(word))
+        .catch(() => {
+          // Last resort: select the text visually
+          const range = document.createRange();
+          range.selectNodeContents(p);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          showToast(word + ' (手動でCtrl+C)');
+        });
+    });
+  });
+
+  /* ── AI PROMPT COPY BUTTON ── */
+  document.querySelectorAll('.ai-prompt-example').forEach(box => {
+    const btn = document.createElement('button');
+    btn.className = 'ai-copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy prompt');
+    btn.addEventListener('click', async () => {
+      const clone = box.cloneNode(true);
+      clone.querySelectorAll('.ai-prompt-label, .ai-copy-btn').forEach(el => el.remove());
+      const text = clone.textContent.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'Copied ✓';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+      } catch {
+        btn.textContent = 'Failed';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+      }
+    });
+    box.appendChild(btn);
+  });
+
+  /* ── CHAPTER NUM SCRAMBLE ── */
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    document.querySelectorAll('.chapter-nav').forEach(nav => {
+      const orig = nav.textContent;
+      const match = orig.match(/^(0)(\d)(.*)$/);
+      if (!match) return;
+      const [, prefix, target, suffix] = match;
+      const obs = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        obs.unobserve(nav);
+        let tick = 0;
+        const iv = setInterval(() => {
+          if (tick >= 9) { clearInterval(iv); nav.textContent = orig; return; }
+          nav.textContent = `${prefix}${Math.floor(Math.random() * 10)}${suffix}`;
+          tick++;
+        }, 55);
+      }, { threshold: 0.6 });
+      obs.observe(nav);
+    });
+  }
+
+  /* ── SMOOTH ANCHOR ── */
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const href = link.getAttribute('href');
+      if (href.length <= 1) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      const y = target.getBoundingClientRect().top + window.scrollY - header.offsetHeight - 16;
+      window.scrollTo({ top: y, behavior: prefersReduced ? 'auto' : 'smooth' });
+      history.pushState(null, '', href);
+    });
+  });
+
+  /* ── CUSTOM CURSOR ── */
+  const cursorDot = document.getElementById('cursorDot');
+  const cursorRing = document.getElementById('cursorRing');
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  if (isFinePointer && !isTouch && !prefersReduced) {
+    document.body.classList.add('has-custom-cursor');
+    let mx = -100, my = -100, dx = -100, dy = -100, rx = -100, ry = -100;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+    document.addEventListener('mousedown', () => cursorRing.classList.add('click'));
+    document.addEventListener('mouseup', () => cursorRing.classList.remove('click'));
+    document.addEventListener('mouseleave', () => { cursorDot.classList.add('hidden'); cursorRing.classList.add('hidden'); });
+    document.addEventListener('mouseenter', () => { cursorDot.classList.remove('hidden'); cursorRing.classList.remove('hidden'); });
+    (function anim() {
+      dx += (mx - dx) * 0.55; dy += (my - dy) * 0.55;
+      rx += (mx - rx) * 0.14; ry += (my - ry) * 0.14;
+      cursorDot.style.transform = `translate(${dx}px,${dy}px) translate(-50%,-50%)`;
+      cursorRing.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+      requestAnimationFrame(anim);
+    })();
+    const hoverTargets = 'a, button, .pill, .param-card, .case-card, .double-card, .tip-card, .tag';
+    document.addEventListener('mouseover', e => { if (e.target.closest(hoverTargets)) cursorRing.classList.add('hover'); });
+    document.addEventListener('mouseout', e => { if (e.target.closest(hoverTargets)) cursorRing.classList.remove('hover'); });
+  } else {
+    cursorDot.style.display = 'none';
+    cursorRing.style.display = 'none';
+  }
+
+})();
+</script>
+</body>
+</html>
