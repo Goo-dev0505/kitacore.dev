@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code — Reference Shelf | KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #E9E9E9;
+  --surface:   #FFFFFF;
+  --surface-v: #F4F4F2;
+  --text:      #111111;
+  --text-sub:  #333333;
+  --muted:     #6B6B6B;
+  --border:    #DDDDDD;
+  --accent:    #000000;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-6: 24px; --sp-8: 32px; --sp-12: 48px; --sp-16: 64px;
+  --font-display: 'Inter', sans-serif;
+  --font-body:    'Noto Sans JP', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--accent);
+  color: #fff;
+  padding: var(--sp-8) var(--sp-12);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-6);
+}
+.header-left { flex: 1; }
+.header-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: var(--sp-2);
+}
+.header-title {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+.header-title span { color: #555; }
+.header-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #666;
+  text-align: right;
+  line-height: 1.8;
+}
+
+/* ── NAV ── */
+.nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 var(--sp-12);
+  display: flex;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 2px solid transparent;
+  transition: color 150ms ease, border-color 150ms ease;
+  white-space: nowrap;
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+
+/* ── LAYOUT ── */
+.wrapper { max-width: 1280px; margin: 0 auto; padding: var(--sp-12); }
+.section { margin-bottom: var(--sp-16); scroll-margin-top: 48px; }
+.section-nav {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-4);
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  margin-bottom: var(--sp-8);
+  padding-bottom: var(--sp-4);
+  border-bottom: 2px solid var(--accent);
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--sp-6) var(--sp-8);
+  margin-bottom: var(--sp-6);
+}
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-3);
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: var(--sp-3);
+}
+.card p { color: var(--text-sub); line-height: 1.8; }
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
+.grid-surface {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+}
+.surface-card {
+  background: var(--surface-v);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--sp-4) var(--sp-6);
+}
+.surface-card.featured { background: var(--surface); border-color: var(--accent); border-width: 2px; }
+.surface-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: var(--sp-1);
+}
+.surface-who {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-2);
+}
+.surface-desc { font-size: 12px; color: var(--text-sub); line-height: 1.6; }
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .04em;
+  background: var(--accent);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-top: var(--sp-2);
+}
+.badge-gray { background: var(--surface-v); color: var(--muted); border: 1px solid var(--border); }
+
+/* ── TABLES ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: var(--sp-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+thead tr { background: var(--surface-v); }
+th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+td {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-sub);
+  vertical-align: top;
+  line-height: 1.7;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface-v); }
+td:first-child { color: var(--text); font-weight: 500; }
+.check { color: var(--accent); font-weight: 700; }
+.cross { color: var(--muted); }
+.partial { color: var(--text-sub); }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding-left: var(--sp-8); margin-bottom: var(--sp-6); }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.tl-item { position: relative; margin-bottom: var(--sp-6); }
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--sp-8) - 3px);
+  top: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.tl-item.milestone::before { width: 11px; height: 11px; left: calc(-1 * var(--sp-8) - 5px); top: 4px; }
+.tl-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.tl-text { font-size: 13px; color: var(--text-sub); line-height: 1.7; }
+.tl-text strong { color: var(--text); }
+
+/* ── COMPARE ── */
+.compare-header {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) 1fr 1fr 1fr;
+  gap: 0;
+  background: var(--surface-v);
+  border: 1px solid var(--border);
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+}
+.compare-col-head {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: var(--sp-3) var(--sp-4);
+  text-align: center;
+  border-left: 1px solid var(--border);
+}
+.compare-col-head:first-child { text-align: left; border-left: none; }
+.compare-col-head.claude { color: var(--text); background: var(--surface); }
+.compare-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) 1fr 1fr 1fr;
+  border: 1px solid var(--border);
+  border-top: none;
+  background: var(--surface);
+}
+.compare-row:last-child { border-radius: 0 0 4px 4px; }
+.compare-row:hover { background: var(--surface-v); }
+.compare-cell {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 12px;
+  color: var(--text-sub);
+  border-left: 1px solid var(--border);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.6;
+}
+.compare-cell:first-child {
+  text-align: left;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--text);
+  font-size: 12px;
+  border-left: none;
+  justify-content: flex-start;
+  align-items: flex-start;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── COMPARE SYMBOLS ── */
+.sym {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+.sym-yes { color: var(--accent); }
+.sym-yes::before { content: '●'; font-size: 9px; }
+.sym-mid { color: #888; }
+.sym-mid::before { content: '◐'; font-size: 9px; }
+.sym-no  { color: #BBBBBB; }
+.sym-no::before  { content: '○'; font-size: 9px; }
+
+/* ── FEATURES ── */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+}
+.feat-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--sp-4) var(--sp-6);
+}
+.feat-num {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: #B8B8B8;
+  line-height: 1;
+  margin-bottom: var(--sp-2);
+  letter-spacing: .04em;
+}
+.feat-name { font-weight: 700; font-size: 14px; margin-bottom: var(--sp-2); }
+.feat-desc { font-size: 12px; color: var(--text-sub); line-height: 1.7; }
+
+/* ── EVAL ── */
+.eval-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-6); }
+.eval-box { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: var(--sp-6) var(--sp-8); }
+.eval-box-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+.eval-box-title.win { border-color: var(--accent); }
+.eval-box-title.lose { color: var(--muted); }
+.eval-item { display: flex; gap: var(--sp-3); padding: var(--sp-2) 0; border-bottom: 1px solid var(--surface-v); font-size: 13px; line-height: 1.6; }
+.eval-item:last-child { border-bottom: none; }
+.eval-item-mark { font-size: 12px; flex-shrink: 0; width: 16px; padding-top: 2px; }
+
+/* ── KPI STRIP ── */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-8);
+}
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--sp-6);
+}
+.kpi-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-2);
+}
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: var(--sp-1);
+}
+.kpi-sub { font-size: 11px; color: var(--muted); }
+
+/* ── CODE BLOCK ── */
+.code-block {
+  background: var(--text);
+  color: #E2E8F0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  padding: var(--sp-4) var(--sp-6);
+  border-radius: 4px;
+  margin: var(--sp-4) 0;
+  overflow-x: auto;
+}
+.code-block .cm { color: #64748B; }
+.code-block .ck { color: #7DD3FC; }
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: var(--sp-8) var(--sp-12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.footer-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: var(--sp-8) 0; }
+.sub-head { font-size: 15px; font-weight: 700; margin: var(--sp-6) 0 var(--sp-3); color: var(--text); }
+p.body { font-size: 13px; color: var(--text-sub); line-height: 1.8; margin-bottom: var(--sp-4); }
+
+/* ── NAV ACTIVE STATE ── */
+.nav a.active { color: var(--text); border-color: var(--accent); }
+
+/* ── BACK TO TOP ── */
+#back-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms ease, transform 200ms ease;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#back-top.show { opacity: 1; transform: translateY(0); }
+#back-top:hover { opacity: .75; }
+
+/* ── KPI LABEL ── */
+.kpi-section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+
+/* ── FEATURED SURFACE CARD ── */
+.surface-card.featured {
+  background: var(--surface);
+  border-color: var(--accent);
+  border-width: 1px;
+  border-left: 4px solid var(--accent);
+}
+
+/* ── EVAL BOX DIFFERENTIATION ── */
+.eval-box.win-box {
+  border-left: 3px solid var(--accent);
+}
+.eval-box.lose-box {
+  border-left: 3px solid var(--border);
+}
+.eval-box-title.win {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.eval-box-title.lose {
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+/* ── COMPARE LEGEND ── */
+.compare-legend {
+  display: flex;
+  gap: var(--sp-6);
+  margin-top: var(--sp-3);
+  margin-bottom: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--surface-v);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  flex-wrap: wrap;
+}
+.cl-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-sub);
+}
+.cl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── CODE BLOCK WITH LABEL ── */
+.code-wrap { position: relative; margin: var(--sp-4) 0; }
+.code-lang {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #64748B;
+  pointer-events: none;
+}
+.code-wrap .code-block { margin: 0; }
+
+/* ── TABLE WRAP (responsive) ── */
+.table-wrap { overflow-x: auto; margin-bottom: var(--sp-6); }
+.table-wrap table { margin-bottom: 0; }
+
+/* ── BEFORE/AFTER CARDS ── */
+.ba-before { background: var(--surface-v); border-left: 3px solid var(--border); }
+.ba-after  { background: var(--surface);   border-left: 3px solid var(--accent); }
+
+/* ── SECTION SPACING ── */
+.section-nav { margin-bottom: var(--sp-2); }
+.section-title { margin-top: 0; }
+/* ═══════════════════════════════════════
+   ANIMATIONS — 遊び心
+═══════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ─ Keyframes ─ */
+  @keyframes kFadeUp {
+    from { opacity: 0; translate: 0 16px; }
+    to   { opacity: 1; translate: 0 0; }
+  }
+  @keyframes kSlideRight {
+    from { opacity: 0; translate: -16px 0; }
+    to   { opacity: 1; translate: 0 0; }
+  }
+  @keyframes kHeaderIn {
+    from { opacity: 0; translate: 0 28px; filter: blur(2px); }
+    to   { opacity: 1; translate: 0 0;   filter: blur(0); }
+  }
+  @keyframes kPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,0,0,.45); }
+    55%       { box-shadow: 0 0 0 7px rgba(0,0,0,0); }
+  }
+  @keyframes kBlink {
+    0%, 100% { opacity: 1; } 50% { opacity: 0; }
+  }
+  @keyframes kScan {
+    from { transform: translateY(-200%); }
+    to   { transform: translateY(800%); }
+  }
+  @keyframes kDotBounce {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.6); }
+    100% { transform: scale(1); }
+  }
+  @keyframes kBadgePop {
+    0%   { transform: scale(1) rotate(0deg); }
+    35%  { transform: scale(1.1) rotate(-2deg); }
+    65%  { transform: scale(1.05) rotate(1deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  @keyframes kWipeX {
+    from { clip-path: inset(0 100% 0 0); opacity: 0; }
+    to   { clip-path: inset(0 0% 0 0);   opacity: 1; }
+  }
+
+  /* ─ Header stagger entrance ─ */
+  .header-eyebrow { animation: kFadeUp 500ms ease 80ms  both; }
+  .header-title   { animation: kHeaderIn 750ms cubic-bezier(.15,0,.2,1) 220ms both; }
+  .header-meta    { animation: kFadeUp 500ms ease 480ms both; }
+  .nav            { animation: kFadeUp 400ms ease 600ms both; }
+  .kpi-section-label { animation: kFadeUp 400ms ease 700ms both; }
+
+  /* ─ KPI cards (controlled by JS) ─ */
+  .kpi-card { opacity: 0; }
+  .kpi-card.vis {
+    animation: kFadeUp 500ms ease both;
+    animation-delay: var(--d, 0ms);
+    transition: transform 150ms ease, border-color 150ms ease;
+  }
+  .kpi-card.vis:hover { transform: translateY(-3px); border-color: #888; }
+
+  /* ─ Generic scroll-reveal (set by JS) ─ */
+  .rv  { opacity: 0; }
+  .rvr { opacity: 0; }
+  .rv.vis  { animation: kFadeUp     450ms ease both; animation-delay: var(--d, 0ms); }
+  .rvr.vis { animation: kSlideRight 450ms ease both; animation-delay: var(--d, 0ms); }
+
+  /* ─ Section title wipe ─ */
+  .section-title.anim-ready { opacity: 0; }
+  .section-title.anim-go    {
+    animation: kWipeX 600ms cubic-bezier(.4,0,.2,1) both;
+  }
+
+  /* ─ Timeline milestone pulse ─ */
+  .tl-item.milestone::before {
+    animation: kPulse 3s ease-in-out infinite;
+  }
+
+  /* ─ Code block cursor blink ─ */
+  .code-block::after {
+    content: '▌';
+    color: #7DD3FC;
+    animation: kBlink 1s step-end infinite;
+    margin-left: 1px;
+  }
+
+  /* ─ Featured CLI card scan line ─ */
+  .surface-card.featured { position: relative; overflow: hidden; }
+  .surface-card.featured::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    height: 50%;
+    background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,.08) 50%, transparent 100%);
+    animation: kScan 4s linear infinite;
+    pointer-events: none;
+  }
+
+  /* ─ Compare dot bounce on row hover ─ */
+  .compare-row:hover .sym-yes {
+    animation: kDotBounce 280ms cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ─ Badge pop on featured card hover ─ */
+  .surface-card.featured:hover .badge {
+    animation: kBadgePop 350ms ease;
+  }
+
+  /* ─ Hover lifts ─ */
+  .feat-item {
+    transition: transform 150ms ease, border-color 150ms ease;
+  }
+  .feat-item:hover { transform: translateY(-3px); border-color: #888; }
+
+  .surface-card { position: relative; transition: transform 150ms ease; }
+  .surface-card:hover { transform: translateY(-2px); }
+
+  .eval-box { transition: transform 150ms ease; }
+  .eval-box:hover { transform: translateY(-2px); }
+
+  /* ─ Table row transition (already hover bg, add speed) ─ */
+  td { transition: background 80ms ease; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     LOADING SCREEN
+═══════════════════════════════════════ -->
+<div id="loader">
+  <div id="loader-inner">
+    <div id="loader-brand">KITA<span>core</span></div>
+    <div id="loader-vol">Reference Shelf — Vol.01</div>
+    <div id="loader-divider"></div>
+    <div id="loader-log" aria-live="polite"></div>
+    <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+    <div id="loader-pct">0%</div>
+  </div>
+</div>
+
+<style>
+/* ── LOADER ── */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: #080808;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 700ms cubic-bezier(.4,0,.2,1),
+              transform 700ms cubic-bezier(.4,0,.2,1);
+}
+#loader.out {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+#loader-inner {
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+#loader-brand {
+  font-family: 'Inter', sans-serif;
+  font-size: 52px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+#loader-brand span { color: #444; }
+#loader-vol {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 32px;
+}
+#loader-divider {
+  width: 100%;
+  height: 1px;
+  background: #1a1a1a;
+  margin-bottom: 20px;
+}
+#loader-log {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #444;
+  line-height: 1.8;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 24px;
+}
+.log-line {
+  display: flex;
+  gap: 8px;
+  animation: logIn 200ms ease both;
+}
+.log-line.done .log-status { color: #00D4FF; }
+.log-line.running .log-status { color: #555; animation: logBlink 600ms step-end infinite; }
+.log-status { width: 12px; flex-shrink: 0; }
+.log-text { color: #555; }
+.log-line.done .log-text { color: #777; }
+.log-line.final .log-text { color: #fff; }
+.log-line.final .log-status { color: #00D4FF; }
+
+#loader-bar-wrap {
+  width: 100%;
+  height: 1px;
+  background: #1a1a1a;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+#loader-bar {
+  height: 100%;
+  background: #fff;
+  width: 0%;
+  transition: width 300ms cubic-bezier(.4,0,.2,1);
+}
+#loader-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: #333;
+  text-align: right;
+  transition: color 300ms ease;
+}
+#loader-pct.done { color: #00D4FF; }
+
+@keyframes logIn {
+  from { opacity: 0; translate: 0 4px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+@keyframes logBlink {
+  0%, 100% { opacity: 1; } 50% { opacity: 0; }
+}
+</style>
+
+<script>
+(function() {
+  const log   = document.getElementById('loader-log');
+  const bar   = document.getElementById('loader-bar');
+  const pct   = document.getElementById('loader-pct');
+  const loader = document.getElementById('loader');
+
+  const steps = [
+    { text: 'INITIALIZING REFERENCE SHELF v1.0',   pct: 10,  ms: 180 },
+    { text: 'LOADING CLAUDE CODE TIMELINE DATA',   pct: 28,  ms: 260 },
+    { text: 'PARSING SERVICE ARCHITECTURE',        pct: 44,  ms: 220 },
+    { text: 'BUILDING COMPARISON MATRIX',          pct: 60,  ms: 200 },
+    { text: 'FETCHING WEB EVALUATION REPORTS',     pct: 75,  ms: 280 },
+    { text: 'RENDERING SURFACE FLOW DIAGRAM',      pct: 90,  ms: 220 },
+    { text: 'READY',                               pct: 100, ms: 160, final: true },
+  ];
+
+  let current = null;
+
+  function addLine(step, state) {
+    const div = document.createElement('div');
+    div.className = 'log-line ' + state + (step.final ? ' final' : '');
+    div.innerHTML = `<span class="log-status">${state === 'done' ? '✓' : state === 'running' ? '›' : '✓'}</span><span class="log-text">${step.text}</span>`;
+    log.appendChild(div);
+    return div;
+  }
+
+  function run(i) {
+    if (i >= steps.length) {
+      setTimeout(() => {
+        loader.classList.add('out');
+        setTimeout(() => { loader.remove(); }, 750);
+      }, 320);
+      return;
+    }
+    const step = steps[i];
+
+    // mark previous as done
+    if (current) {
+      current.className = current.className.replace('running', 'done');
+      current.querySelector('.log-status').textContent = '✓';
+    }
+
+    current = addLine(step, 'running');
+    bar.style.width = step.pct + '%';
+    pct.textContent = step.pct + '%';
+    if (step.pct === 100) pct.classList.add('done');
+
+    setTimeout(() => run(i + 1), step.ms);
+  }
+
+  // Start after fonts have a moment to load
+  setTimeout(() => run(0), 300);
+})();
+</script>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-eyebrow">KITAcore Reference Shelf — Vol.01</div>
+    <div class="header-title">Claude Code<span> /</span><br>Complete Reference</div>
+  </div>
+  <div class="header-meta">
+    作成：2026.04.21<br>
+    対象：Anthropic Claude Code<br>
+    バージョン：Opus 4.7 / Sonnet 4.6
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#history">01. History</a>
+  <a href="#service">02. Service</a>
+  <a href="#compare">03. vs Others</a>
+  <a href="#features">04. Features</a>
+  <a href="#eval">05. Web Eval</a>
+</nav>
+
+<div class="wrapper">
+
+  <!-- KPI STRIP -->
+  <div class="kpi-section-label">At a Glance — 主要指標</div>
+  <div class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-label">年間収益換算</div>
+      <div class="kpi-value">$2.5B</div>
+      <div class="kpi-sub">2026年初頭時点</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Anthropic評価額</div>
+      <div class="kpi-value">$380B</div>
+      <div class="kpi-sub">Series G（2026年2月）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">SWE-bench スコア</div>
+      <div class="kpi-value">87.6%</div>
+      <div class="kpi-sub">Opus 4.7（2026年4月時点・最高水準）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">ハルシネーション率</div>
+      <div class="kpi-value">~3%</div>
+      <div class="kpi-sub">競合比較：GPT/Gemini は約6%</div>
+    </div>
+  </div>
+
+  <!-- ① HISTORY -->
+  <section class="section" id="history">
+    <div class="section-nav">01. History</div>
+    <div class="section-title">歴史・沿革</div>
+
+    <div class="grid-2">
+      <div>
+        <div class="sub-head">Anthropic 創設〜Claude 本体</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-date">2021</div>
+            <div class="tl-text">OpenAI元研究者が創業。Constitutional AI（憲法的AI）という独自安全設計を開発</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2023年3月</div>
+            <div class="tl-text"><strong>Claude 1</strong> 一般公開</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2023年9月</div>
+            <div class="tl-text">Amazon 最大80億ドル投資。AWS をプライマリクラウドに</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2023年10月</div>
+            <div class="tl-text">Google 30億ドル投資</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2024年3月</div>
+            <div class="tl-text"><strong>Claude 3</strong>（Haiku / Sonnet / Opus）リリース</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2024年10月</div>
+            <div class="tl-text">Computer Use 機能（公開ベータ）。GUIを自律操作可能に</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sub-head">Claude Code の歩み</div>
+        <div class="timeline">
+          <div class="tl-item milestone">
+            <div class="tl-date">2025年2月</div>
+            <div class="tl-text"><strong>Claude Code リサーチプレビュー公開</strong>。ターミナル型エージェントとして登場</div>
+          </div>
+          <div class="tl-item milestone">
+            <div class="tl-date">2025年5月</div>
+            <div class="tl-text"><strong>Claude 4（Sonnet/Opus）リリース & Claude Code GA</strong>。SWE-bench トップクラスへ</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2025年7月</div>
+            <div class="tl-text">収益が5.5倍に急増と報告</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2025年10〜11月</div>
+            <div class="tl-text">Web版・iOS版リリース。<strong>年間収益換算10億ドル突破</strong></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2025年12月</div>
+            <div class="tl-text">年末年始バイラル。非エンジニア層へのバイブコーディングブーム</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2026年1月</div>
+            <div class="tl-text">Claude Cowork（非技術者向けGUI版）リサーチプレビュー</div>
+          </div>
+          <div class="tl-item milestone">
+            <div class="tl-date">2026年2月</div>
+            <div class="tl-text"><strong>評価額3800億ドル（Series G）</strong>。Opus 4.6 / Sonnet 4.6 リリース</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2026年4月</div>
+            <div class="tl-text">Opus 4.7 リリース。Claude Design（ビジュアル生成）リサーチプレビュー</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② SERVICE -->
+  <section class="section" id="service">
+    <div class="section-nav">02. Service</div>
+    <div class="section-title">サービス内容</div>
+
+    <div class="card">
+      <div class="card-label">Definition</div>
+      <div class="card-title">ターミナル・IDE・デスクトップ・ブラウザで動くエージェント型コーディングツール</div>
+      <p>単なるコード補完ではなく、コードベース全体を理解した上でファイルの読み書き・コマンド実行・テスト・gitコミットまでを自律的に行うAIエージェント。CLAUDE.mdによる永続設定とMCP連携が他サービスとの本質的な差分。</p>
+    </div>
+
+    <div class="sub-head">6つのサーフェス（実行環境）</div>
+    <div class="grid-surface">
+      <div class="surface-card featured">
+        <div class="surface-who">ターミナル慣れた人向け</div>
+        <div class="surface-name">CLI（ターミナル）</div>
+        <div class="surface-desc">全機能フル対応の本体。MCP・Agent SDK・パイプ連携など制限なし。まずここから。</div>
+        <div class="badge">★ 最初のおすすめ</div>
+      </div>
+      <div class="surface-card">
+        <div class="surface-who">ターミナルが苦手な人</div>
+        <div class="surface-name">Desktop App</div>
+        <div class="surface-desc">GUIラッパー。ビジュアルdiff確認・スケジュール実行・Dispatch対応。</div>
+        <div class="badge badge-gray">CLI次の選択肢</div>
+      </div>
+      <div class="surface-card">
+        <div class="surface-who">VS Code / Cursor ユーザー</div>
+        <div class="surface-name">VS Code 拡張</div>
+        <div class="surface-desc">エディタ離れずdiff確認・@メンション・会話履歴。Cursor / Windsurf も対応。</div>
+        <div class="badge badge-gray">IDE派向け</div>
+      </div>
+      <div class="surface-card">
+        <div class="surface-who">JetBrains ユーザー</div>
+        <div class="surface-name">JetBrains プラグイン</div>
+        <div class="surface-desc">IntelliJ / PyCharm 等。IDEのdiffビューア連携（Beta表記あり）。</div>
+        <div class="badge badge-gray">JetBrains派向け</div>
+      </div>
+      <div class="surface-card">
+        <div class="surface-who">外出先・ローカル環境なし</div>
+        <div class="surface-name">Web（claude.ai/code）</div>
+        <div class="surface-desc">ブラウザのみで動作。長時間タスクを投げて放置するのに向いている。</div>
+        <div class="badge badge-gray">外出・監視用</div>
+      </div>
+      <div class="surface-card">
+        <div class="surface-who">スマホから指示したいとき</div>
+        <div class="surface-name">Mobile（iOS）</div>
+        <div class="surface-desc">Desktopへのタスク委譲（Dispatch）やRemote Control操作用のサブツール。</div>
+        <div class="badge badge-gray">サブ用途</div>
+      </div>
+    </div>
+
+    <div class="sub-head" style="margin-top: var(--sp-8);">どれを選ぶか — 選択フロー図</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:var(--sp-6) var(--sp-4);margin-bottom:var(--sp-6);overflow-x:auto;">
+      <svg width="100%" viewBox="0 0 960 510" xmlns="http://www.w3.org/2000/svg" role="img">
+        <title>Claude Code サーフェス選択フロー図</title>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M1 2L9 5L1 8" fill="none" stroke="#444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M1 2L9 5L1 8" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- ═══ ARROWS ═══ -->
+        <!-- Q1 → Q2 YES (solid) -->
+        <path d="M480,74 L480,97 L700,97 L700,120" fill="none" stroke="#444" stroke-width="1.2" marker-end="url(#ah)"/>
+        <!-- Q1 → Q3 NO (dashed) -->
+        <path d="M480,74 L480,97 L180,97 L180,120" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ahg)"/>
+
+        <!-- Q2 → R_IDE YES (solid) -->
+        <path d="M700,164 L700,187 L827,187 L827,200" fill="none" stroke="#444" stroke-width="1.2" marker-end="url(#ah)"/>
+        <!-- Q2 → R_CLI NO (dashed) -->
+        <path d="M700,164 L700,187 L597,187 L597,210" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ahg)"/>
+
+        <!-- Q3 → R_DesktopA YES (solid) -->
+        <path d="M180,164 L180,187 L80,187 L80,210" fill="none" stroke="#444" stroke-width="1.2" marker-end="url(#ah)"/>
+        <!-- Q3 → Q4 NO (dashed) -->
+        <path d="M180,164 L180,187 L300,187 L300,210" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ahg)"/>
+
+        <!-- Q4 → Q5 YES (solid) -->
+        <path d="M300,254 L300,287 L400,287 L400,320" fill="none" stroke="#444" stroke-width="1.2" marker-end="url(#ah)"/>
+        <!-- Q4 → R_DesktopB NO (dashed) -->
+        <path d="M300,254 L300,287 L187,287 L187,320" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ahg)"/>
+
+        <!-- Q5 → R_Mobile YES (solid) -->
+        <path d="M400,364 L400,390 L280,390 L280,415" fill="none" stroke="#444" stroke-width="1.2" marker-end="url(#ah)"/>
+        <!-- Q5 → R_Web NO (dashed) -->
+        <path d="M400,364 L400,390 L460,390 L460,415" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ahg)"/>
+
+        <!-- ═══ YES / NO LABELS ═══ -->
+        <text x="598" y="91" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="600" fill="#111">YES</text>
+        <text x="328" y="91" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#999">NO</text>
+
+        <text x="767" y="183" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="600" fill="#111">YES</text>
+        <text x="643" y="183" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#999">NO</text>
+
+        <text x="122" y="183" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="600" fill="#111">YES</text>
+        <text x="246" y="183" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#999">NO</text>
+
+        <text x="357" y="283" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="600" fill="#111">YES</text>
+        <text x="238" y="283" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#999">NO</text>
+
+        <text x="334" y="386" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="600" fill="#111">YES</text>
+        <text x="432" y="386" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#999">NO</text>
+
+        <!-- ═══ QUESTION NODES (white) ═══ -->
+
+        <!-- Q1: ターミナルを普段使う？ -->
+        <rect x="380" y="30" width="200" height="44" rx="4" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <text x="480" y="48" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">ターミナルを</text>
+        <text x="480" y="65" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">普段使う？</text>
+
+        <!-- Q2: IDEで使いたい？ -->
+        <rect x="595" y="120" width="210" height="44" rx="4" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <text x="700" y="138" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">IDEの中で</text>
+        <text x="700" y="155" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">使いたい？</text>
+
+        <!-- Q3: GUIでローカル作業？ -->
+        <rect x="80" y="120" width="200" height="44" rx="4" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <text x="180" y="138" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">GUIでローカル</text>
+        <text x="180" y="155" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">作業したい？</text>
+
+        <!-- Q4: 外出先？ -->
+        <rect x="210" y="210" width="180" height="44" rx="4" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <text x="300" y="228" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">外出先 /</text>
+        <text x="300" y="245" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">ローカルなし？</text>
+
+        <!-- Q5: スマホから？ -->
+        <rect x="310" y="320" width="180" height="44" rx="4" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <text x="400" y="338" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">スマホから</text>
+        <text x="400" y="355" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#111">指示したい？</text>
+
+        <!-- ═══ RESULT NODES (black) ═══ -->
+
+        <!-- R_DesktopA -->
+        <rect x="5" y="210" width="150" height="52" rx="4" fill="#111"/>
+        <text x="80" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="700" fill="#fff">Desktop App</text>
+        <text x="80" y="248" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888">GUI派・ターミナル不要</text>
+
+        <!-- R_CLI (RECOMMENDED) -->
+        <rect x="518" y="208" width="160" height="60" rx="4" fill="#111"/>
+        <rect x="518" y="208" width="160" height="3" rx="0" fill="#fff" opacity="0.25"/>
+        <text x="598" y="226" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#fff">CLI（ターミナル）</text>
+        <text x="598" y="243" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#aaa">全機能対応</text>
+        <text x="598" y="258" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="600" fill="#fff">★ RECOMMENDED</text>
+
+        <!-- R_IDE (VS Code / JetBrains) -->
+        <rect x="730" y="200" width="200" height="68" rx="4" fill="#111"/>
+        <text x="830" y="222" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12" font-weight="700" fill="#fff">VS Code 拡張</text>
+        <text x="830" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#ccc">/ JetBrains Plugin</text>
+        <text x="830" y="256" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888">IDEによって選択</text>
+
+        <!-- R_DesktopB -->
+        <rect x="110" y="320" width="154" height="52" rx="4" fill="#111"/>
+        <text x="187" y="340" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="700" fill="#fff">Desktop App</text>
+        <text x="187" y="358" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888">GUI派・ターミナル不要</text>
+
+        <!-- R_Mobile -->
+        <rect x="205" y="415" width="150" height="52" rx="4" fill="#111"/>
+        <text x="280" y="435" text-anchor="middle" font-family="'Noto Sans JP','Hiragino Sans',sans-serif" font-size="12" font-weight="700" fill="#fff">Mobile（iOS）</text>
+        <text x="280" y="453" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888">Dispatch・Remote用</text>
+
+        <!-- R_Web -->
+        <rect x="385" y="415" width="150" height="52" rx="4" fill="#111"/>
+        <text x="460" y="435" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="700" fill="#fff">Web</text>
+        <text x="460" y="453" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888">外出先・放置向け</text>
+
+        <!-- ═══ LEGEND ═══ -->
+        <line x1="620" y1="480" x2="648" y2="480" stroke="#444" stroke-width="1.2"/>
+        <text x="653" y="484" font-family="'JetBrains Mono',monospace" font-size="10" fill="#666">YES（はい）</text>
+        <line x1="730" y1="480" x2="758" y2="480" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="763" y="484" font-family="'JetBrains Mono',monospace" font-size="10" fill="#999">NO（いいえ）</text>
+        <rect x="840" y="474" width="10" height="10" rx="1" fill="#111"/>
+        <text x="855" y="484" font-family="'JetBrains Mono',monospace" font-size="10" fill="#666">選択結果</text>
+      </svg>
+    </div>
+
+    <div class="sub-head">主な機能一覧</div>
+    <div class="table-wrap">
+
+    <table>
+      <thead><tr><th>機能カテゴリ</th><th>概要</th><th>代表的な使い方</th></tr></thead>
+      <tbody>
+        <tr><td>コーディング・バグ修正</td><td>自然言語で指示するだけで複数ファイルにまたがる実装を実行</td><td>「このボタンにdark mode追加して」→ 複数ファイル一括変更</td></tr>
+        <tr><td>自動化・定型作業</td><td>テスト作成・lint修正・マージコンフリクト解消・依存関係更新</td><td>「未テストのauthモジュールにテスト書いて実行して」</td></tr>
+        <tr><td>git連携</td><td>ステージング・コミットメッセージ作成・PR作成まで一括対応</td><td>「変更内容を説明的なメッセージでコミットして」</td></tr>
+        <tr><td>MCP連携</td><td>Notion / GCal / Drive / Slack 等をエージェントが直接操作</td><td>タスク一覧取得→会議スケジュール登録を一括実行</td></tr>
+        <tr><td>CLAUDE.md 永続設定</td><td>プロジェクト規約・禁止事項を永続化。毎回説明不要</td><td>/init で自動生成後、コーディング規約を記述</td></tr>
+        <tr><td>エージェントチーム</td><td>複数Claudeを並行起動。リードエージェントがサブタスク割り当て</td><td>フロントエンド / バックエンド / テストを同時進行</td></tr>
+        <tr><td>スケジュール実行</td><td>Anthropicインフラで定期実行。PC電源オフでも動作</td><td>毎朝9時にPRレビュー・毎週依存関係監査</td></tr>
+        <tr><td>CLIパイプ連携</td><td>Unix哲学に従いパイプ・スクリプト・CI連携が可能</td><td>tail -200 app.log | claude -p "Slackで通知して"</td></tr>
+        <tr><td>セッション引き継ぎ</td><td>サーフェス間でセッションをシームレスに移動</td><td>Webで開始→ --teleport でターミナルに引き込み</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="sub-head">料金体系</div>
+    <div class="table-wrap">
+
+    <table>
+      <thead><tr><th>プラン</th><th>月額</th><th>主な内容</th></tr></thead>
+      <tbody>
+        <tr><td>Free</td><td>無料</td><td>制限付きアクセス</td></tr>
+        <tr><td>Pro</td><td>$20</td><td>Claude Code含む。Sonnet 4.6 + Opus 4.7へのアクセス</td></tr>
+        <tr><td>Max 5x</td><td>$100</td><td>利用制限5倍。Claude Codeのauto mode・xhigh effort対応</td></tr>
+        <tr><td>Max 20x</td><td>$200</td><td>利用制限20倍。Opus 4.7優先アクセス・拡張思考フル対応</td></tr>
+        <tr><td>Team</td><td>$30/ユーザー</td><td>チーム管理・自己サービスシート管理</td></tr>
+        <tr><td>API従量課金</td><td>トークン単価</td><td>開発者向け。無制限デプロイ・シート料金なし</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <!-- ③ COMPARE -->
+  <section class="section" id="compare">
+    <div class="section-nav">03. vs Others</div>
+    <div class="section-title">他社との違い</div>
+
+    <div class="card" style="border-left: 4px solid var(--accent); padding-left: calc(var(--sp-8) - 4px);">
+      <div class="card-label">Core Difference</div>
+      <div class="card-title">「チャット型」ではなく「エージェント型」</div>
+      <p>ChatGPTチャット / GeminiチャットがAIへの問い合わせ型であるのに対し、Claude Codeはコードベースをローカルで自律スキャンしファイルを直接読み書きして実行・テスト・コミットまで完結させる。CLAUDE.mdでプロジェクト知識を永続化し、毎回の説明コストをゼロにできる。なおChatGPTのCodex（クラウド型）も同様のエージェント機能を提供するが、ローカル実行・コンテキスト規模・MCP統合の深さで差がある。</p>
+    </div>
+
+    <div class="sub-head">ChatGPT / Gemini との比較</div>
+    <div class="compare-header">
+      <div class="compare-col-head">観点</div>
+      <div class="compare-col-head claude">Claude Code</div>
+      <div class="compare-col-head">ChatGPT</div>
+      <div class="compare-col-head">Gemini</div>
+    </div>
+    <div class="compare-row"><div class="compare-cell">ローカルファイル操作</div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">コードベース全体把握</div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div></div>
+    <div class="compare-row"><div class="compare-cell">シェル・テスト実行</div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div></div>
+    <div class="compare-row"><div class="compare-cell">設定ファイル永続化<br><span style="font-size:11px;color:var(--muted);font-weight:400;">CLAUDE.md / AGENTS.md等</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">MCP 連携</div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div></div>
+    <div class="compare-row"><div class="compare-cell">エージェントチーム並行実行</div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">Slack 連携（@メンション→PR）</div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">スケジュール自動実行</div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div></div>
+    <div class="compare-row"><div class="compare-cell">IDE 拡張<br><span style="font-size:11px;color:var(--muted);font-weight:400;">VS Code / JetBrainsへの組み込み</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">画像生成</div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">動画生成</div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">Google Workspace<br><span style="font-size:11px;color:var(--muted);font-weight:400;">UI統合（Docs/Sheets/Gmail内）</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">Google Workspace<br><span style="font-size:11px;color:var(--muted);font-weight:400;">データ読み書き（Drive/Gmail/GCal）</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
+
+    <div class="compare-legend">
+      <div class="cl-item"><span class="sym sym-yes">対応</span>標準機能として使える</div>
+      <div class="cl-item"><span class="sym sym-mid">限定的</span>条件付き・部分的に対応</div>
+      <div class="cl-item"><span class="sym sym-no">非対応</span>現時点では使えない</div>
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-left:auto;">2026年4月時点</span>
+    </div>
+    <div style="margin-top:var(--sp-4);display:flex;flex-direction:column;gap:6px;">
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">Google Workspace データ読み書き 限定的</strong>　Claude Code = MCP設定要・読み書き可。ChatGPT = Team/Enterprise以上かつ読み込みのみ（書き込み不可）。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">UI統合</strong>　GmailのUI内に「下書き作成」ボタンが表示・DocsのサイドバーでAIが編集・Sheetsでセル選択してそのまま分析、など各アプリのUI内にAIが直接組み込まれた状態。Claude CodeはMCP経由でデータ読み書きは可能だが、各アプリのUI内への組み込みはない。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">動画生成</strong>　ChatGPTのSoraはWebアプリ2026年4月26日・API2026年9月24日に終了予定。ChatGPTの画像生成はDALL-E / GPT-4o Imageが引き続き対応。Geminiの動画生成はVeo 3.1が担う。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">スケジュール自動実行 限定的</strong>　ChatGPT・Geminiは定時プロンプト実行（通知で受け取る形）。Claude CodeのRoutinesはAnthropicサーバー上でコード実行・PRレビューなど開発タスクを直接動かす点で性質が異なる。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">IDE拡張</strong>　VS Code・JetBrainsなどのコードエディタにインストールするプラグイン。エディタのUI内でdiff確認・指示出しができる。GeminiはGemini Code AssistでVS Code・JetBrains（IntelliJ/PyCharm/WebStorm）・Android Studioに正式対応。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">MCP 限定的</strong>　ChatGPTは2025年9月のDeveloper Mode（ベータ）で読み書き対応。ただしリモートサーバーのみ・Plus/Pro必須。GeminiはAPI経由で対応。Claude Codeはローカル＋リモート両対応で最も整備されている。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">シェル・テスト実行 限定的</strong>　ChatGPTはCodexのクラウドサンドボックス内で実行可能。Gemini CLIも端末コマンドに対応。いずれもローカル環境への直接アクセスではない。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">設定ファイル永続化</strong>　Claude Code = CLAUDE.md。ChatGPTのCodex = AGENTS.md（オープン標準・Cursor/Aider等でも共用可）。Geminiは同等の永続化ファイルは未整備。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">エージェントチーム並行実行 限定的</strong>　CodexはGitHubリポジトリを複数クラウドコンテナで並列処理可能。ただしクラウド実行のみ・ローカル環境への直接アクセスなし。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">※ <strong style="color:var(--text-sub);">Slack連携 限定的</strong>　CodexはSlack・GitHub・Linearと統合。ただしClaude Code（@メンションで直接PR作成）とは設定方法・統合の深さが異なる。</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.7;padding:6px 10px;background:var(--surface-v);border-radius:2px;">2026年4月時点の情報。各サービスの仕様は随時更新されます。</div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="sub-head">CLAUDE.md によるプロンプト削減</div>
+    <div class="grid-2">
+      <div class="card ba-before">
+        <div class="card-label">Before — 設定なし</div>
+        <p>「Jestを使って、コンポーネントは src/components に配置して、スタイルはTailwindで、MUIは使わないで、命名はcamelCaseで…」と毎回セッション冒頭で説明が必要。規約のズレも頻発する。</p>
+      </div>
+      <div class="card ba-after">
+        <div class="card-label">After — CLAUDE.md 設定済み</div>
+        <p style="font-weight: 700; font-size: 15px; margin-bottom: var(--sp-3);">「このボタンにdark modeを追加して」</p>
+        <p>一言だけで完結。コーディング規約・技術スタック・禁止ライブラリはすべてセッション開始時に自動適用される。チームで共有すれば全員の指示が統一される。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ FEATURES -->
+  <section class="section" id="features">
+    <div class="section-nav">04. Features</div>
+    <div class="section-title">特徴の棚卸し</div>
+
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-num">01</div>
+        <div class="feat-name">エージェント型アーキテクチャ</div>
+        <div class="feat-desc">コードベースを最初に自律スキャンして全体構造を把握してから作業開始。ファイル間の依存関係・アーキテクチャを理解した上で複数ファイルを同時変更する。Unix哲学に従いパイプ・スクリプト・CI連携が可能。</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">02</div>
+        <div class="feat-name">CLAUDE.md による永続化</div>
+        <div class="feat-desc">プロジェクトルートに置くだけでコーディング規約・アーキテクチャ決定・推奨ライブラリを永続化。/init でAIが自動生成。カスタムスラッシュコマンドでチーム共有ワークフローをパッケージ化できる。</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">03</div>
+        <div class="feat-name">大規模コンテキスト（200K〜1M tokens）</div>
+        <div class="feat-desc">Sonnet 4.6 で200Kトークン（約15万単語）のコンテキストウィンドウ。大規模コードベース全体をメモリに保持したまま作業できる。GeminiのようなWebグラウンディングはないが、コード理解精度は高い。</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">04</div>
+        <div class="feat-name">Plan Mode（安全実行）</div>
+        <div class="feat-desc">Shift+Tab で切り替え。ファイルに触れずに調査・計画だけを先行させる。大きな変更前に必ず使うことで誤操作を防げる。/rewind でチェックポイントへのロールバックも可能。</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">05</div>
+        <div class="feat-name">MCP（Model Context Protocol）</div>
+        <div class="feat-desc">Notion・GCal・Google Drive・Slack等の外部サービスをエージェントが直接操作できるオープン標準。Anthropicが提唱しClaude Codeが最も積極的に対応している。</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">06</div>
+        <div class="feat-name">Hooks による自動化</div>
+        <div class="feat-desc">PreToolUse / PostToolUse イベントでシェルコマンドを自動実行。ファイル編集後のPrettier自動実行・コミット前のlint実行・型チェック通過後のみ変更を受け入れるゲートなど。</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">07</div>
+        <div class="feat-name">エージェントチーム（サブエージェント）</div>
+        <div class="feat-desc">複数のClaude Codeエージェントを並行起動。リードエージェントがサブタスクを割り振り・統合する。フロントエンド / バックエンド / テストを同時並行で進められる。</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">08</div>
+        <div class="feat-name">スケジュール実行（Routines）</div>
+        <div class="feat-desc">Anthropic管理インフラで定期実行。PC電源オフでも動き続ける。毎朝PRレビュー・毎週依存関係監査・CI障害の夜間分析など定型タスクを全自動化できる。</div>
+      </div>
+    </div>
+
+    <div class="sub-head">CLIパイプ連携の例</div>
+    <div class="code-wrap">
+      <span class="code-lang">bash</span>
+      <div class="code-block">
+<span class="cm"># ログの異常をSlackで自動通知</span>
+tail -200 app.log | <span class="ck">claude</span> -p "Slack me if you see any anomalies"
+
+<span class="cm"># CIで新規文字列をフランス語に翻訳してPRを自動作成</span>
+<span class="ck">claude</span> -p "translate new strings into French and raise a PR for review"
+
+<span class="cm"># セキュリティレビューを変更ファイル全体に適用</span>
+git diff main --name-only | <span class="ck">claude</span> -p "review these changed files for security issues"
+      </div>
+    </div>
+
+    <div class="sub-head">Constitutional AI によるセキュリティ設計</div>
+    <div class="table-wrap">
+
+    <table>
+      <thead><tr><th>仕組み</th><th>概要</th></tr></thead>
+      <tbody>
+        <tr><td>Constitutional AI</td><td>Anthropic独自のアライメント手法。原則に基づいてAI自身が回答を評価・改善する</td></tr>
+        <tr><td>Responsible Scaling Policy</td><td>AIリスクをASL1〜5のレベルで評価するフレームワーク。Opus 4はASL-3に分類</td></tr>
+        <tr><td>Claude Code Security</td><td>2026年2月リリース。コードベースの脆弱性を自動検出する専用機能</td></tr>
+        <tr><td>CLAUDE.md アクセス制御</td><td>許可・禁止操作をコードとして管理。チームポリシーをAIに強制できる</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <!-- ⑤ WEB EVAL -->
+  <section class="section" id="eval">
+    <div class="section-nav">05. Web Eval</div>
+    <div class="section-title">ウェブでの評価</div>
+
+    <div class="eval-grid">
+      <div class="eval-box win-box">
+        <div class="eval-box-title win">強みとして繰り返し挙げられる点</div>
+        <div class="eval-item"><div class="eval-item-mark">◎</div><div><strong>コーディング品質</strong>：型安全・JSDoc付き・エッジケース対応まで行う。SWE-bench 82.1%でトップクラス</div></div>
+        <div class="eval-item"><div class="eval-item-mark">◎</div><div><strong>文章品質・指示への忠実さ</strong>：複数レビューで「最もよく挙げられる強み」。自然なリズム・段落構造・トーン指示への追従</div></div>
+        <div class="eval-item"><div class="eval-item-mark">◎</div><div><strong>長文コンテキスト処理</strong>：非常に長いドキュメントの深い部分から特定詳細を取り出す精度が高い</div></div>
+        <div class="eval-item"><div class="eval-item-mark">◎</div><div><strong>ハルシネーション率の低さ</strong>：独立テストで約3%。ChatGPT / Gemini の約6%と比較して最低水準</div></div>
+        <div class="eval-item"><div class="eval-item-mark">◎</div><div><strong>開発者エコシステムの中心</strong>：Cursor・Windsurfがバックエンドに採用。Google / Microsoft / OpenAI社員も業務利用</div></div>
+      </div>
+      <div class="eval-box lose-box">
+        <div class="eval-box-title lose">弱みとして挙げられる点</div>
+        <div class="eval-item"><div class="eval-item-mark">△</div><div><strong>マルチモーダル（動画・音声）</strong>：動画・音声処理・動画生成はGeminiが明確に優勢。Claude自体は画像入力に対応するが、動画・音声はネイティブ非対応</div></div>
+        <div class="eval-item"><div class="eval-item-mark">△</div><div><strong>Google Workspace 連携</strong>：G Suite中心の組織にはGeminiの方が大幅に有利</div></div>
+        <div class="eval-item"><div class="eval-item-mark">△</div><div><strong>APIコスト</strong>：Gemini Flash等と比較してAPI単価が高め。大量処理には要検討</div></div>
+        <div class="eval-item"><div class="eval-item-mark">△</div><div><strong>リアルタイム情報</strong>：Webグラウンディングの強さではGemini・Grokに劣る</div></div>
+        <div class="eval-item"><div class="eval-item-mark">△</div><div><strong>完全委任の限界</strong>：Anthropic調査でも完全委任できるタスクは0〜20%。残りは人間のレビューが必要</div></div>
+      </div>
+    </div>
+
+    <div class="sub-head">主要メディア・レビューのまとめ</div>
+    <div class="table-wrap">
+
+    <table>
+      <thead><tr><th>ソース</th><th>評価ポイント</th></tr></thead>
+      <tbody>
+        <tr><td>AI Weekly</td><td>「コーディング・長文・精度重視ならClaude。2026年のコーディングツール事実上の標準」</td></tr>
+        <tr><td>MindStudio</td><td>「文章品質が最もよく挙げられるClaude最大の強み。トーン指示への忠実さが他モデルを凌駕」</td></tr>
+        <tr><td>Playcode Blog</td><td>TypeScript実装テストでClaude一位。型安全・JSDoc・エッジケース対応で他を圧倒</td></tr>
+        <tr><td>Zemith.com</td><td>「文章品質・大規模コードベース・長文書分析でClaude優位。GeminiはマルチモーダルとAPI価格で優位」</td></tr>
+        <tr><td>FreeAcademy AI</td><td>ハルシネーション率最低（約3%）として複数ソースで引用される</td></tr>
+        <tr><td>Shawn Kanungo</td><td>「Googleエンジニアが1年かかるアーキテクチャ作業を1時間で再現した事例あり」</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="sub-head">開発者コミュニティの声</div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-label">Anthropic 社内調査</div>
+        <p>エンジニアが業務の<strong>60%</strong>にClaudeを活用し、<strong>生産性50%向上</strong>を報告。完全委任できるのは0〜20%。残りは人間のレビューが必要。</p>
+      </div>
+      <div class="card">
+        <div class="card-label">TDDとの相性</div>
+        <p><strong>テスト駆動開発（TDD）を実践しているチームが最も恩恵を受ける</strong>という評価が定着。テストのないプロジェクトでは品質管理が難しい。</p>
+      </div>
+      <div class="card">
+        <div class="card-label">企業採用状況</div>
+        <p>Microsoft・Googleが主要エンジニアリングチームで<strong>内部採用</strong>。Fortune 10のうち8社がClaudeを利用（Anthropic発表）。</p>
+      </div>
+    </div>
+
+    <div class="sub-head">用途別おすすめ選択ガイド（2026年4月時点）</div>
+    <div class="table-wrap">
+
+    <table>
+      <thead><tr><th>用途</th><th>おすすめ</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>複雑なコーディング・大規模リファクタ</td><td><strong>Claude Code</strong></td><td>コードベース全体理解・エージェント型実行・SWE-benchmark最高水準</td></tr>
+        <tr><td>長文文書作成・分析</td><td><strong>Claude</strong></td><td>自然な文体・トーン追従・長文コンテキスト精度</td></tr>
+        <tr><td>マルチモーダル（動画・画像・音声）</td><td>Gemini</td><td>動画・音声のネイティブ処理が圧倒的に強い</td></tr>
+        <tr><td>Google Workspace 中心の業務</td><td>Gemini</td><td>Gmail・Docs・Sheetsとのネイティブ統合</td></tr>
+        <tr><td>汎用・一般的なチャット</td><td>ChatGPT</td><td>最大のユーザーベースとプラグインエコシステム</td></tr>
+        <tr><td>API大量処理・コスト最適化</td><td>Gemini Flash</td><td>フロンティアモデル中最安のAPI単価</td></tr>
+        <tr><td>リアルタイム情報・検索連携</td><td>Gemini / Grok</td><td>Webグラウンディング・ライブデータへのアクセス</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+</div>
+
+<!-- BACK TO TOP -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ページトップに戻る">↑</button>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div>
+    <div class="footer-brand">KITAcore Reference Shelf — Claude Code Vol.01</div>
+    <div style="display:flex;gap:var(--sp-4);margin-top:var(--sp-2);flex-wrap:wrap;">
+      <a href="#history" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;">01. History</a>
+      <a href="#service" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;">02. Service</a>
+      <a href="#compare" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;">03. vs Others</a>
+      <a href="#features" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;">04. Features</a>
+      <a href="#eval" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;">05. Web Eval</a>
+    </div>
+  </div>
+  <div class="footer-meta" style="text-align:right;">
+    作成：2026.04.21 &nbsp;|&nbsp; 参照：code.claude.com/docs/en/overview<br>
+    KITAcore Design System v2.0
+  </div>
+</footer>
+
+<script>
+/* ── NAV ACTIVE STATE ── */
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav a');
+const backTop  = document.getElementById('back-top');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -60% 0px' });
+
+sections.forEach(s => obs.observe(s));
+
+/* ── BACK TO TOP ── */
+window.addEventListener('scroll', () => {
+  backTop.classList.toggle('show', window.scrollY > 400);
+}, { passive: true });
+</script>
+
+<script>
+/* ═══════════════════════════════════════
+   ANIMATION ENGINE
+═══════════════════════════════════════ */
+
+/* ─ KPI counter ─ */
+function countUp(el) {
+  const orig = el.textContent.trim();
+  const match = orig.match(/([^0-9.]*)([0-9.]+)(.*)/);
+  if (!match) return;
+  const [, pre, rawNum, suf] = match;
+  const num = parseFloat(rawNum);
+  const isInt = !rawNum.includes('.');
+  const dur = 1100, start = performance.now();
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  const step = now => {
+    const p = Math.min((now - start) / dur, 1);
+    const v = num * ease(p);
+    el.textContent = pre + (isInt ? Math.round(v) : v.toFixed(1)) + suf;
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = orig;
+  };
+  requestAnimationFrame(step);
+}
+
+/* ─ Generic scroll observer ─ */
+const io = new IntersectionObserver((entries, obs) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('vis');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -24px 0px' });
+
+/* ─ KPI scroll observer (with countUp) ─ */
+const kpiObs = new IntersectionObserver((entries, obs) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('vis');
+      const val = e.target.querySelector('.kpi-value');
+      if (val) setTimeout(() => countUp(val), parseInt(getComputedStyle(e.target).getPropertyValue('--d') || '0') + 150);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+/* ─ Apply KPI stagger ─ */
+document.querySelectorAll('.kpi-card').forEach((el, i) => {
+  el.style.setProperty('--d', `${i * 100}ms`);
+  kpiObs.observe(el);
+});
+
+/* ─ Feature items (2-col stagger by column) ─ */
+document.querySelectorAll('.feat-item').forEach((el, i) => {
+  el.classList.add('rv');
+  el.style.setProperty('--d', `${(i % 2) * 80}ms`);
+  io.observe(el);
+});
+
+/* ─ Timeline items (sequential) ─ */
+document.querySelectorAll('.tl-item').forEach((el, i) => {
+  el.classList.add('rvr');
+  el.style.setProperty('--d', `${Math.min(i * 45, 300)}ms`);
+  io.observe(el);
+});
+
+/* ─ Eval items (stagger within box) ─ */
+document.querySelectorAll('.eval-box').forEach(box => {
+  box.classList.add('rv');
+  io.observe(box);
+  box.querySelectorAll('.eval-item').forEach((el, i) => {
+    el.classList.add('rv');
+    el.style.setProperty('--d', `${i * 40 + 80}ms`);
+    io.observe(el);
+  });
+});
+
+/* ─ Compare rows ─ */
+document.querySelectorAll('.compare-row').forEach((el, i) => {
+  el.classList.add('rv');
+  el.style.setProperty('--d', `${i * 28}ms`);
+  io.observe(el);
+});
+
+/* ─ Community cards ─ */
+document.querySelectorAll('.grid-3 .card, .card.ba-before, .card.ba-after').forEach((el, i) => {
+  el.classList.add('rv');
+  el.style.setProperty('--d', `${i * 80}ms`);
+  io.observe(el);
+});
+
+/* ─ Surface cards ─ */
+document.querySelectorAll('.surface-card').forEach((el, i) => {
+  el.classList.add('rv');
+  el.style.setProperty('--d', `${i * 50}ms`);
+  io.observe(el);
+});
+
+/* ─ Section title wipe ─ */
+const titleObs = new IntersectionObserver((entries, obs) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.remove('anim-ready');
+      e.target.classList.add('anim-go');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.6 });
+
+document.querySelectorAll('.section-title').forEach(el => {
+  el.classList.add('anim-ready');
+  titleObs.observe(el);
+});
+
+/* ─ Feat-num roll in (number stamp effect on first hover) ─ */
+document.querySelectorAll('.feat-num').forEach(el => {
+  const orig = el.textContent;
+  let done = false;
+  el.closest('.feat-item')?.addEventListener('mouseenter', () => {
+    if (done) return;
+    done = true;
+    const chars = '0123456789';
+    let iter = 0;
+    const iv = setInterval(() => {
+      el.textContent = chars[Math.floor(Math.random() * chars.length)] + chars[Math.floor(Math.random() * chars.length)];
+      if (++iter > 6) { clearInterval(iv); el.textContent = orig; }
+    }, 40);
+  });
+});
+</script>
+
+</body>
+</html>
