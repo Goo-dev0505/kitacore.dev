@@ -671,6 +671,169 @@ p.body { font-size: 13px; color: var(--text-sub); line-height: 1.8; margin-botto
   /* ─ Table row transition (already hover bg, add speed) ─ */
   td { transition: background 80ms ease; }
 }
+
+/* ═══════════════════════════════════════
+   MOBILE RESPONSIVE — タブレット（〜768px）
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+  body { font-size: 13px; }
+
+  /* ── HEADER ── */
+  .header {
+    padding: var(--sp-6) var(--sp-4);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+  }
+  .header-title { font-size: 30px; }
+  .header-meta { text-align: left; font-size: 10px; }
+
+  /* ── NAV（横スクロール可能に）── */
+  .nav {
+    padding: 0 var(--sp-4);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { padding: var(--sp-3) var(--sp-3); font-size: 10px; }
+
+  /* ── LAYOUT ── */
+  .wrapper { padding: var(--sp-6) var(--sp-4); }
+  .section { margin-bottom: var(--sp-12); }
+  .section-title { font-size: 22px; margin-bottom: var(--sp-6); }
+
+  /* ── KPI（4列→2列）── */
+  .kpi-strip { grid-template-columns: repeat(2, 1fr); gap: var(--sp-3); }
+  .kpi-card { padding: var(--sp-4); }
+  .kpi-value { font-size: 26px; }
+
+  /* ── GRIDS（全て1列）── */
+  .grid-2 { grid-template-columns: 1fr; gap: var(--sp-4); }
+  .grid-3 { grid-template-columns: 1fr; gap: var(--sp-3); }
+  .grid-surface { grid-template-columns: 1fr; gap: var(--sp-3); }
+  .feat-grid { grid-template-columns: 1fr; gap: var(--sp-3); }
+  .eval-grid { grid-template-columns: 1fr; gap: var(--sp-4); }
+
+  /* ── CARDS ── */
+  .card { padding: var(--sp-4) var(--sp-4); }
+  .card-title { font-size: 16px; }
+  .eval-box { padding: var(--sp-4) var(--sp-4); }
+
+  /* ── TIMELINE ── */
+  .timeline { padding-left: var(--sp-6); }
+  .tl-item::before { left: calc(-1 * var(--sp-6) - 3px); }
+  .tl-item.milestone::before { left: calc(-1 * var(--sp-6) - 5px); }
+
+  /* ── SVGフロー図：横スクロールで読めるサイズ維持 ── */
+  .section#service > div[style*="overflow-x"] svg { min-width: 720px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    padding: var(--sp-6) var(--sp-4);
+  }
+  .footer-meta { text-align: left; }
+
+  /* ── LOADER ── */
+  #loader-inner { width: calc(100vw - 48px); max-width: 380px; }
+  #loader-brand { font-size: 42px; }
+
+  /* ── BACK TO TOP ── */
+  #back-top {
+    bottom: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+}
+
+/* ═══════════════════════════════════════
+   MOBILE RESPONSIVE — スマホ（〜480px）
+═══════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* ── HEADER ── */
+  .header { padding: var(--sp-4) var(--sp-4); }
+  .header-title { font-size: 24px; line-height: 1.15; }
+  .header-eyebrow { font-size: 10px; }
+
+  /* ── NAV ── */
+  .nav a { padding: var(--sp-2) var(--sp-3); }
+
+  /* ── KPI（2列→1列）── */
+  .kpi-strip { grid-template-columns: 1fr; }
+  .kpi-value { font-size: 28px; }
+
+  /* ── COMPARE TABLE → カード型スタック ── */
+  .compare-header { display: none; }
+  .compare-row {
+    display: block;
+    padding: var(--sp-4);
+    margin-bottom: var(--sp-3);
+    border-radius: 4px !important;
+    border-top: 1px solid var(--border);
+  }
+  .compare-row + .compare-row { margin-top: 0; }
+  .compare-cell {
+    border-left: none;
+    padding: var(--sp-2) 0;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sp-3);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .compare-cell:first-child {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 0 0 var(--sp-3);
+    margin-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--border);
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  /* 各列にラベルを擬似要素で付与 */
+  .compare-row .compare-cell:nth-child(2)::before {
+    content: 'Claude Code';
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .compare-row .compare-cell:nth-child(3)::before {
+    content: 'ChatGPT';
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .compare-row .compare-cell:nth-child(4)::before {
+    content: 'Gemini';
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-block { font-size: 11px; padding: var(--sp-3) var(--sp-4); }
+
+  /* ── LOADER ── */
+  #loader-brand { font-size: 36px; }
+  #loader-inner { padding: 0 var(--sp-2); }
+}
 </style>
 </head>
 <body>
@@ -1025,7 +1188,7 @@ p.body { font-size: 13px; color: var(--text-sub); line-height: 1.8; margin-botto
     </div>
 
     <div class="sub-head" style="margin-top: var(--sp-8);">どれを選ぶか — 選択フロー図</div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:var(--sp-6) var(--sp-4);margin-bottom:var(--sp-6);overflow-x:auto;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:var(--sp-6) var(--sp-4);margin-bottom:var(--sp-6);overflow-x:auto;-webkit-overflow-scrolling:touch;">
       <svg width="100%" viewBox="0 0 960 510" xmlns="http://www.w3.org/2000/svg" role="img">
         <title>Claude Code サーフェス選択フロー図</title>
         <defs>
@@ -1217,7 +1380,7 @@ p.body { font-size: 13px; color: var(--text-sub); line-height: 1.8; margin-botto
     <div class="compare-row"><div class="compare-cell">画像生成</div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
     <div class="compare-row"><div class="compare-cell">動画生成</div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
     <div class="compare-row"><div class="compare-cell">Google Workspace<br><span style="font-size:11px;color:var(--muted);font-weight:400;">UI統合（Docs/Sheets/Gmail内）</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-no">非対応</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
-    <div class="compare-row"><div class="compare-cell">Google Workspace<br><span style="font-size:11px;color:var(--muted);font-weight:400;">データ読み書き（Drive/Gmail/GCal）</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
+    <div class="compare-row"><div class="compare-cell">Google Workspace<br><span style="font-size:11px;color:var(--muted);font-weight:400;">データ読み書き(Drive/Gmail/GCal)</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-mid">限定的</span></div><div class="compare-cell"><span class="sym sym-yes">対応</span></div></div>
 
     <div class="compare-legend">
       <div class="cl-item"><span class="sym sym-yes">対応</span>標準機能として使える</div>
@@ -1367,7 +1530,7 @@ git diff main --name-only | <span class="ck">claude</span> -p "review these chan
         <tr><td>MindStudio</td><td>「文章品質が最もよく挙げられるClaude最大の強み。トーン指示への忠実さが他モデルを凌駕」</td></tr>
         <tr><td>Playcode Blog</td><td>TypeScript実装テストでClaude一位。型安全・JSDoc・エッジケース対応で他を圧倒</td></tr>
         <tr><td>Zemith.com</td><td>「文章品質・大規模コードベース・長文書分析でClaude優位。GeminiはマルチモーダルとAPI価格で優位」</td></tr>
-        <tr><td>FreeAcademy AI</td><td>ハルシネーション率最低（約3%）として複数ソースで引用される</td></tr>
+        <tr><td>FreeAcademy AI</td><td>ハルシネーション率最低(約3%)として複数ソースで引用される</td></tr>
         <tr><td>Shawn Kanungo</td><td>「Googleエンジニアが1年かかるアーキテクチャ作業を1時間で再現した事例あり」</td></tr>
       </tbody>
     </table>
