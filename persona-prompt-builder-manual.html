@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANUAL — Persona Brand Prompt Builder for GPT-Image-2 / KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E9E9E9;
+    --surface:#FFFFFF;
+    --surface-v:#F4F4F2;
+    --text:#111111;
+    --text-sub:#333333;
+    --muted:#6B6B6B;
+    --border:#DDDDDD;
+    --accent:#000000;
+    --accent-mid:#333333;
+    --highlight:#FFF7D6;
+    --ng:#B73A3A;
+    --ok:#2F7A3E;
+    --font-display:'Inter','Helvetica Now',sans-serif;
+    --font-body:'Noto Sans JP','Hiragino Sans',sans-serif;
+    --font-mono:'JetBrains Mono','IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--text);font-family:var(--font-body);
+    font-size:14px;line-height:1.8;letter-spacing:0.02em
+  }
+
+  /* ===== LAYOUT ===== */
+  .app{
+    display:grid;grid-template-columns:240px minmax(0,1fr);
+    max-width:1280px;margin:0 auto;min-height:100vh
+  }
+
+  /* ===== SIDEBAR NAV ===== */
+  aside.nav{
+    position:sticky;top:0;height:100vh;
+    padding:32px 20px 32px 24px;
+    border-right:1px solid var(--border);overflow-y:auto
+  }
+  .nav-mark{
+    font-family:var(--font-mono);font-size:10px;color:var(--muted);
+    letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px
+  }
+  .nav-title{
+    font-family:var(--font-display);font-size:15px;font-weight:600;
+    line-height:1.35;margin-bottom:24px
+  }
+  .nav-title .sub{
+    display:block;font-family:var(--font-body);font-size:11px;
+    color:var(--muted);margin-top:4px;font-weight:400;letter-spacing:0.02em
+  }
+  nav ul{list-style:none}
+  nav ul li{margin-bottom:2px}
+  nav ul li a{
+    display:block;padding:6px 10px;color:var(--muted);
+    text-decoration:none;font-size:12.5px;border-left:2px solid transparent;
+    transition:all .15s ease;letter-spacing:0.02em
+  }
+  nav ul li a:hover{color:var(--text);border-left-color:var(--border);background:var(--surface-v)}
+  nav ul li a.active{color:var(--text);border-left-color:var(--accent);font-weight:500}
+  nav ul li a .num{
+    font-family:var(--font-mono);font-size:10px;color:var(--muted);
+    margin-right:8px;letter-spacing:0.1em
+  }
+  .nav-foot{
+    margin-top:32px;padding-top:20px;border-top:1px solid var(--border);
+    font-family:var(--font-mono);font-size:10px;color:var(--muted);
+    letter-spacing:0.15em
+  }
+  .nav-toggle{display:none}
+
+  /* ===== MAIN ===== */
+  main{padding:48px 56px 120px;min-width:0}
+  header.page-head{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+  header.page-head .brand-mark{
+    font-family:var(--font-mono);font-size:11px;color:var(--muted);
+    letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px
+  }
+  header.page-head h1{
+    font-family:var(--font-display);font-size:44px;font-weight:700;
+    line-height:1.1;letter-spacing:-0.01em;margin-bottom:12px
+  }
+  header.page-head .lead{
+    font-size:15px;color:var(--text-sub);max-width:680px;line-height:1.8
+  }
+  header.page-head .meta{
+    display:flex;gap:24px;margin-top:20px;font-family:var(--font-mono);
+    font-size:10.5px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase
+  }
+  header.page-head .meta strong{color:var(--text);font-weight:500}
+
+  /* ===== SECTION ===== */
+  section{margin-bottom:72px;scroll-margin-top:24px}
+  section .sec-num{
+    font-family:var(--font-mono);font-size:11px;color:var(--muted);
+    letter-spacing:0.25em;text-transform:uppercase;display:block;margin-bottom:8px
+  }
+  section h2{
+    font-family:var(--font-display);font-size:28px;font-weight:700;
+    margin-bottom:8px;letter-spacing:-0.01em
+  }
+  section h2 .jp{
+    display:block;font-family:var(--font-body);font-size:13px;
+    color:var(--muted);font-weight:400;margin-top:6px;letter-spacing:0.02em
+  }
+  section > p{color:var(--text-sub);margin-top:16px;max-width:720px}
+  section h3{
+    font-family:var(--font-display);font-size:17px;font-weight:600;
+    margin-top:36px;margin-bottom:12px;letter-spacing:0
+  }
+  section h4{
+    font-family:var(--font-display);font-size:14px;font-weight:600;
+    margin-top:24px;margin-bottom:8px
+  }
+
+  /* ===== CARDS ===== */
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:4px;
+    padding:24px 28px;margin-top:20px
+  }
+  .card.highlight{background:var(--surface-v)}
+
+  /* ===== TABLE ===== */
+  .field-table{width:100%;border-collapse:collapse;margin-top:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+  .field-table th{
+    text-align:left;padding:14px 18px;background:var(--surface-v);
+    font-family:var(--font-mono);font-size:10.5px;color:var(--muted);
+    letter-spacing:0.15em;text-transform:uppercase;font-weight:500;
+    border-bottom:1px solid var(--border);vertical-align:top
+  }
+  .field-table td{
+    padding:16px 18px;border-bottom:1px solid var(--border);
+    font-size:13px;line-height:1.75;vertical-align:top
+  }
+  .field-table tr:last-child td{border-bottom:none}
+  .field-table .fld{width:22%}
+  .field-table .fld code{
+    font-family:var(--font-mono);font-size:11px;color:var(--muted);
+    display:block;margin-bottom:4px;letter-spacing:0.05em
+  }
+  .field-table .fld b{font-weight:600}
+  .field-table .desc{width:38%;color:var(--text-sub)}
+  .field-table .ex{width:40%;color:var(--text-sub)}
+  .field-table .ex .ok{color:var(--ok)}
+  .field-table .ex .ng{color:var(--ng)}
+  .field-table .ex code{
+    display:inline-block;background:var(--surface-v);padding:2px 6px;
+    border-radius:2px;font-family:var(--font-mono);font-size:11.5px;
+    border:1px solid var(--border)
+  }
+  .field-table .req{color:var(--accent);margin-left:4px;font-weight:700}
+
+  /* ===== LAYOUT MAP ===== */
+  .layout-map{
+    display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px
+  }
+  .layout-map .box{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:4px;padding:24px;position:relative;min-height:200px
+  }
+  .layout-map .box .label{
+    font-family:var(--font-mono);font-size:10px;color:var(--muted);
+    letter-spacing:0.2em;text-transform:uppercase;margin-bottom:12px
+  }
+  .layout-map .box h4{
+    font-family:var(--font-display);font-size:16px;font-weight:600;
+    margin-bottom:10px;margin-top:0
+  }
+  .layout-map .box p{font-size:12.5px;color:var(--text-sub);line-height:1.7}
+  .layout-map .box ul{margin-top:10px;padding-left:16px;font-size:12px;color:var(--text-sub)}
+  .layout-map .box ul li{margin-bottom:4px}
+
+  /* ===== STEPS ===== */
+  .steps{
+    counter-reset:step;margin-top:20px;
+    display:grid;grid-template-columns:1fr;gap:0;
+    border:1px solid var(--border);border-radius:4px;overflow:hidden;
+    background:var(--surface)
+  }
+  .steps .step{
+    counter-increment:step;padding:20px 24px;
+    border-bottom:1px solid var(--border);
+    display:grid;grid-template-columns:80px 1fr;gap:16px;align-items:start
+  }
+  .steps .step:last-child{border-bottom:none}
+  .steps .step::before{
+    content:"STEP " counter(step,decimal-leading-zero);
+    font-family:var(--font-mono);font-size:10.5px;color:var(--muted);
+    letter-spacing:0.2em;padding-top:2px
+  }
+  .steps .step h4{margin:0 0 4px;font-family:var(--font-display);font-size:15px;font-weight:600}
+  .steps .step p{font-size:13px;color:var(--text-sub);line-height:1.75}
+  .steps .step .tip{
+    display:block;margin-top:6px;font-size:11.5px;color:var(--muted);
+    padding-left:10px;border-left:2px solid var(--border)
+  }
+
+  /* ===== TIPS ===== */
+  .tips{
+    counter-reset:tip;list-style:none;padding:0;margin-top:20px
+  }
+  .tips li{
+    counter-increment:tip;background:var(--surface);
+    border:1px solid var(--border);border-radius:4px;
+    padding:20px 24px 20px 72px;margin-bottom:10px;position:relative
+  }
+  .tips li::before{
+    content:"TIP " counter(tip,decimal-leading-zero);
+    position:absolute;left:24px;top:20px;
+    font-family:var(--font-mono);font-size:10.5px;color:var(--muted);
+    letter-spacing:0.15em
+  }
+  .tips li h4{
+    font-family:var(--font-display);font-size:15px;font-weight:600;margin-bottom:6px
+  }
+  .tips li p{font-size:13px;color:var(--text-sub);line-height:1.75}
+  .tips li p + p{margin-top:8px}
+  .tips li code{
+    font-family:var(--font-mono);font-size:11.5px;background:var(--surface-v);
+    padding:2px 6px;border-radius:2px;border:1px solid var(--border)
+  }
+
+  /* ===== CALLOUTS ===== */
+  .callout{
+    padding:16px 20px;border-left:3px solid var(--accent);
+    background:var(--surface-v);margin-top:16px;font-size:13px;color:var(--text-sub)
+  }
+  .callout.warn{border-left-color:var(--ng);background:#FAF0F0}
+  .callout.tip{border-left-color:var(--ok);background:#F1F7F2}
+  .callout .label{
+    display:block;font-family:var(--font-mono);font-size:10px;
+    letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px;color:var(--accent)
+  }
+  .callout.warn .label{color:var(--ng)}
+  .callout.tip .label{color:var(--ok)}
+
+  /* ===== PROMPT EXAMPLE ===== */
+  .prompt-ex{
+    background:var(--surface-v);border:1px solid var(--border);
+    border-radius:4px;padding:20px 24px;margin-top:16px;
+    font-family:var(--font-mono);font-size:12px;line-height:1.75;
+    color:var(--text-sub);white-space:pre-wrap;word-break:break-word
+  }
+  .prompt-ex .hl{background:var(--highlight);padding:1px 3px;border-radius:2px;color:var(--text)}
+
+  /* ===== FAQ ===== */
+  .faq-item{
+    background:var(--surface);border:1px solid var(--border);border-radius:4px;
+    margin-bottom:8px;overflow:hidden
+  }
+  .faq-item summary{
+    list-style:none;cursor:pointer;padding:16px 24px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-weight:500;font-size:13.5px
+  }
+  .faq-item summary::-webkit-details-marker{display:none}
+  .faq-item summary .chev{font-family:var(--font-mono);font-size:11px;color:var(--muted);transition:transform .15s ease}
+  .faq-item[open] summary .chev{transform:rotate(90deg)}
+  .faq-item .faq-body{
+    padding:0 24px 20px;color:var(--text-sub);font-size:13px;line-height:1.8
+  }
+  .faq-item .faq-body code{
+    font-family:var(--font-mono);font-size:11.5px;background:var(--surface-v);
+    padding:2px 6px;border-radius:2px;border:1px solid var(--border)
+  }
+
+  /* ===== FOOTER ===== */
+  footer.page-foot{
+    margin-top:72px;padding-top:32px;border-top:1px solid var(--border);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
+    font-family:var(--font-mono);font-size:11px;color:var(--muted);
+    letter-spacing:0.15em;text-transform:uppercase
+  }
+
+  /* ===== HELPERS ===== */
+  code.inline{
+    font-family:var(--font-mono);font-size:12px;background:var(--surface-v);
+    padding:2px 6px;border-radius:2px;border:1px solid var(--border)
+  }
+  b{font-weight:600;color:var(--text)}
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px){
+    .app{grid-template-columns:1fr}
+    aside.nav{
+      position:static;height:auto;max-height:none;
+      border-right:none;border-bottom:1px solid var(--border);
+      padding:20px 16px
+    }
+    .nav-toggle{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;background:none;border:none;cursor:pointer;
+      font-family:var(--font-mono);font-size:11px;color:var(--muted);
+      letter-spacing:0.15em;text-transform:uppercase;padding:0
+    }
+    .nav-toggle .chev{transition:transform .15s ease}
+    aside.nav.open .nav-toggle .chev{transform:rotate(90deg)}
+    aside.nav nav, aside.nav .nav-foot, aside.nav .nav-mark, aside.nav .nav-title{
+      display:none
+    }
+    aside.nav.open nav, aside.nav.open .nav-foot, aside.nav.open .nav-mark, aside.nav.open .nav-title{
+      display:block;margin-top:16px
+    }
+    main{padding:28px 20px 80px}
+    header.page-head h1{font-size:32px}
+    .field-table .fld, .field-table .desc, .field-table .ex{width:auto;display:block}
+    .field-table thead{display:none}
+    .field-table td{display:block;padding:8px 16px;border-bottom:none}
+    .field-table td.fld{padding-top:16px;background:var(--surface-v)}
+    .field-table tr{display:block;border-bottom:1px solid var(--border)}
+    .field-table tr:last-child{border-bottom:none}
+    .layout-map{grid-template-columns:1fr}
+    .steps .step{grid-template-columns:1fr;gap:4px}
+    .steps .step::before{margin-bottom:4px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="nav" id="nav">
+    <button class="nav-toggle" type="button" aria-expanded="false">
+      <span>CONTENTS</span><span class="chev">▶</span>
+    </button>
+    <div class="nav-mark">KITAcore / MANUAL — 026</div>
+    <div class="nav-title">
+      Persona Brand<br>Prompt Builder
+      <span class="sub">丁寧な使い方＆コツ</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#sec-00"><span class="num">00</span>Overview</a></li>
+        <li><a href="#sec-01"><span class="num">01</span>画面の見方</a></li>
+        <li><a href="#sec-02"><span class="num">02</span>入力項目ガイド</a></li>
+        <li><a href="#sec-03"><span class="num">03</span>使い方のコツ</a></li>
+        <li><a href="#sec-04"><span class="num">04</span>ChatGPTでの運用</a></li>
+        <li><a href="#sec-05"><span class="num">05</span>トラブルシュート</a></li>
+        <li><a href="#sec-06"><span class="num">06</span>FAQ</a></li>
+      </ul>
+    </nav>
+    <div class="nav-foot">
+      v1.0<br>2026.04<br>KITAcore
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main>
+
+    <header class="page-head">
+      <div class="brand-mark">KITAcore / TOOL — 026 / FOR GPT-IMAGE-2</div>
+      <h1>Persona Brand Prompt Builder<br>Manual</h1>
+      <p class="lead">
+        GPT-Image-2 で日本語ブランドポスターを一発生成するためのプロンプトビルダー。
+        このマニュアルでは、各フィールドの丁寧な書き方、チップ選びのコツ、
+        ChatGPTに投げた後の運用方法まで一通り解説します。
+      </p>
+      <div class="meta">
+        <span>TARGET&nbsp;<strong>GPT-IMAGE-2</strong></span>
+        <span>READ&nbsp;<strong>≈ 10 MIN</strong></span>
+        <span>LEVEL&nbsp;<strong>BEGINNER → PRO</strong></span>
+      </div>
+    </header>
+
+    <!-- ========== 00. OVERVIEW ========== -->
+    <section id="sec-00">
+      <span class="sec-num">00. Overview</span>
+      <h2>このツールで何ができるか<span class="jp">What this tool is for</span></h2>
+      <p>
+        クリエイター情報・キャラクター設定・ブランドテーマをフォームで入力すると、
+        GPT-Image-2 用のポスター生成メタプロンプトが自動生成されます。
+        ChatGPT（画像生成ON）に貼り付けると、<b>ブランド分析＋日本語見出し案＋英語プロンプト＋ポスター画像</b>
+        が一気通貫で出力されます。
+      </p>
+
+      <h3>向いているユースケース</h3>
+      <div class="card">
+        <ul style="padding-left:20px">
+          <li>noteのプロフィール用ブランドポスター</li>
+          <li>マガジン・メンバーシップのカバー画像</li>
+          <li>自己紹介スライドの中表紙</li>
+          <li>Xプロフィール添付画像、固定ポスト用画像</li>
+          <li>個人事業・屋号のビジュアルアイデンティティ試作</li>
+        </ul>
+      </div>
+
+      <h3>向いていないユースケース</h3>
+      <div class="callout warn">
+        <span class="label">NOT FOR</span>
+        企業の正式ロゴ制作、著作権が絡む二次創作、実在人物の肖像利用。
+        あくまで「自分のブランド」を立ち上げるための試作用途として使ってください。
+      </div>
+    </section>
+
+    <!-- ========== 01. 画面の見方 ========== -->
+    <section id="sec-01">
+      <span class="sec-num">01. UI Map</span>
+      <h2>画面の見方<span class="jp">Where everything lives</span></h2>
+      <p>
+        ツール本体は左右2カラム構成。左が<b>入力フォーム</b>、右が<b>生成プロンプトのリアルタイムプレビュー</b>です。
+      </p>
+
+      <div class="layout-map">
+        <div class="box">
+          <span class="label">LEFT / FORM</span>
+          <h4>入力フォーム</h4>
+          <p>上から順に：</p>
+          <ul>
+            <li>01. Creator Info — クリエイター情報</li>
+            <li>02. Character — ポスター中央の人物設定</li>
+            <li>03. Brand System — テーマ・トーン・カラー</li>
+          </ul>
+          <p style="margin-top:10px">チップクリック・テキスト入力がそのままプレビューに反映。</p>
+        </div>
+        <div class="box">
+          <span class="label">RIGHT / PREVIEW</span>
+          <h4>生成プロンプト</h4>
+          <p>フォームに合わせて自動生成される英日混合のメタプロンプト。</p>
+          <ul>
+            <li>Copyボタン → 全文クリップボードへ</li>
+            <li>.mdボタン → Markdownファイルとしてダウンロード</li>
+            <li>下部のメタバー → 文字数・トークン数・STATUS表示</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>上部のボタン群</h3>
+      <table class="field-table">
+        <thead>
+          <tr><th class="fld">ボタン</th><th class="desc">役割</th><th class="ex">使いどころ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fld"><b>サンプルを読み込む</b></td>
+            <td class="desc">KITAcoreの見本データを全フィールドに一括投入</td>
+            <td class="ex">初回起動時に押して、書き換える形で使うと最速。</td>
+          </tr>
+          <tr>
+            <td class="fld"><b>リセット</b></td>
+            <td class="desc">すべての入力を空に戻す（確認ダイアログあり）</td>
+            <td class="ex">別のブランドをゼロから作り直すとき。</td>
+          </tr>
+          <tr>
+            <td class="fld"><b>ブラウザに保存</b></td>
+            <td class="desc">localStorage に現在の入力を保存</td>
+            <td class="ex">作業中断・次回再開したいとき。</td>
+          </tr>
+          <tr>
+            <td class="fld"><b>保存から復元</b></td>
+            <td class="desc">保存済みデータを読み出す</td>
+            <td class="ex">ブラウザ再起動後に続きから。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ========== 02. 入力項目ガイド ========== -->
+    <section id="sec-02">
+      <span class="sec-num">02. Field Guide</span>
+      <h2>入力項目ガイド<span class="jp">How to fill each field</span></h2>
+      <p>
+        全15項目の「何を書くか」「書き方の例」「避けたいNGパターン」を一覧化。
+        迷ったら該当箇所だけ見てください。
+      </p>
+
+      <!-- Creator Info -->
+      <h3>01. Creator Info（クリエイター情報）</h3>
+      <table class="field-table">
+        <thead>
+          <tr><th class="fld">フィールド</th><th class="desc">何を書く</th><th class="ex">例とNG</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fld"><code>creator_name</code><b>Creator Name</b><span class="req">*</span></td>
+            <td class="desc">noteやXで使っている活動名。本名じゃなくてOK。ポスター内に描画される可能性あり。</td>
+            <td class="ex">
+              <span class="ok">OK：</span> KITAcore / Goo / ktcrs<br>
+              <span class="ng">NG：</span> 「クリエイター」などの一般名詞（特定できない）
+            </td>
+          </tr>
+          <tr>
+            <td class="fld"><code>brand_name</code><b>Brand Name</b><span class="req">*</span></td>
+            <td class="desc">活動の屋号・ブランド名。クリエイター名と同じでも可。ポスターのメイン見出しに入る。</td>
+            <td class="ex">
+              <span class="ok">OK：</span> KITAcore Studio / 実験と観察<br>
+              <span class="ng">NG：</span> 長すぎる（20字超）
+            </td>
+          </tr>
+          <tr>
+            <td class="fld"><code>main_url</code><b>Main URL</b><span class="req">*</span></td>
+            <td class="desc">ChatGPTが読み込む最重要ソース。noteのトップページで十分。</td>
+            <td class="ex">
+              <span class="ok">OK：</span> <code>https://note.com/ktcrs1107</code><br>
+              <span class="ng">NG：</span> URLの http:// を省く
+            </td>
+          </tr>
+          <tr>
+            <td class="fld"><code>profile_url</code><b>Profile URL</b></td>
+            <td class="desc">自己紹介記事・固定プロフィール。空欄可。</td>
+            <td class="ex">あると人物像の精度UP。なければ空欄でOK。</td>
+          </tr>
+          <tr>
+            <td class="fld"><code>ref_url</code><b>Reference Article</b></td>
+            <td class="desc">「このブランドを象徴する記事」を1本。スタイル判定の補助。</td>
+            <td class="ex">AI実験ログ系なら代表的な実験記事1本。プロフィール記事とは別物推奨。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Character -->
+      <h3>02. Character（キャラクター情報）</h3>
+      <p style="margin-top:8px;font-size:12.5px;color:var(--muted)">
+        ポスター中央に描かれる人物の設定。本人に寄せる／アバター／完全架空のペルソナ、どれもOK。
+      </p>
+      <table class="field-table">
+        <thead>
+          <tr><th class="fld">フィールド</th><th class="desc">何を書く</th><th class="ex">例とNG</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fld"><code>char_gender</code><b>Gender</b></td>
+            <td class="desc">性別。プルダウンから選択。</td>
+            <td class="ex">male / female / androgynous / non-binary</td>
+          </tr>
+          <tr>
+            <td class="fld"><code>char_age</code><b>Age Range</b></td>
+            <td class="desc">年代。幅のある表現で。</td>
+            <td class="ex">late 20s / early 30s / mid 30s ...</td>
+          </tr>
+          <tr>
+            <td class="fld"><code>char_culture</code><b>Culture</b></td>
+            <td class="desc">国籍・文化圏。日本人はデフォルトでJapanese。</td>
+            <td class="ex">
+              <span class="ok">OK：</span> Japanese / East Asian<br>
+              <span class="ng">NG：</span> 空欄（文化圏が描画に効くので必ず記入）
+            </td>
+          </tr>
+          <tr>
+            <td class="fld"><code>char_role</code><b>Role</b></td>
+            <td class="desc">職業的イメージ。肩書より「雰囲気」優先。英語キーワード2〜3個。</td>
+            <td class="ex">
+              <span class="ok">OK：</span> <code>creative technologist, data storyteller, prompt engineer</code><br>
+              <span class="ng">NG：</span> 正式な肩書だけ（例：Senior Engineer at XYZ）
+            </td>
+          </tr>
+          <tr>
+            <td class="fld"><code>char_appearance</code><b>Appearance</b></td>
+            <td class="desc">外見特徴。髪・メガネ・服装の方向性を英語で。</td>
+            <td class="ex">
+              <span class="ok">OK：</span> <code>short black hair, minimal round glasses, clean casual outfit in neutral tones</code><br>
+              <span class="ng">NG：</span> 細かすぎる服飾指定（AIが迷う）
+            </td>
+          </tr>
+          <tr>
+            <td class="fld"><code>char_expression</code><b>Expression</b></td>
+            <td class="desc">表情・雰囲気。形容詞3つ程度で。</td>
+            <td class="ex">
+              <span class="ok">OK：</span> <code>calm, curious, slightly smiling</code><br>
+              <span class="ng">NG：</span> <code>happy</code> だけ（情報不足）
+            </td>
+          </tr>
+          <tr>
+            <td class="fld"><code>char_pose</code><b>Pose</b></td>
+            <td class="desc">ポーズ・構図。身体のどの部分が写るかも含める。</td>
+            <td class="ex">
+              <span class="ok">OK：</span> <code>half-body, looking slightly off-camera, holding a notebook</code><br>
+              <span class="ng">NG：</span> <code>cool pose</code>（抽象すぎ）
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Brand System -->
+      <h3>03. Brand System（ブランドテーマ・トーン・カラー）</h3>
+      <p style="margin-top:8px;font-size:12.5px;color:var(--muted)">
+        チップクリックで追加。候補にない語は下の入力欄でEnter追加可能。
+        それぞれ <b>3〜6個</b> 選ぶとバランスが一番出ます。
+      </p>
+      <table class="field-table">
+        <thead>
+          <tr><th class="fld">カテゴリ</th><th class="desc">何を選ぶ</th><th class="ex">選び方のコツ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fld"><b>Brand Themes</b><code>themes</code></td>
+            <td class="desc">ブランドを象徴する視覚モチーフ・発信テーマ。</td>
+            <td class="ex">自分のnoteの記事タイトルを一覧して、頻出してる雰囲気を選ぶ。例：<code>sunlight</code> <code>technology</code> <code>data storytelling</code></td>
+          </tr>
+          <tr>
+            <td class="fld"><b>Brand Tone</b><code>tones</code></td>
+            <td class="desc">読者に持ってほしい印象。</td>
+            <td class="ex">形容詞中心。例：<code>intelligent</code> <code>calm</code> <code>editorial</code></td>
+          </tr>
+          <tr>
+            <td class="fld"><b>Color Palette</b><code>colors</code></td>
+            <td class="desc">ポスター全体の配色。</td>
+            <td class="ex">
+              ベース1色＋アクセント1〜2色＋中間色2〜3色。<br>
+              例：<code>deep navy</code> <code>warm sunlight gold</code> <code>off-white</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <span class="label">TIP</span>
+        チップ式の候補は全カテゴリで計50個以上用意してます。
+        迷ったら<b>直感で「これかも」と思うやつを全部クリック</b>して、後から減らすほうが早い。
+      </div>
+    </section>
+
+    <!-- ========== 03. 使い方のコツ ========== -->
+    <section id="sec-03">
+      <span class="sec-num">03. Tips</span>
+      <h2>使い方のコツ<span class="jp">Practical tips</span></h2>
+      <p>
+        実際に使って「精度が上がった」と感じた設計のコツを10個にまとめました。
+      </p>
+
+      <ol class="tips">
+        <li>
+          <h4>まずサンプルを読み込んで、置き換える</h4>
+          <p>
+            空のフォームから書き始めるより、<b>サンプル → 各フィールドを自分のデータに上書き</b>
+            するほうが圧倒的に早いし、抜け漏れが出ない。最初の1回は必ずサンプルから入るのを推奨。
+          </p>
+        </li>
+
+        <li>
+          <h4>3〜6個ルール</h4>
+          <p>
+            テーマ・トーン・カラーはそれぞれ<b>3〜6個</b>が最適レンジ。
+            2個以下 → キャラクターが立たない。7個以上 → 散らかって焦点ボケる。
+          </p>
+          <p>
+            迷ったらまず6個選んで、プレビューを見ながら「これは違うな」を削る方式が安全。
+          </p>
+        </li>
+
+        <li>
+          <h4>カラーは「ベース＋アクセント＋中間」の3層で</h4>
+          <p>
+            単なる色の羅列より、役割を意識すると一貫性が出る。
+          </p>
+          <p>
+            例：ベース<code>deep navy</code> + アクセント<code>warm sunlight gold</code>
+            + 中間<code>off-white</code> <code>muted sage</code> <code>charcoal black</code>
+          </p>
+        </li>
+
+        <li>
+          <h4>Appearance は「3要素＋雰囲気1語」で止める</h4>
+          <p>
+            髪・メガネ・服装 の3要素と、全体の雰囲気を1語。
+            書きすぎるとAIが優先順位を迷って破綻する。
+          </p>
+          <p>
+            例：<code>short black hair, minimal round glasses, clean casual outfit in neutral tones, quietly intellectual vibe</code>
+          </p>
+        </li>
+
+        <li>
+          <h4>日本語と英語の使い分けを固定する</h4>
+          <p>
+            Creator Name / Brand Name は<b>日本語のまま</b>（ポスターに直接描画される）。
+            Character系・Brand系は<b>英語</b>（描画指示として渡される）。
+          </p>
+          <p>
+            GPT-Image-2 は日本語描画が得意だが、「どう描くかの指示」は英語のほうが精度が出ます。
+          </p>
+        </li>
+
+        <li>
+          <h4>ref_url（参考記事）は「自分らしさMAX」の1本を</h4>
+          <p>
+            入れるなら、自分のスタイルを最もよく表している記事を1本だけ。
+            プロフィール記事とは別物として扱ったほうが、人格とスタイルを別レイヤーで抽出してくれる。
+          </p>
+        </li>
+
+        <li>
+          <h4>プレビューを見ながら調整する</h4>
+          <p>
+            右側のプレビューは<b>入力と同時にリアルタイム更新</b>。
+            「入れてみる → プレビューの該当箇所を確認 → 違和感あれば直す」のループを意識すると、
+            ChatGPTに投げる前に完成度を上げられる。
+          </p>
+        </li>
+
+        <li>
+          <h4>ブラウザ保存は「作業区切り」で押す</h4>
+          <p>
+            各STEPを終えるごと、または30分ごとに「ブラウザに保存」。
+            localStorage なのでタブを閉じても残るが、シークレットモードでは消えるので注意。
+          </p>
+        </li>
+
+        <li>
+          <h4>複数案を作るときは .md でダウンロードする</h4>
+          <p>
+            パターンA・Bを試したいときは、各パターンを <code>.md</code> でダウンロードして保存。
+            ブラウザ保存は1セットしか持てないので、複数案管理はファイル保存がおすすめ。
+          </p>
+        </li>
+
+        <li>
+          <h4>一発で決まらなくて当たり前と思う</h4>
+          <p>
+            画像生成は確率的。1回目で気に入らなくても、同じプロンプトで2〜3回再生成するのが普通。
+            「プロンプト修正は3回目以降」くらいの感覚で。
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ========== 04. ChatGPTでの運用 ========== -->
+    <section id="sec-04">
+      <span class="sec-num">04. Workflow</span>
+      <h2>ChatGPTでの運用<span class="jp">How to actually generate the poster</span></h2>
+      <p>
+        ビルダーから出たプロンプトを、実際にどう使うか。2つのルートがあります。
+      </p>
+
+      <h3>ルートA：ChatGPTでワンストップ（推奨）</h3>
+      <div class="steps">
+        <div class="step">
+          <div>
+            <h4>ChatGPTを開く</h4>
+            <p>画像生成機能が使えるモデル（GPT-5など）を選択し、画像生成ONの状態にする。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h4>プロンプト全文を貼り付け</h4>
+            <p>ビルダーでCopyしたメタプロンプトをまるごと入力欄に貼る。</p>
+            <span class="tip">Copyボタンで全文取得済みなので、Ctrl+V（⌘+V）1発でOK。</span>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h4>Enterで送信 → 分析とプロンプト生成を待つ</h4>
+            <p>ブランド分析（日本語）→ ポスター構成仕様（日本語）→ GPT-Image-2用プロンプト（英語）の3段が返る。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h4>画像生成をリクエスト</h4>
+            <p>
+              「このプロンプトで画像を生成してください」と追加で指示。
+              縦長ポスター希望なら <b>「縦長ポスター（A3相当）で生成して」</b> と明示。
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h4>出力の調整</h4>
+            <p>気に入らない要素があれば、「人物の表情をもう少し柔らかく」「左上の見出しを大きく」など日本語で追加指示。</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>ルートB：API直接（開発者向け）</h3>
+      <p>
+        OpenAI の Images API で <code class="inline">gpt-image-2</code> モデルを使う場合。
+        メタプロンプト出力の<b>「# 3. GPT-Image-2 用プロンプト」の英語部分だけ</b>を <code class="inline">prompt</code> パラメータに渡します。
+      </p>
+
+      <div class="prompt-ex">POST https://api.openai.com/v1/images/generations
+
+{
+  "model": "gpt-image-2",
+  "prompt": "<span class="hl">&lt;3段目の英語プロンプト全文&gt;</span>",
+  "size": "1024x1536",
+  "n": 1
+}</div>
+
+      <div class="callout">
+        <span class="label">RECOMMENDED SIZE</span>
+        縦長ポスター：<code class="inline">1024x1536</code> ／ 横長：<code class="inline">1536x1024</code> ／ 正方形：<code class="inline">1024x1024</code>
+      </div>
+
+      <h3>リトライのコツ</h3>
+      <div class="card">
+        <h4 style="margin-top:0">同じプロンプトで3回まで試す</h4>
+        <p style="font-size:13px;color:var(--text-sub)">
+          画像生成は確率的なので、1回目が微妙でもプロンプトを変えずに再生成すると別解が出ます。
+          3回試して改善が見られない場合だけ、プロンプトを修正。
+        </p>
+        <h4>修正するなら1箇所ずつ</h4>
+        <p style="font-size:13px;color:var(--text-sub)">
+          複数箇所を同時に変えると、どの修正が効いたかわからなくなる。
+          色 → 表情 → ポーズ、のように1変数ずつ変えるのが科学的。
+        </p>
+      </div>
+    </section>
+
+    <!-- ========== 05. トラブルシュート ========== -->
+    <section id="sec-05">
+      <span class="sec-num">05. Troubleshooting</span>
+      <h2>トラブルシュート<span class="jp">When things go wrong</span></h2>
+      <p>よくある困りごとと、対処法をまとめました。</p>
+
+      <table class="field-table">
+        <thead>
+          <tr><th class="fld">症状</th><th class="desc">原因</th><th class="ex">対処</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fld">プレビューが更新されない</td>
+            <td class="desc">必須3項目（Creator Name / Brand Name / Main URL）が未入力</td>
+            <td class="ex">3つとも埋めると生成が始まる。STATUSが "WAITING" → "READY" に変わればOK。</td>
+          </tr>
+          <tr>
+            <td class="fld">Copyボタンで何もコピーされない</td>
+            <td class="desc">ブラウザのクリップボード権限が無効／HTTPS以外で開いてる</td>
+            <td class="ex">ローカルファイル（file://）では動作する。企業PCで制限されてる場合は .md ダウンロードで代用。</td>
+          </tr>
+          <tr>
+            <td class="fld">チップをクリックしても追加されない</td>
+            <td class="desc">すでに選択済みなのでトグルオフされている</td>
+            <td class="ex">「Suggestions」下のチップに色がついてるものが選択済み。上の選択エリアで確認。</td>
+          </tr>
+          <tr>
+            <td class="fld">ポスター画像の日本語が崩れる</td>
+            <td class="desc">GPT-Image-2 以外のモデルで生成している／日本語文字列が長すぎる</td>
+            <td class="ex">
+              モデルが <code>gpt-image-2</code> になってるか確認。<br>
+              ブランド名・見出しが長すぎる場合は短縮（15字以内推奨）。
+            </td>
+          </tr>
+          <tr>
+            <td class="fld">人物の顔が希望と違う</td>
+            <td class="desc">Appearance が抽象的 or 詳細すぎる</td>
+            <td class="ex">「3要素＋雰囲気1語」のルールに戻す。書きすぎを減らす。</td>
+          </tr>
+          <tr>
+            <td class="fld">ブラウザ再起動後、保存データが消えた</td>
+            <td class="desc">シークレットモード／ブラウザ設定でlocalStorage無効化</td>
+            <td class="ex">通常モードで使う。重要なセットは <code>.md</code> ダウンロードで保険を。</td>
+          </tr>
+          <tr>
+            <td class="fld">情報パネル（CORE OS等）の内容が空っぽ</td>
+            <td class="desc">ChatGPTの分析段階で情報が足りていない</td>
+            <td class="ex">ChatGPTに「CORE OSパネルの中身を具体化してください」と追加指示。URLが有効でも情報が少ない場合は、note記事を3本ほど指定して再分析依頼。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ========== 06. FAQ ========== -->
+    <section id="sec-06">
+      <span class="sec-num">06. FAQ</span>
+      <h2>よくある質問<span class="jp">Frequently asked questions</span></h2>
+
+      <details class="faq-item">
+        <summary>Midjourneyでも使えますか？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          このツールはGPT-Image-2に最適化しています。Midjourney / Imagen / Nano Banana でも
+          意味は通じますが、日本語タイポグラフィの描画精度は大きく落ちます。
+          他モデルで使う場合は、日本語部分を英訳するか、Photoshop等で文字を合成してください。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>参考記事URL（ref_url）は必須？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          省略可です。入れると精度が上がりますが、なくても Main URL があれば分析できます。
+          迷ったら空欄でOK。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>1つのブランドで何パターン作れば足りますか？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          カラーパレット違い・トーン違いで <b>3〜5パターン</b>作って比較するのがおすすめ。
+          1パターンだけだと「本当にコレでいいのか」の判断ができないので、必ず比較できる複数案を。
+          それぞれ <code>.md</code> でダウンロードしておけば後から再利用可。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>キャラクターは自分の姿を反映すべき？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          どちらでもOK。本人に寄せる／アバター的にする／完全に架空のペルソナにする、
+          いずれも成立します。note・Xのアイコンと整合させたい場合は、アイコンの特徴を
+          Appearance欄にそのまま書くと連続性が出ます。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>生成した画像の著作権は？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          OpenAI の利用規約に準じます（2026年4月時点では、ChatGPT / Images APIで生成した画像は
+          商用含め利用可能）。最新の規約は OpenAI の利用規約ページを確認してください。
+          ただし、プロンプトに著作権がある既存キャラクター名を含めた場合は別途注意が必要です。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>企業の広告やロゴに使っていい？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          このツールは<b>個人のブランディング試作</b>を想定しています。
+          企業の正式ロゴや、商用広告のメインビジュアルには、プロのデザイナーに
+          依頼するのが筋。試作・ラフ提案・社内プレゼン用ならこのツールで十分です。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>データはどこに保存される？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          「ブラウザに保存」を押したときだけ、<b>このブラウザのlocalStorage</b>に保存されます。
+          サーバーには一切送信されません。別のブラウザ・別PCには引き継がれないので、
+          重要なセットは生成プロンプト(.md)をダウンロードして残すのが確実です。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>オフラインで使える？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          ツール本体（HTML）はGoogle Fonts読み込み以外はオフラインで動きます。
+          ただしChatGPTへの貼り付け以降はインターネット接続が必要です。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>このツール自体を改変していい？<span class="chev">▶</span></summary>
+        <div class="faq-body">
+          自由に改変・再配布OKです。KITAcoreクレジットを残してもらえると嬉しいです。
+          自分のワークフロー用にフィールド追加・チップ候補差し替えなど、ご自由にどうぞ。
+        </div>
+      </details>
+    </section>
+
+    <footer class="page-foot">
+      <span>KITAcore / Manual — 026</span>
+      <span>© 2026 / Less, but better.</span>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+// ===== Active section highlight on scroll =====
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a');
+function onScroll(){
+  const top = window.scrollY + 80;
+  let current = sections[0].id;
+  sections.forEach(s=>{ if(s.offsetTop <= top) current = s.id; });
+  navLinks.forEach(a=>{
+    a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+  });
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+// ===== Mobile nav toggle =====
+const navEl = document.getElementById('nav');
+const toggleBtn = navEl.querySelector('.nav-toggle');
+toggleBtn.addEventListener('click', ()=>{
+  navEl.classList.toggle('open');
+  toggleBtn.setAttribute('aria-expanded', navEl.classList.contains('open'));
+});
+// Close mobile nav on link tap
+navLinks.forEach(a=>a.addEventListener('click', ()=>{
+  if(window.innerWidth <= 900) navEl.classList.remove('open');
+}));
+</script>
+</body>
+</html>
