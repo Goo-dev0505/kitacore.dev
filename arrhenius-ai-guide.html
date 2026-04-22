@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アレニウス解析 × AI 活用ガイド — KITAcore</title>
+<meta name="description" content="Arrhenius Analyzerで出た数値をAIに投げて解釈・報告書化するプロンプトテンプレート集。AF計算結果の解釈・Ea推定診断・試験設計相談・報告書生成の4テンプレート。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--or:#FF4400;--bk:#111111;--wh:#F5F4F0;--dk:#1A1A1A;--gy:#E0DED8;--mu:#888884;--bd:#D0CEC8;--bg2:#DDDBD4;--fw:'Bebas Neue',Impact,sans-serif;--fc:'Barlow Condensed',sans-serif;--fm:'IBM Plex Mono',monospace;--fb:'Noto Sans JP',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--wh);color:var(--bk);font-size:14px;line-height:1.75;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--or)}
+body::after{content:'';position:fixed;inset:0;z-index:8000;pointer-events:none;opacity:.028;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;animation:grain .14s steps(1) infinite}
+@keyframes grain{0%{background-position:0 0}20%{background-position:-40px 30px}40%{background-position:30px -20px}60%{background-position:-50px 50px}80%{background-position:20px -40px}100%{background-position:-30px 10px}}
+#prog{position:fixed;top:0;left:0;z-index:500;height:3px;width:0;background:var(--or);transition:width .1s linear}
+header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;background:var(--wh);}
+.brand{font-family:var(--fw);font-size:24px;letter-spacing:.08em}.brand em{font-style:normal;color:var(--or)}
+.nav-r{display:flex;align-items:center;gap:16px}
+.nav-back{font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--mu);text-decoration:none;transition:color .2s}
+.nav-back:hover{color:var(--or)}
+.nav-tool{font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--bk);border:1px solid var(--bk);padding:7px 16px;text-decoration:none;transition:all .2s}
+.nav-tool:hover{background:var(--or);border-color:var(--or)}
+.wrap{max-width:960px;margin:0 auto;padding:0 40px}
+
+/* Hero */
+.hero{background:var(--dk);color:var(--wh);padding:64px 0;border-bottom:2px solid #000;position:relative;overflow:hidden}
+.hero::before{content:'PROMPT';position:absolute;right:-10px;bottom:-20px;font-family:var(--fw);font-size:clamp(80px,16vw,180px);color:rgba(255,255,255,.04);letter-spacing:.04em;line-height:1;user-select:none;pointer-events:none}
+.hero-ey{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.32em;text-transform:uppercase;margin-bottom:16px;display:block}
+.hero-h1{font-family:var(--fw);font-size:clamp(40px,8vw,88px);line-height:.92;letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px}
+.hero-h1 .or{color:var(--or)}
+.hero-sub{font-family:var(--fc);font-size:17px;color:#666;max-width:520px;line-height:1.8;margin-bottom:32px}
+.flow-strip{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-bottom:0}
+.fs{background:#1E1E1E;border:1px solid #2A2A2A;padding:12px 16px;flex:1;min-width:120px}
+.fs-num{font-family:var(--fm);font-size:9px;color:var(--or);letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+.fs-txt{font-family:var(--fc);font-size:14px;font-weight:600;color:var(--wh)}
+.fs-arr{font-family:var(--fm);font-size:16px;color:#333;padding:0 6px;flex-shrink:0}
+
+/* Sections */
+.sec{padding:56px 0;border-bottom:2px solid var(--bk)}
+.sec:last-of-type{border-bottom:none}
+.sec-meta{display:flex;align-items:baseline;gap:12px;margin-bottom:24px}
+.sec-id{font-family:var(--fw);font-size:52px;color:var(--or);line-height:1}
+.sec-info{}
+.sec-label-sm{font-family:var(--fm);font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.2em;margin-bottom:4px}
+.sec-title{font-family:var(--fc);font-size:26px;font-weight:700;line-height:1.2}
+.sec-when{font-size:13px;color:var(--mu);margin-bottom:20px;padding:10px 14px;border-left:3px solid var(--or);background:var(--gy);font-family:var(--fm);font-size:11px;letter-spacing:.02em}
+
+/* Prompt block */
+.prompt-wrap{background:#fff;border:2px solid var(--bk);overflow:hidden}
+.prompt-bar{background:var(--bk);padding:10px 18px;display:flex;align-items:center;justify-content:space-between}
+.prompt-bar-label{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.2em;text-transform:uppercase}
+.copy-btn{background:var(--or);color:var(--bk);border:none;padding:5px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:opacity .15s;font-weight:600}
+.copy-btn:hover{opacity:.8}
+.copy-btn.ok{background:#2d6a4f;color:#fff}
+.prompt-body{padding:22px 24px;font-family:var(--fm);font-size:12.5px;line-height:2;color:#333;white-space:pre-wrap;word-break:break-word;background:#FAFAF8}
+.prompt-body mark{background:#FFF3CC;color:var(--bk);padding:0 3px;font-style:normal}
+
+/* Tip */
+.tip{margin-top:14px;border-left:3px solid var(--or);padding:10px 14px;background:var(--gy);font-size:12px;color:#444;line-height:1.7;font-family:var(--fm)}
+
+/* Checklist */
+.checklist{list-style:none;background:#fff;border:2px solid var(--bk)}
+.cl-item{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-bottom:1px solid var(--bd)}
+.cl-item:last-child{border-bottom:none}
+.cl-box{width:20px;height:20px;border:2px solid var(--bd);flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cl-box.on{background:var(--or);border-color:var(--or)}
+.cl-box.on::after{content:'✓';color:#fff;font-size:12px;font-family:var(--fm);font-weight:600}
+.cl-main{font-family:var(--fc);font-size:15px;font-weight:600;line-height:1.3;margin-bottom:3px}
+.cl-sub{font-size:12px;color:var(--mu);line-height:1.6;font-family:var(--fm)}
+
+/* Notice */
+.notice{background:var(--dk);color:var(--wh);padding:28px 32px;border-top:2px solid var(--or)}
+.notice-head{font-family:var(--fw);font-size:20px;letter-spacing:.06em;color:var(--or);margin-bottom:8px}
+.notice-body{font-size:13px;color:#777;line-height:1.8}
+
+footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;flex-wrap:wrap;gap:8px}
+.foot-brand{color:var(--wh)}
+.foot-link{color:var(--or);text-decoration:none}.foot-link:hover{text-decoration:underline}
+
+@media(max-width:640px){header{padding:0 16px}.wrap{padding:0 16px}.hero{padding:40px 0}.flow-strip{flex-direction:column}.fs{width:100%}.fs-arr{transform:rotate(90deg)}.sec-id{font-size:36px}footer{padding:16px}}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<header>
+  <div class="brand">KITA<em>core</em></div>
+  <div class="nav-r">
+    <a class="nav-tool" href="arrhenius-analyzer.html">Analyzer を開く →</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="hero-ey">■ KITACORE / ARTICLE SUPPLEMENT · #15</span>
+    <h1 class="hero-h1">アレニウス解析<br><span class="or">× AI 活用ガイド</span></h1>
+    <p class="hero-sub">Arrhenius Analyzerで出た数値をそのままAIに投げる。解釈・診断・試験設計・報告書化を4テンプレートで完結させる。</p>
+    <div class="flow-strip">
+      <div class="fs"><div class="fs-num">Step 01</div><div class="fs-txt">Analyzerで計算する</div></div>
+      <div class="fs-arr">→</div>
+      <div class="fs"><div class="fs-num">Step 02</div><div class="fs-txt">[ ] に数値を貼る</div></div>
+      <div class="fs-arr">→</div>
+      <div class="fs"><div class="fs-num">Step 03</div><div class="fs-txt">AIに投げる</div></div>
+      <div class="fs-arr">→</div>
+      <div class="fs"><div class="fs-num">Step 04</div><div class="fs-txt">解釈・文章化・設計に活用</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Prompt A -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-meta">
+      <div class="sec-id">A</div>
+      <div class="sec-info">
+        <div class="sec-label-sm">Prompt Template</div>
+        <div class="sec-title">AF計算結果の解釈</div>
+      </div>
+    </div>
+    <div class="sec-when">💡 AF値が出たあと「この数字は妥当か？」「報告書でどう説明すべきか？」を確認したいとき。Ea感度（AF範囲）もセットで貼ると精度が上がる。</div>
+    <div class="prompt-wrap" id="block-a">
+      <div class="prompt-bar">
+        <span class="prompt-bar-label">Prompt A — AF解釈</span>
+        <button class="copy-btn" onclick="copyPrompt('text-a',this)">Copy</button>
+      </div>
+      <div class="prompt-body" id="text-a">以下はアレニウスモデルによる加速係数（AF）の計算結果です。
+信頼性工学の観点から、この結果を解釈してください。
+
+【入力条件】
+- 活性化エネルギー Ea : [  ] eV
+- 使用温度 T_use     : [  ] ℃
+- 試験温度 T_test    : [  ] ℃
+- 試験時間           : [  ] h
+
+【計算結果】
+- 加速係数 AF        : [  ]
+- 実使用換算寿命     : [  ] h（= [  ] 年）
+- Ea ± 0.2 eV の AF範囲 : [  ] 〜 [  ]
+
+【対象デバイス・材料】（わかれば記入）
+- [  ]
+
+以下の観点で回答してください：
+1. このAF値は信頼性試験として妥当な範囲か（一般的に AF = 10〜1000 が目安）
+2. Ea の感度幅（AF範囲）から、Ea推定の精度がどの程度重要か
+3. この試験条件で見落としやすいリスク（モード切替・複合加速因子など）
+4. 報告書に記載すべき前提条件と留意点を箇条書きで</div>
+    </div>
+    <div class="tip">Ea感度（AF範囲）は必ず貼ること。Ea ±0.2 eV でAFが数倍〜数十倍変わる。この幅をAIに渡すと「Ea推定の不確かさをどう報告書に書くか」まで提案してもらえる。</div>
+  </div>
+</section>
+
+<!-- Prompt B -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-meta">
+      <div class="sec-id">B</div>
+      <div class="sec-info">
+        <div class="sec-label-sm">Prompt Template</div>
+        <div class="sec-title">Ea推定結果の診断</div>
+      </div>
+    </div>
+    <div class="sec-when">🔬 アレニウスプロットから Ea を推定したあと「この値は物理的に正しいか？」「R²が低い原因は？」を診断したいとき。測定データごと貼ると精度の高い回答が得られる。</div>
+    <div class="prompt-wrap" id="block-b">
+      <div class="prompt-bar">
+        <span class="prompt-bar-label">Prompt B — Ea診断</span>
+        <button class="copy-btn" onclick="copyPrompt('text-b',this)">Copy</button>
+      </div>
+      <div class="prompt-body" id="text-b">以下はアレニウスプロットの線形回帰によって推定した活性化エネルギー（Ea）の結果です。
+信頼性工学・材料工学の観点から診断してください。
+
+【測定データ】
+| 温度 (℃) | MTTF (h) |
+|----------|----------|
+| [  ]     | [  ]     |
+| [  ]     | [  ]     |
+| [  ]     | [  ]     |
+
+【回帰結果】
+- 推定 Ea  : [  ] eV
+- 決定係数 R² : [  ]
+- データ点数  : [  ] 点
+
+【対象材料・故障モードの想定】（わかれば記入）
+- [  ]
+
+以下の観点で回答してください：
+1. 推定 Ea は文献値と比較して妥当か（対応する故障モードの典型域を示してください）
+2. R² の値から、データの線形性をどう評価するか
+3. R² が低い場合（< 0.95）、考えられる原因とその確認方法
+4. この温度範囲でモードの切り替わりが起きていないかの判断基準
+5. 次に取るべきアクション（追加試験・物理観察など）を優先順で</div>
+    </div>
+    <div class="tip">R² &lt; 0.95 のときは要注意。Analyzerのグラフで折れ曲がりがないか目視確認してからAIに渡すこと。非線形なら温度域を分けて再解析が必要。</div>
+  </div>
+</section>
+
+<!-- Prompt C -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-meta">
+      <div class="sec-id">C</div>
+      <div class="sec-info">
+        <div class="sec-label-sm">Prompt Template</div>
+        <div class="sec-title">試験設計の相談</div>
+      </div>
+    </div>
+    <div class="sec-when">📐 「何℃で何時間の試験を組めばいいか」をまだ決めていない段階で使う。Ea が不明でも「未知」と書いて投げると、保守的な設定の提案が得られる。</div>
+    <div class="prompt-wrap" id="block-c">
+      <div class="prompt-bar">
+        <span class="prompt-bar-label">Prompt C — 試験設計</span>
+        <button class="copy-btn" onclick="copyPrompt('text-c',this)">Copy</button>
+      </div>
+      <div class="prompt-body" id="text-c">信頼性加速試験の設計を検討しています。
+アレニウスモデルを前提に、適切な試験条件を提案してください。
+
+【製品・材料情報】
+- 対象デバイス / 材料 : [  ]
+- 想定故障モード      : [  ]（不明な場合は「未特定」と記入）
+- 参考 Ea             : [  ] eV（不明な場合は「未知」と記入）
+
+【要求寿命】
+- 実使用温度   : [  ] ℃
+- 目標寿命     : [  ] h（= [  ] 年）
+
+【制約条件】
+- 試験に使える最大時間 : [  ] h
+- 使用できる最高温度   : [  ] ℃（材料の Tg・相変態温度など）
+
+以下を提案してください：
+1. 推奨する試験温度（複数点）とその根拠
+2. 各温度での推定試験時間（目標AFを達成するために必要）
+3. この試験設計で注意すべき温度上限のリスク
+4. Ea が未知の場合の推奨アプローチ（文献値の使い方・保守的な設定など）</div>
+    </div>
+    <div class="tip">「使用できる最高温度」は必ず入力する。Tgや相変態温度を超えると故障モードが変わりアレニウスが成立しなくなる。材料のデータシートで確認してから記入すること。</div>
+  </div>
+</section>
+
+<!-- Prompt D -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-meta">
+      <div class="sec-id">D</div>
+      <div class="sec-info">
+        <div class="sec-label-sm">Prompt Template</div>
+        <div class="sec-title">報告書の文章生成</div>
+      </div>
+    </div>
+    <div class="sec-when">📄 解析が完了したあと、報告書の「解析方法」「結果と考察」の下書きをAIに生成させたいとき。SEM観察結果など物理的根拠もあれば一緒に貼ると質が上がる。</div>
+    <div class="prompt-wrap" id="block-d">
+      <div class="prompt-bar">
+        <span class="prompt-bar-label">Prompt D — 報告書生成</span>
+        <button class="copy-btn" onclick="copyPrompt('text-d',this)">Copy</button>
+      </div>
+      <div class="prompt-body" id="text-d">以下の信頼性試験データと解析結果をもとに、社内報告書の「解析方法」「結果と考察」の文章を生成してください。
+文体は技術報告書として適切な日本語で、箇条書きと本文を組み合わせた構成にしてください。
+
+【試験概要】
+- 対象           : [  ]
+- 試験規格       : [  ]（例: JEDEC JESD22-A108, IEC 60068-2-2 など）
+- 試験温度・時間 : [  ]℃ × [  ]h、[  ]℃ × [  ]h、[  ]℃ × [  ]h
+
+【解析結果】
+- 推定 Ea  : [  ] eV
+- R²       : [  ]
+- 加速係数 AF（使用温度 [  ]℃ 換算）: [  ]
+- 推定寿命 : [  ] h（= 約 [  ] 年）
+
+【物理的根拠・観察結果】（あれば記入）
+- [  ]
+
+【注記事項】（あれば記入）
+- [  ]
+
+出力に含めてほしい内容：
+1. アレニウスモデルの適用根拠と前提条件の明記
+2. 推定 Ea の物理的解釈（対応故障モードへの言及）
+3. 寿命推定値の信頼性に関する留意事項（R²・Ea感度・モード前提）
+4. 次フェーズの推奨アクション（追加試験・観察など）</div>
+    </div>
+    <div class="tip">AIの出力は必ず技術者がレビューすること。規格番号や文献値の引用が含まれる場合は原典で確認する。AIは学習データの誤りをそのまま引き継ぐことがある。</div>
+  </div>
+</section>
+
+<!-- Checklist -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-meta">
+      <div class="sec-id" style="color:var(--bk)">—</div>
+      <div class="sec-info">
+        <div class="sec-label-sm">Before You Submit</div>
+        <div class="sec-title">AIに投げる前のチェックリスト</div>
+      </div>
+    </div>
+    <ul class="checklist">
+      <li class="cl-item"><div class="cl-box" onclick="toggleCl(this)"></div><div><div class="cl-main">Ea の出所を明確にしているか</div><div class="cl-sub">実測値 / 文献値 / 仮定 の区別をプロンプトに書く。出所が違うと解釈が変わる。</div></div></li>
+      <li class="cl-item"><div class="cl-box" onclick="toggleCl(this)"></div><div><div class="cl-main">温度の定義を統一しているか</div><div class="cl-sub">槽内設定温度 / デバイス表面温度 / ジャンクション温度。定義がズレるとAFが実態と合わない。</div></div></li>
+      <li class="cl-item"><div class="cl-box" onclick="toggleCl(this)"></div><div><div class="cl-main">MTTF の定義を明記しているか</div><div class="cl-sub">中央値 / B10 / B50 など。定義が不明だとAIの解釈に幅が出る。</div></div></li>
+      <li class="cl-item"><div class="cl-box" onclick="toggleCl(this)"></div><div><div class="cl-main">対象温度域でモード切替がないか確認したか</div><div class="cl-sub">材料のTg・相変態温度・電荷移動モードの変化点を把握してから解析する。</div></div></li>
+      <li class="cl-item"><div class="cl-box" onclick="toggleCl(this)"></div><div><div class="cl-main">R² の値を含めているか</div><div class="cl-sub">解釈の信頼性判断に必須。R² を省くとAIが「良い結果」と誤認する場合がある。</div></div></li>
+      <li class="cl-item"><div class="cl-box" onclick="toggleCl(this)"></div><div><div class="cl-main">加速因子が「温度のみ」か確認したか</div><div class="cl-sub">湿度・電圧・電流が絡む場合はアレニウス単独モデルでは不十分。複合モデルを検討する。</div></div></li>
+    </ul>
+  </div>
+</section>
+
+<div class="notice">
+  <div class="wrap">
+    <div class="notice-head">DISCLAIMER</div>
+    <div class="notice-body">
+      AIの出力は「解釈の補助」であり、最終判断は技術者が行ってください。AIは統計的なパターンに基づいて回答するため、特定製品固有の知見は持ちません。規格・文献の引用が含まれる場合は必ず原典で確認してください。本ツールおよびAI解析の結果を製品保証の根拠として単独で使用することは推奨しません。
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="foot-brand">KITAcore ®</span>
+  <span><a class="foot-link" href="arrhenius-analyzer.html">← Arrhenius Analyzer</a></span>
+</footer>
+
+<script>
+const bar=document.getElementById('prog');
+window.addEventListener('scroll',()=>{bar.style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';},{passive:true});
+
+async function copyPrompt(id,btn){
+  const text=document.getElementById(id).innerText;
+  try{
+    await navigator.clipboard.writeText(text);
+    btn.classList.add('ok');btn.textContent='Copied!';
+    setTimeout(()=>{btn.classList.remove('ok');btn.textContent='Copy';},2000);
+  }catch{
+    btn.textContent='Error';setTimeout(()=>{btn.textContent='Copy';},2000);
+  }
+}
+
+function toggleCl(el){el.classList.toggle('on');}
+</script>
+</body>
+</html>
