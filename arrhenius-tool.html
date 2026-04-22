@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arrhenius Analyzer — KITAcore</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:#E9E9E9; --surface:#FFFFFF; --surface-v:#F4F4F2;
+    --text:#111111; --text-sub:#333333; --muted:#6B6B6B;
+    --border:#DDDDDD; --accent:#000000; --green:#2d6a4f;
+    --font-d:'Inter',sans-serif;
+    --font-b:'Noto Sans JP','Hiragino Sans',sans-serif;
+    --font-m:'JetBrains Mono',monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:14px;line-height:1.8;letter-spacing:.02em;min-height:100vh;}
+
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;gap:12px;}
+  .h-eye{font-family:var(--font-m);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;}
+  .h-title{font-family:var(--font-d);font-size:18px;font-weight:700;}
+  .h-k{margin-left:auto;font-family:var(--font-m);font-size:11px;color:var(--muted);}
+
+  .container{max-width:960px;margin:0 auto;padding:32px 24px;}
+
+  .tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:32px;overflow-x:auto;}
+  .tab-btn{background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;padding:10px 20px;font-family:var(--font-m);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;white-space:nowrap;transition:color 150ms,border-color 150ms;display:flex;align-items:center;gap:7px;}
+  .tab-btn:hover{color:var(--text);}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500;}
+  .step-badge{background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:1px 6px;font-size:9px;color:var(--muted);}
+  .tab-btn.active .step-badge{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px 32px;margin-bottom:24px;}
+  .card-title{font-family:var(--font-m);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding-bottom:14px;margin-bottom:20px;border-bottom:1px solid var(--border);}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+  .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+  .field label{display:block;font-family:var(--font-m);font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+  .field input{width:100%;background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:9px 12px;font-family:var(--font-m);font-size:14px;color:var(--text);outline:none;transition:border-color 150ms;}
+  .field input:focus{border-color:var(--accent);}
+  .field .hint{font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:4px;}
+
+  .preset-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;align-items:center;}
+  .preset-label{font-family:var(--font-m);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .preset-btn{background:none;border:1px solid var(--border);border-radius:2px;padding:4px 10px;font-family:var(--font-m);font-size:11px;color:var(--text-sub);cursor:pointer;transition:background 150ms;}
+  .preset-btn:hover{background:var(--surface-v);}
+
+  .btn-primary{background:var(--accent);color:#fff;border:none;border-radius:2px;padding:10px 22px;font-family:var(--font-m);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity 150ms;}
+  .btn-primary:hover{opacity:.8;}
+  .btn-secondary{background:none;color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:8px 16px;font-family:var(--font-m);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background 150ms;}
+  .btn-secondary:hover{background:var(--surface-v);}
+
+  .send-btn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;border-radius:2px;padding:10px 20px;font-family:var(--font-m);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity 150ms;}
+  .send-btn:hover{opacity:.85;}
+
+  .result-panel{background:var(--surface-v);border:1px solid var(--border);border-radius:4px;padding:24px;margin-top:24px;}
+  .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .r-label{font-family:var(--font-m);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  .r-value{font-family:var(--font-m);font-size:28px;font-weight:500;line-height:1.2;}
+  .r-unit{font-family:var(--font-m);font-size:11px;color:var(--muted);}
+  .result-divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+  .result-note{font-size:12px;color:var(--muted);line-height:1.7;}
+
+  .ea-badge{display:none;align-items:center;gap:8px;background:#f0fff8;border:1px solid #a8d8b9;border-radius:2px;padding:8px 14px;margin-bottom:20px;font-family:var(--font-m);font-size:12px;color:var(--green);}
+  .ea-badge.visible{display:flex;}
+
+  .info-box{border-left:3px solid var(--accent);padding:10px 14px;background:var(--surface-v);margin-top:16px;font-size:12px;color:var(--text-sub);line-height:1.7;border-radius:0 2px 2px 0;}
+  .warn-box{border-left:3px solid #c0392b;padding:10px 14px;background:#fff5f5;margin-top:16px;font-size:12px;color:#7b2121;line-height:1.7;border-radius:0 2px 2px 0;display:none;}
+
+  .data-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+  .data-table th{background:var(--surface-v);font-family:var(--font-m);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+  .data-table td{padding:6px 14px;border-bottom:1px solid var(--border);}
+  .data-table input{width:100%;background:none;border:none;border-bottom:1px solid transparent;font-family:var(--font-m);font-size:13px;color:var(--text);padding:4px 0;outline:none;transition:border-color 150ms;}
+  .data-table input:focus{border-bottom-color:var(--accent);}
+  .del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color 150ms;}
+  .del-btn:hover{color:#c0392b;}
+
+  .ea-result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+
+  .chart-wrap{background:var(--bg);border:1px solid var(--border);border-radius:4px;margin-top:24px;overflow:hidden;display:none;}
+  .chart-toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--surface-v);border-bottom:1px solid var(--border);}
+  .chart-toolbar-label{font-family:var(--font-m);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+  .chart-actions{display:flex;gap:6px;}
+  .chart-btn{background:none;border:1px solid var(--border);border-radius:2px;padding:4px 12px;font-family:var(--font-m);font-size:10px;color:var(--text-sub);cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:background 150ms;}
+  .chart-btn:hover{background:var(--surface);}
+  .chart-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .chart-btn.primary:hover{opacity:.8;}
+  .chart-btn.success{background:var(--green);color:#fff;border-color:var(--green);}
+  .chart-canvas-wrap{padding:16px;height:340px;}
+
+  .ref-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .ref-table th{background:var(--surface-v);font-family:var(--font-m);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;}
+  .ref-table td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--text-sub);}
+  .ref-table td.ea-val{font-family:var(--font-m);font-weight:500;color:var(--text);}
+  .ref-table tr:hover td{background:var(--surface-v);}
+  .ref-table tr.hl td{background:#f0fff8;}
+
+  .flow-wrap{display:flex;align-items:stretch;margin:20px 0;}
+  .flow-step{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 18px;}
+  .flow-step-num{font-family:var(--font-m);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+  .flow-step-name{font-family:var(--font-d);font-size:13px;font-weight:600;margin-bottom:4px;}
+  .flow-step-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+  .flow-arrow{display:flex;align-items:center;padding:0 8px;color:var(--border);font-size:20px;}
+
+  .notice-card{border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+  .notice-head{background:var(--surface-v);padding:9px 16px;font-family:var(--font-m);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);}
+  .notice-body{padding:12px 16px;font-size:13px;color:var(--text-sub);line-height:1.8;}
+
+  .row-actions{display:flex;gap:8px;align-items:center;margin-bottom:24px;}
+
+  @media(max-width:680px){
+    .form-grid,.form-grid-2{grid-template-columns:1fr;}
+    .result-grid,.ea-result-grid{grid-template-columns:1fr 1fr;}
+    .flow-wrap{flex-direction:column;}
+    .flow-arrow{transform:rotate(90deg);justify-content:center;padding:4px 0;}
+    .container{padding:16px;}
+    header{padding:12px 16px;}
+    .card{padding:20px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="h-eye">KITAcore / Tool</span>
+  <span class="h-title">Arrhenius Analyzer</span>
+  <span class="h-k">k = 8.617 × 10⁻⁵ eV/K</span>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('guide',this)"><span class="step-badge">01</span>使い方 &amp; 注意点</button>
+    <button class="tab-btn" onclick="switchTab('ea',this)"><span class="step-badge">02</span>Ea 推定 &amp; プロット</button>
+    <button class="tab-btn" onclick="switchTab('af',this)"><span class="step-badge">03</span>AF 計算機</button>
+    <button class="tab-btn" onclick="switchTab('ref',this)"><span class="step-badge">04</span>Ea 参照テーブル</button>
+  </div>
+
+  <!-- 01: 使い方 -->
+  <div id="tab-guide" class="tab-panel active">
+    <div class="card">
+      <div class="card-title">Overview — このツールの使い方</div>
+      <p style="font-size:13px;color:var(--text-sub);line-height:1.8;margin-bottom:20px;">
+        アレニウスモデルによる加速試験の解析を、以下の順序で進めてください。<br>
+        <strong>Ea 推定 → AF 計算</strong> の順に使うと、実測データに基づいた精度の高い寿命推定ができます。
+      </p>
+      <div class="flow-wrap">
+        <div class="flow-step">
+          <div class="flow-step-num">Step 01</div>
+          <div class="flow-step-name">Ea 推定 &amp; プロット</div>
+          <div class="flow-step-desc">複数温度のMTTFを入力 → プロット描画 → 線形回帰でEaを算出</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">Step 02</div>
+          <div class="flow-step-name">AF計算機へ送る</div>
+          <div class="flow-step-desc">推定EaをワンクリックでAF計算機に引き渡し</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">Step 03</div>
+          <div class="flow-step-name">AF 計算機</div>
+          <div class="flow-step-desc">使用温度・試験温度を入力 → AF・換算寿命・Ea感度を確認</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">参考</div>
+          <div class="flow-step-name">Ea 参照テーブル</div>
+          <div class="flow-step-desc">推定EaをEaテーブルと照合 → 故障モードの物理的解釈に使う</div>
+        </div>
+      </div>
+      <div class="info-box">
+        <strong>Eaが文献値のみの場合：</strong> Ea推定（Step 01）をスキップしてAF計算機に直接入力できます。ただし感度確認（±0.2 eV）は必ず実施してください。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Model Limitations — アレニウスモデルの注意点</div>
+      <div style="display:grid;gap:10px;">
+        <div class="notice-card"><div class="notice-head">⚠ 前提条件：単一の支配的故障モードが温度範囲全体で一定であること</div><div class="notice-body">複数のモードが並存するとEaが平均化・曖昧化し、AFの精度が大きく低下します。モードが不明な場合は先に物理観察（SEM断面等）を行ってください。</div></div>
+        <div class="notice-card"><div class="notice-head">⚠ 温度を上げるとモードが切り替わる場合がある</div><div class="notice-body">Tg（ガラス転移点）・相変態温度・電荷移動モードの切替点を超えると成立しなくなります。試験温度の上限は材料データシートで必ず確認してください。<br><span style="font-family:var(--font-m);font-size:11px;color:var(--muted);">例：ポリマー系はTg超え ／ Cu配線は界面拡散→バルク拡散の切替点</span></div></div>
+        <div class="notice-card"><div class="notice-head">⚠ 加速因子は「温度のみ」を前提としている</div><div class="notice-body">湿度・電圧・電流が関与する場合は過小評価になる可能性があります。腐食系→Peckモデル、TDDB→E-model / 1/E-modelの併用を検討してください。</div></div>
+        <div class="notice-card"><div class="notice-head">⚠ Ea は計算結果に非常に敏感</div><div class="notice-body">Ea を ±0.2 eV 変えるだけでAFが数倍〜数十倍変化します。文献値を使う場合は必ず感度確認を行い、AF範囲を報告書に明示してください。</div></div>
+        <div class="notice-card"><div class="notice-head">⚠ 温度の定義を統一する</div><div class="notice-body">「槽内設定温度」「デバイス表面温度」「ジャンクション温度」は異なります。試験と使用で定義がズレるとAFが実態と合わなくなります。</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Tool Notes — ツール固有の注意点</div>
+      <div style="display:grid;gap:10px;">
+        <div class="notice-card"><div class="notice-head">データはリロードで消えます</div><div class="notice-body">入力データと計算結果はページを閉じると消えます。グラフのダウンロード・スクリーンショットで保存してください。</div></div>
+        <div class="notice-card"><div class="notice-head">「Copy Image」はHTTPS / localhost 環境でのみ動作します</div><div class="notice-body">Clipboard APIはセキュアコンテキストが必要です。HTTP環境では自動的にダウンロードにフォールバックします。</div></div>
+        <div class="notice-card"><div class="notice-head">Ea 推定の最低データ点数は3点</div><div class="notice-body">線形回帰には最低3点必要です。精度を上げるには4〜5点以上を推奨します。点数が少ないほどR²の信頼性が下がります。</div></div>
+        <div class="notice-card"><div class="notice-head">本ツールの結果は補助的なものです</div><div class="notice-body">最終的な寿命予測・製品保証の根拠には、専用統計ソフトとの照合と技術者によるレビューを行ってください。</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02: Ea推定 -->
+  <div id="tab-ea" class="tab-panel">
+    <div class="card">
+      <div class="card-title">Ea Estimation — アレニウスプロット回帰</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">複数温度条件のMTTFを入力 → 「Ea を推定 &amp; 描画」を押してください。最低3点が必要です。</p>
+
+      <table class="data-table">
+        <thead><tr><th>#</th><th>温度 (℃)</th><th>MTTF (h)</th><th>1/T × 10³ (K⁻¹)</th><th>ln(MTTF)</th><th></th></tr></thead>
+        <tbody id="mttf-body"></tbody>
+      </table>
+
+      <div class="row-actions">
+        <button class="btn-secondary" onclick="addRow()">＋ 行を追加</button>
+        <button class="btn-primary"   onclick="runRegression()">▶ Ea を推定 &amp; 描画</button>
+      </div>
+
+      <div id="ea-warn" class="warn-box"></div>
+
+      <div class="result-panel" id="ea-result-panel" style="display:none;">
+        <div class="ea-result-grid">
+          <div><div class="r-label">推定 Ea</div><div class="r-value" id="ea-est">—</div><div class="r-unit">eV</div></div>
+          <div><div class="r-label">傾き（slope）</div><div class="r-value" id="ea-slope" style="font-size:20px">—</div><div class="r-unit">K</div></div>
+          <div><div class="r-label">R²（決定係数）</div><div class="r-value" id="ea-r2">—</div><div class="r-unit">1.0 が完全線形</div></div>
+          <div><div class="r-label">データ点数</div><div class="r-value" id="ea-n">—</div><div class="r-unit">points</div></div>
+        </div>
+        <hr class="result-divider">
+        <div class="result-note" id="ea-interp"></div>
+        <hr class="result-divider">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <span style="font-size:12px;color:var(--muted);">このEaをAF計算機に引き渡す →</span>
+          <button class="send-btn" onclick="sendEaToAF()">→ この Ea で AF を計算する</button>
+        </div>
+      </div>
+
+      <div class="chart-wrap" id="chart-wrap">
+        <div class="chart-toolbar">
+          <span class="chart-toolbar-label">Arrhenius Plot — 1/T vs ln(MTTF)</span>
+          <div class="chart-actions">
+            <button class="chart-btn" onclick="downloadChart()">↓ Download PNG</button>
+            <button class="chart-btn primary" id="copy-chart-btn" onclick="copyChart()">⎘ Copy Image</button>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="arrhenius-chart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03: AF計算機 -->
+  <div id="tab-af" class="tab-panel">
+    <div class="card">
+      <div class="card-title">Acceleration Factor — 加速係数の計算</div>
+
+      <div class="ea-badge" id="ea-badge">
+        <span>✓</span>
+        <span id="ea-badge-text">Ea推定タブから Ea を引き継ぎました</span>
+        <button onclick="clearEaBadge()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--green);font-family:var(--font-m);font-size:11px;">× 消す</button>
+      </div>
+
+      <div class="preset-row">
+        <span class="preset-label">Ea プリセット</span>
+        <button class="preset-btn" onclick="setEa(0.3)">0.30 eV — 金属腐食</button>
+        <button class="preset-btn" onclick="setEa(0.5)">0.50 eV — 半導体一般</button>
+        <button class="preset-btn" onclick="setEa(0.7)">0.70 eV — 酸化・IM</button>
+        <button class="preset-btn" onclick="setEa(0.9)">0.90 eV — TDDB</button>
+        <button class="preset-btn" onclick="setEa(1.1)">1.10 eV — Si拡散</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field"><label>Ea — 活性化エネルギー (eV)</label><input type="number" id="ea-input" value="0.7" step="0.01" min="0.1" max="2.0" oninput="calcAF()"><div class="hint">典型値: 0.3 – 1.2 eV</div></div>
+        <div class="field"><label>T<sub>use</sub> — 使用温度 (℃)</label><input type="number" id="t-use" value="25" step="1" oninput="calcAF()"><div class="hint">実使用環境の温度</div></div>
+        <div class="field"><label>T<sub>test</sub> — 試験温度 (℃)</label><input type="number" id="t-test" value="125" step="1" oninput="calcAF()"><div class="hint">加速試験の温度</div></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="field"><label>試験時間 (h)</label><input type="number" id="test-hours" value="1000" step="100" min="1" oninput="calcAF()"><div class="hint">換算寿命を算出</div></div>
+        <div class="field"><label>Ea 感度確認幅 (± eV)</label><input type="number" id="ea-delta" value="0.2" step="0.05" min="0" max="0.5" oninput="calcAF()"><div class="hint">Ea不確かさのAFへの影響</div></div>
+      </div>
+
+      <div class="result-panel">
+        <div class="result-grid">
+          <div><div class="r-label">Acceleration Factor</div><div class="r-value" id="af-val">—</div><div class="r-unit">AF（無次元）</div></div>
+          <div><div class="r-label">換算寿命（実使用）</div><div class="r-value" id="af-life">—</div><div class="r-unit" id="af-life-unit">h</div></div>
+          <div><div class="r-label">AF 範囲（Ea ± δ）</div><div class="r-value" id="af-range">—</div><div class="r-unit">low — high</div></div>
+        </div>
+        <hr class="result-divider">
+        <div class="result-note" id="af-note">数値を入力すると自動計算されます。</div>
+      </div>
+
+      <div class="info-box">
+        <strong>計算式：</strong> AF = exp[ Ea/k × (1/T<sub>use</sub> − 1/T<sub>test</sub>) ] | T(K) = T(℃) + 273.15<br>
+        Ea の <strong>±0.2 eV でAFが数倍〜数十倍変わる</strong>。感度幅を必ず確認して報告書に明示すること。
+      </div>
+    </div>
+  </div>
+
+  <!-- 04: Ea参照テーブル -->
+  <div id="tab-ref" class="tab-panel">
+    <div class="card">
+      <div class="card-title">Ea Reference — 故障モード別 活性化エネルギー目安</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">推定した Ea を入力すると対応する故障モードをハイライトします。文献値は JEDEC / JEP122B / IEC を参考としています。</p>
+      <div class="field" style="max-width:240px;margin-bottom:24px;">
+        <label>推定 Ea を入力して絞り込む (eV)</label>
+        <input type="number" id="ref-ea-input" step="0.01" placeholder="例: 0.72" oninput="highlightRef()">
+      </div>
+      <table class="ref-table">
+        <thead><tr><th>Ea 範囲 (eV)</th><th>故障モード / メカニズム</th><th>材料・デバイス例</th><th>主な適用規格</th></tr></thead>
+        <tbody id="ref-tbody">
+          <tr data-lo="0.1"  data-hi="0.35"><td class="ea-val">0.10 – 0.35</td><td>金属腐食（湿潤環境）<br><span style="font-size:11px;color:var(--muted);">湿度支配的な場合は Peck モデルを併用</span></td><td>Al 配線、ボンドパッド</td><td>JEDEC JESD22-A101</td></tr>
+          <tr data-lo="0.35" data-hi="0.55"><td class="ea-val">0.35 – 0.55</td><td>半導体一般（パッケージ封止劣化）<br>接触抵抗増加</td><td>プラスチックパッケージ IC</td><td>MIL-HDBK-217</td></tr>
+          <tr data-lo="0.55" data-hi="0.75"><td class="ea-val">0.55 – 0.75</td><td>酸化・絶縁膜劣化<br>イオンマイグレーション（IM）</td><td>SiO₂、Au/Ag 配線</td><td>JEP122B, IEC 62380</td></tr>
+          <tr data-lo="0.75" data-hi="1.0" ><td class="ea-val">0.75 – 1.00</td><td>TDDB（Time-Dependent Dielectric Breakdown）<br>エレクトロマイグレーション（Cu 高温）</td><td>ゲート酸化膜、Cu デュアルダマシン</td><td>JEDEC JESD35, JEP122B</td></tr>
+          <tr data-lo="1.0"  data-hi="1.3" ><td class="ea-val">1.00 – 1.30</td><td>Si バルク拡散<br>電荷トラップ（ホットキャリア劣化 HCI）</td><td>Si 基板</td><td>JEDEC JESD28</td></tr>
+          <tr data-lo="1.3"  data-hi="2.0" ><td class="ea-val">1.30 – 2.00</td><td>共有結合切断<br>高温下の相変態・再結晶</td><td>高融点金属、セラミック</td><td>文献依存（個別評価推奨）</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box" style="margin-top:20px;">
+        <strong>注意：</strong> Ea が境界付近（例: 0.74 eV）の場合は隣接する故障モードも検討し、SEM観察などで物理的裏付けを取ることを推奨します。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const k = 8.617e-5;
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setEa(v){ document.getElementById('ea-input').value=v; calcAF(); }
+
+function calcAF(){
+  const Ea=+document.getElementById('ea-input').value;
+  const Tuse=+document.getElementById('t-use').value+273.15;
+  const Ttest=+document.getElementById('t-test').value+273.15;
+  const h=+document.getElementById('test-hours').value;
+  const d=+document.getElementById('ea-delta').value||0;
+  if(!Ea||!Tuse||!Ttest) return;
+  if(Ttest<=Tuse){document.getElementById('af-note').textContent='⚠ 試験温度は使用温度より高く設定してください。';return;}
+  const af=ea=>Math.exp((ea/k)*(1/Tuse-1/Ttest));
+  const A=af(Ea), L=af(Math.max(.01,Ea-d)), H=af(Ea+d);
+  const fmt=v=>v>=10000?v.toExponential(2):v>=1000?v.toFixed(0):v.toFixed(1);
+  document.getElementById('af-val').textContent=fmt(A);
+  if(h>0){
+    const life=A*h;
+    const[ls,lu]=life>=87600?[(life/8760).toFixed(0),'年換算 (h÷8760)']:[life>=100000?life.toExponential(2):life.toFixed(0),'h（実使用換算）'];
+    document.getElementById('af-life').textContent=ls;
+    document.getElementById('af-life-unit').textContent=lu;
+  }
+  document.getElementById('af-range').textContent=d>0?`${fmt(L)} – ${fmt(H)}`:'±δ を入力';
+  document.getElementById('af-note').textContent=
+    `Ea=${Ea}eV、T_use=${(Tuse-273.15).toFixed(1)}℃、T_test=${(Ttest-273.15).toFixed(1)}℃ → AF≈${fmt(A)}`+
+    (d>0?`　Ea±${d}eVの不確かさ → AF=${fmt(L)}〜${fmt(H)}。報告書に明示してください。`:'');
+}
+
+function sendEaToAF(){
+  const ea=parseFloat(document.getElementById('ea-est').textContent);
+  if(isNaN(ea)) return;
+  const afBtn=document.querySelector('.tab-btn:nth-child(3)');
+  switchTab('af',afBtn);
+  document.getElementById('ea-input').value=ea;
+  calcAF();
+  const badge=document.getElementById('ea-badge');
+  document.getElementById('ea-badge-text').textContent=`Ea推定タブから Ea = ${ea.toFixed(3)} eV を引き継ぎました`;
+  badge.classList.add('visible');
+  document.getElementById('tab-af').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function clearEaBadge(){ document.getElementById('ea-badge').classList.remove('visible'); }
+
+const defs=[{t:85,m:5000},{t:105,m:1500},{t:125,m:480}];
+let rid=0;
+function addRow(t='',m=''){
+  const id=rid++;
+  const idx=document.querySelectorAll('#mttf-body tr').length+1;
+  const tr=document.createElement('tr');
+  tr.id='r-'+id;
+  tr.innerHTML=`<td style="font-family:var(--font-m);font-size:12px;color:var(--muted)">${idx}</td>
+    <td><input type="number" class="t-inp" placeholder="125" value="${t}" oninput="upd(this)"></td>
+    <td><input type="number" class="m-inp" placeholder="1000" value="${m}" oninput="upd(this)"></td>
+    <td class="it" style="font-family:var(--font-m);font-size:12px;color:var(--muted)">${t?((1/(+t+273.15))*1000).toFixed(4):'—'}</td>
+    <td class="lm" style="font-family:var(--font-m);font-size:12px;color:var(--muted)">${m&&m>0?Math.log(+m).toFixed(4):'—'}</td>
+    <td><button class="del-btn" onclick="delRow('r-${id}')">×</button></td>`;
+  document.getElementById('mttf-body').appendChild(tr);
+  reindex();
+}
+function delRow(id){ document.getElementById(id)?.remove(); reindex(); }
+function reindex(){ document.querySelectorAll('#mttf-body tr').forEach((r,i)=>r.cells[0].textContent=i+1); }
+function upd(inp){
+  const row=inp.closest('tr');
+  const T=parseFloat(row.querySelector('.t-inp').value);
+  const M=parseFloat(row.querySelector('.m-inp').value);
+  row.querySelector('.it').textContent=isNaN(T)?'—':((1/(T+273.15))*1000).toFixed(4);
+  row.querySelector('.lm').textContent=isNaN(M)||M<=0?'—':Math.log(M).toFixed(4);
+}
+
+function linReg(xs,ys){
+  const n=xs.length,mx=xs.reduce((a,b)=>a+b,0)/n,my=ys.reduce((a,b)=>a+b,0)/n;
+  let sxy=0,sxx=0;
+  xs.forEach((x,i)=>{sxy+=(x-mx)*(ys[i]-my);sxx+=(x-mx)**2;});
+  const s=sxy/sxx,b=my-s*mx,p=xs.map(x=>s*x+b);
+  const st=ys.reduce((a,y)=>a+(y-my)**2,0),sr=ys.reduce((a,y,i)=>a+(y-p[i])**2,0);
+  return{slope:s,intercept:b,r2:st===0?1:1-sr/st};
+}
+
+let ci=null;
+function runRegression(){
+  const rows=document.querySelectorAll('#mttf-body tr');
+  const pts=[];
+  rows.forEach(r=>{
+    const T=parseFloat(r.querySelector('.t-inp').value);
+    const M=parseFloat(r.querySelector('.m-inp').value);
+    if(!isNaN(T)&&!isNaN(M)&&M>0) pts.push({T:T+273.15,M});
+  });
+  const we=document.getElementById('ea-warn');
+  we.style.display='none';
+  if(pts.length<3){we.textContent='⚠ 有効データが3点未満です。最低3点の温度・MTTFデータを入力してください。';we.style.display='block';return;}
+  const xs=pts.map(p=>1/p.T),ys=pts.map(p=>Math.log(p.M));
+  const{slope,intercept,r2}=linReg(xs,ys);
+  const Ea=slope*k;
+  if(r2<0.95){we.innerHTML=`⚠ R² = ${r2.toFixed(3)}（&lt; 0.95）。プロットの非線形性を確認してください。温度域をまたいで故障モードが切り替わっている可能性があります。`;we.style.display='block';}
+  document.getElementById('ea-est').textContent=Ea.toFixed(3);
+  document.getElementById('ea-slope').textContent=slope.toFixed(0);
+  document.getElementById('ea-r2').textContent=r2.toFixed(4);
+  document.getElementById('ea-n').textContent=pts.length;
+  const interp=Ea<0.35?'金属腐食（低温域）。湿度支配的な場合は Peck モデルの併用を検討してください。':Ea<0.55?'半導体パッケージ一般的な劣化域。接触抵抗増加や封止劣化が疑われます。':Ea<0.75?'酸化・絶縁膜劣化またはイオンマイグレーション（IM）の典型域です。':Ea<1.0?'TDDB やエレクトロマイグレーション（Cu高温）の可能性。ゲート酸化膜やCu配線を確認してください。':Ea<1.3?'Si バルク拡散またはホットキャリア劣化（HCI）域。高温データが支配的になっていないか確認を。':'高活性化エネルギー域。複数モードの混在か試験温度範囲が広すぎる可能性があります。';
+  document.getElementById('ea-interp').textContent=`推定 Ea = ${Ea.toFixed(3)} eV → ${interp}`;
+  document.getElementById('ea-result-panel').style.display='block';
+  const xmn=Math.min(...xs)*.999,xmx=Math.max(...xs)*1.001;
+  document.getElementById('chart-wrap').style.display='block';
+  const ctx=document.getElementById('arrhenius-chart').getContext('2d');
+  if(ci) ci.destroy();
+  ci=new Chart(ctx,{type:'scatter',data:{datasets:[
+    {label:'実測データ',data:pts.map(p=>({x:1/p.T,y:Math.log(p.M)})),backgroundColor:'#111111',pointRadius:7,pointHoverRadius:9},
+    {label:`回帰直線 (Ea=${Ea.toFixed(3)}eV, R²=${r2.toFixed(3)})`,data:[{x:xmn,y:slope*xmn+intercept},{x:xmx,y:slope*xmx+intercept}],type:'line',borderColor:'#111111',borderWidth:1.5,borderDash:[6,3],pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'JetBrains Mono',size:11},color:'#6B6B6B'}},tooltip:{callbacks:{label:c=>{const Tk=1/c.raw.x;return`T=${(Tk-273.15).toFixed(1)}℃ | ln(MTTF)=${c.raw.y.toFixed(3)} | MTTF=${Math.exp(c.raw.y).toFixed(0)}h`;}}}},scales:{x:{title:{display:true,text:'1/T (K⁻¹)',font:{family:'JetBrains Mono',size:11},color:'#6B6B6B'},ticks:{font:{family:'JetBrains Mono',size:10},color:'#6B6B6B',callback:v=>v.toExponential(2)},grid:{color:'#DDDDDD'}},y:{title:{display:true,text:'ln(MTTF)',font:{family:'JetBrains Mono',size:11},color:'#6B6B6B'},ticks:{font:{family:'JetBrains Mono',size:10},color:'#6B6B6B'},grid:{color:'#DDDDDD'}}}}});
+}
+
+function getOff(){
+  const s=document.getElementById('arrhenius-chart');
+  const o=document.createElement('canvas');o.width=s.width;o.height=s.height;
+  const c=o.getContext('2d');c.fillStyle='#FFF';c.fillRect(0,0,o.width,o.height);c.drawImage(s,0,0);return o;
+}
+async function copyChart(){
+  const btn=document.getElementById('copy-chart-btn');
+  if(!ci) return;
+  try{
+    await new Promise((r,j)=>getOff().toBlob(b=>b?navigator.clipboard.write([new ClipboardItem({'image/png':b})]).then(r).catch(j):j(),'image/png'));
+    btn.classList.remove('primary');btn.classList.add('success');btn.textContent='✓ Copied!';
+    setTimeout(()=>{btn.classList.remove('success');btn.classList.add('primary');btn.textContent='⎘ Copy Image';},2200);
+  }catch{downloadChart();btn.textContent='⚠ → Download';setTimeout(()=>{btn.classList.add('primary');btn.textContent='⎘ Copy Image';},2500);}
+}
+function downloadChart(){
+  if(!ci) return;
+  const a=document.createElement('a');a.href=getOff().toDataURL('image/png');a.download='arrhenius-plot.png';a.click();
+}
+
+function highlightRef(){
+  const v=parseFloat(document.getElementById('ref-ea-input').value);
+  document.querySelectorAll('#ref-tbody tr').forEach(r=>r.classList.toggle('hl',!isNaN(v)&&v>=+r.dataset.lo&&v<+r.dataset.hi));
+}
+
+window.onload=()=>{defs.forEach(d=>addRow(d.t,d.m));calcAF();};
+</script>
+</body>
+</html>
