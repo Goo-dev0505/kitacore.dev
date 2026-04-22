@@ -9,48 +9,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --or:#FF4400; --bk:#111111; --wh:#F5F4F0; --dk:#1A1A1A;
-  --gy:#E0DED8; --mu:#888884; --bd:#D0CEC8;
-  --bg2:#DDDBD4;
-  --fw:'Bebas Neue',Impact,sans-serif;
-  --fc:'Barlow Condensed',sans-serif;
-  --fm:'IBM Plex Mono',monospace;
-  --fb:'Noto Sans JP',sans-serif;
-  --boot-end:4s;
-}
+:root{--or:#FF4400;--bk:#111111;--wh:#F5F4F0;--dk:#1A1A1A;--gy:#E0DED8;--mu:#888884;--bd:#D0CEC8;--bg2:#DDDBD4;--fw:'Bebas Neue',Impact,sans-serif;--fc:'Barlow Condensed',sans-serif;--fm:'IBM Plex Mono',monospace;--fb:'Noto Sans JP',sans-serif;--boot-end:4s;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--fb);background:var(--wh);color:var(--bk);font-size:14px;line-height:1.75;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:var(--or)}
-
-body::after{content:'';position:fixed;inset:0;z-index:8000;pointer-events:none;opacity:.032;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:180px 180px;animation:grain .14s steps(1) infinite}
-@keyframes grain{
-  0%{background-position:0 0} 20%{background-position:-40px 30px}
-  40%{background-position:30px -20px} 60%{background-position:-50px 50px}
-  80%{background-position:20px -40px} 100%{background-position:-30px 10px}}
-
-body::before{content:'';position:fixed;inset:0;z-index:7999;pointer-events:none;
-  background:linear-gradient(to bottom,transparent 48%,rgba(255,68,0,.016) 50%,transparent 52%);
-  background-size:100% 240px;animation:scan 10s linear infinite}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--or)}
+body::after{content:'';position:fixed;inset:0;z-index:8000;pointer-events:none;opacity:.032;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;animation:grain .14s steps(1) infinite}
+@keyframes grain{0%{background-position:0 0}20%{background-position:-40px 30px}40%{background-position:30px -20px}60%{background-position:-50px 50px}80%{background-position:20px -40px}100%{background-position:-30px 10px}}
+body::before{content:'';position:fixed;inset:0;z-index:7999;pointer-events:none;background:linear-gradient(to bottom,transparent 48%,rgba(255,68,0,.016) 50%,transparent 52%);background-size:100% 240px;animation:scan 10s linear infinite}
 @keyframes scan{from{background-position:0 -240px}to{background-position:0 110vh}}
-
-#boot{position:fixed;inset:0;z-index:9999;background:var(--bk);
-  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
-  padding:clamp(28px,5vw,64px);transition:clip-path .5s ease}
+#boot{position:fixed;inset:0;z-index:9999;background:var(--bk);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:clamp(28px,5vw,64px);transition:clip-path .5s ease}
 #boot.exit{clip-path:inset(0 0 100% 0);pointer-events:none}
 .bc{position:absolute;width:24px;height:24px;border-color:var(--or);border-style:solid;border-width:0;opacity:0;animation:cin .3s ease .1s forwards}
-.bc.tl{top:18px;left:18px;border-top-width:2px;border-left-width:2px}
-.bc.tr{top:18px;right:18px;border-top-width:2px;border-right-width:2px}
-.bc.bl{bottom:18px;left:18px;border-bottom-width:2px;border-left-width:2px}
-.bc.br{bottom:18px;right:18px;border-bottom-width:2px;border-right-width:2px}
+.bc.tl{top:18px;left:18px;border-top-width:2px;border-left-width:2px}.bc.tr{top:18px;right:18px;border-top-width:2px;border-right-width:2px}.bc.bl{bottom:18px;left:18px;border-bottom-width:2px;border-left-width:2px}.bc.br{bottom:18px;right:18px;border-bottom-width:2px;border-right-width:2px}
 @keyframes cin{to{opacity:1}}
 .boot-lbl{font-family:var(--fm);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--or);margin-bottom:22px;opacity:0;animation:fup .4s ease .2s forwards}
 #boot-log{font-family:var(--fm);font-size:clamp(11px,1.3vw,13px);line-height:2.1;color:#777;letter-spacing:.04em;margin-bottom:28px}
 #boot-log .li{display:block;opacity:0;transform:translateX(-6px)}
-#boot-log .hi{color:#fff} #boot-log .or{color:var(--or)}
+#boot-log .hi{color:#fff}#boot-log .or{color:var(--or)}
 #boot-log .cur::after{content:'▌';color:var(--or);animation:blink .6s step-end infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .boot-bar-wrap{width:min(280px,75vw);opacity:0;animation:fup .3s ease .4s forwards}
@@ -61,56 +37,42 @@ body::before{content:'';position:fixed;inset:0;z-index:7999;pointer-events:none;
 .boot-skip{position:absolute;bottom:24px;right:24px;font-family:var(--fm);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#444;border:1px solid #333;padding:8px 16px;background:transparent;cursor:pointer;transition:color .15s,border-color .15s;opacity:0;animation:fup .4s ease .6s forwards}
 .boot-skip:hover{color:var(--or);border-color:var(--or)}
 .boot-bg{position:absolute;bottom:40px;right:56px;font-family:var(--fw);font-size:clamp(48px,12vw,120px);color:rgba(255,255,255,.025);letter-spacing:.06em;user-select:none}
-
 #prog{position:fixed;top:0;left:0;z-index:500;height:3px;width:0;background:var(--or);transition:width .1s linear}
-
 .ticker-bar{background:var(--bk);padding:0 20px;height:32px;display:flex;align-items:center;overflow:hidden}
 .t-live{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.18em;flex-shrink:0;padding-right:16px;border-right:1px solid #222}
 .t-live::before{content:'● ';animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .t-wrap{overflow:hidden;flex:1;mask-image:linear-gradient(to right,transparent,black 6%,black 94%,transparent)}
-.t-track{display:flex;white-space:nowrap;animation:tick 28s linear infinite}
+.t-track{display:flex;white-space:nowrap;animation:tick 36s linear infinite}
 .t-track:hover{animation-play-state:paused}
 .ti{font-family:var(--fm);font-size:10px;color:#444;letter-spacing:.18em;text-transform:uppercase;padding:0 28px;flex-shrink:0}
 .ti .ot{color:var(--or)}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 #clock{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.18em;flex-shrink:0;padding-left:16px;border-left:1px solid #222}
-
-header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:200;background:var(--wh);
-  transform:translateY(-100%);animation:slideDown .5s ease var(--boot-end) forwards}
+header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;background:var(--wh);transform:translateY(-100%);animation:slideDown .5s ease var(--boot-end) forwards}
 @keyframes slideDown{to{transform:translateY(0)}}
-.brand{font-family:var(--fw);font-size:24px;letter-spacing:.08em}
-.brand em{font-style:normal;color:var(--or)}
+.brand{font-family:var(--fw);font-size:24px;letter-spacing:.08em}.brand em{font-style:normal;color:var(--or)}
 .nav-r{display:flex;align-items:center;gap:20px}
 .nav-meta{font-family:var(--fm);font-size:10px;color:var(--mu);letter-spacing:.2em;text-transform:uppercase}
 .nav-note{font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--bk);border:1px solid var(--bk);padding:7px 16px;text-decoration:none;transition:all .2s}
 .nav-note:hover{background:var(--or);border-color:var(--or)}
-
 @keyframes fup{to{opacity:1;transform:translateY(0)}}
 @keyframes fIn{to{opacity:1}}
-.h-ey {opacity:0;animation:fup .5s ease var(--boot-end) forwards}
-.h-t1 {display:block;opacity:0;transform:translateY(32px);animation:fup .6s ease calc(var(--boot-end) + .15s) forwards}
-.h-t2 {display:block;opacity:0;transform:translateY(32px);animation:fup .6s ease calc(var(--boot-end) + .3s) forwards}
+.h-ey{opacity:0;animation:fup .5s ease var(--boot-end) forwards}
+.h-t1{display:block;opacity:0;transform:translateY(32px);animation:fup .6s ease calc(var(--boot-end) + .15s) forwards}
+.h-t2{display:block;opacity:0;transform:translateY(32px);animation:fup .6s ease calc(var(--boot-end) + .3s) forwards}
 .h-sub{opacity:0;transform:translateY(16px);animation:fup .5s ease calc(var(--boot-end) + .45s) forwards}
 .h-cta{opacity:0;animation:fIn .5s ease calc(var(--boot-end) + .6s) forwards}
-.h-st {opacity:0;animation:fIn .4s ease calc(var(--boot-end) + .75s) forwards}
+.h-st{opacity:0;animation:fIn .4s ease calc(var(--boot-end) + .75s) forwards}
 .h-deco{opacity:0;animation:fIn .8s ease calc(var(--boot-end) + .2s) forwards}
-
 .rv{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
 .rv.on{opacity:1;transform:translateY(0)}
 .rv2{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
 .rv2.on{opacity:1;transform:translateY(0);transition-delay:.12s}
-
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-
 .wrap{max-width:1080px;margin:0 auto;padding:0 40px}
-
 .hero{padding:80px 0 0;position:relative;overflow:hidden;border-bottom:2px solid var(--bk)}
-.hero-deco{position:absolute;right:40px;top:50%;transform:translateY(-60%);
-  font-family:var(--fw);font-size:clamp(80px,18vw,220px);color:rgba(0,0,0,.04);
-  letter-spacing:.04em;line-height:1;user-select:none;pointer-events:none}
+.hero-deco{position:absolute;right:40px;top:50%;transform:translateY(-60%);font-family:var(--fw);font-size:clamp(80px,18vw,220px);color:rgba(0,0,0,.04);letter-spacing:.04em;line-height:1;user-select:none;pointer-events:none}
 .hero-ey{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.32em;text-transform:uppercase;font-weight:600;margin-bottom:20px}
 .hero-h1{font-family:var(--fw);font-size:clamp(60px,11vw,128px);line-height:.9;letter-spacing:.04em;text-transform:uppercase;margin-bottom:28px}
 .hero-h1 .or{color:var(--or)}
@@ -121,44 +83,26 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .btn-gh{display:inline-block;color:var(--bk);font-family:var(--fm);font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:13px 28px;text-decoration:none;border:1px solid var(--bk);transition:all .2s;white-space:nowrap}
 .btn-gh:hover{background:var(--bk);color:var(--wh)}
 .hero-stats{display:flex;gap:0;border-top:1px solid var(--bd)}
-.stat{padding:20px 32px 20px 0;margin-right:32px;border-right:1px solid var(--bd)}
-.stat:last-child{border-right:none}
+.stat{padding:20px 32px 20px 0;margin-right:32px;border-right:1px solid var(--bd)}.stat:last-child{border-right:none}
 .stat-n{font-family:var(--fw);font-size:40px;line-height:1;display:block}
 .stat-l{font-family:var(--fm);font-size:9px;color:var(--mu);letter-spacing:.2em;text-transform:uppercase}
-
 .sec-dark{background:var(--dk);color:var(--wh);padding:72px 0;border-bottom:2px solid #000}
 .sec-label{font-family:var(--fm);font-size:10px;letter-spacing:.32em;text-transform:uppercase;margin-bottom:8px;display:block}
 .sec-dark .sec-label{color:var(--or)}
 .sec-title{font-family:var(--fw);font-size:clamp(36px,6vw,64px);letter-spacing:.04em;text-transform:uppercase;line-height:.95;margin-bottom:8px}
 .sec-sub{font-family:var(--fc);font-size:18px;font-weight:500;margin-bottom:40px}
 .sec-dark .sec-sub{color:#555}
-
 .sec-or{background:var(--or);color:var(--bk);padding:72px 0;border-bottom:2px solid var(--bk)}
-.sec-or .sec-label{color:rgba(0,0,0,.38)}
-.sec-or .sec-sub{color:rgba(0,0,0,.45)}
-
-/* ───────── KNOWLEDGE SHELF (gray/beige) ───────── */
+.sec-or .sec-label{color:rgba(255,255,255,.75)}.sec-or .sec-sub{color:rgba(0,0,0,.45)}
 .sec-gy{background:var(--bg2);color:var(--bk);padding:72px 0;border-bottom:2px solid var(--bk);position:relative;overflow:hidden}
-.sec-gy::before{content:'KNOWLEDGE';position:absolute;right:-20px;top:20px;
-  font-family:var(--fw);font-size:clamp(80px,14vw,160px);letter-spacing:.04em;
-  color:rgba(0,0,0,.035);user-select:none;pointer-events:none;line-height:1}
-.sec-gy .sec-label{color:var(--or)}
-.sec-gy .sec-sub{color:#555}
-
+.sec-gy::before{content:'KNOWLEDGE';position:absolute;right:-20px;top:20px;font-family:var(--fw);font-size:clamp(80px,14vw,160px);letter-spacing:.04em;color:rgba(0,0,0,.035);user-select:none;pointer-events:none;line-height:1}
+.sec-gy .sec-label{color:var(--or)}.sec-gy .sec-sub{color:#555}
 .sec-wh{padding:72px 0;border-bottom:2px solid var(--bk)}
-.sec-wh .sec-label{color:var(--or)}
-.sec-wh .sec-sub{color:var(--mu)}
-
+.sec-wh .sec-label{color:var(--or)}.sec-wh .sec-sub{color:var(--mu)}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px}
-
-.card-d{background:#1E1E1E;border:1px solid #2A2A2A;text-decoration:none;color:inherit;
-  display:flex;flex-direction:column;position:relative;overflow:hidden;
-  transition:transform .25s ease,box-shadow .25s ease}
-.card-d::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--or);transform:scaleY(0);transform-origin:bottom;
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
-.card-d:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--or)}
-.card-d:hover::before{transform:scaleY(1)}
+.card-d{background:#1E1E1E;border:1px solid #2A2A2A;text-decoration:none;color:inherit;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
+.card-d::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--or);transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.card-d:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--or)}.card-d:hover::before{transform:scaleY(1)}
 .card-d .ct{background:var(--or);color:var(--bk);padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between}
 .card-num{font-family:var(--fw);font-size:48px;line-height:1}
 .card-status{font-family:var(--fm);font-size:9px;letter-spacing:.18em;text-transform:uppercase;text-align:right;line-height:1.8;opacity:.65}
@@ -168,86 +112,51 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;
 .card-title{font-family:var(--fc);font-size:22px;font-weight:700;line-height:1.2;margin-bottom:8px}
 .card-d .card-title{color:var(--wh)}
 .card-hook{font-size:13px;color:#777;line-height:1.7;margin-bottom:14px}
-.card-get{font-family:var(--fm);font-size:11px;color:var(--or);letter-spacing:.08em}
-.card-get::before{content:'→ '}
+.card-get{font-family:var(--fm);font-size:11px;color:var(--or);letter-spacing:.08em}.card-get::before{content:'→ '}
 .card-d .cf{padding:14px 24px;border-top:1px solid #2A2A2A;display:flex;align-items:center;justify-content:space-between;background:#161616}
 .card-date{font-family:var(--fm);font-size:9px;color:#444;letter-spacing:.15em;text-transform:uppercase}
 .card-arr{font-family:var(--fm);font-size:14px;color:var(--or);transition:transform .2s}
 .card-d:hover .card-arr{transform:translateX(4px)}
-
-.card-o{background:#fff;border:1px solid rgba(0,0,0,.12);text-decoration:none;color:inherit;
-  display:flex;flex-direction:column;position:relative;overflow:hidden;
-  transition:transform .25s ease,box-shadow .25s ease}
-.card-o::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--bk);transform:scaleY(0);transform-origin:bottom;
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
-.card-o:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--bk)}
-.card-o:hover::before{transform:scaleY(1)}
+.card-o{background:#fff;border:1px solid rgba(0,0,0,.12);text-decoration:none;color:inherit;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
+.card-o::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--bk);transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.card-o:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--bk)}.card-o:hover::before{transform:scaleY(1)}
 .card-o .ct{background:var(--bk);color:var(--wh);padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between}
 .card-o .ct .live-badge{background:var(--or);color:var(--bk)}
 .card-o .cb{padding:22px 24px;flex:1}
-.card-o .card-tag{color:rgba(0,0,0,.32)}
-.card-o .card-hook{color:#555}
-.card-o .card-get{color:var(--bk)}
+.card-o .card-tag{color:rgba(0,0,0,.32)}.card-o .card-hook{color:#555}.card-o .card-get{color:var(--bk)}
 .card-o .cf{padding:14px 24px;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between}
 .card-date-o{font-family:var(--fm);font-size:9px;color:rgba(0,0,0,.3);letter-spacing:.15em;text-transform:uppercase}
 .card-o .card-arr{font-family:var(--fm);font-size:14px;color:var(--bk);transition:transform .2s}
 .card-o:hover .card-arr{transform:translateX(4px)}
-
-/* ───────── Knowledge Shelf card (beige surface + dark header) ───────── */
-.card-k{background:#fff;border:1px solid rgba(0,0,0,.12);text-decoration:none;color:inherit;
-  display:flex;flex-direction:column;position:relative;overflow:hidden;
-  transition:transform .25s ease,box-shadow .25s ease}
-.card-k::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--or);transform:scaleY(0);transform-origin:bottom;
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
-.card-k:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--bk)}
-.card-k:hover::before{transform:scaleY(1)}
+.card-k{background:#fff;border:1px solid rgba(0,0,0,.12);text-decoration:none;color:inherit;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
+.card-k::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--or);transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.card-k:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--bk)}.card-k:hover::before{transform:scaleY(1)}
 .card-k .ct{background:var(--bk);color:var(--wh);padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between}
 .card-k .ct .live-badge{background:var(--or);color:var(--bk)}
 .card-k .cb{padding:22px 24px;flex:1}
-.card-k .card-tag{color:var(--or)}
-.card-k .card-title{color:var(--bk)}
-.card-k .card-hook{color:#555}
-.card-k .card-get{color:var(--or)}
+.card-k .card-tag{color:var(--or)}.card-k .card-title{color:var(--bk)}.card-k .card-hook{color:#555}.card-k .card-get{color:var(--or)}
 .card-k .cf{padding:14px 24px;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between;background:#FAFAF7}
 .card-k .card-date-k{font-family:var(--fm);font-size:9px;color:rgba(0,0,0,.3);letter-spacing:.15em;text-transform:uppercase}
 .card-k .card-arr{font-family:var(--fm);font-size:14px;color:var(--or);transition:transform .2s}
 .card-k:hover .card-arr{transform:translateX(4px)}
 .card-k .card-chapters{display:flex;gap:4px;margin-top:12px;flex-wrap:wrap}
-.card-k .chp{font-family:var(--fm);font-size:8px;letter-spacing:.12em;text-transform:uppercase;
-  padding:3px 7px;background:var(--gy);color:#555;border-radius:1px}
-
+.card-k .chp{font-family:var(--fm);font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;background:var(--gy);color:#555;border-radius:1px}
 .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:2px solid var(--bk);margin-top:32px}
 .how-card{background:#fff;padding:28px 24px;border-right:1px solid var(--bd);transition:background .2s}
-.how-card:last-child{border-right:none}
-.how-card:hover{background:var(--gy)}
+.how-card:last-child{border-right:none}.how-card:hover{background:var(--gy)}
 .how-n{font-family:var(--fw);font-size:48px;color:var(--or);line-height:1;margin-bottom:12px}
 .how-card h4{font-size:15px;font-weight:700;margin-bottom:8px}
 .how-card p{font-size:13px;color:#555;line-height:1.7}
 code{font-family:var(--fm);font-size:11px;background:var(--gy);padding:2px 6px}
-
-footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);padding:20px 40px;
-  display:flex;justify-content:space-between;align-items:center;
-  font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;flex-wrap:wrap;gap:8px}
+footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;flex-wrap:wrap;gap:8px}
 .foot-brand{color:var(--wh)}
-
-@media(max-width:640px){
-  .wrap{padding:0 20px} header{padding:0 20px}
-  .hero{padding-top:52px} .hero-deco{display:none}
-  .hero-h1{font-size:52px} .how-grid{grid-template-columns:1fr}
-  .cards{grid-template-columns:1fr} .nav-meta{display:none}
-  footer{padding:20px} .hero-stats{flex-wrap:wrap} #clock{display:none}
-  .sec-gy::before{font-size:72px}
-}
+@media(max-width:640px){.wrap{padding:0 20px}header{padding:0 20px}.hero{padding-top:52px}.hero-deco{display:none}.hero-h1{font-size:52px}.how-grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.nav-meta{display:none}footer{padding:20px}.hero-stats{flex-wrap:wrap}#clock{display:none}.sec-gy::before{font-size:72px}}
 </style>
 </head>
 <body>
 
-<!-- BOOT -->
 <div id="boot">
-  <div class="bc tl"></div><div class="bc tr"></div>
-  <div class="bc bl"></div><div class="bc br"></div>
+  <div class="bc tl"></div><div class="bc tr"></div><div class="bc bl"></div><div class="bc br"></div>
   <div class="boot-bg">KITAcore</div>
   <div class="boot-lbl">■ SYSTEM INITIALIZATION</div>
   <div id="boot-log"></div>
@@ -260,7 +169,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 
 <div id="prog"></div>
 
-<!-- TICKER -->
 <div class="ticker-bar">
   <span class="t-live">LIVE</span>
   <div class="t-wrap">
@@ -269,14 +177,18 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <span class="ti">NAME EDITOR V1 MANUAL — <span class="ot">LIVE</span></span>
       <span class="ti">SKI RANKING 2 GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">AI 7 POWERS GUIDE — <span class="ot">LIVE</span></span>
-      <span class="ti">MARKETING MECE MAP — <span class="ot">NEW</span></span>
+      <span class="ti">MARKETING MECE MAP — <span class="ot">LIVE</span></span>
+      <span class="ti">ARRHENIUS ANALYZER — <span class="ot">NEW</span></span>
+      <span class="ti">ARRHENIUS AI GUIDE — <span class="ot">NEW</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
       <span class="ti">DEPLOYMENT: KITACORE-2026-ALPHA</span>
       <span class="ti">KITACORE PUBLIC TOOLS · GITHUB PAGES</span>
       <span class="ti">NAME EDITOR V1 MANUAL — <span class="ot">LIVE</span></span>
       <span class="ti">SKI RANKING 2 GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">AI 7 POWERS GUIDE — <span class="ot">LIVE</span></span>
-      <span class="ti">MARKETING MECE MAP — <span class="ot">NEW</span></span>
+      <span class="ti">MARKETING MECE MAP — <span class="ot">LIVE</span></span>
+      <span class="ti">ARRHENIUS ANALYZER — <span class="ot">NEW</span></span>
+      <span class="ti">ARRHENIUS AI GUIDE — <span class="ot">NEW</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
       <span class="ti">DEPLOYMENT: KITACORE-2026-ALPHA</span>
     </div>
@@ -284,7 +196,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   <span id="clock"></span>
 </div>
 
-<!-- NAV -->
 <header>
   <div class="brand">KITA<em>core</em></div>
   <div class="nav-r">
@@ -293,15 +204,11 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </header>
 
-<!-- HERO -->
 <div class="hero">
   <div class="wrap">
     <div class="hero-deco h-deco">KITAcore</div>
     <span class="hero-ey h-ey">■ KITACORE / PUBLIC RELEASE</span>
-    <h1 class="hero-h1">
-      <span class="h-t1">TOOLS &</span>
-      <span class="h-t2 or">GUIDES</span>
-    </h1>
+    <h1 class="hero-h1"><span class="h-t1">TOOLS &</span><span class="h-t2 or">GUIDES</span></h1>
     <p class="hero-sub h-sub">note記事の補足ページ・取説・ナレッジ棚卸しを公開中。<br>ブラウザだけで動く。インストール不要。すべて無料。</p>
     <div class="hero-cta h-cta">
       <a class="btn-pr" href="https://note.com/ktcrs1107" target="_blank" rel="noopener">→ noteで記事を読む</a>
@@ -317,7 +224,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 
 <div id="tools"></div>
 
-<!-- 使い方を読む (DARK) -->
 <section class="sec-dark">
   <div class="wrap">
     <div class="rv">
@@ -327,29 +233,19 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
     </div>
     <div class="cards">
       <a class="card-d rv2" href="name-editor-v1-manual.html">
-        <div class="ct">
-          <span class="card-num">01</span>
-          <div>
-            <div class="card-status">FIELD MANUAL<br>VERSION 1</div>
-            <span class="live-badge">● LIVE</span>
-          </div>
-        </div>
+        <div class="ct"><span class="card-num">01</span><div><div class="card-status">FIELD MANUAL<br>VERSION 1</div><span class="live-badge">● LIVE</span></div></div>
         <div class="cb">
           <span class="card-tag">MANUAL · MANGA STORYBOARD</span>
           <h3 class="card-title">NAME Editor V1<br>取扱説明書</h3>
           <p class="card-hook">コマ割り・セリフ入力・下絵描画・書き出しまで。V1の基本操作をこの1ページで完全解説。</p>
           <span class="card-get">読むと、ツールがすぐ使いこなせる</span>
         </div>
-        <div class="cf">
-          <span class="card-date">2026.04 · V1</span>
-          <span class="card-arr">→</span>
-        </div>
+        <div class="cf"><span class="card-date">2026.04 · V1</span><span class="card-arr">→</span></div>
       </a>
     </div>
   </div>
 </section>
 
-<!-- 記事と一緒に読む (ORANGE) -->
 <section class="sec-or">
   <div class="wrap">
     <div class="rv">
@@ -359,48 +255,51 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
     </div>
     <div class="cards">
       <a class="card-o rv" href="ski-r2-guide.html">
-        <div class="ct">
-          <span class="card-num">01</span>
-          <div>
-            <div class="card-status">HOW TO PLAY<br>VERSION 2</div>
-            <span class="live-badge">● LIVE</span>
-          </div>
-        </div>
+        <div class="ct"><span class="card-num">01</span><div><div class="card-status">HOW TO PLAY<br>VERSION 2</div><span class="live-badge">● LIVE</span></div></div>
         <div class="cb">
           <span class="card-tag">GUIDE · NOTE GAME</span>
           <h3 class="card-title">SKI RANKING 2<br>遊び方ガイド</h3>
           <p class="card-hook">スキの数だけじゃない──ポイント計算のしくみ、バッジの意味、ランキングの読み方を完全解説。</p>
           <span class="card-get">読むと、ランキング戦略が立てられる</span>
         </div>
-        <div class="cf">
-          <span class="card-date-o">2026.04 · SKI-R2</span>
-          <span class="card-arr">→</span>
-        </div>
+        <div class="cf"><span class="card-date-o">2026.04 · SKI-R2</span><span class="card-arr">→</span></div>
       </a>
       <a class="card-o rv2" href="ai-7powers.html">
-        <div class="ct">
-          <span class="card-num">02</span>
-          <div>
-            <div class="card-status">SPEC UNIT R1<br>FIELD TESTED</div>
-            <span class="live-badge">● LIVE</span>
-          </div>
-        </div>
+        <div class="ct"><span class="card-num">02</span><div><div class="card-status">SPEC UNIT R1<br>FIELD TESTED</div><span class="live-badge">● LIVE</span></div></div>
         <div class="cb">
           <span class="card-tag">GUIDE · AI CAPABILITY</span>
           <h3 class="card-title">AIの7つの力<br>完全ガイド</h3>
           <p class="card-hook">「AIをうまく使えてない」人へ。MAPS+R+Oの7つの力をインタラクティブに体験できる補足ページ。</p>
           <span class="card-get">読むと、プロンプト設計の考え方が変わる</span>
         </div>
-        <div class="cf">
-          <span class="card-date-o">2026.04 · MAPS+R+O</span>
-          <span class="card-arr">→</span>
+        <div class="cf"><span class="card-date-o">2026.04 · MAPS+R+O</span><span class="card-arr">→</span></div>
+      </a>
+      <!-- ▼ NEW 03: Arrhenius Analyzer -->
+      <a class="card-o rv" href="arrhenius-analyzer.html">
+        <div class="ct"><span class="card-num">03</span><div><div class="card-status">RELIABILITY ENG.<br>INTERACTIVE</div><span class="live-badge">● NEW</span></div></div>
+        <div class="cb">
+          <span class="card-tag">TOOL · RELIABILITY</span>
+          <h3 class="card-title">Arrhenius<br>Analyzer</h3>
+          <p class="card-hook">Ea推定・加速係数（AF）計算・故障モード照合を1ページに統合。実測MTTFを入れるとプロットとEaが自動で出る。</p>
+          <span class="card-get">使うと、加速試験の解析がその場で完結する</span>
         </div>
+        <div class="cf"><span class="card-date-o">2026.04 · #15補足</span><span class="card-arr">→</span></div>
+      </a>
+      <!-- ▼ NEW 04: Arrhenius AI Guide -->
+      <a class="card-o rv2" href="arrhenius-ai-guide.html">
+        <div class="ct"><span class="card-num">04</span><div><div class="card-status">PROMPT GUIDE<br>4 TEMPLATES</div><span class="live-badge">● NEW</span></div></div>
+        <div class="cb">
+          <span class="card-tag">GUIDE · AI × RELIABILITY</span>
+          <h3 class="card-title">アレニウス解析<br>× AI 活用ガイド</h3>
+          <p class="card-hook">ツールで出た数値をそのままAIに投げて解釈・報告書化するプロンプトテンプレート集。数値を貼るだけで使える。</p>
+          <span class="card-get">使うと、解析結果の言語化が一気に楽になる</span>
+        </div>
+        <div class="cf"><span class="card-date-o">2026.04 · #15補足</span><span class="card-arr">→</span></div>
       </a>
     </div>
   </div>
 </section>
 
-<!-- ナレッジ棚卸し (GRAY) -->
 <section class="sec-gy">
   <div class="wrap" style="position:relative;z-index:1">
     <div class="rv">
@@ -410,36 +309,20 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
     </div>
     <div class="cards">
       <a class="card-k rv" href="marketing-mece-map.html">
-        <div class="ct">
-          <span class="card-num">01</span>
-          <div>
-            <div class="card-status">MECE DESIGN<br>5 CHAPTERS</div>
-            <span class="live-badge">● NEW</span>
-          </div>
-        </div>
+        <div class="ct"><span class="card-num">01</span><div><div class="card-status">MECE DESIGN<br>5 CHAPTERS</div><span class="live-badge">● LIVE</span></div></div>
         <div class="cb">
           <span class="card-tag">SHELF · MARKETING</span>
           <h3 class="card-title">マーケティング、<br>ワイの場合</h3>
           <p class="card-hook">正解やないし、教科書でもない。KITAcoreがマーケをどう整理してるかの頭の中身を棚卸ししたもの。AIに効く語彙帳としても使える。</p>
           <span class="card-get">読むと、AIへの聞き方が変わる</span>
-          <div class="card-chapters">
-            <span class="chp">WHY</span>
-            <span class="chp">WHO</span>
-            <span class="chp">WHAT</span>
-            <span class="chp">HOW</span>
-            <span class="chp">MEASURE</span>
-          </div>
+          <div class="card-chapters"><span class="chp">WHY</span><span class="chp">WHO</span><span class="chp">WHAT</span><span class="chp">HOW</span><span class="chp">MEASURE</span></div>
         </div>
-        <div class="cf">
-          <span class="card-date-k">2026.04 · MECE v3</span>
-          <span class="card-arr">→</span>
-        </div>
+        <div class="cf"><span class="card-date-k">2026.04 · MECE v3</span><span class="card-arr">→</span></div>
       </a>
     </div>
   </div>
 </section>
 
-<!-- 3 STEPS (WHITE) -->
 <section class="sec-wh">
   <div class="wrap">
     <div class="rv">
@@ -448,21 +331,9 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <p class="sec-sub">noteとセットで使うとより効果的。</p>
     </div>
     <div class="how-grid rv">
-      <div class="how-card">
-        <div class="how-n">01</div>
-        <h4>noteで記事を読む</h4>
-        <p>各ページに対応するnote記事があります。まず記事を読んでから開くのがおすすめ。</p>
-      </div>
-      <div class="how-card">
-        <div class="how-n">02</div>
-        <h4>カードをクリック</h4>
-        <p>ブラウザだけで動きます。インストール不要。<br><code>Ctrl+D</code> でブックマーク推奨。</p>
-      </div>
-      <div class="how-card">
-        <div class="how-n">03</div>
-        <h4>HTMLをDLして使う</h4>
-        <p>GitHubからHTMLを直接ダウンロードしてローカルで使ったり、改造してもOK。</p>
-      </div>
+      <div class="how-card"><div class="how-n">01</div><h4>noteで記事を読む</h4><p>各ページに対応するnote記事があります。まず記事を読んでから開くのがおすすめ。</p></div>
+      <div class="how-card"><div class="how-n">02</div><h4>カードをクリック</h4><p>ブラウザだけで動きます。インストール不要。<br><code>Ctrl+D</code> でブックマーク推奨。</p></div>
+      <div class="how-card"><div class="how-n">03</div><h4>HTMLをDLして使う</h4><p>GitHubからHTMLを直接ダウンロードしてローカルで使ったり、改造してもOK。</p></div>
     </div>
   </div>
 </section>
@@ -474,88 +345,49 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 </footer>
 
 <script>
-const SEEN = 'kc_boot';
-const seen = sessionStorage.getItem(SEEN);
-
-function finishBoot() {
-  sessionStorage.setItem(SEEN, '1');
-  document.getElementById('boot').classList.add('exit');
-  document.body.style.overflow = 'auto';
-  document.documentElement.style.setProperty('--boot-end', '0.1s');
-}
-function skipBoot() { finishBoot(); }
-
-if (seen) {
-  document.getElementById('boot').style.display = 'none';
-  document.body.style.overflow = 'auto';
-  document.documentElement.style.setProperty('--boot-end', '0.05s');
-} else {
-  document.body.style.overflow = 'hidden';
-  const log  = document.getElementById('boot-log');
-  const fill = document.getElementById('bfill');
-  const pct  = document.getElementById('bpct');
-  const lines = [
-    { t:'KITACORE PORTAL v2026 INITIALIZING...', c:'hi', d:0 },
-    { t:'LOADING: PUBLIC TOOLS & GUIDES',        c:'',   d:240 },
-    { t:'  [取説]      NAME EDITOR V1 MANUAL   ■', c:'or', d:440 },
-    { t:'  [補足 01]   SKI RANKING 2 GUIDE     ■', c:'or', d:600 },
-    { t:'  [補足 02]   AI 7 POWERS GUIDE       ■', c:'or', d:760 },
-    { t:'  [棚]        MARKETING MECE MAP      ■', c:'or', d:920 },
-    { t:'ALL SYSTEMS OPERATIONAL',               c:'hi', d:1120 },
-    { t:'LAUNCHING...',                          c:'hi cur', d:1260 },
+const SEEN='kc_boot',seen=sessionStorage.getItem(SEEN);
+function finishBoot(){sessionStorage.setItem(SEEN,'1');document.getElementById('boot').classList.add('exit');document.body.style.overflow='auto';document.documentElement.style.setProperty('--boot-end','0.1s');}
+function skipBoot(){finishBoot();}
+if(seen){document.getElementById('boot').style.display='none';document.body.style.overflow='auto';document.documentElement.style.setProperty('--boot-end','0.05s');}
+else{
+  document.body.style.overflow='hidden';
+  const log=document.getElementById('boot-log'),fill=document.getElementById('bfill'),pct=document.getElementById('bpct');
+  const lines=[
+    {t:'KITACORE PORTAL v2026 INITIALIZING...',c:'hi',d:0},
+    {t:'LOADING: PUBLIC TOOLS & GUIDES',       c:'',  d:240},
+    {t:'  [取説]      NAME EDITOR V1 MANUAL   ■',c:'or',d:440},
+    {t:'  [補足 01]   SKI RANKING 2 GUIDE     ■',c:'or',d:580},
+    {t:'  [補足 02]   AI 7 POWERS GUIDE       ■',c:'or',d:720},
+    {t:'  [補足 03]   ARRHENIUS ANALYZER      ■',c:'or',d:860},
+    {t:'  [補足 04]   ARRHENIUS AI GUIDE      ■',c:'or',d:1000},
+    {t:'  [棚]        MARKETING MECE MAP      ■',c:'or',d:1140},
+    {t:'ALL SYSTEMS OPERATIONAL',              c:'hi', d:1320},
+    {t:'LAUNCHING...',                         c:'hi cur',d:1460},
   ];
-  let max = 0;
-  lines.forEach((l, i) => {
-    setTimeout(() => {
-      const s = document.createElement('span');
-      s.className = 'li ' + l.c; s.textContent = l.t;
-      log.appendChild(s);
-      requestAnimationFrame(() => setTimeout(() => {
-        s.style.opacity='1'; s.style.transform='translateX(0)';
-        s.style.transition='opacity .2s ease,transform .2s ease';
-      }, 10));
-      const p = Math.round((i+1)/lines.length*100);
-      fill.style.width = p+'%'; pct.textContent = p+'%';
-    }, l.d);
-    max = Math.max(max, l.d);
+  let max=0;
+  lines.forEach((l,i)=>{
+    setTimeout(()=>{
+      const s=document.createElement('span');s.className='li '+l.c;s.textContent=l.t;log.appendChild(s);
+      requestAnimationFrame(()=>setTimeout(()=>{s.style.opacity='1';s.style.transform='translateX(0)';s.style.transition='opacity .2s ease,transform .2s ease';},10));
+      const p=Math.round((i+1)/lines.length*100);fill.style.width=p+'%';pct.textContent=p+'%';
+    },l.d);max=Math.max(max,l.d);
   });
-  setTimeout(finishBoot, max + 420);
+  setTimeout(finishBoot,max+420);
 }
-
-const bar = document.getElementById('prog');
-window.addEventListener('scroll', () => {
-  bar.style.width = (scrollY / (document.documentElement.scrollHeight - innerHeight) * 100) + '%';
-}, { passive:true });
-
-const ck = document.getElementById('clock');
-const pad = n => String(n).padStart(2,'0');
-function tick() {
-  const n = new Date();
-  ck.textContent = `${n.getFullYear()}.${pad(n.getMonth()+1)}.${pad(n.getDate())} ${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
-}
-tick(); setInterval(tick, 1000);
-
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
-}, { threshold:.08, rootMargin:'0px 0px -32px 0px' });
-document.querySelectorAll('.rv,.rv2').forEach(el => io.observe(el));
-
-window.addEventListener('load', () => {
-  function countUp(id, target, delay=0) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    setTimeout(() => {
-      const s = performance.now();
-      const f = now => {
-        const t = Math.min((now-s)/900, 1);
-        el.textContent = Math.round((1-Math.pow(1-t,3))*target);
-        if (t<1) requestAnimationFrame(f);
-      };
-      requestAnimationFrame(f);
-    }, delay);
+const bar=document.getElementById('prog');
+window.addEventListener('scroll',()=>{bar.style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';},{passive:true});
+const ck=document.getElementById('clock'),pad=n=>String(n).padStart(2,'0');
+function tick(){const n=new Date();ck.textContent=`${n.getFullYear()}.${pad(n.getMonth()+1)}.${pad(n.getDate())} ${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;}
+tick();setInterval(tick,1000);
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -32px 0px'});
+document.querySelectorAll('.rv,.rv2').forEach(el=>io.observe(el));
+window.addEventListener('load',()=>{
+  function countUp(id,target,delay=0){
+    const el=document.getElementById(id);if(!el)return;
+    setTimeout(()=>{const s=performance.now();const f=now=>{const t=Math.min((now-s)/900,1);el.textContent=Math.round((1-Math.pow(1-t,3))*target);if(t<1)requestAnimationFrame(f);};requestAnimationFrame(f);},delay);
   }
-  countUp('cnt-p', 4, 600);
-  countUp('cnt-c', 3, 700);
+  countUp('cnt-p',6,600);
+  countUp('cnt-c',3,700);
 });
 </script>
 </body>
