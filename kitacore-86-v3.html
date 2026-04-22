@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>爆速投資ハック #86 — yfinance × Colab × Plotly | KITAcore</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens ─────────────────────────────────── */
+:root {
+  --or:#FF4B1A; --bk:#0C0C0C; --dk:#141414; --wh:#F4F4F2;
+  --gy:#E0E0DC; --tx:#111111; --tx2:#444444; --bd:#CCCCCC;
+  --fw:'Anton',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+  --fb:'Noto Sans JP',sans-serif;
+  --nav-w:220px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bk);color:var(--tx);cursor:crosshair;overflow-x:hidden}
+a,button,summary{cursor:pointer}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--or)}
+
+/* ── Boot ──────────────────────────────────────────── */
+#boot{position:fixed;inset:0;background:var(--bk);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:var(--fm);font-size:12px;color:#555;letter-spacing:.1em}
+#boot-lines{display:flex;flex-direction:column;gap:5px;min-height:140px}
+.boot-line{color:#444;opacity:0;transition:opacity .1s}
+.boot-line.ok{color:#888}
+.boot-line.ok::after{content:" [OK]";color:var(--or)}
+#boot-bar-wrap{width:240px;height:2px;background:#222;margin-top:16px}
+#boot-bar{width:0%;height:100%;background:var(--or);transition:width .5s ease}
+#boot-logo{font-family:var(--fw);font-size:28px;color:var(--wh);letter-spacing:.1em;margin-bottom:16px}
+#boot-logo span{color:var(--or)}
+
+/* ── Fixed Bars ────────────────────────────────────── */
+#top-status{position:fixed;top:0;left:0;right:0;height:26px;background:var(--bk);border-bottom:1px solid #222;font-family:var(--fm);font-size:10px;color:#555;letter-spacing:.12em;display:flex;align-items:center;padding:0 16px;gap:16px;z-index:200}
+#top-status::before{content:"●";color:var(--or);font-size:8px}
+#bot-status{position:fixed;bottom:0;left:0;right:0;height:24px;background:var(--or);font-family:var(--fm);font-size:10px;color:var(--bk);letter-spacing:.12em;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:200}
+
+/* ── Layout ────────────────────────────────────────── */
+#wrap{display:flex;padding-top:26px;padding-bottom:24px;min-height:100vh}
+
+/* ── Sidebar ───────────────────────────────────────── */
+#nav{width:var(--nav-w);background:var(--bk);border-right:1px solid #222;position:fixed;top:26px;bottom:24px;left:0;overflow-y:auto;z-index:100;padding:24px 0;display:flex;flex-direction:column}
+#nav-brand{font-family:var(--fw);font-size:13px;color:var(--wh);letter-spacing:.15em;padding:0 20px 20px;border-bottom:1px solid #222;margin-bottom:12px}
+#nav-brand span{color:var(--or)}
+.nav-section{padding:0 12px 8px}
+.nav-label{font-family:var(--fm);font-size:9px;color:#444;letter-spacing:.15em;text-transform:uppercase;padding:12px 8px 6px}
+.nav-item{display:block;padding:7px 8px;font-family:var(--fm);font-size:11px;color:#666;text-decoration:none;border-radius:2px;letter-spacing:.04em;transition:color 120ms,background 120ms;line-height:1.3}
+.nav-item:hover{color:var(--wh);background:#1a1a1a}
+.nav-item.active{color:var(--or)}
+.nav-num{font-size:9px;color:#333;margin-right:6px}
+
+/* ── Main ──────────────────────────────────────────── */
+#main{margin-left:var(--nav-w);flex:1}
+
+/* ── Sections ──────────────────────────────────────── */
+.sec{position:relative;padding:72px 64px;overflow:hidden}
+.sec-wh{background:var(--wh);color:var(--tx)}
+.sec-dk{background:var(--dk);color:var(--wh)}
+.sec-or{background:var(--or);color:var(--bk)}
+
+.sec::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
+.sec-dk::before{background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px)}
+.sec-or::before{background-image:linear-gradient(rgba(0,0,0,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.06) 1px,transparent 1px)}
+
+.scan-host::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(255,75,26,.022) 50%);background-size:100% 4px;pointer-events:none;animation:scan 8s linear infinite}
+@keyframes scan{to{background-position:0 100px}}
+
+.sec-bg-num{position:absolute;right:32px;top:50%;transform:translateY(-50%);font-family:var(--fw);font-size:200px;line-height:1;opacity:.04;pointer-events:none;user-select:none;letter-spacing:-.04em}
+.sec-dk .sec-bg-num{color:var(--wh)}
+.sec-wh .sec-bg-num{color:var(--bk)}
+.sec-or .sec-bg-num{color:var(--bk)}
+
+.xh{position:absolute;font-family:var(--fm);font-size:14px;color:var(--or);opacity:.5;animation:xhpulse 3s ease-in-out infinite;pointer-events:none;user-select:none}
+.xh-tl{top:16px;left:20px}.xh-br{bottom:16px;right:20px}
+.sec-or .xh{color:var(--bk)}
+@keyframes xhpulse{0%,100%{opacity:.3}50%{opacity:.7}}
+
+/* ── Typography ────────────────────────────────────── */
+.tag{display:inline-block;font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor;margin-bottom:16px;opacity:.6}
+.sec-title{font-family:var(--fw);font-size:clamp(36px,5vw,60px);line-height:1;letter-spacing:.02em;margin-bottom:24px}
+.sec-title .hl{color:var(--or)}
+.sec-or .sec-title .hl{color:var(--bk)}
+.sec-lead{font-size:15px;line-height:1.8;max-width:600px;color:var(--tx2)}
+.sec-dk .sec-lead{color:#aaa}
+.sec-or .sec-lead{color:rgba(0,0,0,.7)}
+
+/* ── Cards ─────────────────────────────────────────── */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:#ddd;border:1px solid #ddd;margin-top:40px}
+.card{background:var(--wh);padding:24px;position:relative}
+.card-num{font-family:var(--fm);font-size:11px;color:var(--or);letter-spacing:.1em;margin-bottom:8px}
+.card-title{font-family:var(--fw);font-size:22px;margin-bottom:8px;letter-spacing:.02em}
+.card-body{font-size:13px;color:var(--tx2);line-height:1.7}
+.card-icon{position:absolute;bottom:16px;right:16px;font-size:28px;opacity:.15}
+.card-dk{background:#1e1e1e;border:1px solid #2a2a2a}
+.card-dk .card-title{color:var(--wh)}
+.card-dk .card-body{color:#888}
+
+/* ── Step Flow ─────────────────────────────────────── */
+.step-flow{display:flex;flex-direction:column;gap:0;margin-top:40px;max-width:640px}
+.step{display:flex;gap:20px;position:relative;padding-bottom:32px}
+.step:last-child{padding-bottom:0}
+.step-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.step-num{width:36px;height:36px;background:var(--or);color:var(--bk);font-family:var(--fw);font-size:16px;display:flex;align-items:center;justify-content:center;border-radius:2px;flex-shrink:0}
+.step-connector{width:2px;flex:1;background:#333;margin-top:4px}
+.step:last-child .step-connector{display:none}
+.step-content{padding-top:6px}
+.step-title{font-family:var(--fw);font-size:20px;color:var(--wh);margin-bottom:6px;letter-spacing:.02em}
+.step-desc{font-size:13px;color:#888;line-height:1.7}
+.step-hint{margin-top:8px;font-family:var(--fm);font-size:11px;color:var(--or);letter-spacing:.05em}
+
+/* ── Code Blocks ───────────────────────────────────── */
+.code-block{background:#0a0a0a;border:1px solid #222;border-left:3px solid var(--or);border-radius:2px;margin-top:16px;overflow:hidden}
+.code-top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #1a1a1a}
+.code-filename{font-family:var(--fm);font-size:10px;color:#444;letter-spacing:.08em}
+.copy-btn{font-family:var(--fm);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#444;background:transparent;border:1px solid #333;border-radius:2px;padding:3px 10px;cursor:pointer;transition:color .15s,border-color .15s}
+.copy-btn:hover{color:var(--or);border-color:var(--or)}
+.copy-btn.ok{color:#4CAF50;border-color:#4CAF50}
+.code-body{padding:16px 20px;font-family:var(--fm);font-size:12px;color:#aaa;line-height:1.9;overflow-x:auto;white-space:pre}
+.code-body .cm{color:#3d4451}
+.code-body .ck{color:var(--or)}
+.code-body .cv{color:#7ec8e3}
+.code-body .cs{color:#a5d6a7}
+.code-body .cn{color:#f0b429}
+
+/* ── Chart Preview ─────────────────────────────────── */
+.chart-preview{background:#0a0a0a;border:1px solid #222;border-left:3px solid var(--or);border-radius:2px;padding:16px 20px;margin-top:16px}
+.chart-label{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+.chart-preview svg{width:100%;display:block}
+
+/* ── Tables ────────────────────────────────────────── */
+.op-table{width:100%;border-collapse:collapse;margin-top:24px;font-size:13px}
+.op-table th{text-align:left;font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;border-bottom:2px solid var(--or);color:var(--or)}
+.op-table td{padding:12px 16px;border-bottom:1px solid #222;color:#aaa;line-height:1.5;vertical-align:top}
+.op-table td:first-child{color:var(--wh);font-weight:500;white-space:nowrap}
+.op-table tr:last-child td{border-bottom:none}
+.op-table tr:hover td{background:rgba(255,255,255,.02)}
+
+.op-table-wh th{border-bottom-color:var(--bk);color:var(--bk)}
+.op-table-wh td{border-bottom-color:#ddd;color:var(--tx2)}
+.op-table-wh td:first-child{color:var(--tx)}
+.op-table-wh tr:hover td{background:rgba(0,0,0,.03)}
+
+/* ── Compare Grid ──────────────────────────────────── */
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#222;border:1px solid #222;border-radius:2px;margin-top:32px;overflow:hidden}
+.cmp-col{background:var(--dk);padding:28px 24px}
+.cmp-head{font-family:var(--fw);font-size:22px;color:var(--wh);margin-bottom:4px}
+.cmp-role{font-family:var(--fm);font-size:11px;color:var(--or);margin-bottom:16px}
+.cmp-col ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.cmp-col li{font-size:13px;color:#888;padding-left:16px;position:relative}
+.cmp-col li::before{content:"→";position:absolute;left:0;color:#555;font-family:var(--fm)}
+
+/* ── FAQ ───────────────────────────────────────────── */
+.faq-list{margin-top:40px;display:flex;flex-direction:column;gap:1px}
+details{border-bottom:1px solid #222}
+summary{padding:18px 0;font-family:var(--fb);font-size:14px;font-weight:600;color:var(--wh);list-style:none;display:flex;align-items:center;gap:12px;user-select:none}
+summary::-webkit-details-marker{display:none}
+.faq-icon{width:24px;height:24px;background:#222;color:var(--or);font-family:var(--fm);font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:2px;flex-shrink:0;transition:background .2s}
+details[open] .faq-icon{background:var(--or);color:var(--bk)}
+.faq-body{padding:0 0 20px 36px;font-size:13px;color:#888;line-height:1.8}
+.faq-body code{font-family:var(--fm);color:var(--or);font-size:11px}
+
+/* FAQ overrides for light (sec-wh) sections */
+.sec-wh details{border-bottom-color:#ddd}
+.sec-wh summary{color:var(--tx)}
+.sec-wh .faq-icon{background:#e4e4e0;color:var(--or)}
+.sec-wh details[open] .faq-icon{background:var(--or);color:var(--wh)}
+.sec-wh .faq-body{color:var(--tx2)}
+
+/* ── Cheat Rows ────────────────────────────────────── */
+.cheat-list{margin-top:32px;display:flex;flex-direction:column;gap:1px;border:1px solid rgba(0,0,0,.2)}
+.cheat-row{display:flex;gap:24px;align-items:flex-start;padding:14px 20px;background:rgba(0,0,0,.1);border-bottom:1px solid rgba(0,0,0,.15);font-size:13px}
+.cheat-row:last-child{border-bottom:none}
+.cheat-key{font-family:var(--fm);font-size:11px;color:rgba(0,0,0,.5);min-width:140px;flex-shrink:0;padding-top:1px}
+.cheat-val{color:rgba(0,0,0,.7);line-height:1.6}
+.cheat-val code{font-family:var(--fm);background:rgba(0,0,0,.15);padding:1px 6px;border-radius:2px;font-size:11px;color:rgba(0,0,0,.8)}
+
+/* ── Reveal ────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ── Tip Box ───────────────────────────────────────── */
+.tip-box{background:#1e1e1e;border:1px solid #2a2a2a;border-left:3px solid var(--or);padding:20px 24px;border-radius:2px;margin-top:16px}
+.tip-label{font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.tip-body{font-size:13px;color:#888;line-height:1.8}
+
+.tip-box-wh{background:#f8f8f6;border:1px solid #ddd;border-left:3px solid var(--tx);padding:20px 24px;border-radius:2px;margin-top:16px}
+.tip-box-wh .tip-label{color:var(--tx)}
+.tip-box-wh .tip-body{color:var(--tx2)}
+
+/* ── Mobile ────────────────────────────────────────── */
+#mob-nav-btn{display:none;position:fixed;bottom:40px;right:16px;width:44px;height:44px;background:var(--or);color:var(--bk);border:none;font-size:18px;z-index:300;border-radius:2px;align-items:center;justify-content:center}
+#nav-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99}
+@media(max-width:768px){
+  /* ── Nav ── */
+  #nav{transform:translateX(-100%);transition:transform .3s}
+  #nav.open{transform:translateX(0)}
+  #main{margin-left:0}
+  #mob-nav-btn{display:flex}
+  #nav-backdrop.open{display:block}
+
+  /* ── Status bars ── */
+  #top-status{font-size:9px;gap:8px;padding:0 12px;overflow:hidden;white-space:nowrap}
+  #bot-status{font-size:9px;padding:0 12px}
+  #bot-status span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%}
+
+  /* ── Sections ── */
+  .sec{padding:40px 20px}
+  .sec-bg-num{font-size:72px;right:8px}
+  .xh{display:none}
+
+  /* ── Typography ── */
+  .sec-title{font-size:clamp(28px,9vw,42px) !important;margin-bottom:16px}
+  .sec-lead{font-size:14px;max-width:100%}
+  .tag{font-size:9px}
+
+  /* ── Cards ── */
+  .card-grid{grid-template-columns:1fr}
+  .cmp-grid{grid-template-columns:1fr}
+
+  /* ── Inline 2-col → 1-col on mobile ── */
+  .mob-1col{grid-template-columns:1fr !important}
+
+  /* ── Step flow ── */
+  .step-flow{max-width:100%}
+  .step-title{font-size:16px}
+  .step-desc{font-size:12px}
+  .step-hint{font-size:10px}
+
+  /* ── Code blocks ── */
+  .code-block{margin-top:12px}
+  .code-body{font-size:11px;line-height:1.7;padding:12px 14px}
+  .code-top{padding:8px 12px}
+  .code-filename{font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+
+  /* ── Chart preview ── */
+  .chart-preview{padding:12px 14px}
+
+  /* ── Tables ── */
+  .op-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .op-table td:first-child{min-width:100px}
+
+  /* ── Compare grid ── */
+  .cmp-col{padding:20px 16px}
+
+  /* ── Tip boxes ── */
+  .tip-box,.tip-box-wh{padding:14px 16px}
+
+  /* ── Cheat sheet ── */
+  .cheat-row{flex-direction:column;gap:6px;padding:12px 14px}
+  .cheat-key{min-width:unset}
+
+  /* ── FAQ ── */
+  summary{font-size:13px}
+  .faq-body{padding:0 0 16px 32px;font-size:12px}
+
+  /* ── Boot ── */
+  #boot{padding:24px}
+  #boot-logo{font-size:22px}
+  #boot-lines{font-size:11px}
+  #boot-bar-wrap{width:200px}
+}
+</style>
+</head>
+<body>
+
+<!-- Boot -->
+<div id="boot">
+  <div id="boot-logo">KITA<span>core</span></div>
+  <div id="boot-lines">
+    <div class="boot-line" id="bl0">INITIALIZING INVESTMENT HACK MODULE...</div>
+    <div class="boot-line" id="bl1">LOADING yfinance INTERFACE</div>
+    <div class="boot-line" id="bl2">LOADING PLOTLY CHART ENGINE</div>
+    <div class="boot-line" id="bl3">LOADING CANDLESTICK MODULE</div>
+    <div class="boot-line" id="bl4">LOADING HORIZONTAL LINE METHOD</div>
+    <div class="boot-line" id="bl5">LOADING MULTI-TICKER COMPARATOR</div>
+    <div class="boot-line" id="bl6">FIELD GUIDE READY</div>
+  </div>
+  <div id="boot-bar-wrap"><div id="boot-bar"></div></div>
+</div>
+
+<!-- Fixed Bars -->
+<div id="top-status">KITACORE #86 — yfinance × Colab × Plotly / STATUS: OPERATIONAL</div>
+<div id="bot-status">
+  <span>爆速投資ハック — EXCEL地獄から5分で脱出</span>
+  <span>® KITAcore 2026</span>
+</div>
+
+<!-- Layout -->
+<div id="wrap">
+
+  <!-- Sidebar -->
+  <nav id="nav">
+    <div id="nav-brand">KITA<span>core</span> #86</div>
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a href="#s01" class="nav-item"><span class="nav-num">01</span>ツール概要</a>
+      <a href="#s02" class="nav-item"><span class="nav-num">02</span>全体の流れ</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">セットアップ</div>
+      <a href="#s03" class="nav-item"><span class="nav-num">03</span>環境構築</a>
+      <a href="#s04" class="nav-item"><span class="nav-num">04</span>データ取得</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">チャート</div>
+      <a href="#s05" class="nav-item"><span class="nav-num">05</span>チャート一覧</a>
+      <a href="#s06" class="nav-item"><span class="nav-num">06</span>折れ線</a>
+      <a href="#s07" class="nav-item"><span class="nav-num">07</span>ローソク足</a>
+      <a href="#s08" class="nav-item"><span class="nav-num">08</span>移動平均</a>
+      <a href="#s09" class="nav-item"><span class="nav-num">09</span>RSI</a>
+      <a href="#s10" class="nav-item"><span class="nav-num">10</span>水平線</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">応用</div>
+      <a href="#s11" class="nav-item"><span class="nav-num">11</span>複数銘柄比較</a>
+      <a href="#s12" class="nav-item"><span class="nav-num">12</span>ツール戦略</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Tips</div>
+      <a href="#s13" class="nav-item"><span class="nav-num">13</span>FAQ</a>
+      <a href="#s14" class="nav-item"><span class="nav-num">14</span>チートシート</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- S01: Hero -->
+    <section class="sec sec-wh scan-host" id="s01">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">01</div>
+      <div class="tag reveal">KITAcore #86</div>
+      <h1 class="sec-title reveal">爆速<span class="hl">投資ハック</span><br>EXCEL地獄から<br>5分で脱出</h1>
+      <p class="sec-lead reveal">
+        yfinance × Google Colab × Plotly で「取る → 見える → 比べる」をブラウザひとつ、<br>コピペだけで完結させる。<br>Python 初心者でも動く。無料。インストール不要。
+      </p>
+      <div class="card-grid reveal" style="margin-top:40px">
+        <div class="card">
+          <div class="card-num">機能 01</div>
+          <div class="card-title">データ取得</div>
+          <div class="card-body">yfinance で日本株・米国株・ETF・為替を数行で取得。銘柄コードを変えるだけ。</div>
+          <div class="card-icon">↓</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 02</div>
+          <div class="card-title">折れ線チャート</div>
+          <div class="card-body">終値の時系列を可視化する基本形。<br>ホバー・ズーム・PNG保存が自動で付く。</div>
+          <div class="card-icon">📈</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 03</div>
+          <div class="card-title">ローソク足</div>
+          <div class="card-body">OHLC（始値・高値・安値・終値）を1本で表現。<br>トレーダー定番のチャート。</div>
+          <div class="card-icon">🕯</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 04</div>
+          <div class="card-title">移動平均 / RSI</div>
+          <div class="card-body">SMAでトレンドを、RSIで過熱感を数値化。<br>テクニカル分析の定番指標。</div>
+          <div class="card-icon">〜</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 05</div>
+          <div class="card-title">水平線</div>
+          <div class="card-body">支持線・抵抗線（キリバン）を <code style="font-family:var(--fm);color:var(--or)">add_hline()</code> で一発描画。</div>
+          <div class="card-icon">─</div>
+        </div>
+        <div class="card">
+          <div class="card-num">機能 06</div>
+          <div class="card-title">複数銘柄比較</div>
+          <div class="card-body">2銘柄以上を重ね描き。<br>正規化（初日=100）で伸び率を純粋に比較。</div>
+          <div class="card-icon">⊞</div>
+        </div>
+      </div>
+
+      <!-- 対象者 + 3ツール比較 -->
+      <div style="margin-top:56px" class="reveal">
+        <div class="tag" style="margin-bottom:20px">このガイドの対象者</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#ddd;border:1px solid #ddd;margin-bottom:48px" class="mob-1col">
+          <div style="background:var(--wh);padding:20px 24px">
+            <div style="font-family:var(--fm);font-size:10px;color:var(--or);letter-spacing:.12em;margin-bottom:10px">こんな人に向いてる</div>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--tx2);line-height:1.6">
+              <li style="padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--or)">→</span>証券会社のチャートだけでは物足りない</li>
+              <li style="padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--or)">→</span>TradingViewは使わず自分で管理・可視化したい</li>
+              <li style="padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--or)">→</span>ExcelやスプレッドシートからPythonに移行したい</li>
+              <li style="padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--or)">→</span>Python は初心者〜少し触ったことがある程度</li>
+            </ul>
+          </div>
+          <div style="background:var(--wh);padding:20px 24px">
+            <div style="font-family:var(--fm);font-size:10px;color:#bbb;letter-spacing:.12em;margin-bottom:10px">こんな人は対象外</div>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;color:#bbb;line-height:1.6">
+              <li style="padding-left:14px;position:relative"><span style="position:absolute;left:0">→</span>すでに pandas/Plotly を使いこなしている</li>
+              <li style="padding-left:14px;position:relative"><span style="position:absolute;left:0">→</span>アルゴリズムトレードを本格的に組みたい</li>
+              <li style="padding-left:14px;position:relative"><span style="position:absolute;left:0">→</span>リアルタイムデータが必要</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3ツール比較表 -->
+        <div class="tag" style="margin-bottom:20px">3つの管理方法を比較する</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:540px">
+            <thead>
+              <tr>
+                <th style="text-align:left;font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;border-bottom:2px solid #ddd;color:var(--tx2);font-weight:500;width:30%"></th>
+                <th style="text-align:center;font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;border-bottom:2px solid #ddd;color:var(--tx2);font-weight:500">Excel / スプシ</th>
+                <th style="text-align:center;font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;border-bottom:2px solid var(--or);color:var(--or);font-weight:600;background:rgba(255,75,26,.04)">Google Colab ← このガイド</th>
+                <th style="text-align:center;font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;border-bottom:2px solid #ddd;color:var(--tx2);font-weight:500">TradingView</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--tx);font-weight:500">データ取得</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">手動コピペ</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--or);text-align:center;font-weight:600;background:rgba(255,75,26,.03)">自動（yfinance）</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">自動</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--tx);font-weight:500">チャート</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">静的グラフ</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--or);text-align:center;font-weight:600;background:rgba(255,75,26,.03)">インタラクティブ</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">インタラクティブ</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--tx);font-weight:500">カスタム分析</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">限界あり</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--or);text-align:center;font-weight:600;background:rgba(255,75,26,.03)">自由度高い</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">限界あり</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--tx);font-weight:500">複数銘柄比較</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">しんどい</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--or);text-align:center;font-weight:600;background:rgba(255,75,26,.03)">数行で完結</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">できる</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--tx);font-weight:500">リアルタイム</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">✗</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center;background:rgba(255,75,26,.03)">✗</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#4ade80;text-align:center;font-weight:600">✓</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--tx);font-weight:500">コスト</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">無料</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:var(--or);text-align:center;font-weight:600;background:rgba(255,75,26,.03)">無料</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #eee;color:#aaa;text-align:center">無料〜有料</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;color:var(--tx);font-weight:500">難易度</td>
+                <td style="padding:12px 16px;color:#aaa;text-align:center">低</td>
+                <td style="padding:12px 16px;color:var(--or);text-align:center;font-weight:600;background:rgba(255,75,26,.03)">中（コピペで可）</td>
+                <td style="padding:12px 16px;color:#aaa;text-align:center">低</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;font-family:var(--fm);font-size:11px;color:#bbb;letter-spacing:.04em">
+          ※ リアルタイムデータが必要な場面は TradingView を、自分好みの分析・管理は Colab を使い分けるのが最強。
+        </div>
+      </div>
+    </section>
+    <section class="sec sec-dk scan-host" id="s02">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">02</div>
+      <div class="tag reveal" style="color:#888">Workflow</div>
+      <h2 class="sec-title reveal"><span class="hl">4ステップ</span>で<br>完結する</h2>
+      <p class="sec-lead reveal">Google Colab を開いてコピペするだけ。インストールは不要。</p>
+      <div class="step-flow reveal">
+        <div class="step">
+          <div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div>
+          <div class="step-content">
+            <div class="step-title">セットアップ</div>
+            <div class="step-desc">Google Colab を開き、yfinance と Plotly をインストールする。1セルで完了。</div>
+            <div class="step-hint">→ !pip install yfinance plotly</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div>
+          <div class="step-content">
+            <div class="step-title">データ取得</div>
+            <div class="step-desc">銘柄コードと期間を指定してデータを取得。日本株は末尾に <code style="color:var(--or);font-family:var(--fm)">.T</code> を付ける。</div>
+            <div class="step-hint">→ yf.Ticker("9432.T").history(period="6mo")</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-num">3</div><div class="step-connector"></div></div>
+          <div class="step-content">
+            <div class="step-title">可視化</div>
+            <div class="step-desc">Plotly で折れ線・ローソク足・SMA・RSI・水平線の5種類のチャートを描画。</div>
+            <div class="step-hint">→ px.line() / go.Candlestick() / add_hline()</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-num">4</div><div class="step-connector"></div></div>
+          <div class="step-content">
+            <div class="step-title">比較分析</div>
+            <div class="step-desc">複数銘柄を重ね描き。正規化で「どの銘柄が一番伸びたか」を純粋に比較する。</div>
+            <div class="step-hint">→ yf.download() → 正規化 → px.line(color="Ticker")</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S03: セットアップ -->
+    <section class="sec sec-or" id="s03">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">03</div>
+      <div class="tag reveal">Setup</div>
+      <h2 class="sec-title reveal">Google Colabを<br><span class="hl">開くところから</span></h2>
+      <p class="sec-lead reveal">Google Colab はブラウザだけで動く無料の Python 実行環境。インストール不要、Googleアカウントがあれば今すぐ始められる。</p>
+
+      <!-- Colab intro steps -->
+      <div class="step-flow reveal">
+        <div class="step">
+          <div class="step-line"><div class="step-num" style="background:var(--bk);color:var(--wh)">1</div><div class="step-connector" style="background:rgba(0,0,0,.2)"></div></div>
+          <div class="step-content">
+            <div class="step-title" style="color:var(--bk)">Colabを開く</div>
+            <div class="step-desc" style="color:rgba(0,0,0,.6)">ブラウザで <strong>colab.research.google.com</strong> にアクセス。Googleアカウントでログインする（Gmailと同じアカウントでOK）。</div>
+            <div class="step-hint" style="color:var(--bk)">→ colab.research.google.com</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-num" style="background:var(--bk);color:var(--wh)">2</div><div class="step-connector" style="background:rgba(0,0,0,.2)"></div></div>
+          <div class="step-content">
+            <div class="step-title" style="color:var(--bk)">新しいノートブックを作る</div>
+            <div class="step-desc" style="color:rgba(0,0,0,.6)">左上「ファイル」→「新しいノートブック」をクリック。白い画面に「+ コード」と書かれたセルが1つ表示されれば準備OK。</div>
+            <div class="step-hint" style="color:var(--bk)">→ ファイル → 新しいノートブック</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-num" style="background:var(--bk);color:var(--wh)">3</div><div class="step-connector" style="background:rgba(0,0,0,.2)"></div></div>
+          <div class="step-content">
+            <div class="step-title" style="color:var(--bk)">コードをコピペして ▶ を押す</div>
+            <div class="step-desc" style="color:rgba(0,0,0,.6)">このページのコードブロックをコピーして、Colabのセルに貼り付ける。セルの左にある ▶ ボタン（または <kbd style="background:rgba(0,0,0,.15);border-color:rgba(0,0,0,.3);color:var(--bk)">Shift</kbd> + <kbd style="background:rgba(0,0,0,.15);border-color:rgba(0,0,0,.3);color:var(--bk)">Enter</kbd>）で実行する。</div>
+            <div class="step-hint" style="color:var(--bk)">→ セルに貼り付け → ▶ をクリック</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-num" style="background:var(--bk);color:var(--wh)">4</div></div>
+          <div class="step-content">
+            <div class="step-title" style="color:var(--bk)">結果がセルの下に表示される</div>
+            <div class="step-desc" style="color:rgba(0,0,0,.6)">実行が終わると、セルの下にグラフや数字が表示される。エラーが出たら赤字でメッセージが出るので、次のセクションのTIPを参照。</div>
+            <div class="step-hint" style="color:var(--bk)">→ セルの下にグラフが出れば成功！</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- セル構成の説明 -->
+      <div style="margin-top:32px;background:rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.18);padding:20px 24px;border-radius:2px;" class="reveal">
+        <div style="font-family:var(--fm);font-size:10px;color:rgba(0,0,0,.4);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px">ノートブックのセル構成（全部で7セル）</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;font-size:12px">
+          <div style="background:rgba(0,0,0,.1);padding:10px 12px;border-radius:2px;font-family:var(--fm)"><span style="color:rgba(0,0,0,.4)">セル 1</span><br><span style="color:rgba(0,0,0,.8)">セットアップ</span></div>
+          <div style="background:rgba(0,0,0,.1);padding:10px 12px;border-radius:2px;font-family:var(--fm)"><span style="color:rgba(0,0,0,.4)">セル 2</span><br><span style="color:rgba(0,0,0,.8)">データ取得</span></div>
+          <div style="background:rgba(0,0,0,.1);padding:10px 12px;border-radius:2px;font-family:var(--fm)"><span style="color:rgba(0,0,0,.4)">セル 3a</span><br><span style="color:rgba(0,0,0,.8)">折れ線</span></div>
+          <div style="background:rgba(0,0,0,.1);padding:10px 12px;border-radius:2px;font-family:var(--fm)"><span style="color:rgba(0,0,0,.4)">セル 3b</span><br><span style="color:rgba(0,0,0,.8)">ローソク足</span></div>
+          <div style="background:rgba(0,0,0,.1);padding:10px 12px;border-radius:2px;font-family:var(--fm)"><span style="color:rgba(0,0,0,.4)">セル 3c〜e</span><br><span style="color:rgba(0,0,0,.8)">SMA / RSI / 水平線</span></div>
+          <div style="background:rgba(0,0,0,.1);padding:10px 12px;border-radius:2px;font-family:var(--fm)"><span style="color:rgba(0,0,0,.4)">セル 4</span><br><span style="color:rgba(0,0,0,.8)">複数銘柄比較</span></div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:rgba(0,0,0,.5);font-family:var(--fm)">※ セル 1 を実行してからセル 2 以降を実行する。セルは上から順番に実行すること。</div>
+      </div>
+
+      <div style="margin-top:24px;font-family:var(--fw);font-size:20px;color:var(--bk);letter-spacing:.02em;" class="reveal">セル 1 — セットアップコード</div>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_01_setup.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title ─── セル 1：一撃セットアップ ────────────────</span>
+<span class="ck">!pip</span> -q install yfinance plotly
+
+<span class="ck">import</span> <span class="cv">yfinance</span> <span class="ck">as</span> <span class="cv">yf</span>
+<span class="ck">import</span> <span class="cv">pandas</span>   <span class="ck">as</span> <span class="cv">pd</span>
+<span class="ck">import</span> <span class="cv">plotly.express</span>      <span class="ck">as</span> <span class="cv">px</span>
+<span class="ck">import</span> <span class="cv">plotly.graph_objects</span> <span class="ck">as</span> <span class="cv">go</span>
+        </div>
+      </div>
+      <div style="margin-top:20px;background:rgba(0,0,0,.15);border:1px solid rgba(0,0,0,.2);padding:16px 20px;border-radius:2px;" class="reveal">
+        <div style="font-family:var(--fm);font-size:10px;color:rgba(0,0,0,.4);letter-spacing:.1em;margin-bottom:6px">⚠ TIP</div>
+        <div style="font-size:13px;color:rgba(0,0,0,.6);line-height:1.8"><code style="font-family:var(--fm)">ModuleNotFoundError</code> が出た場合は <code style="font-family:var(--fm)">!pip install yfinance</code> を別セルで単独実行してから再試行。</div>
+      </div>
+    </section>
+
+    <!-- S04: データ取得 -->
+    <section class="sec sec-dk scan-host" id="s04">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">04</div>
+      <div class="tag reveal" style="color:#888">Data Fetch</div>
+      <h2 class="sec-title reveal">株価を<br><span class="hl">数行で</span>取得する</h2>
+      <p class="sec-lead reveal">yfinance は Yahoo Finance の非公式ラッパー。銘柄コードを渡すだけで株価履歴が DataFrame で返ってくる。</p>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_02_fetch.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title ─── セル 2：株価の取得 ──────────────────────</span>
+<span class="cv">ticker</span> = <span class="cv">yf</span>.Ticker(<span class="cs">"9432.T"</span>)           <span class="cm"># 日本株：銘柄コード + .T</span>
+<span class="cv">data</span>   = <span class="cv">ticker</span>.history(period=<span class="cs">"1d"</span>)   <span class="cm"># period: 1d / 1mo / 6mo / 1y ...</span>
+
+<span class="ck">print</span>(<span class="cs">f"NTTの終値: {data['Close'].iloc[-1]:.2f} 円"</span>)
+        </div>
+      </div>
+      <table class="op-table reveal" style="margin-top:32px">
+        <thead><tr><th>コード</th><th>銘柄 / 資産</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>9432.T</td><td>NTT</td><td>日本株（末尾 <code style="font-family:var(--fm);color:var(--or)">.T</code> が必要）</td></tr>
+          <tr><td>7203.T</td><td>トヨタ自動車</td><td></td></tr>
+          <tr><td>6758.T</td><td>ソニーグループ</td><td></td></tr>
+          <tr><td>AAPL</td><td>Apple Inc.</td><td>米国株（サフィックス不要）</td></tr>
+          <tr><td>SPY</td><td>S&P500 ETF</td><td></td></tr>
+          <tr><td>USDJPY=X</td><td>ドル円</td><td>為替</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box reveal">
+        <div class="tip-label">NOTE — 短期足について</div>
+        <div class="tip-body">1分足・5分足は Yahoo Finance 側の制限で取得できないことが多い。まず <code style="font-family:var(--fm);color:var(--or)">interval="1d"</code>（日足）で始めると安定する。</div>
+      </div>
+    </section>
+
+    <!-- S05: チャート一覧 -->
+    <section class="sec sec-wh" id="s05">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">05</div>
+      <div class="tag reveal">Charts</div>
+      <h2 class="sec-title reveal">5種の<span class="hl">チャート</span><br>どれを使う？</h2>
+      <p class="sec-lead reveal">Plotly はインタラクティブがデフォルト。ホバー・ズーム・PNG 保存が自動で付いてくる。目的に合わせてチャートを選ぼう。</p>
+      <div class="card-grid reveal">
+        <div class="card">
+          <div class="card-num">03a — LINE</div>
+          <div class="card-title">折れ線</div>
+          <div class="card-body">終値の時系列を把握する基本形。まず最初に作るグラフ。</div>
+          <div class="card-icon">📈</div>
+        </div>
+        <div class="card">
+          <div class="card-num">03b — CANDLE</div>
+          <div class="card-title">ローソク足</div>
+          <div class="card-body">OHLC を1本で表現。トレーダー定番。値動きの強さを見たい時。</div>
+          <div class="card-icon">🕯</div>
+        </div>
+        <div class="card">
+          <div class="card-num">03c — SMA</div>
+          <div class="card-title">移動平均</div>
+          <div class="card-body">終値を平滑化。ゴールデン／デッドクロスでトレンド転換を読む。</div>
+          <div class="card-icon">〜</div>
+        </div>
+        <div class="card">
+          <div class="card-num">03d — RSI</div>
+          <div class="card-title">RSI</div>
+          <div class="card-body">過熱感を0〜100で数値化。70↑=買われ過ぎ、30↓=売られ過ぎ。</div>
+          <div class="card-icon">⚡</div>
+        </div>
+        <div class="card">
+          <div class="card-num">03e — HLINE</div>
+          <div class="card-title">水平線</div>
+          <div class="card-body">支持線・抵抗線をキリバンに引く。シンプルで精度が高い手法。</div>
+          <div class="card-icon">─</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S06: 折れ線 -->
+    <section class="sec sec-dk scan-host" id="s06">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">06</div>
+      <div class="tag reveal" style="color:#888">03a — Line Chart</div>
+      <h2 class="sec-title reveal">折れ線<span class="hl">チャート</span></h2>
+      <p class="sec-lead reveal">6 か月分の終値推移を折れ線で確認する最もシンプルなグラフ。まずここから始めよう。</p>
+      <div class="chart-preview reveal">
+        <div class="chart-label">▶ PREVIEW — NTT(9432.T) 終値 6mo</div>
+        <svg viewBox="0 0 680 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="85" x2="680" y2="85" stroke="#1a1a1a" stroke-width="1"/>
+          <line x1="0" y1="50" x2="680" y2="50" stroke="#1a1a1a" stroke-width="1"/>
+          <line x1="0" y1="15" x2="680" y2="15" stroke="#1a1a1a" stroke-width="1"/>
+          <path d="M0,72 C40,70 60,58 100,54 S160,64 210,58 S280,42 340,38 S410,46 470,40 S540,28 610,24 S660,22 680,20"
+                stroke="#FF4B1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M0,72 C40,70 60,58 100,54 S160,64 210,58 S280,42 340,38 S410,46 470,40 S540,28 610,24 S660,22 680,20 L680,85 L0,85 Z"
+                fill="#FF4B1A" fill-opacity="0.06"/>
+        </svg>
+      </div>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_03a_line_chart.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title 03a — 終値の折れ線チャート ──────────────────</span>
+<span class="cv">ticker_symbol</span> = <span class="cs">"9432.T"</span>   <span class="cm"># 変更OK（例: 7203.T=トヨタ）</span>
+<span class="cv">period</span>        = <span class="cs">"6mo"</span>      <span class="cm"># 1mo / 3mo / 6mo / 1y / 2y / max</span>
+<span class="cv">interval</span>      = <span class="cs">"1d"</span>       <span class="cm"># 1d / 1wk / 1mo</span>
+
+<span class="cv">df</span> = <span class="cv">yf</span>.Ticker(<span class="cv">ticker_symbol</span>).history(period=<span class="cv">period</span>, interval=<span class="cv">interval</span>)
+<span class="cv">df</span> = <span class="cv">df</span>.reset_index()  <span class="cm"># Date をグラフの X 軸に使うため列形式に変換</span>
+
+<span class="cv">fig</span> = <span class="cv">px</span>.line(<span class="cv">df</span>, x=<span class="cs">"Date"</span>, y=<span class="cs">"Close"</span>,
+               title=<span class="cs">f"{ticker_symbol} Close ({period})"</span>)
+<span class="cv">fig</span>.update_layout(xaxis_title=<span class="cs">"Date"</span>, yaxis_title=<span class="cs">"Close (JPY)"</span>)
+<span class="cv">fig</span>.show()
+        </div>
+      </div>
+      <div class="tip-box reveal">
+        <div class="tip-label">できること</div>
+        <div class="tip-body">グラフ上をなぞると日付ごとの株価がホバー表示。右上のカメラアイコンで PNG 保存もできる。</div>
+      </div>
+    </section>
+
+    <!-- S07: ローソク足 -->
+    <section class="sec sec-wh" id="s07">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">07</div>
+      <div class="tag reveal">03b — Candlestick</div>
+      <h2 class="sec-title reveal">ローソク足<br><span class="hl">チャート</span></h2>
+      <p class="sec-lead reveal">始値・高値・安値・終値（OHLC）を 1 本のローソクで表現。上ヒゲ・下ヒゲ・陽線・陰線で値動きの強さが一目でわかる。</p>
+      <div class="chart-preview reveal">
+        <div class="chart-label">▶ PREVIEW — ローソク足</div>
+        <svg viewBox="0 0 680 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="85" x2="680" y2="85" stroke="#1a1a1a" stroke-width="1"/>
+          <line x1="60"  y1="18" x2="60"  y2="78" stroke="#4ade80" stroke-width="1"/><rect x="52" y="30" width="16" height="36" fill="#4ade80" rx="1"/>
+          <line x1="115" y1="22" x2="115" y2="72" stroke="#f87171" stroke-width="1"/><rect x="107" y="32" width="16" height="28" fill="#f87171" rx="1"/>
+          <line x1="170" y1="16" x2="170" y2="65" stroke="#4ade80" stroke-width="1"/><rect x="162" y="26" width="16" height="30" fill="#4ade80" rx="1"/>
+          <line x1="225" y1="20" x2="225" y2="62" stroke="#f87171" stroke-width="1"/><rect x="217" y="30" width="16" height="24" fill="#f87171" rx="1"/>
+          <line x1="280" y1="14" x2="280" y2="58" stroke="#4ade80" stroke-width="1"/><rect x="272" y="22" width="16" height="28" fill="#4ade80" rx="1"/>
+          <line x1="335" y1="16" x2="335" y2="52" stroke="#4ade80" stroke-width="1"/><rect x="327" y="22" width="16" height="24" fill="#4ade80" rx="1"/>
+          <line x1="390" y1="18" x2="390" y2="56" stroke="#f87171" stroke-width="1"/><rect x="382" y="26" width="16" height="22" fill="#f87171" rx="1"/>
+          <line x1="445" y1="12" x2="445" y2="50" stroke="#4ade80" stroke-width="1"/><rect x="437" y="18" width="16" height="26" fill="#4ade80" rx="1"/>
+          <line x1="500" y1="14" x2="500" y2="48" stroke="#4ade80" stroke-width="1"/><rect x="492" y="20" width="16" height="22" fill="#4ade80" rx="1"/>
+          <line x1="555" y1="16" x2="555" y2="52" stroke="#f87171" stroke-width="1"/><rect x="547" y="24" width="16" height="20" fill="#f87171" rx="1"/>
+          <line x1="610" y1="10" x2="610" y2="46" stroke="#4ade80" stroke-width="1"/><rect x="602" y="16" width="16" height="24" fill="#4ade80" rx="1"/>
+        </svg>
+      </div>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_03b_candlestick.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title 03b — ローソク足チャート ────────────────────</span>
+<span class="cv">df</span> = <span class="cv">yf</span>.Ticker(<span class="cv">ticker_symbol</span>).history(period=<span class="cv">period</span>, interval=<span class="cv">interval</span>).reset_index()
+
+<span class="cv">fig</span> = <span class="cv">go</span>.Figure(data=[<span class="cv">go</span>.Candlestick(
+    x=<span class="cv">df</span>[<span class="cs">"Date"</span>],
+    open=<span class="cv">df</span>[<span class="cs">"Open"</span>], high=<span class="cv">df</span>[<span class="cs">"High"</span>],
+    low=<span class="cv">df</span>[<span class="cs">"Low"</span>],  close=<span class="cv">df</span>[<span class="cs">"Close"</span>]
+)])
+<span class="cv">fig</span>.update_layout(
+    title=<span class="cs">f"{ticker_symbol} Candlestick ({period})"</span>,
+    xaxis_rangeslider_visible=<span class="ck">False</span>  <span class="cm"># 下部スライダーを非表示</span>
+)
+<span class="cv">fig</span>.show()
+        </div>
+      </div>
+      <table class="op-table op-table-wh reveal" style="margin-top:24px">
+        <thead><tr><th>要素</th><th>意味</th></tr></thead>
+        <tbody>
+          <tr><td>陽線（緑）</td><td>始値より終値が高い。その日は上昇した。</td></tr>
+          <tr><td>陰線（赤）</td><td>始値より終値が低い。その日は下落した。</td></tr>
+          <tr><td>上ヒゲ</td><td>日中の最高値。ここから売りが入った。</td></tr>
+          <tr><td>下ヒゲ</td><td>日中の最安値。ここから買いが入った。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- S08: SMA -->
+    <section class="sec sec-or" id="s08">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">08</div>
+      <div class="tag reveal">03c — Moving Average</div>
+      <h2 class="sec-title reveal">移動平均<br><span class="hl">（SMA）</span>重ね描き</h2>
+      <p class="sec-lead reveal">終値を平滑化してトレンドを明確にする。2 本の線が交差するポイントで売買シグナルを読む。</p>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_03c_moving_average.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title 03c — 移動平均（SMA）を重ね描き ────────────</span>
+<span class="cv">window</span> = <span class="cn">25</span>  <span class="cm"># SMA の期間（日）。国内では 25日・75日 が一般的</span>
+
+<span class="cv">df</span> = <span class="cv">yf</span>.Ticker(<span class="cv">ticker_symbol</span>).history(period=<span class="cv">period</span>, interval=<span class="cv">interval</span>).reset_index()
+<span class="cv">df</span>[<span class="cs">"SMA"</span>] = <span class="cv">df</span>[<span class="cs">"Close"</span>].rolling(window=<span class="cv">window</span>).mean()  <span class="cm"># 移動平均を計算</span>
+
+<span class="cv">fig</span> = <span class="cv">go</span>.Figure()
+<span class="cv">fig</span>.add_trace(<span class="cv">go</span>.Scatter(x=<span class="cv">df</span>[<span class="cs">"Date"</span>], y=<span class="cv">df</span>[<span class="cs">"Close"</span>], name=<span class="cs">"Close"</span>, mode=<span class="cs">"lines"</span>))
+<span class="cv">fig</span>.add_trace(<span class="cv">go</span>.Scatter(x=<span class="cv">df</span>[<span class="cs">"Date"</span>], y=<span class="cv">df</span>[<span class="cs">"SMA"</span>],   name=<span class="cs">f"SMA({window})"</span>, mode=<span class="cs">"lines"</span>))
+<span class="cv">fig</span>.update_layout(title=<span class="cs">f"{ticker_symbol} Close + SMA({window})"</span>)
+<span class="cv">fig</span>.show()
+        </div>
+      </div>
+      <div style="margin-top:20px;background:rgba(0,0,0,.15);border:1px solid rgba(0,0,0,.2);padding:16px 20px;border-radius:2px;" class="reveal">
+        <div style="font-family:var(--fm);font-size:10px;color:rgba(0,0,0,.4);letter-spacing:.1em;margin-bottom:8px">読み方</div>
+        <div style="font-size:13px;color:rgba(0,0,0,.65);line-height:1.9">
+          <strong>ゴールデンクロス</strong>：短期線が長期線を上抜け → 上昇転換のシグナル<br>
+          <strong>デッドクロス</strong>：短期線が長期線を下抜け → 下落転換のシグナル
+        </div>
+      </div>
+    </section>
+
+    <!-- S09: RSI -->
+    <section class="sec sec-dk scan-host" id="s09">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">09</div>
+      <div class="tag reveal" style="color:#888">03d — RSI</div>
+      <h2 class="sec-title reveal">RSI<br><span class="hl">（相対力指数）</span></h2>
+      <p class="sec-lead reveal">過熱感を 0〜100 のスケールで数値化。終値と 2 軸で並べて表示する。</p>
+      <div class="chart-preview reveal">
+        <div class="chart-label">▶ PREVIEW — RSI(14)</div>
+        <svg viewBox="0 0 680 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="22" x2="680" y2="22" stroke="#f87171" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>
+          <line x1="0" y1="50" x2="680" y2="50" stroke="#1a1a1a" stroke-width="1"/>
+          <line x1="0" y1="78" x2="680" y2="78" stroke="#4ade80" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>
+          <path d="M0,68 L80,54 L160,28 L220,16 L300,22 L380,38 L450,56 L530,74 L580,80 L640,62 L680,46"
+                stroke="#FF4B1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <text x="600" y="18" font-family="monospace" font-size="9" fill="#f87171">70 — 買われ過ぎ</text>
+          <text x="600" y="75" font-family="monospace" font-size="9" fill="#4ade80">30 — 売られ過ぎ</text>
+        </svg>
+      </div>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_03d_rsi.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title 03d — RSI（終値と 2 軸表示） ──────────────</span>
+<span class="cv">window</span> = <span class="cn">14</span>  <span class="cm"># RSI の標準は 14 日</span>
+
+<span class="cv">df</span> = <span class="cv">yf</span>.Ticker(<span class="cv">ticker_symbol</span>).history(period=<span class="cv">period</span>, interval=<span class="cv">interval</span>).reset_index()
+<span class="cv">delta</span> = <span class="cv">df</span>[<span class="cs">"Close"</span>].diff()
+<span class="cv">gain</span>  = <span class="cv">delta</span>.where(<span class="cv">delta</span> > <span class="cn">0</span>, <span class="cn">0</span>).rolling(window=<span class="cv">window</span>).mean()
+<span class="cv">loss</span>  = -<span class="cv">delta</span>.where(<span class="cv">delta</span> < <span class="cn">0</span>, <span class="cn">0</span>).rolling(window=<span class="cv">window</span>).mean()
+<span class="cv">df</span>[<span class="cs">"RSI"</span>] = <span class="cn">100</span> - (<span class="cn">100</span> / (<span class="cn">1</span> + <span class="cv">gain</span> / <span class="cv">loss</span>))
+
+<span class="cv">fig</span> = <span class="cv">go</span>.Figure()
+<span class="cv">fig</span>.add_trace(<span class="cv">go</span>.Scatter(x=<span class="cv">df</span>[<span class="cs">"Date"</span>], y=<span class="cv">df</span>[<span class="cs">"Close"</span>], name=<span class="cs">"終値"</span>, yaxis=<span class="cs">"y1"</span>))
+<span class="cv">fig</span>.add_trace(<span class="cv">go</span>.Scatter(x=<span class="cv">df</span>[<span class="cs">"Date"</span>], y=<span class="cv">df</span>[<span class="cs">"RSI"</span>],   name=<span class="cs">"RSI"</span>,  yaxis=<span class="cs">"y2"</span>))
+<span class="cv">fig</span>.update_layout(
+    title=<span class="cs">f"{ticker_symbol} 終値 + RSI({window})"</span>,
+    yaxis =dict(title=<span class="cs">"株価 (円)"</span>),
+    yaxis2=dict(title=<span class="cs">"RSI"</span>, overlaying=<span class="cs">"x"</span>, side=<span class="cs">"right"</span>, range=[<span class="cn">0</span>, <span class="cn">100</span>])
+)
+<span class="cv">fig</span>.show()
+        </div>
+      </div>
+      <table class="op-table reveal" style="margin-top:24px">
+        <thead><tr><th>ゾーン</th><th>判断</th></tr></thead>
+        <tbody>
+          <tr><td style="color:#f87171">RSI &gt; 70</td><td>買われ過ぎ → 反落に注意</td></tr>
+          <tr><td>RSI 30〜70</td><td>中立ゾーン → トレンドに従う</td></tr>
+          <tr><td style="color:#4ade80">RSI &lt; 30</td><td>売られ過ぎ → 反発に注意（買い検討）</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- S10: 水平線 -->
+    <section class="sec sec-wh" id="s10">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">10</div>
+      <div class="tag reveal">03e — Horizontal Line</div>
+      <h2 class="sec-title reveal">水平線を<br><span class="hl">引くだけ</span></h2>
+      <p class="sec-lead reveal">「過去の反転ポイントを見つけて横線を引く」。誰が引いてもほぼ同じになるから機能する。Plotly なら <code style="font-family:var(--fm);color:var(--or)">add_hline()</code> で一発。</p>
+      <div class="chart-preview reveal">
+        <div class="chart-label">▶ PREVIEW — 水平線（支持線・抵抗線）</div>
+        <svg viewBox="0 0 680 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="20" x2="680" y2="20" stroke="#FF4B1A" stroke-width="1.5"/>
+          <text x="2" y="17" font-family="monospace" font-size="9" fill="#FF4B1A">1,000円 ── 最強バリア</text>
+          <rect x="0" y="48" width="680" height="16" fill="#7ec8e3" fill-opacity="0.06"/>
+          <text x="310" y="58" font-family="monospace" font-size="9" fill="#7ec8e3" text-anchor="middle">BUY ZONE 920〜940円</text>
+          <line x1="0" y1="64" x2="680" y2="64" stroke="#7ec8e3" stroke-width="1.2" stroke-dasharray="5,3"/>
+          <text x="2" y="61" font-family="monospace" font-size="9" fill="#7ec8e3">900円 ── 支持線</text>
+          <line x1="0" y1="92" x2="680" y2="92" stroke="#7ec8e3" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+          <path d="M0,100 L80,86 L160,72 L220,55 L270,24 L310,30 L360,56 L420,64 L460,54 L510,28 L550,34 L590,52 L640,66 L680,78"
+                stroke="#4ade80" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <text x="268" y="15" font-family="monospace" font-size="8" fill="#FF4B1A">↑利確</text>
+          <text x="460" y="15" font-family="monospace" font-size="8" fill="#FF4B1A">↑利確</text>
+          <text x="338" y="78" font-family="monospace" font-size="8" fill="#4ade80">↓買い</text>
+        </svg>
+      </div>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_03e_horizontal_lines.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title 03e — 水平線（支持線・抵抗線）を引く ────────</span>
+<span class="cm"># 過去の反転ポイントを見つけて横線を引くだけ</span>
+<span class="cv">ticker_symbol</span> = <span class="cs">"4755.T"</span>    <span class="cm"># 楽天G</span>
+<span class="cv">period</span>        = <span class="cs">"1y"</span>
+<span class="cv">interval</span>      = <span class="cs">"1d"</span>
+
+<span class="cm"># キリバン（抵抗線・支持線）：キリがよいほど強いバリアになる</span>
+<span class="cv">levels</span> = {
+    <span class="cn">1000</span>: (<span class="cs">"1000円 — 最強バリア"</span>, <span class="cs">"orange"</span>,    <span class="cs">"dash"</span>),
+    <span class="cn">900</span>:  (<span class="cs">"900円  — 支持線"</span>,    <span class="cs">"royalblue"</span>, <span class="cs">"dot"</span>),
+    <span class="cn">800</span>:  (<span class="cs">"800円  — 次の支持線"</span>,<span class="cs">"royalblue"</span>, <span class="cs">"dot"</span>),
+}
+
+<span class="cv">df</span> = <span class="cv">yf</span>.Ticker(<span class="cv">ticker_symbol</span>).history(period=<span class="cv">period</span>, interval=<span class="cv">interval</span>).reset_index()
+<span class="cv">fig</span> = <span class="cv">go</span>.Figure()
+<span class="cv">fig</span>.add_trace(<span class="cv">go</span>.Scatter(x=<span class="cv">df</span>[<span class="cs">"Date"</span>], y=<span class="cv">df</span>[<span class="cs">"Close"</span>], name=<span class="cs">"Close"</span>, mode=<span class="cs">"lines"</span>))
+
+<span class="ck">for</span> <span class="cv">price</span>, (<span class="cv">label</span>, <span class="cv">color</span>, <span class="cv">dash</span>) <span class="ck">in</span> <span class="cv">levels</span>.items():
+    <span class="cv">fig</span>.add_hline(y=<span class="cv">price</span>, line_dash=<span class="cv">dash</span>, line_color=<span class="cv">color</span>,
+                  line_width=<span class="cn">1.5</span>, annotation_text=<span class="cv">label</span>,
+                  annotation_position=<span class="cs">"right"</span>)
+
+<span class="cv">fig</span>.update_layout(title=<span class="cs">f"{ticker_symbol} — 水平線（支持線・抵抗線）"</span>)
+<span class="cv">fig</span>.show()
+        </div>
+      </div>
+      <table class="op-table op-table-wh reveal" style="margin-top:24px">
+        <thead><tr><th>ポイント</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>バリアの強さ</td><td>1000円 > 500円 > 900円 > 800円。キリがよいほど強い</td></tr>
+          <tr><td>買いポイント</td><td>バリア手前（例: 1000円バリアなら 920〜940円付近）でエントリー</td></tr>
+          <tr><td>利確ポイント</td><td>上のバリアに達したら即利確。欲張らないのが重要</td></tr>
+          <tr><td>騙しに注意</td><td>バリア上抜けに見えて急落することもある → 損切りを必ずセット</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box-wh reveal">
+        <div class="tip-label">なぜ水平線がおすすめか</div>
+        <div class="tip-body">トレンドラインは引き方が人によってバラバラ。水平線は「誰が引いてもほぼ同じ」になる。テクニカル分析は多数決ゲームなので、みんなが同じ線を見ているほど機能する。</div>
+      </div>
+    </section>
+
+    <!-- S11: 複数銘柄比較 -->
+    <section class="sec sec-or" id="s11">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">11</div>
+      <div class="tag reveal">04 — Comparison</div>
+      <h2 class="sec-title reveal">複数銘柄を<br><span class="hl">並べて読む</span></h2>
+      <p class="sec-lead reveal">1 銘柄では「上がった・下がった」で終わる。複数銘柄を並べると「どちらが相対的に強いか」が見えてくる。</p>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_04a_multi_compare.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title 04a — 複数銘柄を重ね描き ─────────────────</span>
+<span class="cv">ticker_list</span> = <span class="cs">"9432.T,7203.T"</span>  <span class="cm"># カンマ区切りで 10 社程度まで</span>
+<span class="cv">period</span>      = <span class="cs">"6mo"</span>
+
+<span class="cv">tickers</span> = [t.strip() <span class="ck">for</span> t <span class="ck">in</span> <span class="cv">ticker_list</span>.split(<span class="cs">","</span>)]
+<span class="cv">df</span> = <span class="cv">yf</span>.download(<span class="cv">tickers</span>, period=<span class="cv">period</span>)[<span class="cs">"Close"</span>]
+<span class="cv">df</span> = <span class="cv">df</span>.reset_index().melt(id_vars=[<span class="cs">"Date"</span>], var_name=<span class="cs">"Ticker"</span>, value_name=<span class="cs">"Close"</span>)
+
+<span class="cv">fig</span> = <span class="cv">px</span>.line(<span class="cv">df</span>, x=<span class="cs">"Date"</span>, y=<span class="cs">"Close"</span>, color=<span class="cs">"Ticker"</span>,
+               title=<span class="cs">f"Stock Comparison ({period})"</span>)
+<span class="cv">fig</span>.show()
+        </div>
+      </div>
+      <div class="code-block reveal">
+        <div class="code-top">
+          <span class="code-filename">cell_04b_normalized.py　← 正規化（初日=100）</span>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <div class="code-body">
+<span class="cm"># @title 04b — 正規化比較（初日 = 100） ────────────</span>
+<span class="cm"># 株価の絶対値が違いすぎる場合に伸び率で比較する</span>
+<span class="cv">df</span> = <span class="cv">yf</span>.download(<span class="cv">tickers</span>, period=<span class="cv">period</span>)[<span class="cs">"Close"</span>]
+<span class="cv">df</span> = <span class="cv">df</span> / <span class="cv">df</span>.iloc[<span class="cn">0</span>] * <span class="cn">100</span>  <span class="cm"># 初日を 100 に正規化</span>
+<span class="cv">df</span> = <span class="cv">df</span>.reset_index().melt(id_vars=[<span class="cs">"Date"</span>], var_name=<span class="cs">"Ticker"</span>, value_name=<span class="cs">"Index(%)"</span>)
+
+<span class="cv">fig</span> = <span class="cv">px</span>.line(<span class="cv">df</span>, x=<span class="cs">"Date"</span>, y=<span class="cs">"Index(%)"</span>, color=<span class="cs">"Ticker"</span>,
+               title=<span class="cs">"Growth Comparison (Base = 100)"</span>)
+<span class="cv">fig</span>.show()
+        </div>
+      </div>
+    </section>
+
+    <!-- S12: ツール戦略 -->
+    <section class="sec sec-dk scan-host" id="s12">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">12</div>
+      <div class="tag reveal" style="color:#888">05 — Tool Strategy</div>
+      <h2 class="sec-title reveal">Python ×<br><span class="hl">TradingView</span></h2>
+      <p class="sec-lead reveal">どちらが優れているかではなく、目的に応じて役割分担するのが正解。</p>
+      <div class="cmp-grid reveal">
+        <div class="cmp-col">
+          <div class="cmp-head">Python + Colab</div>
+          <div class="cmp-role">「操縦桿」— カスタム分析の武器</div>
+          <ul>
+            <li>自分だけのカスタム指標を実装できる</li>
+            <li>複数銘柄の一括比較・正規化が容易</li>
+            <li>データ保存・加工・集計が自在</li>
+            <li>仕組みを理解できる</li>
+            <li>リアルタイム取得は制限あり</li>
+          </ul>
+        </div>
+        <div class="cmp-col">
+          <div class="cmp-head">TradingView</div>
+          <div class="cmp-role">「コックピット」— 実戦のダッシュボード</div>
+          <ul>
+            <li>リアルタイムチャートに即アクセス</li>
+            <li>豊富なテクニカル指標が最初から使える</li>
+            <li>コミュニティの分析を参照できる</li>
+            <li>コーディング不要で直感的</li>
+            <li>カスタム分析の自由度は低め</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip-box reveal" style="margin-top:24px">
+        <div class="tip-label">推奨ワークフロー</div>
+        <div class="tip-body">Python で RSI / SMA / 水平線を計算して有望銘柄を絞り込む → TradingView でリアルタイムの値動きを監視・エントリー判断。両方使いこなすのが最強。</div>
+      </div>
+    </section>
+
+    <!-- S13: FAQ -->
+    <section class="sec sec-wh scan-host" id="s13">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">13</div>
+      <div class="tag reveal">FAQ</div>
+      <h2 class="sec-title reveal">よくある<span class="hl">質問</span></h2>
+      <div class="faq-list reveal">
+        <details>
+          <summary><span class="faq-icon">Q</span>データが取得できない / エラーが出る</summary>
+          <div class="faq-body">まず確認するのは ① 銘柄コード（日本株は <code>7203.T</code> のように末尾に <code>.T</code>）、② インターネット接続、③ Yahoo Finance 側の一時的な制限。1分待って再実行するだけで直ることが多い。</div>
+        </details>
+        <details>
+          <summary><span class="faq-icon">Q</span>短期足（1分足・5分足）を取りたい</summary>
+          <div class="faq-body">Yahoo Finance 側の制限で短期足は取得できないことが多い。まず <code>interval="1d"</code>（日足）で試す。高頻度データが必要な場合は Alpha Vantage や Quandl（API キー必要）を検討するとよい。</div>
+        </details>
+        <details>
+          <summary><span class="faq-icon">Q</span>MACD・ボリンジャーバンドも実装したい</summary>
+          <div class="faq-body"><code>pandas_ta</code> ライブラリを使うと多くの指標が 1 行で計算できる。<code>!pip install pandas_ta</code> でインストール後、<code>df.ta.macd()</code> や <code>df.ta.bbands()</code> を呼ぶだけ。</div>
+        </details>
+        <details>
+          <summary><span class="faq-icon">Q</span>米国株・ETF・為替も分析できる？</summary>
+          <div class="faq-body">できる。米国株は <code>AAPL</code>、ETF は <code>SPY</code>、為替は <code>USDJPY=X</code> のようにコードを指定するだけ。サフィックス <code>.T</code> は東証（日本株）のみ必要。</div>
+        </details>
+        <details>
+          <summary><span class="faq-icon">Q</span>グラフを PNG ファイルとして保存したい</summary>
+          <div class="faq-body">Plotly のグラフ右上のカメラアイコンをクリックすれば即 PNG 保存できる。コードで保存する場合は <code>fig.write_image("chart.png")</code>（<code>!pip install kaleido</code> が必要）。</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- S14: チートシート -->
+    <section class="sec sec-or" id="s14">
+      <div class="xh xh-tl">+</div><div class="xh xh-br">+</div>
+      <div class="sec-bg-num">14</div>
+      <div class="tag reveal">Cheat Sheet</div>
+      <h2 class="sec-title reveal">すぐ使える<br><span class="hl">パラメータ</span>一覧</h2>
+      <div class="cheat-list reveal">
+        <div class="cheat-row">
+          <div class="cheat-key">period</div>
+          <div class="cheat-val"><code>1mo</code> <code>3mo</code> <code>6mo</code> <code>1y</code> <code>2y</code> <code>5y</code> <code>ytd</code> <code>max</code></div>
+        </div>
+        <div class="cheat-row">
+          <div class="cheat-key">interval</div>
+          <div class="cheat-val"><code>1d</code>（日足）<code>5d</code> <code>1wk</code>（週足）<code>1mo</code>（月足）</div>
+        </div>
+        <div class="cheat-row">
+          <div class="cheat-key">日本株コード</div>
+          <div class="cheat-val">銘柄コード + <code>.T</code>（例: <code>7203.T</code> = トヨタ）</div>
+        </div>
+        <div class="cheat-row">
+          <div class="cheat-key">SMA 期間（国内）</div>
+          <div class="cheat-val">短期 <code>25</code>日 / 長期 <code>75</code>日 が一般的</div>
+        </div>
+        <div class="cheat-row">
+          <div class="cheat-key">RSI 期間</div>
+          <div class="cheat-val"><code>14</code>日 が標準。短くすると感度が上がる</div>
+        </div>
+        <div class="cheat-row">
+          <div class="cheat-key">複数銘柄の上限</div>
+          <div class="cheat-val">10 社程度まで快適。それ以上はグラフが煩雑になる</div>
+        </div>
+        <div class="cheat-row">
+          <div class="cheat-key">推奨スタート</div>
+          <div class="cheat-val"><code>period="6mo"</code> + <code>interval="1d"</code> が最も安定</div>
+        </div>
+      </div>
+      <div style="margin-top:40px;padding:32px;background:rgba(0,0,0,.15);border:1px solid rgba(0,0,0,.2);border-radius:2px;" class="reveal">
+        <div style="font-family:var(--fw);font-size:28px;color:var(--bk);margin-bottom:12px">元記事を読む</div>
+        <div style="font-size:13px;color:rgba(0,0,0,.6);line-height:1.8;margin-bottom:20px">このページはビジュアル補足ガイド。リアルな体験談・詳細な解説は note 記事で。</div>
+        <a href="https://note.com/ktcrs1107/n/nc26003dfcebd" target="_blank" rel="noopener"
+           style="display:inline-block;background:var(--bk);color:var(--wh);font-family:var(--fm);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 28px;text-decoration:none;border-radius:2px;transition:background .2s">
+          → KITAcore note #86 を読む
+        </a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<button id="mob-nav-btn">☰</button>
+<div id="nav-backdrop"></div>
+
+<script>
+// ── Boot ────────────────────────────────────────────────
+(function(){
+  const lines = document.querySelectorAll('.boot-line');
+  const bar   = document.getElementById('boot-bar');
+  const boot  = document.getElementById('boot');
+  let delay = 160;
+  lines.forEach((l, i) => {
+    setTimeout(() => {
+      l.style.opacity = '1';
+      l.classList.add('ok');
+      bar.style.width = ((i + 1) / lines.length * 100) + '%';
+    }, delay);
+    delay += 150;
+  });
+  setTimeout(() => {
+    boot.style.transition = 'opacity .5s';
+    boot.style.opacity = '0';
+    setTimeout(() => boot.remove(), 500);
+  }, delay + 200);
+})();
+
+// ── Scroll Reveal ────────────────────────────────────────
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); } });
+}, { threshold: .1 });
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+// ── Nav Active ───────────────────────────────────────────
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const t = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (t) t.classList.add('active');
+    }
+  });
+}, { threshold: .3, rootMargin: '-20% 0px -60% 0px' });
+document.querySelectorAll('.sec').forEach(s => navObs.observe(s));
+
+// ── Mobile Nav ───────────────────────────────────────────
+const nav = document.getElementById('nav');
+const bd  = document.getElementById('nav-backdrop');
+document.getElementById('mob-nav-btn').addEventListener('click', () => {
+  nav.classList.toggle('open'); bd.classList.toggle('open');
+});
+bd.addEventListener('click', () => { nav.classList.remove('open'); bd.classList.remove('open'); });
+nav.querySelectorAll('.nav-item').forEach(a => {
+  a.addEventListener('click', () => { nav.classList.remove('open'); bd.classList.remove('open'); });
+});
+
+// ── Copy Code ────────────────────────────────────────────
+function copyCode(btn) {
+  const body = btn.closest('.code-block').querySelector('.code-body');
+  const text = body.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'COPIED';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+
+// ── FAQ icon toggle ──────────────────────────────────────
+document.querySelectorAll('details').forEach(d => {
+  d.addEventListener('toggle', () => {
+    const icon = d.querySelector('.faq-icon');
+    if (icon) icon.textContent = d.open ? 'A' : 'Q';
+  });
+});
+</script>
+</body>
+</html>
