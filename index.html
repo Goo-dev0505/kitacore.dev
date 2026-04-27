@@ -99,6 +99,32 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;display:flex
 .sec-gy .sec-label{color:var(--or)}.sec-gy .sec-sub{color:#555}
 .sec-wh{padding:72px 0;border-bottom:2px solid var(--bk)}
 .sec-wh .sec-label{color:var(--or)}.sec-wh .sec-sub{color:var(--mu)}
+
+/* ── NEW: RESEARCH REPORT SECTION ── */
+.sec-rp{background:#0A0E1A;color:#E2E8F0;padding:72px 0;border-bottom:2px solid #000;position:relative;overflow:hidden}
+.sec-rp::before{content:'RESEARCH';position:absolute;right:-20px;top:10px;font-family:var(--fw);font-size:clamp(80px,14vw,180px);letter-spacing:.04em;color:rgba(255,255,255,.025);user-select:none;pointer-events:none;line-height:1}
+.sec-rp .sec-label{color:#00D4FF}
+.sec-rp .sec-sub{color:#475569}
+.card-rp{background:#111827;border:1px solid #1E293B;text-decoration:none;color:inherit;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
+.card-rp::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#00D4FF;transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.card-rp:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 #00D4FF}.card-rp:hover::before{transform:scaleY(1)}
+.card-rp .ct{background:#0A0E1A;padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid #1E293B}
+.card-rp .card-num{font-family:var(--fw);font-size:48px;line-height:1;color:#00D4FF}
+.card-rp .card-status{font-family:var(--fm);font-size:9px;letter-spacing:.18em;text-transform:uppercase;text-align:right;line-height:1.8;color:#475569}
+.card-rp .live-badge{display:block;font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:3px 8px;background:#00D4FF;color:#0A0E1A;margin-top:6px}
+.card-rp .cb{padding:22px 24px;flex:1}
+.card-rp .card-tag{font-family:var(--fm);font-size:9px;color:#00D4FF;letter-spacing:.22em;text-transform:uppercase;font-weight:600;margin-bottom:10px;display:block}
+.card-rp .card-title{font-family:var(--fc);font-size:22px;font-weight:700;line-height:1.2;margin-bottom:8px;color:#fff}
+.card-rp .card-hook{font-size:13px;color:#64748B;line-height:1.7;margin-bottom:14px}
+.card-rp .card-get{font-family:var(--fm);font-size:11px;color:#00D4FF;letter-spacing:.08em}.card-rp .card-get::before{content:'→ '}
+.card-rp .cf{padding:14px 24px;border-top:1px solid #1E293B;display:flex;align-items:center;justify-content:space-between;background:#0A0E1A}
+.card-rp .card-date{font-family:var(--fm);font-size:9px;color:#334155;letter-spacing:.15em;text-transform:uppercase}
+.card-rp .card-arr{font-family:var(--fm);font-size:14px;color:#00D4FF;transition:transform .2s}
+.card-rp:hover .card-arr{transform:translateX(4px)}
+/* chapters / meta chips */
+.card-rp .rp-chips{display:flex;gap:4px;margin-top:12px;flex-wrap:wrap}
+.card-rp .rp-chip{font-family:var(--fm);font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border:1px solid #1E293B;color:#475569;border-radius:1px}
+
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px}
 .card-d{background:#1E1E1E;border:1px solid #2A2A2A;text-decoration:none;color:inherit;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
 .card-d::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--or);transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
@@ -150,7 +176,7 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;display:flex
 code{font-family:var(--fm);font-size:11px;background:var(--gy);padding:2px 6px}
 footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;font-family:var(--fm);font-size:10px;letter-spacing:.15em;text-transform:uppercase;flex-wrap:wrap;gap:8px}
 .foot-brand{color:var(--wh)}
-@media(max-width:640px){.wrap{padding:0 20px}header{padding:0 20px}.hero{padding-top:52px}.hero-deco{display:none}.hero-h1{font-size:52px}.how-grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.nav-meta{display:none}footer{padding:20px}.hero-stats{flex-wrap:wrap}#clock{display:none}.sec-gy::before{font-size:72px}}
+@media(max-width:640px){.wrap{padding:0 20px}header{padding:0 20px}.hero{padding-top:52px}.hero-deco{display:none}.hero-h1{font-size:52px}.how-grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.nav-meta{display:none}footer{padding:20px}.hero-stats{flex-wrap:wrap}#clock{display:none}.sec-gy::before,.sec-rp::before{font-size:72px}}
 </style>
 </head>
 <body>
@@ -169,6 +195,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 
 <div id="prog"></div>
 
+<!-- ★ ティッカーにレポートを追加 -->
 <div class="ticker-bar">
   <span class="t-live">LIVE</span>
   <div class="t-wrap">
@@ -181,6 +208,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <span class="ti">MARKETING MECE MAP — <span class="ot">LIVE</span></span>
       <span class="ti">ARRHENIUS ANALYZER — <span class="ot">LIVE</span></span>
       <span class="ti">ARRHENIUS AI GUIDE — <span class="ot">LIVE</span></span>
+      <span class="ti">★ NEW — CLAUDE × APPLE HEALTH RESEARCH REPORT — <span class="ot">LIVE</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
       <span class="ti">DEPLOYMENT: KITACORE-2026-ALPHA</span>
       <span class="ti">KITACORE PUBLIC TOOLS · GITHUB PAGES</span>
@@ -191,6 +219,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <span class="ti">MARKETING MECE MAP — <span class="ot">LIVE</span></span>
       <span class="ti">ARRHENIUS ANALYZER — <span class="ot">LIVE</span></span>
       <span class="ti">ARRHENIUS AI GUIDE — <span class="ot">LIVE</span></span>
+      <span class="ti">★ NEW — CLAUDE × APPLE HEALTH RESEARCH REPORT — <span class="ot">LIVE</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
       <span class="ti">DEPLOYMENT: KITACORE-2026-ALPHA</span>
     </div>
@@ -217,6 +246,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <a class="btn-gh" href="#tools">ツール一覧を見る ↓</a>
     </div>
     <div class="hero-stats h-st">
+      <!-- ★ PAGES LIVE: 7 → 8 -->
       <div class="stat"><span class="stat-n" id="cnt-p">0</span><span class="stat-l">PAGES LIVE</span></div>
       <div class="stat"><span class="stat-n" id="cnt-c">0</span><span class="stat-l">CATEGORIES</span></div>
       <div class="stat"><span class="stat-n">∞</span><span class="stat-l">ALL FREE</span></div>
@@ -226,6 +256,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 
 <div id="tools"></div>
 
+<!-- HOW TO USE -->
 <section class="sec-dark">
   <div class="wrap">
     <div class="rv">
@@ -258,6 +289,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
+<!-- ARTICLE SUPPLEMENT -->
 <section class="sec-or">
   <div class="wrap">
     <div class="rv">
@@ -310,6 +342,50 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
+<!-- ★★★ NEW: RESEARCH REPORT SECTION ★★★ -->
+<section class="sec-rp" id="research">
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="rv">
+      <span class="sec-label">調査レポート — RESEARCH REPORT</span>
+      <h2 class="sec-title" style="color:#fff;">RESEARCH<br><span style="color:#00D4FF;">REPORT</span></h2>
+      <p class="sec-sub">1次情報をもとに、AIトレンドを深掘りした調査レポート。note記事と一緒に読むと理解が深まる。</p>
+    </div>
+    <div class="cards">
+      <a class="card-rp rv" href="kitacore-claude-applehealth-report.html">
+        <div class="ct">
+          <span class="card-num">01</span>
+          <div>
+            <div class="card-status">DEEP RESEARCH<br>10 SECTIONS</div>
+            <span class="live-badge">● LIVE</span>
+          </div>
+        </div>
+        <div class="cb">
+          <span class="card-tag">REPORT · AI × HEALTH DATA</span>
+          <h3 class="card-title">Claude × Apple Health<br>AIと健康データが<br>交差する地点の全解剖</h3>
+          <p class="card-hook">2026年1月に発表されたClaude × Apple Health連携を徹底分析。時系列・技術仕様・米国の評価・ビジネスインパクト・Apple自身のHealth AI戦略まで、1次情報をもとに10セクションで網羅。</p>
+          <span class="card-get">読むと、AIと健康データの変化の全体像がわかる</span>
+          <div class="rp-chips">
+            <span class="rp-chip">時系列</span>
+            <span class="rp-chip">Tech Spec</span>
+            <span class="rp-chip">Enterprise</span>
+            <span class="rp-chip">Benchmark</span>
+            <span class="rp-chip">米国評価</span>
+            <span class="rp-chip">WaPo Test</span>
+            <span class="rp-chip">Business</span>
+            <span class="rp-chip">Apple戦略</span>
+            <span class="rp-chip">日本</span>
+          </div>
+        </div>
+        <div class="cf">
+          <span class="card-date">2026.04.28 · REPORT-001</span>
+          <span class="card-arr">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- KNOWLEDGE SHELF -->
 <section class="sec-gy">
   <div class="wrap" style="position:relative;z-index:1">
     <div class="rv">
@@ -333,6 +409,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
+<!-- 3 STEPS -->
 <section class="sec-wh">
   <div class="wrap">
     <div class="rv">
@@ -362,18 +439,20 @@ if(seen){document.getElementById('boot').style.display='none';document.body.styl
 else{
   document.body.style.overflow='hidden';
   const log=document.getElementById('boot-log'),fill=document.getElementById('bfill'),pct=document.getElementById('bpct');
+  // ★ ブートログにレポートを追加
   const lines=[
     {t:'KITACORE PORTAL v2026 INITIALIZING...',c:'hi',d:0},
-    {t:'LOADING: PUBLIC TOOLS & GUIDES',       c:'',  d:240},
-    {t:'  [取説 01]   NAME EDITOR V1 MANUAL        ■',c:'or',d:400},
-    {t:'  [取説 02]   PERSONA PROMPT BUILDER MANUAL ■',c:'or',d:540},
-    {t:'  [補足 01]   SKI RANKING 2 GUIDE           ■',c:'or',d:680},
-    {t:'  [補足 02]   AI 7 POWERS GUIDE             ■',c:'or',d:820},
-    {t:'  [補足 03]   ARRHENIUS ANALYZER            ■',c:'or',d:960},
-    {t:'  [補足 04]   ARRHENIUS AI GUIDE            ■',c:'or',d:1100},
-    {t:'  [棚]        MARKETING MECE MAP            ■',c:'or',d:1240},
-    {t:'ALL SYSTEMS OPERATIONAL',              c:'hi', d:1400},
-    {t:'LAUNCHING...',                         c:'hi cur',d:1540},
+    {t:'LOADING: PUBLIC TOOLS & GUIDES',       c:'',  d:200},
+    {t:'  [取説 01]   NAME EDITOR V1 MANUAL        ■',c:'or',d:340},
+    {t:'  [取説 02]   PERSONA PROMPT BUILDER MANUAL ■',c:'or',d:460},
+    {t:'  [補足 01]   SKI RANKING 2 GUIDE           ■',c:'or',d:580},
+    {t:'  [補足 02]   AI 7 POWERS GUIDE             ■',c:'or',d:700},
+    {t:'  [補足 03]   ARRHENIUS ANALYZER            ■',c:'or',d:820},
+    {t:'  [補足 04]   ARRHENIUS AI GUIDE            ■',c:'or',d:940},
+    {t:'  [棚]        MARKETING MECE MAP            ■',c:'or',d:1060},
+    {t:'  [REPORT 01] CLAUDE × APPLE HEALTH         ■',c:'or',d:1180},
+    {t:'ALL SYSTEMS OPERATIONAL',              c:'hi', d:1320},
+    {t:'LAUNCHING...',                         c:'hi cur',d:1460},
   ];
   let max=0;
   lines.forEach((l,i)=>{
@@ -383,7 +462,7 @@ else{
       const p=Math.round((i+1)/lines.length*100);fill.style.width=p+'%';pct.textContent=p+'%';
     },l.d);max=Math.max(max,l.d);
   });
-  setTimeout(finishBoot,max+420);
+  setTimeout(finishBoot,max+400);
 }
 const bar=document.getElementById('prog');
 window.addEventListener('scroll',()=>{bar.style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';},{passive:true});
@@ -395,10 +474,11 @@ document.querySelectorAll('.rv,.rv2').forEach(el=>io.observe(el));
 window.addEventListener('load',()=>{
   function countUp(id,target,delay=0){
     const el=document.getElementById(id);if(!el)return;
+    // ★ PAGES LIVE: 8 に変更
     setTimeout(()=>{const s=performance.now();const f=now=>{const t=Math.min((now-s)/900,1);el.textContent=Math.round((1-Math.pow(1-t,3))*target);if(t<1)requestAnimationFrame(f);};requestAnimationFrame(f);},delay);
   }
-  countUp('cnt-p',7,600);
-  countUp('cnt-c',3,700);
+  countUp('cnt-p',8,600);  // 7→8
+  countUp('cnt-c',4,700);  // 3→4（REPORTカテゴリ追加）
 });
 </script>
 </body>
