@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>analyze_quality.py — 記事#332を実装する</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #E9E9E9;
+    --surface:   #FFFFFF;
+    --surface-v: #F4F4F2;
+    --text:      #111111;
+    --text-sub:  #333333;
+    --muted:     #6B6B6B;
+    --border:    #DDDDDD;
+    --accent:    #000000;
+    --font-display: 'Inter', sans-serif;
+    --font-body:    'Noto Sans JP', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── NAV ───────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0;
+    width: 216px; height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 36px 24px;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  .nav-brand {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.7;
+  }
+  nav a {
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none;
+    padding: 5px 0; transition: color 150ms ease;
+  }
+  nav a:hover, nav a.active { color: var(--accent); }
+  .nav-num { opacity: 0.4; font-size: 10px; }
+
+  /* ── MAIN ──────────────────────── */
+  main { margin-left: 216px; padding: 64px 56px 96px; max-width: 1000px; }
+
+  /* ── HERO ──────────────────────── */
+  .hero {
+    padding-bottom: 56px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 72px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: 44px; font-weight: 900;
+    letter-spacing: -0.03em; line-height: 1.1;
+    color: var(--accent); margin-bottom: 24px;
+  }
+  .hero-quote {
+    border-left: 3px solid var(--accent);
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    font-size: 15px; color: var(--text-sub);
+    font-style: italic; line-height: 1.85;
+  }
+  .hero-desc { font-size: 15px; color: var(--text-sub); max-width: 580px; line-height: 1.9; margin-bottom: 24px; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    font-family: var(--font-mono); font-size: 11px;
+    background: var(--surface-v); border: 1px solid var(--border);
+    padding: 3px 10px; border-radius: 2px; color: var(--muted);
+  }
+
+  /* ── SECTION ───────────────────── */
+  section { margin-bottom: 84px; scroll-margin-top: 32px; }
+  .sec-header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 32px; }
+  .sec-num {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+  }
+  .sec-header h2 {
+    font-family: var(--font-display); font-size: 22px; font-weight: 700;
+    letter-spacing: -0.01em; color: var(--accent);
+  }
+
+  /* ── CONCEPT MAP ───────────────── */
+  .concept-map {
+    display: grid; grid-template-columns: 1fr 48px 1fr;
+    gap: 0; margin-bottom: 32px;
+  }
+  .concept-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .concept-col-header {
+    background: var(--accent); color: #fff;
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 10px 16px;
+  }
+  .concept-col-header.light {
+    background: var(--surface-v); color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .concept-arrow {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--muted); margin: 0 4px;
+    padding-top: 42px;
+  }
+  .concept-row {
+    display: flex; align-items: flex-start;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+  .concept-row:last-child { border-bottom: none; }
+  .concept-tag {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--surface-v); border: 1px solid var(--border);
+    padding: 2px 7px; border-radius: 2px; color: var(--muted);
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .concept-text { font-size: 13px; color: var(--text-sub); line-height: 1.65; }
+  .concept-text strong { color: var(--accent); font-family: var(--font-mono); font-size: 12px; }
+
+  /* ── DIFF TABLE ────────────────── */
+  .diff-table {
+    width: 100%; border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px; overflow: hidden;
+    font-size: 13.5px; margin-bottom: 24px;
+  }
+  .diff-table thead th {
+    background: var(--surface-v);
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); padding: 10px 16px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .diff-table tbody td {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    color: var(--text-sub); vertical-align: top;
+  }
+  .diff-table tbody tr:last-child td { border-bottom: none; }
+  .diff-table tbody tr:hover td { background: var(--surface-v); }
+  .diff-table code {
+    font-family: var(--font-mono); font-size: 12px;
+    background: var(--surface-v); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 2px; color: var(--accent);
+  }
+
+  /* ── FORMULA CARDS ─────────────── */
+  .formula-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .formula-card {
+    border: 1px solid var(--border);
+    border-radius: 4px; overflow: hidden;
+  }
+  .formula-card-head {
+    background: var(--surface-v);
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); padding: 9px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .formula-card-head .tag-article { color: var(--muted); }
+  .formula-card-head .tag-script { color: var(--accent); font-weight: 500; }
+  .formula-card-body {
+    background: var(--surface); padding: 20px 18px;
+  }
+  .formula-eq {
+    font-family: var(--font-mono); font-size: 17px; font-weight: 500;
+    color: var(--accent); margin-bottom: 12px; letter-spacing: -0.01em;
+  }
+  .formula-note { font-size: 12px; color: var(--muted); line-height: 1.7; }
+  .formula-card.is-script .formula-card-head { background: var(--accent); color: #fff; }
+  .formula-card.is-script .tag-script { color: #fff; opacity: 0.7; }
+  .formula-card.is-script .formula-eq { color: var(--accent); }
+
+  /* ── WHY BOX ───────────────────── */
+  .why-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .why-icon {
+    font-size: 20px; flex-shrink: 0; padding-top: 2px;
+  }
+  .why-body { flex: 1; }
+  .why-title {
+    font-family: var(--font-display); font-size: 14px; font-weight: 700;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .why-desc { font-size: 13px; color: var(--text-sub); line-height: 1.75; }
+
+  /* ── GROWTH TYPE GRID ──────────── */
+  .gtype-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .gtype-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; padding: 16px 18px;
+  }
+  .gtype-emoji { font-size: 22px; margin-bottom: 8px; }
+  .gtype-name {
+    font-family: var(--font-display); font-size: 13px; font-weight: 700;
+    color: var(--accent); margin-bottom: 4px;
+  }
+  .gtype-cond {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--muted); margin-bottom: 6px; line-height: 1.5;
+  }
+  .gtype-desc { font-size: 12px; color: var(--text-sub); line-height: 1.65; }
+
+  /* ── METRIC GROUPS ─────────────── */
+  .metric-group { margin-bottom: 28px; }
+  .metric-group-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .metric-group-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .metric-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; padding: 12px 16px;
+  }
+  .metric-name {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+    color: var(--accent); margin-bottom: 3px;
+  }
+  .metric-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ── CODE BLOCK ────────────────── */
+  .code-wrap { position: relative; margin-bottom: 24px; }
+  .code-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    background: var(--surface); border: 1px solid var(--border);
+    border-bottom: none; padding: 8px 16px; border-radius: 4px 4px 0 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .copy-btn {
+    font-family: var(--font-mono); font-size: 10px; cursor: pointer;
+    background: var(--surface-v); border: 1px solid var(--border);
+    padding: 2px 10px; border-radius: 2px; color: var(--muted);
+    transition: all 150ms ease;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  pre {
+    background: #111; color: #e0e0e0;
+    font-family: var(--font-mono); font-size: 12.5px; line-height: 1.75;
+    padding: 24px; overflow-x: auto;
+    border-radius: 0 0 4px 4px; margin: 0;
+  }
+  .c  { color: #666; }
+  .kw { color: #aab4ff; }
+  .st { color: #99ddaa; }
+  .nu { color: #ffcc88; }
+  .fn { color: #88ccff; }
+  .hl { background: rgba(255,220,100,0.12); display: inline; }
+
+  code {
+    font-family: var(--font-mono); font-size: 12px;
+    background: var(--surface-v); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 2px; color: var(--accent);
+  }
+
+  /* ── CALLOUT ───────────────────── */
+  .callout {
+    background: var(--surface); border-left: 3px solid var(--accent);
+    padding: 14px 20px; border-radius: 0 4px 4px 0;
+    margin-bottom: 24px; font-size: 13.5px; color: var(--text-sub); line-height: 1.75;
+  }
+  .callout strong { color: var(--accent); font-weight: 700; }
+
+  /* ── STEPS ─────────────────────── */
+  .steps { display: flex; flex-direction: column; }
+  .step { display: flex; gap: 20px; }
+  .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 34px; }
+  .step-dot {
+    width: 34px; height: 34px; background: var(--accent); color: #fff;
+    border-radius: 2px; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 500; flex-shrink: 0;
+  }
+  .step-line { width: 1px; flex: 1; background: var(--border); min-height: 20px; }
+  .step-content { padding-bottom: 32px; flex: 1; }
+  .step-title {
+    font-family: var(--font-display); font-size: 15px; font-weight: 700;
+    color: var(--accent); margin-bottom: 6px; padding-top: 5px;
+  }
+  .step-desc { font-size: 13.5px; color: var(--text-sub); margin-bottom: 12px; }
+
+  /* ── SCORE FORMULA ─────────────── */
+  .score-formula {
+    background: var(--accent); color: #f0f0f0;
+    border-radius: 4px; padding: 28px 32px; margin-bottom: 24px; text-align: center;
+  }
+  .score-formula-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5; margin-bottom: 14px;
+  }
+  .score-formula-eq {
+    font-family: var(--font-mono); font-size: 16px; font-weight: 500;
+    line-height: 1.9; letter-spacing: -0.01em;
+  }
+  .score-formula-eq .dim { opacity: 0.5; font-size: 13px; font-weight: 400; }
+
+  /* ── RESPONSIVE ────────────────── */
+  @media (max-width: 900px) {
+    nav { display: none; }
+    main { margin-left: 0; padding: 32px 20px 64px; }
+    .concept-map { grid-template-columns: 1fr; }
+    .concept-arrow { display: none; }
+    .formula-row, .gtype-grid, .metric-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">KITAcore<br>analyze_quality.py</div>
+  <a href="#article"><span class="nav-num">01.</span> 記事の問い</a>
+  <a href="#map"><span class="nav-num">02.</span> 概念マップ</a>
+  <a href="#stability"><span class="nav-num">03.</span> 安定性の実装</a>
+  <a href="#score"><span class="nav-num">04.</span> スコアの実装</a>
+  <a href="#gtype"><span class="nav-num">05.</span> 成長タイプ分類</a>
+  <a href="#fullcode"><span class="nav-num">06.</span> スクリプト全文</a>
+  <a href="#run"><span class="nav-num">07.</span> 実行方法</a>
+  <a href="#git"><span class="nav-num">08.</span> Gitへの組み込み</a>
+  <a href="#aiprompt"><span class="nav-num">09.</span> AIに聞く</a>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="eyebrow">KITAcore — analyze_quality.py 解説</div>
+    <h1>花火 vs インフラ、<br>Pythonで実装する</h1>
+    <div class="hero-quote">
+      「Viewは見る。けど、Viewだけで運用したらブレる。<br>
+      花火と街灯を、同じ"光ってるもの"として並べるくらい雑や。」<br>
+      <span style="font-style:normal;font-size:13px;color:var(--muted);">— note #332「あなたのNoteを資産に変える、たった2つの数式」</span>
+    </div>
+    <p class="hero-desc">
+      記事で語った「安定性」と「資産スコア」の概念を、
+      <code>analyze_quality.py</code> がどう実装しているか。
+      記事の数式との違いと、なぜそうなっているかを一緒に読み解く。
+    </p>
+    <div class="badge-row">
+      <span class="badge">articles.csv → article_quality.csv</span>
+      <span class="badge">指標 20+</span>
+      <span class="badge">成長タイプ 7分類</span>
+      <span class="badge">質スコア 0〜100点</span>
+    </div>
+  </div>
+
+  <!-- 01 記事の問い -->
+  <section id="article">
+    <div class="sec-header">
+      <span class="sec-num">01.</span>
+      <h2>記事 #332 の問い</h2>
+    </div>
+    <p style="color:var(--text-sub);margin-bottom:24px;">
+      記事では「今この瞬間、その記事はまだ生きてるか？」を見るために2つの数式を提示した。
+      どちらも直近14日間の日次PVだけを見る、シンプルな設計。
+    </p>
+    <div class="formula-row">
+      <div class="formula-card">
+        <div class="formula-card-head"><span>記事の式 — 安定性</span><span class="tag-article">Article #332</span></div>
+        <div class="formula-card-body">
+          <div class="formula-eq">Stability = 10 / σ</div>
+          <div class="formula-note">
+            σ = 直近14日の日次PVの標準偏差<br>
+            ブレが小さいほど値が大きくなる。σ=0のとき上限10。
+          </div>
+        </div>
+      </div>
+      <div class="formula-card">
+        <div class="formula-card-head"><span>記事の式 — 資産スコア</span><span class="tag-article">Article #332</span></div>
+        <div class="formula-card-body">
+          <div class="formula-eq">Score = V̄ × W × Stability</div>
+          <div class="formula-note">
+            V̄ = 平均日次PV<br>
+            W  = 稼働した日数（PV増加日数）<br>
+            3軸すべて高くないと上に行けない。
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>記事の設計思想：</strong>
+      「派手かどうかじゃなくて、毎日ちゃんと働いてるか」を見る。
+      一日だけバズった花火記事より、毎日地味に稼働するインフラ記事が高スコアになる構造。
+    </div>
+  </section>
+
+  <!-- 02 概念マップ -->
+  <section id="map">
+    <div class="sec-header">
+      <span class="sec-num">02.</span>
+      <h2>記事 ↔ スクリプトの対応</h2>
+    </div>
+    <p style="color:var(--text-sub);margin-bottom:24px;">
+      スクリプトは記事の概念をそのまま実装しているわけではない。
+      より精密に、より多くの軸で捉え直している。
+    </p>
+
+    <div class="concept-map">
+      <div class="concept-col">
+        <div class="concept-col-header">記事 #332 のコンセプト</div>
+        <div class="concept-row"><span class="concept-tag">安定性</span><div class="concept-text"><strong>10 / σ</strong><br>直近14日のσ（絶対値）</div></div>
+        <div class="concept-row"><span class="concept-tag">資産スコア</span><div class="concept-text"><strong>V̄ × W × Stability</strong><br>平均PV × 稼働日数 × 安定性</div></div>
+        <div class="concept-row"><span class="concept-tag">花火/インフラ</span><div class="concept-text"><strong>2分類</strong><br>定性的な概念として提示</div></div>
+        <div class="concept-row"><span class="concept-tag">期間</span><div class="concept-text"><strong>直近14日のみ</strong><br>「今生きてるか」に特化</div></div>
+      </div>
+      <div class="concept-arrow">→</div>
+      <div class="concept-col">
+        <div class="concept-col-header light">analyze_quality.py の実装</div>
+        <div class="concept-row"><span class="concept-tag" style="background:var(--accent);color:#fff;border-color:var(--accent);">実装</span><div class="concept-text"><strong>1 / (1 + CV)</strong><br>CV = σ/mean。スケール不問で比較できる</div></div>
+        <div class="concept-row"><span class="concept-tag" style="background:var(--accent);color:#fff;border-color:var(--accent);">実装</span><div class="concept-text"><strong>質スコア（sigmoid加重平均）</strong><br>スキ率×40% + 持続率×35% + 安定性×25%</div></div>
+        <div class="concept-row"><span class="concept-tag" style="background:var(--accent);color:#fff;border-color:var(--accent);">実装</span><div class="concept-text"><strong>7分類（成長タイプ）</strong><br>バースト/定常/遅咲き/フェード/スリーパー…</div></div>
+        <div class="concept-row"><span class="concept-tag" style="background:var(--accent);color:#fff;border-color:var(--accent);">実装</span><div class="concept-text"><strong>全期間 + 直近14日</strong><br>初速・ピーク・持続率も含めた長期視点</div></div>
+      </div>
+    </div>
+
+    <table class="diff-table">
+      <thead><tr><th>概念</th><th>記事の式</th><th>スクリプトの式</th><th>なぜ違うか</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>安定性</strong></td>
+          <td><code>10 / σ</code></td>
+          <td><code>1 / (1 + CV)</code></td>
+          <td>σは絶対値なのでPV規模の影響を受ける。CV（変動係数）は平均で割るので、毎日5PVの記事も毎日200PVの記事も公平に比較できる</td>
+        </tr>
+        <tr>
+          <td><strong>スコア</strong></td>
+          <td><code>V̄ × W × Stab</code></td>
+          <td>sigmoid加重平均（3軸）</td>
+          <td>掛け算だと規模依存になる。sigmoid正規化を挟むことで「スキ率が高いが小規模な記事」も適切に評価できる</td>
+        </tr>
+        <tr>
+          <td><strong>期間</strong></td>
+          <td>直近14日のみ</td>
+          <td>全期間 ＋ 直近14日</td>
+          <td>「今の稼働力」だけでなく「初速・ピーク・持続」の全ライフサイクルを捉える</td>
+        </tr>
+        <tr>
+          <td><strong>分類</strong></td>
+          <td>花火 / インフラ（2種）</td>
+          <td>7種の成長タイプ</td>
+          <td>遅咲き・スリーパー・フェードなど、記事の「成長プロセス」をより細かく識別する</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 03 安定性の実装 -->
+  <section id="stability">
+    <div class="sec-header">
+      <span class="sec-num">03.</span>
+      <h2>安定性の実装</h2>
+    </div>
+
+    <div class="formula-row">
+      <div class="formula-card">
+        <div class="formula-card-head"><span>記事の式</span><span class="tag-article">Article #332</span></div>
+        <div class="formula-card-body">
+          <div class="formula-eq">10 / σ</div>
+          <div class="formula-note">
+            σ = 日次PVの標準偏差（絶対値）<br>
+            毎日500PV の記事と毎日5PV の記事では σ の大きさが全然違う
+          </div>
+        </div>
+      </div>
+      <div class="formula-card is-script">
+        <div class="formula-card-head"><span>スクリプトの式</span><span class="tag-script">analyze_quality.py</span></div>
+        <div class="formula-card-body">
+          <div class="formula-eq">1 / (1 + CV)</div>
+          <div class="formula-note">
+            CV = σ / mean（変動係数）<br>
+            平均で割ることでPV規模を消す。結果は必ず 0〜1 の範囲に収まる
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="why-box">
+      <div class="why-icon">🔍</div>
+      <div class="why-body">
+        <div class="why-title">なぜ CV を使うか — 具体例</div>
+        <div class="why-desc">
+          記事A：毎日 <strong>200, 210, 190, 205, 195</strong> PV → σ ≈ 7.9、CV ≈ 0.04 → 安定性 = 0.96<br>
+          記事B：毎日 <strong>2, 3, 2, 3, 2</strong> PV → σ ≈ 0.5、CV ≈ 0.2 → 安定性 = 0.83<br><br>
+          <code>10/σ</code> だと記事A は 1.27、記事B は 20 — スケール差で逆転する。
+          CV ベースなら「ブレの割合」で比べるので公平。
+        </div>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-label">
+        <span>analyze_quality.py — 安定性スコアの計算部分</span>
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      </div>
+      <pre><span class="c"># PVが0より大きい日だけを対象にする（=稼働していない日を除外）</span>
+dpv_vals = grp[<span class="st">"dpv"</span>][grp[<span class="st">"dpv"</span>] > <span class="nu">0</span>]
+
+stability = <span class="kw">None</span>
+<span class="kw">if</span> len(dpv_vals) >= <span class="nu">5</span>:     <span class="c"># 5日以上の稼働実績がある記事だけ計算</span>
+    <span class="hl">cv = float(dpv_vals.std() / dpv_vals.mean()) <span class="kw">if</span> dpv_vals.mean() > <span class="nu">0</span> <span class="kw">else</span> <span class="nu">99.0</span></span>
+    <span class="hl">stability = round(<span class="nu">1.0</span> / (<span class="nu">1.0</span> + cv), <span class="nu">3</span>)</span>
+
+<span class="c"># → 結果は 0〜1 の範囲。1.0 = 完全に毎日同じPVで超安定</span></pre>
+    </div>
+
+    <div class="callout">
+      <strong>観測対象：</strong>「全期間」の日次PVを使う。記事の直近14日とは違い、その記事が存在した全期間のブレを見る。
+      直近14日の「後期14日平均PV」とは別の指標として共存している。
+    </div>
+  </section>
+
+  <!-- 04 スコアの実装 -->
+  <section id="score">
+    <div class="sec-header">
+      <span class="sec-num">04.</span>
+      <h2>スコアの実装</h2>
+    </div>
+    <p style="color:var(--text-sub);margin-bottom:24px;">
+      記事の資産スコアは <code>V̄ × W × Stability</code> の掛け算。
+      スクリプトはここに「スキ率」と「持続率」を加え、sigmoid正規化した加重平均に変えた。
+    </p>
+
+    <div class="score-formula">
+      <div class="score-formula-label">質スコア（0〜100点）— analyze_quality.py</div>
+      <div class="score-formula-eq">
+        sigmoid(スキ率) <span class="dim">× 40%</span>
+        &nbsp;＋&nbsp; sigmoid(持続率) <span class="dim">× 35%</span>
+        &nbsp;＋&nbsp; sigmoid(安定性) <span class="dim">× 25%</span>
+      </div>
+    </div>
+
+    <table class="diff-table">
+      <thead><tr><th>軸</th><th>重み</th><th>意味</th><th>sigmoid パラメータ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>スキ率</strong></td><td>40%</td><td>累計スキ ÷ 累計PV × 100。「読者に刺さったか」</td><td>center=3.0, scale=2.0</td></tr>
+        <tr><td><strong>持続率</strong></td><td>35%</td><td>後期平均PV ÷ 初速7日平均。「長く読まれ続けているか」</td><td>center=0.2, scale=0.15</td></tr>
+        <tr><td><strong>安定性</strong></td><td>25%</td><td>1/(1+CV)。「コンスタントに読まれているか」</td><td>center=0.3, scale=0.2</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-wrap">
+      <div class="code-label">
+        <span>analyze_quality.py — 質スコア計算</span>
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">sigmoid_norm</span>(x, center, scale):
+    <span class="st">"""値を 0〜1 に正規化する。center 付近で 0.5 になる S字カーブ"""</span>
+    <span class="kw">if</span> x <span class="kw">is None</span> <span class="kw">or</span> (isinstance(x, float) <span class="kw">and</span> np.isnan(x)):
+        <span class="kw">return None</span>
+    <span class="kw">return</span> float(<span class="nu">1</span> / (<span class="nu">1</span> + np.exp(-(x - center) / scale)))
+
+<span class="kw">def</span> <span class="fn">calc_quality_score</span>(eta: float, longevity, stability) -> float:
+    <span class="c"># 各軸を sigmoid で 0〜1 に正規化</span>
+    <span class="hl">s_eta       = sigmoid_norm(eta,       center=<span class="nu">3.0</span>,  scale=<span class="nu">2.0</span>)  <span class="kw">or</span> <span class="nu">0.0</span></span>
+    <span class="hl">s_longevity = sigmoid_norm(longevity, center=<span class="nu">0.2</span>,  scale=<span class="nu">0.15</span>) <span class="kw">if</span> longevity <span class="kw">is not None else</span> <span class="nu">0.5</span></span>
+    <span class="hl">s_stability = sigmoid_norm(stability, center=<span class="nu">0.3</span>,  scale=<span class="nu">0.2</span>)  <span class="kw">if</span> stability <span class="kw">is not None else</span> <span class="nu">0.3</span></span>
+
+    <span class="c"># 加重平均して 0〜100 にスケール</span>
+    <span class="hl">score = (s_eta * <span class="nu">0.40</span> + s_longevity * <span class="nu">0.35</span> + s_stability * <span class="nu">0.25</span>) * <span class="nu">100</span></span>
+    <span class="kw">return</span> round(score, <span class="nu">1</span>)</pre>
+    </div>
+
+    <div class="why-box">
+      <div class="why-icon">💡</div>
+      <div class="why-body">
+        <div class="why-title">sigmoid を挟む理由</div>
+        <div class="why-desc">
+          スキ率 20% の記事とスキ率 3% の記事を単純に掛け算すると差がつきすぎる。
+          sigmoid は「閾値を超えると急速に評価が上がり、それ以上は頭打ちになる」S字カーブ。
+          <code>center=3.0</code> はスキ率3%前後で評価が分かれるライン、という設定。
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-group">
+      <div class="metric-group-label">質スコアを構成する全指標</div>
+      <div class="metric-grid">
+        <div class="metric-item"><div class="metric-name">スキ率（%）</div><div class="metric-desc">累計スキ ÷ 累計PV × 100。最終時点の値</div></div>
+        <div class="metric-item"><div class="metric-name">スキ率トレンド（pp）</div><div class="metric-desc">後期スキ率 − 初期スキ率。+なら後から評価が上がった記事</div></div>
+        <div class="metric-item"><div class="metric-name">持続率</div><div class="metric-desc">後期平均PV ÷ 初速7日平均。1.0なら初速と同じペースを維持</div></div>
+        <div class="metric-item"><div class="metric-name">安定性スコア</div><div class="metric-desc">1/(1+CV)。全期間の日次PVの変動係数の逆数</div></div>
+        <div class="metric-item"><div class="metric-name">後期14日平均PV</div><div class="metric-desc">最新14日間の日次PV平均。「今の稼働力」</div></div>
+        <div class="metric-item"><div class="metric-name">ハーフライフ（日）</div><div class="metric-desc">ピーク後、日次PVが半減するまでの日数。息の長さ</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 成長タイプ -->
+  <section id="gtype">
+    <div class="sec-header">
+      <span class="sec-num">05.</span>
+      <h2>成長タイプ分類</h2>
+    </div>
+    <p style="color:var(--text-sub);margin-bottom:24px;">
+      記事の「花火 vs インフラ」を、7種類の成長パターンに細分化した。
+      <strong>obs_delay ≤ 3</strong>（投稿当日〜3日以内から追跡開始している記事）のみ詳細分類できる。
+      それ以外は初速が不明なため、「直近14日の稼働力」で判定する。
+    </p>
+
+    <div class="gtype-grid">
+      <div class="gtype-card">
+        <div class="gtype-emoji">🎆</div>
+        <div class="gtype-name">バースト型</div>
+        <div class="gtype-cond">初速 > 中期avg × 3</div>
+        <div class="gtype-desc">記事の「花火記事」そのもの。公開直後だけ読まれて急落。</div>
+      </div>
+      <div class="gtype-card">
+        <div class="gtype-emoji">🌲</div>
+        <div class="gtype-name">定常型</div>
+        <div class="gtype-cond">後期avg ≥ 初速avg × 0.5</div>
+        <div class="gtype-desc">記事の「インフラ記事」。後期が初速の50%以上を維持し続ける。</div>
+      </div>
+      <div class="gtype-card">
+        <div class="gtype-emoji">🌱</div>
+        <div class="gtype-name">遅咲き型</div>
+        <div class="gtype-cond">後期avg > 初速avg × 1.2</div>
+        <div class="gtype-desc">記事にはなかった分類。時間とともに発見され、後から伸びる。</div>
+      </div>
+      <div class="gtype-card">
+        <div class="gtype-emoji">📉</div>
+        <div class="gtype-name">フェード型</div>
+        <div class="gtype-cond">後期データあり・定常でない</div>
+        <div class="gtype-desc">一時的に読まれたが定着しなかった。バースト未満の失速。</div>
+      </div>
+      <div class="gtype-card">
+        <div class="gtype-emoji">🌙</div>
+        <div class="gtype-name">スリーパー型</div>
+        <div class="gtype-cond">初速不明 ＋ 後14日avg ≥ 1.0</div>
+        <div class="gtype-desc">古くて初速不明だが今も読まれている。記事の「静かに働く記事」。</div>
+      </div>
+      <div class="gtype-card">
+        <div class="gtype-emoji">💤</div>
+        <div class="gtype-name">眠り型</div>
+        <div class="gtype-cond">初速不明 ＋ 後14日avg &lt; 1.0</div>
+        <div class="gtype-desc">初速不明かつ今もほぼ動いていない。リライト候補。</div>
+      </div>
+      <div class="gtype-card">
+        <div class="gtype-emoji">📊</div>
+        <div class="gtype-name">成長中</div>
+        <div class="gtype-cond">obs_delay ≤ 3 ＋ 後期データ未到達</div>
+        <div class="gtype-desc">投稿から31日未満でまだ後期に達していない若い記事。</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>分類の前提：</strong>
+      成長タイプの詳細分類（バースト/定常/遅咲きなど）は、<strong>投稿日から3日以内に追跡開始できた記事</strong>（obs_delay ≤ 3）のみ有効。
+      それ以外は初速PVが計算できないため、スリーパー型または眠り型に分類される。
+      にーやんのデータでは約173件がこの条件を満たしている。
+    </div>
+  </section>
+
+  <!-- 06 スクリプト全文 -->
+  <section id="fullcode">
+    <div class="sec-header">
+      <span class="sec-num">06.</span>
+      <h2>スクリプト全文</h2>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-label">
+        <span>scripts/analyze_quality.py — 全文（コピペしてそのまま動く）</span>
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      </div>
+      <pre><span class="c">#!/usr/bin/env python3</span>
+<span class="st">"""
+analyze_quality.py  —  note 記事の「質」を多角的に解析する
+
+使い方:
+  python scripts/analyze_quality.py \
+      --articles data/articles.csv \
+      --out data/
+"""</span>
+
+<span class="kw">import</span> argparse
+<span class="kw">import</span> logging
+<span class="kw">import</span> sys
+<span class="kw">from</span> datetime <span class="kw">import</span> date
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=<span class="st">"%(asctime)s [%(levelname)s] %(message)s"</span>,
+    datefmt=<span class="st">"%H:%M:%S"</span>,
+)
+log = logging.getLogger(__name__)
+
+TODAY = pd.Timestamp(date.today())
+
+
+<span class="kw">def</span> <span class="fn">parse_args</span>():
+    p = argparse.ArgumentParser(description=<span class="st">"記事品質解析エンジン"</span>)
+    p.add_argument(<span class="st">"--articles"</span>, required=<span class="kw">True</span>, help=<span class="st">"articles.csv のパス"</span>)
+    p.add_argument(<span class="st">"--out"</span>, default=<span class="st">"data/"</span>, help=<span class="st">"出力ディレクトリ"</span>)
+    p.add_argument(
+        <span class="st">"--min-obs-days"</span>, type=int, default=<span class="nu">7</span>,
+        help=<span class="st">"最低観測日数（これ未満はスキップ）"</span>
+    )
+    <span class="kw">return</span> p.parse_args()
+
+
+<span class="kw">def</span> <span class="fn">to_naive</span>(ts):
+    <span class="kw">if</span> pd.isna(ts):
+        <span class="kw">return</span> pd.NaT
+    <span class="kw">return</span> ts.tz_convert(<span class="st">"UTC"</span>).replace(tzinfo=<span class="kw">None</span>) <span class="kw">if</span> ts.tzinfo <span class="kw">else</span> ts
+
+
+<span class="kw">def</span> <span class="fn">sigmoid_norm</span>(x, center, scale):
+    <span class="kw">if</span> x <span class="kw">is None or</span> (isinstance(x, float) <span class="kw">and</span> np.isnan(x)):
+        <span class="kw">return None</span>
+    <span class="kw">return</span> float(<span class="nu">1</span> / (<span class="nu">1</span> + np.exp(-(x - center) / scale)))
+
+
+<span class="kw">def</span> <span class="fn">analyze_article</span>(key: str, grp: pd.DataFrame) -> dict:
+    grp = grp.sort_values(<span class="st">"date"</span>).reset_index(drop=<span class="kw">True</span>)
+
+    latest       = grp.iloc[-<span class="nu">1</span>]
+    title        = str(latest.get(<span class="st">"title"</span>, key))
+    total_pv     = float(latest[<span class="st">"read_count"</span>])
+    total_like   = float(latest[<span class="st">"like_count"</span>]) <span class="kw">if</span> pd.notna(latest.get(<span class="st">"like_count"</span>)) <span class="kw">else</span> <span class="nu">0.0</span>
+    total_comment = float(latest[<span class="st">"comment_count"</span>]) <span class="kw">if</span> pd.notna(latest.get(<span class="st">"comment_count"</span>)) <span class="kw">else</span> <span class="nu">0.0</span>
+
+    pub_raw  = grp[<span class="st">"published_at"</span>].dropna().iloc[<span class="nu">0</span>] <span class="kw">if</span> grp[<span class="st">"published_at"</span>].notna().any() <span class="kw">else</span> pd.NaT
+    pub      = to_naive(pub_raw)
+    obs_days = grp[<span class="st">"date"</span>].nunique()
+    first_obs = grp[<span class="st">"date"</span>].iloc[<span class="nu">0</span>]
+    age      = int((TODAY - pub).days)      <span class="kw">if</span> pd.notna(pub) <span class="kw">else None</span>
+    obs_delay = int((first_obs - pub).days) <span class="kw">if</span> pd.notna(pub) <span class="kw">else None</span>
+
+    <span class="c"># 日次PV（累計差分・非負クリップ）</span>
+    grp[<span class="st">"dpv"</span>] = grp[<span class="st">"read_count"</span>].diff().fillna(<span class="nu">0.0</span>).clip(lower=<span class="nu">0.0</span>)
+    <span class="kw">if</span> pd.notna(pub) <span class="kw">and</span> obs_delay == <span class="nu">0</span>:
+        grp.at[<span class="nu">0</span>, <span class="st">"dpv"</span>] = float(grp.at[<span class="nu">0</span>, <span class="st">"read_count"</span>])
+
+    grp[<span class="st">"dpv_ma"</span>] = grp[<span class="st">"dpv"</span>].rolling(<span class="nu">3</span>, min_periods=<span class="nu">1</span>).mean()
+    grp[<span class="st">"ddays"</span>]  = (grp[<span class="st">"date"</span>] - pub).dt.days <span class="kw">if</span> pd.notna(pub) <span class="kw">else</span> range(len(grp))
+
+    <span class="c"># スキ率</span>
+    eta_final = round(total_like / total_pv * <span class="nu">100</span>, <span class="nu">2</span>) <span class="kw">if</span> total_pv > <span class="nu">0</span> <span class="kw">else</span> <span class="nu">0.0</span>
+
+    <span class="c"># スキ率トレンド（前1/3 vs 後1/3）</span>
+    grp[<span class="st">"eta_row"</span>] = grp[<span class="st">"like_count"</span>].fillna(<span class="nu">0</span>) / grp[<span class="st">"read_count"</span>].replace(<span class="nu">0</span>, np.nan) * <span class="nu">100</span>
+    n   = len(grp)
+    seg = max(n // <span class="nu">3</span>, <span class="nu">1</span>)
+    eta_early_mean = grp[<span class="st">"eta_row"</span>].iloc[:seg].mean()
+    eta_late_mean  = grp[<span class="st">"eta_row"</span>].iloc[-seg:].mean()
+    eta_trend = round(float(eta_late_mean - eta_early_mean), <span class="nu">2</span>) \
+        <span class="kw">if</span> pd.notna(eta_early_mean) <span class="kw">and</span> pd.notna(eta_late_mean) <span class="kw">else None</span>
+
+    <span class="c"># 後期14日平均PV</span>
+    late14_avg = round(float(grp[<span class="st">"dpv"</span>].tail(<span class="nu">14</span>).mean()), <span class="nu">2</span>)
+
+    <span class="c"># 安定性スコア（CV ベース）</span>
+    dpv_vals  = grp[<span class="st">"dpv"</span>][grp[<span class="st">"dpv"</span>] > <span class="nu">0</span>]
+    stability = <span class="kw">None</span>
+    <span class="kw">if</span> len(dpv_vals) >= <span class="nu">5</span>:
+        cv = float(dpv_vals.std() / dpv_vals.mean()) <span class="kw">if</span> dpv_vals.mean() > <span class="nu">0</span> <span class="kw">else</span> <span class="nu">99.0</span>
+        stability = round(<span class="nu">1.0</span> / (<span class="nu">1.0</span> + cv), <span class="nu">3</span>)
+
+    <span class="c"># 成長パターン（obs_delay ≤ 3 の記事のみ計算）</span>
+    initial_7d = peak_dpv = days_to_peak = half_life = None
+    mid_avg = late_avg = longevity = <span class="kw">None</span>
+    can_measure = (pd.notna(pub) <span class="kw">and</span> obs_delay <span class="kw">is not None and</span> obs_delay <= <span class="nu">3</span>)
+
+    <span class="kw">if</span> can_measure:
+        early_rows = grp[grp[<span class="st">"ddays"</span>] <= <span class="nu">7</span>]
+        mid_rows   = grp[(grp[<span class="st">"ddays"</span>] > <span class="nu">7</span>)  &amp; (grp[<span class="st">"ddays"</span>] <= <span class="nu">30</span>)]
+        late_rows  = grp[grp[<span class="st">"ddays"</span>] > <span class="nu">30</span>]
+
+        initial_7d = int(early_rows[<span class="st">"dpv"</span>].sum()) <span class="kw">if not</span> early_rows.empty <span class="kw">else None</span>
+
+        <span class="kw">if not</span> grp[<span class="st">"dpv_ma"</span>].empty:
+            peak_idx_loc = int(grp[<span class="st">"dpv_ma"</span>].idxmax())
+            peak_dpv     = int(round(grp.at[peak_idx_loc, <span class="st">"dpv_ma"</span>]))
+            days_to_peak = int(grp.at[peak_idx_loc, <span class="st">"ddays"</span>])
+            after_peak   = grp[grp[<span class="st">"ddays"</span>] >= days_to_peak]
+            half_rows    = after_peak[after_peak[<span class="st">"dpv_ma"</span>] <= peak_dpv * <span class="nu">0.5</span>]
+            <span class="kw">if not</span> half_rows.empty:
+                half_life = int(half_rows.iloc[<span class="nu">0</span>][<span class="st">"ddays"</span>]) - days_to_peak
+
+        mid_avg  = round(float(mid_rows[<span class="st">"dpv"</span>].mean()), <span class="nu">1</span>)  <span class="kw">if not</span> mid_rows.empty  <span class="kw">else None</span>
+        late_avg = round(float(late_rows[<span class="st">"dpv"</span>].mean()), <span class="nu">1</span>) <span class="kw">if not</span> late_rows.empty <span class="kw">else None</span>
+        early_avg_7d = (initial_7d / <span class="nu">7.0</span>) <span class="kw">if</span> initial_7d <span class="kw">else None</span>
+        <span class="kw">if</span> early_avg_7d <span class="kw">and</span> early_avg_7d > <span class="nu">0</span> <span class="kw">and</span> late_avg <span class="kw">is not None</span>:
+            longevity = round(late_avg / early_avg_7d, <span class="nu">3</span>)
+
+    gtype   = classify_growth_type(obs_delay, obs_days, can_measure,
+                  initial_7d, mid_avg, late_avg, longevity, late14_avg, total_pv)
+    quality = calc_quality_score(eta_final, longevity, stability)
+
+    <span class="kw">return</span> {
+        <span class="st">"集計日"</span>:             TODAY.date().isoformat(),
+        <span class="st">"key"</span>:                key,
+        <span class="st">"タイトル"</span>:           title,
+        <span class="st">"Age"</span>:                age,
+        <span class="st">"観測遅延日数"</span>:       obs_delay,
+        <span class="st">"観測日数"</span>:           obs_days,
+        <span class="st">"累計PV"</span>:             int(total_pv),
+        <span class="st">"累計スキ"</span>:           int(total_like),
+        <span class="st">"コメント数"</span>:         int(total_comment),
+        <span class="st">"スキ率(%)"</span>:          eta_final,
+        <span class="st">"スキ率トレンド(pp)"</span>: eta_trend,
+        <span class="st">"後期14日平均PV"</span>:     late14_avg,
+        <span class="st">"初速PV(7日)"</span>:        initial_7d,
+        <span class="st">"ピーク日次PV"</span>:       peak_dpv,
+        <span class="st">"ピーク到達日数"</span>:     days_to_peak,
+        <span class="st">"ハーフライフ(日)"</span>:   half_life,
+        <span class="st">"中期平均PV"</span>:         mid_avg,
+        <span class="st">"後期平均PV"</span>:         late_avg,
+        <span class="st">"持続率"</span>:             longevity,
+        <span class="st">"安定性スコア"</span>:       stability,
+        <span class="st">"成長タイプ"</span>:         gtype,
+        <span class="st">"質スコア"</span>:           quality,
+    }
+
+
+<span class="kw">def</span> <span class="fn">classify_growth_type</span>(
+    obs_delay, obs_days, can_measure,
+    initial_7d, mid_avg, late_avg, longevity,
+    late14_avg, total_pv
+) -> str:
+    <span class="kw">if</span> obs_days < <span class="nu">10</span>:
+        <span class="kw">return</span> <span class="st">"❓ データ不足"</span>
+    <span class="kw">if</span> can_measure:
+        early_avg = (initial_7d / <span class="nu">7.0</span>) <span class="kw">if</span> initial_7d <span class="kw">else None</span>
+        <span class="kw">if</span> late_avg <span class="kw">is not None and</span> early_avg <span class="kw">and</span> late_avg > early_avg * <span class="nu">1.2</span>:
+            <span class="kw">return</span> <span class="st">"🌱 遅咲き型"</span>
+        <span class="kw">if</span> late_avg <span class="kw">is not None and</span> early_avg <span class="kw">and</span> late_avg >= early_avg * <span class="nu">0.5</span>:
+            <span class="kw">return</span> <span class="st">"🌲 定常型"</span>
+        <span class="kw">if</span> mid_avg <span class="kw">is not None and</span> mid_avg > <span class="nu">0</span> <span class="kw">and</span> early_avg <span class="kw">and</span> early_avg > mid_avg * <span class="nu">3</span>:
+            <span class="kw">return</span> <span class="st">"🎆 バースト型"</span>
+        <span class="kw">if</span> late_avg <span class="kw">is not None</span>:
+            <span class="kw">return</span> <span class="st">"📉 フェード型"</span>
+        <span class="kw">return</span> <span class="st">"📊 成長中"</span>
+    <span class="kw">else</span>:
+        <span class="kw">if</span> late14_avg >= <span class="nu">1.0</span>:
+            <span class="kw">return</span> <span class="st">"🌙 スリーパー型"</span>
+        <span class="kw">elif</span> late14_avg >= <span class="nu">0.1</span> <span class="kw">and</span> total_pv >= <span class="nu">200</span>:
+            <span class="kw">return</span> <span class="st">"💤 眠り型"</span>
+        <span class="kw">return</span> <span class="st">"❓ データ不足"</span>
+
+
+<span class="kw">def</span> <span class="fn">calc_quality_score</span>(eta: float, longevity, stability) -> float:
+    s_eta       = sigmoid_norm(eta,       center=<span class="nu">3.0</span>,  scale=<span class="nu">2.0</span>)  <span class="kw">or</span> <span class="nu">0.0</span>
+    s_longevity = sigmoid_norm(longevity, center=<span class="nu">0.2</span>,  scale=<span class="nu">0.15</span>) <span class="kw">if</span> longevity <span class="kw">is not None else</span> <span class="nu">0.5</span>
+    s_stability = sigmoid_norm(stability, center=<span class="nu">0.3</span>,  scale=<span class="nu">0.2</span>)  <span class="kw">if</span> stability <span class="kw">is not None else</span> <span class="nu">0.3</span>
+    score = (s_eta * <span class="nu">0.40</span> + s_longevity * <span class="nu">0.35</span> + s_stability * <span class="nu">0.25</span>) * <span class="nu">100</span>
+    <span class="kw">return</span> round(score, <span class="nu">1</span>)
+
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    args = parse_args()
+
+    df = pd.read_csv(args.articles)
+    df[<span class="st">"date"</span>]         = pd.to_datetime(df[<span class="st">"date"</span>])
+    df[<span class="st">"published_at"</span>] = pd.to_datetime(df[<span class="st">"published_at"</span>], utc=<span class="kw">True</span>, errors=<span class="st">"coerce"</span>)
+
+    keys = df[<span class="st">"key"</span>].unique()
+    log.info(<span class="st">"記事数: %d"</span>, len(keys))
+
+    records, skipped = [], <span class="nu">0</span>
+    <span class="kw">for</span> key <span class="kw">in</span> keys:
+        grp = df[df[<span class="st">"key"</span>] == key]
+        <span class="kw">if</span> grp[<span class="st">"date"</span>].nunique() < args.min_obs_days:
+            skipped += <span class="nu">1</span>
+            <span class="kw">continue</span>
+        records.append(analyze_article(key, grp))
+
+    log.info(<span class="st">"解析完了: %d 記事 (スキップ %d)"</span>, len(records), skipped)
+
+    out_df = (
+        pd.DataFrame(records)
+        .sort_values(<span class="st">"質スコア"</span>, ascending=<span class="kw">False</span>)
+        .reset_index(drop=<span class="kw">True</span>)
+    )
+
+    out_path = Path(args.out) / <span class="st">"article_quality.csv"</span>
+    out_path.parent.mkdir(parents=<span class="kw">True</span>, exist_ok=<span class="kw">True</span>)
+    out_df.to_csv(out_path, index=<span class="kw">False</span>, encoding=<span class="st">"utf-8-sig"</span>)
+    log.info(<span class="st">"保存: %s (%d 行)"</span>, out_path, len(out_df))
+
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    main()</pre>
+    </div>
+  </section>
+
+  <!-- 07 実行方法 -->
+  <section id="run">
+    <div class="sec-header">
+      <span class="sec-num">07.</span>
+      <h2>実行方法</h2>
+    </div>
+
+    <div class="callout">
+      <strong>必要なもの：</strong> <code>pandas</code> と <code>numpy</code> のみ。新規インストール不要。
+      <code>articles.csv</code>（fetch_stats.py が生成するやつ）があれば動く。
+    </div>
+
+    <!-- インストール手順 -->
+    <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-bottom:16px;">依存パッケージのインストール</h3>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+        <div style="background:var(--surface-v);font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:9px 14px;border-bottom:1px solid var(--border);">
+          ローカル（初回のみ）
+        </div>
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-label" style="border-radius:0;border:none;border-bottom:1px solid #333;">
+            <span>terminal</span><button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre style="border-radius:0;">pip install pandas numpy</pre>
+        </div>
+        <div style="padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;">
+          既存の fetch_stats.py や analyze.py が動いてる環境なら<strong style="color:var(--accent);">すでに入ってる</strong>。<br>
+          念のため確認するなら <code>pip list | grep -E "pandas|numpy"</code>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+        <div style="background:var(--surface-v);font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:9px 14px;border-bottom:1px solid var(--border);">
+          GitHub Actions（requirements.txt 経由）
+        </div>
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-label" style="border-radius:0;border:none;border-bottom:1px solid #333;">
+            <span>requirements.txt</span><button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre style="border-radius:0;">pandas
+numpy</pre>
+        </div>
+        <div style="padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;">
+          リポジトリのルートに <code>requirements.txt</code> を置いて、yml の <code>pip install</code> で読み込む（下記参照）。
+        </div>
+      </div>
+
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-label"><span>terminal</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre><span class="c"># 基本実行</span>
+python scripts/analyze_quality.py \
+    --articles data/articles.csv \
+    --out data/
+
+<span class="c"># 最低観測日数を変更（デフォルト7日）</span>
+python scripts/analyze_quality.py \
+    --articles data/articles.csv \
+    --out data/ \
+    --min-obs-days 14
+
+<span class="c"># 結果確認</span>
+head -3 data/article_quality.csv</pre>
+    </div>
+
+    <p style="color:var(--text-sub);font-size:13.5px;margin-bottom:12px;">実行するとコンソールに以下の6種のサマリーが出力される：</p>
+    <table class="diff-table">
+      <thead><tr><th>サマリー</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>成長タイプ分布</td><td>各タイプの件数とバーチャート</td></tr>
+        <tr><td>質スコア TOP10</td><td>総合ランキング上位10記事（スキ率・成長タイプ・Age 付き）</td></tr>
+        <tr><td>スキ率 TOP5</td><td>エンゲージメントが最も高い5記事</td></tr>
+        <tr><td>隠れた資産候補</td><td>遅咲き・スリーパー型の一覧（後14日avg と スキ率付き）</td></tr>
+        <tr><td>スキ率上昇記事</td><td>後から評価が高まったトレンド+の記事</td></tr>
+        <tr><td>バースト型ハーフライフ</td><td>花火記事群の中央値・平均・最長の分布</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 08 Gitへの組み込み -->
+  <section id="git">
+    <div class="sec-header">
+      <span class="sec-num">08.</span>
+      <h2>Gitへの組み込み</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-left"><div class="step-dot">1</div><div class="step-line"></div></div>
+        <div class="step-content">
+          <div class="step-title">ファイルを配置する</div>
+          <div class="step-desc"><code>scripts/</code> に置くだけ。依存追加なし。</div>
+          <div class="code-wrap">
+            <div class="code-label"><span>terminal</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre>git add scripts/analyze_quality.py
+git commit -m <span class="st">"feat: add analyze_quality.py"</span></pre>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-dot">2</div><div class="step-line"></div></div>
+        <div class="step-content">
+          <div class="step-title">daily-stats.yml に1ステップ追加</div>
+          <div class="step-desc"><code>summarize.py</code> の直後、push の前に挿入する。</div>
+          <div class="code-wrap">
+            <div class="code-label"><span>.github/workflows/daily-stats.yml — 全文（緑が追加行）</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><span style="color:#888;">name: daily-stats
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  collect-and-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+</span><span style="color:#88dd99;">        run: pip install -r requirements.txt
+</span><span style="color:#888;">
+      - name: データ収集
+        run: python scripts/fetch_stats.py
+        env:
+          NOTE_COOKIE:   ${{ secrets.NOTE_COOKIE }}
+          NOTE_USERNAME: ${{ secrets.NOTE_USERNAME }}
+
+      - name: 短期分析
+        run: python scripts/analyze.py --articles data/articles.csv --out data/
+
+      - name: 中長期集計
+        run: python scripts/summarize.py --articles data/articles.csv --out data/
+
+</span><span style="color:#88dd99;">      - name: 記事品質解析
+        run: python scripts/analyze_quality.py --articles data/articles.csv --out data/
+
+</span><span style="color:#888;">      - name: Push results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/
+          git commit -m "auto: update stats $(date '+%Y-%m-%d %H:%M')" || echo "No changes"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}</span></pre>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-top:12px;">
+            <div style="background:var(--surface-v);font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:9px 14px;border-bottom:1px solid var(--border);">requirements.txt（リポジトリルートに置く）</div>
+            <div class="code-wrap" style="margin:0;">
+              <div class="code-label" style="border-radius:0;border:none;border-bottom:1px solid #333;"><span>requirements.txt</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+              <pre style="border-radius:0;">pandas
+numpy</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-dot">3</div><div class="step-line" style="background:transparent;"></div></div>
+        <div class="step-content">
+          <div class="step-title">push すれば 4時間ごとに自動実行される</div>
+          <div class="step-desc">
+            <code>data/article_quality.csv</code> が生成され、既存の push ステップで
+            note-stats-public・note-wrapped にも自動同期される。追加作業なし。
+          </div>
+          <div class="badge-row" style="margin-top:8px;">
+            <span class="badge">Private repo ✓</span>
+            <span class="badge">note-stats-public ✓</span>
+            <span class="badge">note-wrapped ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 AIに聞く -->
+  <section id="aiprompt">
+    <div class="sec-header">
+      <span class="sec-num">09.</span>
+      <h2>わからんかったら AI に聞く</h2>
+    </div>
+
+    <p style="color:var(--text-sub);margin-bottom:28px;">
+      組み込み手順で詰まったら、以下のプロンプトをそのままコピーして AI（Claude など）に貼る。
+      記事と GitHub のページを読み込ませることで、
+      自分のリポジトリ構成に合った具体的な手順を返してくれる。
+    </p>
+
+    <!-- プロンプト 1：基本の組み込み -->
+    <h3 style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--accent);margin-bottom:12px;">
+      📌 基本 — スクリプトを Git に入れたい
+    </h3>
+    <div class="code-wrap" style="margin-bottom:32px;">
+      <div class="code-label">
+        <span>プロンプト — コピーして AI に貼る</span>
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      </div>
+      <pre style="background:#0a0a0a;color:#e8e8e8;white-space:pre-wrap;word-break:break-all;">以下の記事と GitHub リポジトリを読んで、スクリプトの組み込み手順を教えてください。
+
+【記事】
+https://note.com/ktcrs1107/n/n44e008693003
+
+【GitHub リポジトリ（README）】
+←自分のリポジトリURL→
+
+【やりたいこと】
+`analyze_quality.py` を既存のパイプラインに追加したい。
+具体的には以下を教えてください。
+
+1. ファイルをどこに置くか
+2. `daily-stats.yml` のどこに何行追加するか（前後の文脈ごと）
+3. `requirements.txt` が必要かどうか、必要なら内容
+4. ローカルで動作確認するコマンド
+
+私のリポジトリ構成は README の通りです。</pre>
+    </div>
+
+    <!-- プロンプト 2：エラー時 -->
+    <h3 style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--accent);margin-bottom:12px;">
+      🔧 エラーが出たとき
+    </h3>
+    <div class="code-wrap" style="margin-bottom:32px;">
+      <div class="code-label">
+        <span>プロンプト — エラー内容を貼り替えて使う</span>
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      </div>
+      <pre style="background:#0a0a0a;color:#e8e8e8;white-space:pre-wrap;word-break:break-all;">以下のエラーが出ました。原因と修正方法を教えてください。
+
+【実行コマンド】
+python scripts/analyze_quality.py --articles data/articles.csv --out data/
+
+【エラー内容】
+←ここにエラーを貼る→
+
+【環境】
+- Python 3.11
+- pandas, numpy はインストール済み
+- articles.csv は data/ にある
+
+【リポジトリ構成の参考】
+←自分のリポジトリURL→</pre>
+    </div>
+
+    <!-- プロンプト 3：GitHub Actions 失敗時 -->
+    <h3 style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--accent);margin-bottom:12px;">
+      ⚙️ GitHub Actions が失敗したとき
+    </h3>
+    <div class="code-wrap">
+      <div class="code-label">
+        <span>プロンプト — Actions のログを貼り替えて使う</span>
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+      </div>
+      <pre style="background:#0a0a0a;color:#e8e8e8;white-space:pre-wrap;word-break:break-all;">GitHub Actions のワークフローが失敗しました。
+以下のログを見て、原因と yml の修正方法を教えてください。
+
+【失敗したステップ名】
+←ここに失敗したステップ名を貼る→
+
+【エラーログ】
+←ここにログを貼る→
+
+【現在の daily-stats.yml】
+←ここに yml の中身を貼る→
+
+修正後の yml 全文も出してください。</pre>
+    </div>
+
+    <div class="callout" style="margin-top:24px;">
+      <strong>使い方のコツ：</strong>
+      プロンプトをそのまま貼るだけでも動くけど、
+      <strong>「現在の yml の中身」や「エラーログ」を実際の内容に差し替える</strong>ほど回答の精度が上がる。
+      URL は記事と GitHub を両方渡すのがポイント — AI が自分のリポジトリ構成を把握した上で答えてくれる。
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-wrap').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        const a = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('section[id]').forEach(s => obs.observe(s));
+</script>
+
+</body>
+</html>
