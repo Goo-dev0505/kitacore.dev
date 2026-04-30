@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prompt Idea Builder — 取扱説明書 | KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     KITAcore Design System — Light Mode
+     "Less, but better." — Dieter Rams
+     ============================================================ */
+  :root {
+    --bg:           #E9E9E9;
+    --surface:      #FFFFFF;
+    --surface-v:    #F4F4F2;
+    --text:         #111111;
+    --text-sub:     #333333;
+    --muted:        #6B6B6B;
+    --border:       #DDDDDD;
+    --border-strong:#BBBBBB;
+    --accent:       #000000;
+    --accent-blue:  #4A66AC;
+    --accent-blue-soft: rgba(74, 102, 172, 0.08);
+    --accent-green: #2D7A4F;
+    --accent-green-soft: rgba(45, 122, 79, 0.08);
+
+    --font-display: 'Inter', 'Helvetica Now', sans-serif;
+    --font-body:    'Noto Sans JP', 'Hiragino Sans', sans-serif;
+    --font-mono:    'JetBrains Mono', 'IBM Plex Mono', monospace;
+
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-6: 24px;
+    --sp-8: 32px;
+    --sp-12: 48px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Layout ─── */
+  .app {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  /* ─── Sidebar nav ─── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: var(--sp-6) var(--sp-4) var(--sp-8);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .sidebar-brand {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: var(--sp-1);
+  }
+  .sidebar-sub {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--sp-6);
+  }
+  .sidebar-group {
+    margin-bottom: var(--sp-4);
+  }
+  .sidebar-group-label {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: var(--sp-2);
+    padding-bottom: var(--sp-1);
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    padding: 5px 0;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    transition: color 120ms ease;
+  }
+  .sidebar a:hover { color: var(--text); }
+  .sidebar a .num {
+    font-size: 9px;
+    color: var(--border-strong);
+    min-width: 20px;
+  }
+
+  /* ─── Main content ─── */
+  .main {
+    padding: var(--sp-8) var(--sp-8) var(--sp-12);
+    max-width: 880px;
+  }
+
+  /* ─── Section nav (breadcrumb) ─── */
+  .section-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: var(--sp-6);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--border);
+  }
+  .section-nav .brand { font-weight: 700; color: var(--accent); letter-spacing: 0.18em; }
+  .section-nav .sep  { color: var(--border-strong); }
+  .section-nav .crumb.current { color: var(--text); }
+
+  /* ─── Hero header ─── */
+  header.hero {
+    margin-bottom: var(--sp-12);
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: var(--sp-3);
+  }
+  .dot { width: 6px; height: 6px; background: var(--accent-blue); border-radius: 50%; }
+  h1 {
+    margin: 0 0 var(--sp-3);
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    color: var(--text);
+  }
+  h1 .accent { color: var(--muted); font-weight: 400; }
+  .lead {
+    margin: 0;
+    color: var(--text-sub);
+    font-size: 14px;
+    line-height: 1.8;
+    max-width: 600px;
+  }
+
+  /* ─── Section headings ─── */
+  .section {
+    margin-bottom: var(--sp-12);
+    padding-top: var(--sp-8);
+  }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: var(--sp-3);
+  }
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  h2 {
+    margin: 0 0 var(--sp-4);
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  h3 {
+    margin: var(--sp-6) 0 var(--sp-3);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  p { margin: 0 0 var(--sp-4); color: var(--text-sub); font-size: 14px; line-height: 1.85; }
+
+  /* ─── Feature cards ─── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: var(--sp-4);
+  }
+  .card-icon {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    margin-bottom: var(--sp-2);
+  }
+  .card h4 {
+    margin: 0 0 var(--sp-1);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .card p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ─── Flow steps ─── */
+  .flow {
+    display: grid;
+    gap: 0;
+    margin-bottom: var(--sp-6);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .flow-item {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+  .flow-item:last-child { border-bottom: 0; }
+  .flow-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-blue-soft);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    border-right: 1px solid var(--border);
+  }
+  .flow-body {
+    padding: var(--sp-4);
+  }
+  .flow-body strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: var(--sp-1);
+    color: var(--text);
+  }
+  .flow-body p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ─── Tables ─── */
+  .table-wrap { overflow-x: auto; margin-bottom: var(--sp-6); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    background: var(--accent);
+    color: #FFFFFF;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: var(--sp-2) var(--sp-3);
+    text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: var(--sp-3);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-sub);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  tr:last-child td { border-bottom: 0; }
+  tr:nth-child(even) td { background: var(--surface-v); }
+  code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--surface-v);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    color: var(--accent-blue);
+  }
+
+  /* ─── Screen layout diagram ─── */
+  .screen-diagram {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    margin-bottom: var(--sp-6);
+  }
+  .screen-bar {
+    background: var(--accent);
+    color: #FFFFFF;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    padding: var(--sp-2) var(--sp-4);
+  }
+  .screen-cols {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1.1fr;
+    gap: 0;
+  }
+  .screen-col {
+    padding: var(--sp-4);
+    border-right: 1px solid var(--border);
+  }
+  .screen-col:last-child { border-right: 0; }
+  .screen-col .step-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: var(--accent-blue-soft);
+    border: 1px solid rgba(74,102,172,0.2);
+    padding: 2px 6px;
+    margin-bottom: var(--sp-2);
+  }
+  .screen-col h5 {
+    margin: 0 0 var(--sp-2);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .screen-col p { margin: 0; font-size: 11px; color: var(--muted); line-height: 1.6; }
+  .screen-col ul {
+    margin: var(--sp-2) 0 0;
+    padding-left: 14px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* ─── Category chips demo ─── */
+  .chips-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-1);
+    margin-bottom: var(--sp-6);
+  }
+  .chip-demo {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 2px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+  .chip-demo.active {
+    background: var(--accent);
+    color: #FFFFFF;
+    border-color: var(--accent);
+  }
+
+  /* ─── Badge row for categories ─── */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-6);
+  }
+  .cat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: var(--sp-3);
+  }
+  .cat-card .cat-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: var(--sp-1);
+  }
+  .cat-card .cat-count {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--accent-blue);
+    line-height: 1;
+    margin-bottom: var(--sp-1);
+  }
+  .cat-card .cat-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+  /* ─── Note boxes ─── */
+  .note {
+    border-left: 3px solid var(--accent-blue);
+    background: var(--accent-blue-soft);
+    padding: var(--sp-3) var(--sp-4);
+    margin-bottom: var(--sp-4);
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.7;
+  }
+  .note strong { color: var(--accent-blue); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 4px; }
+  .tip {
+    border-left: 3px solid var(--accent-green);
+    background: var(--accent-green-soft);
+    padding: var(--sp-3) var(--sp-4);
+    margin-bottom: var(--sp-4);
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.7;
+  }
+  .tip strong { color: var(--accent-green); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 4px; }
+
+  /* ─── Button demo ─── */
+  .btn-row {
+    display: flex;
+    gap: var(--sp-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--sp-6);
+  }
+  .btn-demo {
+    border: 1px solid var(--accent);
+    background: var(--surface);
+    color: var(--accent);
+    padding: 9px 16px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 2px;
+    cursor: default;
+  }
+  .btn-demo.primary { background: var(--accent); color: #FFFFFF; }
+  .btn-demo.ghost { border-color: var(--border); color: var(--muted); }
+
+  /* ─── Use case ─── */
+  .usecase-grid {
+    display: grid;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+  }
+  .usecase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: var(--sp-4);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-4);
+    align-items: start;
+  }
+  .usecase-num {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--border-strong);
+    min-width: 32px;
+    line-height: 1;
+  }
+  .usecase h4 { margin: 0 0 var(--sp-1); font-size: 13px; font-weight: 700; color: var(--text); }
+  .usecase p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+  /* ─── FAQ ─── */
+  .faq-list { margin-bottom: var(--sp-6); }
+  .faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: var(--sp-2);
+  }
+  .faq-q {
+    padding: var(--sp-3) var(--sp-4);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    gap: var(--sp-3);
+    align-items: baseline;
+  }
+  .faq-q .q-mark {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent-blue);
+    font-size: 14px;
+    min-width: 16px;
+  }
+  .faq-a {
+    padding: 0 var(--sp-4) var(--sp-3) calc(var(--sp-4) + 22px);
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.75;
+    border-top: 1px solid var(--border);
+  }
+  .faq-a .a-mark {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  /* ─── Kbd ─── */
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border: 1px solid var(--border);
+    background: var(--surface-v);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  /* ─── Footer ─── */
+  footer.app-foot {
+    margin-top: var(--sp-12);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  footer.app-foot b { color: var(--accent); font-weight: 700; letter-spacing: 0.18em; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    .main { padding: var(--sp-6) var(--sp-4) var(--sp-8); }
+    .screen-cols { grid-template-columns: 1fr; }
+    .screen-col { border-right: 0; border-bottom: 1px solid var(--border); }
+    .screen-col:last-child { border-bottom: 0; }
+    .card-grid { grid-template-columns: 1fr 1fr; }
+    .cat-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar navigation -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">KITACORE</div>
+    <div class="sidebar-sub">Manual v1.0</div>
+
+    <div class="sidebar-group">
+      <span class="sidebar-group-label">はじめに</span>
+      <a href="#overview"><span class="num">01</span>ツール概要</a>
+      <a href="#quickstart"><span class="num">02</span>クイックスタート</a>
+    </div>
+
+    <div class="sidebar-group">
+      <span class="sidebar-group-label">画面説明</span>
+      <a href="#layout"><span class="num">03</span>画面レイアウト</a>
+      <a href="#step01"><span class="num">04</span>Step01 テンプレ選択</a>
+      <a href="#step02"><span class="num">05</span>Step02 入力・調整</a>
+      <a href="#step03"><span class="num">06</span>Step03 プロンプト出力</a>
+    </div>
+
+    <div class="sidebar-group">
+      <span class="sidebar-group-label">機能詳細</span>
+      <a href="#categories"><span class="num">07</span>カテゴリ一覧</a>
+      <a href="#options"><span class="num">08</span>共通オプション</a>
+      <a href="#actions"><span class="num">09</span>アクションボタン</a>
+    </div>
+
+    <div class="sidebar-group">
+      <span class="sidebar-group-label">活用</span>
+      <a href="#usecases"><span class="num">10</span>使い方パターン</a>
+      <a href="#faq"><span class="num">11</span>よくある質問</a>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="main">
+
+    <!-- Breadcrumb -->
+    <div class="section-nav">
+      <span class="brand">KITACORE</span>
+      <span class="sep">/</span>
+      <span class="crumb">TOOLS</span>
+      <span class="sep">/</span>
+      <span class="crumb current">PROMPT IDEA BUILDER — MANUAL</span>
+    </div>
+
+    <!-- Hero -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="dot"></span>
+        <span>MANUAL · PROMPT BUILDER SERIES</span>
+      </div>
+      <h1>Prompt Idea<br/><span class="accent">Builder. 取扱説明書</span></h1>
+      <p class="lead">画像生成AI向けプロンプトを選択式でつくる、KITAcoreのビルダーツールの使い方ガイドです。ChatGPT Images / Midjourney / Nano Banana に対応した 90本超のテンプレを3ステップで操作できます。</p>
+    </header>
+
+    <!-- 01. Overview -->
+    <section id="overview" class="section">
+      <div class="section-label">01</div>
+      <h2>ツール概要</h2>
+      <p>Prompt Idea Builder は、画像生成AIに渡すプロンプトをテンプレート選択式で素早く組み立てるためのシングルファイルHTMLツールです。</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <h4>テンプレ選択式</h4>
+          <p>90本超のプロンプトを収録。カテゴリ・検索で絞り込んで即選択できます。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">✏️</div>
+          <h4>差し込み項目</h4>
+          <p><code>&#123;&#123; &#125;&#125;</code> 形式の変数が自動的に入力フォームになります。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <h4>共通オプション</h4>
+          <p>アスペクト比・出力先・文字あり/なし・添付画像の使い方を全テンプレに適用。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📤</div>
+          <h4>即コピー</h4>
+          <p>完成プロンプトをワンクリックでコピー。そのまま貼り付けて使えます。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎯</div>
+          <h4>4ツール対応</h4>
+          <p>ChatGPT Images / Midjourney / Nano Banana / Pollo AI 向けに出力を最適化。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📁</div>
+          <h4>TXT保存</h4>
+          <p>完成プロンプトをテキストファイルとして手元に保存できます。</p>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>対応ツール</strong>
+        ChatGPT Images、Midjourney、Nano Banana（画像生成AI汎用）、Pollo AI の4つに対応しています。共通オプションの「出力先」で切り替えることで、ツールごとに最適化したプロンプトを生成します。
+      </div>
+    </section>
+
+    <!-- 02. Quickstart -->
+    <section id="quickstart" class="section">
+      <div class="section-label">02</div>
+      <h2>クイックスタート — 5ステップ</h2>
+      <p>初めて使う場合はこの手順に沿って操作してください。慣れれば2〜3分でプロンプトが完成します。</p>
+
+      <div class="flow">
+        <div class="flow-item">
+          <div class="flow-num">1</div>
+          <div class="flow-body">
+            <strong>カテゴリを選ぶ</strong>
+            <p>画面左パネルの上部チップ（「すべて」「サムネ」「広告」など）から目的のカテゴリを押してフィルタリングします。</p>
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-num">2</div>
+          <div class="flow-body">
+            <strong>テンプレカードを選択する</strong>
+            <p>テンプレ一覧からカードを1枚クリックします。右側（Step02）の入力欄が切り替わります。</p>
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-num">3</div>
+          <div class="flow-body">
+            <strong>差し込み項目を埋める</strong>
+            <p>「差し込み項目」セクションに表示されたフィールドに、テーマ・タイトル・業種など具体的な言葉を入力します。</p>
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-num">4</div>
+          <div class="flow-body">
+            <strong>共通オプションを調整する（任意）</strong>
+            <p>アスペクト比・出力先・画像内文字・添付画像の使い方を必要に応じて変更します。指定なしの場合はテンプレ側の設定が優先されます。</p>
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-num">5</div>
+          <div class="flow-body">
+            <strong>「プロンプト更新」→「コピー」</strong>
+            <p>黒い「プロンプト更新」ボタンを押すと右パネルに完成プロンプトが表示されます。「コピー」ボタンでクリップボードに転送して完了です。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>TIP</strong>
+        テンプレの「ヒント」カテゴリには、ロゴ・スライド・フォント作成のコツがまとめられています。使い始めに一度読んでおくと品質が上がります。
+      </div>
+    </section>
+
+    <!-- 03. Layout -->
+    <section id="layout" class="section">
+      <div class="section-label">03</div>
+      <h2>画面レイアウト</h2>
+      <p>ツールは3カラム構成です。左から「Step01 テンプレ選択」→「Step02 入力・調整」→「Step03 完成プロンプト」の順に操作します。</p>
+
+      <div class="screen-diagram">
+        <div class="screen-bar">PROMPT IDEA BUILDER — 画面構成</div>
+        <div class="screen-cols">
+          <div class="screen-col">
+            <span class="step-tag">Step 01</span>
+            <h5>テンプレを選ぶ</h5>
+            <p>カテゴリチップ・キーワード検索でテンプレを絞り込み、カードを選択する。</p>
+            <ul>
+              <li>検索ボックス</li>
+              <li>カテゴリチップ</li>
+              <li>テンプレカード一覧</li>
+            </ul>
+          </div>
+          <div class="screen-col">
+            <span class="step-tag">Step 02</span>
+            <h5>入力して調整する</h5>
+            <p>テンプレに応じた差し込み項目フォームと共通オプションを入力する。</p>
+            <ul>
+              <li>テンプレ概要プレビュー</li>
+              <li>差し込み項目（動的）</li>
+              <li>共通オプション 6項目</li>
+              <li>元テンプレ直接編集</li>
+              <li>アクションボタン群</li>
+            </ul>
+          </div>
+          <div class="screen-col">
+            <span class="step-tag">Step 03</span>
+            <h5>完成プロンプト</h5>
+            <p>組み立て済みのプロンプトをそのまま画像生成AIに貼り付けて使う。</p>
+            <ul>
+              <li>プロンプト出力テキストエリア</li>
+              <li>ヘルパーテキスト（使い方ヒント）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>レスポンシブ対応</strong>
+        画面幅が狭い場合（タブレット・スマホ）は3カラムが縦に並びます。Step01 → Step02 → Step03 の順にスクロールして操作してください。
+      </div>
+    </section>
+
+    <!-- 04. Step01 -->
+    <section id="step01" class="section">
+      <div class="section-label">04</div>
+      <h2>Step 01 — テンプレを選ぶ</h2>
+      <p>左パネルでテンプレートを絞り込み・選択します。3つの操作方法があります。</p>
+
+      <h3>検索ボックス</h3>
+      <p>フリーワードで全テンプレのタイトル・カテゴリ・プロンプト本文を横断検索できます。</p>
+      <div class="note">
+        <strong>検索ヒント</strong>
+        「広告」「サムネ」「ロゴ」「SaaS」「Z世代」「フォント」などキーワードを入力してください。カテゴリ名でも絞り込めます。
+      </div>
+
+      <h3>カテゴリチップ</h3>
+      <p>カテゴリボタンを押すと該当するテンプレのみ表示されます。もう一度押すか「すべて」を押すとリセットされます。</p>
+      <div class="chips-demo">
+        <span class="chip-demo active">すべて 94</span>
+        <span class="chip-demo">クイック例 6</span>
+        <span class="chip-demo">広告 6</span>
+        <span class="chip-demo">サムネ 13</span>
+        <span class="chip-demo">ロゴ 16</span>
+        <span class="chip-demo">スライド 31</span>
+        <span class="chip-demo">フォント 5</span>
+        <span class="chip-demo">イラスト 6</span>
+        <span class="chip-demo">その他 5</span>
+        <span class="chip-demo">ヒント 3</span>
+      </div>
+
+      <h3>テンプレカードの見方</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>要素</th><th>内容</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>タイトル（太字）</td>
+              <td>テンプレの名前。「バナー広告」「ミニマル・上品」「SaaS企業風」など。</td>
+            </tr>
+            <tr>
+              <td>概要テキスト</td>
+              <td>プロンプト冒頭の100字程度のプレビュー。内容の確認に使う。</td>
+            </tr>
+            <tr>
+              <td>タグ</td>
+              <td>カテゴリと差し込み項目名のバッジ。選択前に必要な入力項目を確認できる。</td>
+            </tr>
+            <tr>
+              <td>左ボーダー（青）</td>
+              <td>現在選択中のカードにのみ表示される青いアクセントライン。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 05. Step02 -->
+    <section id="step02" class="section">
+      <div class="section-label">05</div>
+      <h2>Step 02 — 入力して調整する</h2>
+      <p>テンプレを選択すると中央パネルが切り替わり、そのテンプレ専用の入力欄が出現します。</p>
+
+      <h3>テンプレ概要プレビュー</h3>
+      <p>パネル上部にグレーのプレビューボックスが表示され、選択中テンプレのカテゴリ・タイトル・プロンプト冒頭が確認できます。</p>
+
+      <h3>差し込み項目（動的フォーム）</h3>
+      <p>テンプレ内の <span class="kbd">&#123;&#123; &#125;&#125;</span> 記法で囲まれた変数が自動的に入力フォームになります。フォームに入力した値が、プロンプト更新時に対応する変数と入れ替わります。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>フィールド名</th><th>入力内容</th><th>入力のコツ</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>タイトル</code></td>
+              <td>記事・画像のタイトル文字列</td>
+              <td>例：「AI時代の創作ログ」</td>
+            </tr>
+            <tr>
+              <td><code>サブタイトル</code></td>
+              <td>サブ見出し・キャッチコピー</td>
+              <td>例：「道具と遊び方を整理する」</td>
+            </tr>
+            <tr>
+              <td><code>商材</code></td>
+              <td>広告対象の商品・サービス名</td>
+              <td>例：「実践型AI活用講座」</td>
+            </tr>
+            <tr>
+              <td><code>ターゲット</code></td>
+              <td>想定する読者・購買者</td>
+              <td>例：「AIを仕事に取り入れたいビジネスパーソン」</td>
+            </tr>
+            <tr>
+              <td><code>メインコピー</code></td>
+              <td>広告の主文（キャッチコピー）</td>
+              <td>例：「AIを、使える武器に。」</td>
+            </tr>
+            <tr>
+              <td><code>CTA</code></td>
+              <td>行動促進テキスト</td>
+              <td>例：「詳しく見る」「今すぐ始める」</td>
+            </tr>
+            <tr>
+              <td><code>ブランド名</code></td>
+              <td>ブランド・サービス名</td>
+              <td>例：「KITAcore Lab」</td>
+            </tr>
+            <tr>
+              <td><code>業種</code></td>
+              <td>業種カテゴリ</td>
+              <td>例：「化粧品」「SaaS」「フィットネス」</td>
+            </tr>
+            <tr>
+              <td><code>ジャンル</code></td>
+              <td>コンテンツジャンル</td>
+              <td>例：「VTuber」「カフェ」「フィンテック」</td>
+            </tr>
+            <tr>
+              <td><code>枚数</code></td>
+              <td>生成枚数</td>
+              <td>例：「6」「12」「24」</td>
+            </tr>
+            <tr>
+              <td><code>種類数</code></td>
+              <td>バリエーション数（フォント・スタンプ等）</td>
+              <td>例：「16」「24」「40」</td>
+            </tr>
+            <tr>
+              <td><code>比率</code></td>
+              <td>アスペクト比</td>
+              <td>例：「3:4」「1:1」「16:9」</td>
+            </tr>
+            <tr>
+              <td><code>テーマ</code></td>
+              <td>スライドやコンテンツのテーマ</td>
+              <td>例：「投資家向けIR資料」「推し活コミュニティ」</td>
+            </tr>
+            <tr>
+              <td><code>文字</code></td>
+              <td>フォント作成の対象文字</td>
+              <td>例：「あ」「A」「KIT」</td>
+            </tr>
+            <tr>
+              <td><code>モチーフ</code></td>
+              <td>スタンプ・図解のモチーフ</td>
+              <td>例：「動物」「食べ物」「家電キャラ」</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tip">
+        <strong>TIP — 空欄のまま更新するとどうなる？</strong>
+        差し込み項目を空欄のまま「プロンプト更新」を押すと、<code>&#123;&#123;フィールド名&#125;&#125;</code> という変数記法がそのままプロンプトに残ります。あとでテキストエリア内を直接編集することもできます。
+      </div>
+
+      <h3>元テンプレを直接編集する（上級）</h3>
+      <p>「元テンプレを直接編集する」という折りたたみエリアを開くと、テンプレのプロンプト本文を直接書き換えられます。<code>&#123;&#123;新しい変数名&#125;&#125;</code> を追加すれば、差し込み項目として自動認識されます。</p>
+    </section>
+
+    <!-- 06. Step03 -->
+    <section id="step03" class="section">
+      <div class="section-label">06</div>
+      <h2>Step 03 — 完成プロンプト</h2>
+      <p>右パネルに完成プロンプトが表示されます。このテキストをそのまま画像生成AIに貼り付けて使います。</p>
+
+      <h3>出力テキストエリア</h3>
+      <p>プロンプト全文が表示される大きなテキストエリアです。「プロンプト更新」ボタンで内容が更新されます。テキストエリアを直接クリックして手動で細かく編集することもできます。</p>
+
+      <h3>ヘルパーテキスト</h3>
+      <p>テキストエリア下部に、選択中テンプレの使い方ヒントや対応ツールの補足が表示されます（一部テンプレのみ）。</p>
+
+      <div class="note">
+        <strong>スペルチェックについて</strong>
+        出力テキストエリアはスペルチェック（赤波線）が無効になっています。英語プロンプトが多いため、誤検出を防ぐための設定です。
+      </div>
+    </section>
+
+    <!-- 07. Categories -->
+    <section id="categories" class="section">
+      <div class="section-label">07</div>
+      <h2>カテゴリ一覧</h2>
+      <p>全94本（v1.0時点）のテンプレを9カテゴリに分類しています。</p>
+
+      <div class="cat-grid">
+        <div class="cat-card">
+          <div class="cat-name">クイック例</div>
+          <div class="cat-count">6</div>
+          <div class="cat-desc">ロゴ・バナー・スタンプ・図解など多ジャンルの入門テンプレ</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-name">広告系</div>
+          <div class="cat-count">6</div>
+          <div class="cat-desc">汎用・BtoB SaaS・D2C美容・教育・不動産・フード広告</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-name">サムネイル</div>
+          <div class="cat-count">13</div>
+          <div class="cat-desc">note記事サムネ向け。カラフル・高級・韓国・テック・前衛など多彩なスタイル</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-name">ロゴ</div>
+          <div class="cat-count">16</div>
+          <div class="cat-desc">SaaS・Z世代・コスメ・フィンテック・カフェ・飲食・ホテル等の業種別ロゴ</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-name">スライド</div>
+          <div class="cat-count">31</div>
+          <div class="cat-desc">ビジネス・ミニマル・Y2K・原宿・ゲームUI・モード誌風など豊富なデザインスタイル</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-name">フォント</div>
+          <div class="cat-count">5</div>
+          <div class="cat-desc">汎用・Z世代ポップ・抽象アート・ゆるかわ・切り絵系の作字テンプレ</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-name">イラスト</div>
+          <div class="cat-count">6</div>
+          <div class="cat-desc">アニメキャラ向けイラスト（天体宮殿・雪庭園・大聖堂・温室など舞台別）</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-name">その他</div>
+          <div class="cat-count">5</div>
+          <div class="cat-desc">メイクレシピ・架空商品ラインナップ・ストーリーボード・アプリブランディング</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-name">ヒント</div>
+          <div class="cat-count">3</div>
+          <div class="cat-desc">ロゴ・スライド・フォント作成のコツをまとめたリファレンステンプレ</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08. Common options -->
+    <section id="options" class="section">
+      <div class="section-label">08</div>
+      <h2>共通オプション — 全6項目</h2>
+      <p>差し込み項目の下に表示される共通オプションは、テンプレに関わらず全プロンプトに適用される追加条件です。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>フィールド</th><th>選択肢・入力内容</th><th>使い方</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>アスペクト比</strong></td>
+              <td>16:9 / 1.91:1（noteサムネ）/ 1:1 / 4:5 / 3:4 / 9:16 / 4:3</td>
+              <td>テンプレ指定がある場合はそちら優先。上書きしたいときに選択する。</td>
+            </tr>
+            <tr>
+              <td><strong>出力先</strong></td>
+              <td>ChatGPT Images / Midjourney向け / Nano Banana汎用 / Pollo AI用</td>
+              <td>使用するAIに合わせて選択。プロンプトの末尾に対応する指示が追加される。</td>
+            </tr>
+            <tr>
+              <td><strong>画像内文字</strong></td>
+              <td>テンプレ指定優先 / 文字あり / 文字なし / タイトルのみ</td>
+              <td>ロゴや背景素材など文字不要の場合は「文字なし」を選ぶ。</td>
+            </tr>
+            <tr>
+              <td><strong>添付画像の使い方</strong></td>
+              <td>指定なし / 雰囲気と構図を活かす / キャラクターを維持 / ロゴ素材を入れ込む / 色味だけ参考</td>
+              <td>参照画像を添付するときに用途を明示する。指定なしでは添付画像は無視される。</td>
+            </tr>
+            <tr>
+              <td><strong>クイック入力</strong></td>
+              <td>テーマ・タイトル・ブランド名など自由入力</td>
+              <td>差し込み項目に相当する情報をまとめて一行で書ける。テンプレ側の変数とは別に末尾に追記される。</td>
+            </tr>
+            <tr>
+              <td><strong>追加条件</strong></td>
+              <td>自由テキスト（テキストエリア）</td>
+              <td>「黒×グレー、余白多め」「SNSで目立つ」など補足条件を書く。プロンプト末尾に連結される。</td>
+            </tr>
+            <tr>
+              <td><strong>避けたい表現</strong></td>
+              <td>自由テキスト（テキストエリア）</td>
+              <td>「文字崩れ、低解像度」など生成AIに避けてほしい表現を明記する。ネガティブプロンプトに相当。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tip">
+        <strong>TIP — 「クイック入力」と「差し込み項目」の違い</strong>
+        差し込み項目はテンプレの <code>&#123;&#123;変数&#125;&#125;</code> と1対1で置換されます。クイック入力はプロンプト末尾に一文として追記されます。どちらも使うと、より細かくコントロールできます。
+      </div>
+    </section>
+
+    <!-- 09. Action buttons -->
+    <section id="actions" class="section">
+      <div class="section-label">09</div>
+      <h2>アクションボタン</h2>
+      <p>Step02パネルの下部に4つのボタンが並んでいます。</p>
+
+      <div class="btn-row">
+        <button class="btn-demo primary">プロンプト更新</button>
+        <button class="btn-demo">コピー</button>
+        <button class="btn-demo">TXT保存</button>
+        <button class="btn-demo ghost">入力リセット</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ボタン</th><th>動作</th><th>備考</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>プロンプト更新</strong>（黒）</td>
+              <td>差し込み項目・共通オプションの内容を反映して右パネルのプロンプトを再生成する。</td>
+              <td>入力変更後は必ず押す。</td>
+            </tr>
+            <tr>
+              <td><strong>コピー</strong></td>
+              <td>完成プロンプトをクリップボードにコピーする。画面右下に「コピーしました」トーストが表示される。</td>
+              <td>更新後すぐ使えます。</td>
+            </tr>
+            <tr>
+              <td><strong>TXT保存</strong></td>
+              <td>完成プロンプトを <code>.txt</code> ファイルとしてダウンロードする。</td>
+              <td>プロンプトを手元に残したいときに使う。</td>
+            </tr>
+            <tr>
+              <td><strong>入力リセット</strong>（ゴースト）</td>
+              <td>差し込み項目と共通オプションの入力をすべて空欄に戻す。</td>
+              <td>テンプレ自体は変わらない。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 10. Use cases -->
+    <section id="usecases" class="section">
+      <div class="section-label">10</div>
+      <h2>使い方パターン</h2>
+      <p>よくある使い方を目的別にまとめました。</p>
+
+      <div class="usecase-grid">
+        <div class="usecase">
+          <div class="usecase-num">A</div>
+          <div>
+            <h4>note記事のサムネを作る</h4>
+            <p>カテゴリ「サムネ」でフィルタリング → スタイルを選ぶ（高級感、テック系、韓国デザインなど）→ タイトルとサブタイトルを入力 → アスペクト比「1.91:1（noteサムネ）」を選択 → プロンプト更新 → コピー → ChatGPT Imagesに貼り付け。</p>
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">B</div>
+          <div>
+            <h4>広告クリエイティブを4サイズ生成する</h4>
+            <p>カテゴリ「広告」→「汎用プロンプト」を選択 → 商材・ターゲット・訴求・メインコピー・CTA・ブランド名を入力 → 出力先は ChatGPT Images → プロンプト更新 → コピー。4サイズ分のクリエイティブが一度に生成されます。</p>
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">C</div>
+          <div>
+            <h4>Midjourney向けロゴ見本帳を作る</h4>
+            <p>カテゴリ「ロゴ」→業種に合ったテンプレ（SaaS企業風・カフェ・コスメなど）を選択 → 枚数と比率を入力 → 出力先「Midjourney向け」を選択 → 画像内文字「文字なし」に変更 → プロンプト更新 → コピー。</p>
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">D</div>
+          <div>
+            <h4>オリジナルフォント作字をする</h4>
+            <p>カテゴリ「フォント」→「汎用テンプレ」または「Z世代向け・ポップ」を選択 → 文字（例：「あ」）・種類数・テーマを入力 → 画像内文字「文字なし」→ 背景を「透過PNG」にするため追加条件に記載 → プロンプト更新 → コピー。</p>
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">E</div>
+          <div>
+            <h4>添付画像を参照してスライドを生成する</h4>
+            <p>カテゴリ「スライド」→好みのスタイルを選択 → テーマ・枚数・比率を入力 → 「添付画像の使い方」を「雰囲気と構図を活かす」に設定 → プロンプト更新 → コピー。ChatGPT Imagesに参照したいスライドを添付しながら貼り付ける。</p>
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">F</div>
+          <div>
+            <h4>テンプレをカスタマイズして保存する</h4>
+            <p>テンプレを選択 → 「元テンプレを直接編集する」を開く → プロンプト本文を書き換え → 新しい <code>&#123;&#123;変数名&#125;&#125;</code> を追加 → 「プロンプト更新」→「TXT保存」で手元にテキストを残す。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. FAQ -->
+    <section id="faq" class="section">
+      <div class="section-label">11</div>
+      <h2>よくある質問</h2>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-q"><span class="q-mark">Q</span>テンプレを選んでも差し込み項目が出ない</div>
+          <div class="faq-a"><span class="a-mark">A</span>　「ヒント」カテゴリのテンプレは <code>&#123;&#123; &#125;&#125;</code> 変数がなく、プロンプト本文がそのままガイドテキストになっています。差し込み項目セクションが空白のまま表示されるのは正常動作です。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="q-mark">Q</span>「プロンプト更新」を押さなくても右パネルが更新される？</div>
+          <div class="faq-a"><span class="a-mark">A</span>　テンプレカードを切り替えた時点でプロンプトは自動更新されます。ただし差し込み項目や共通オプションを変更した後は手動で「プロンプト更新」ボタンを押す必要があります。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="q-mark">Q</span>出力先を「Midjourney向け」にしたら何が変わる？</div>
+          <div class="faq-a"><span class="a-mark">A</span>　プロンプト末尾に Midjourney 向けのパラメータ（<code>--ar</code> や <code>--v</code> などの記法）が自動追加されます。Midjourney 以外のツールを使う場合は「ChatGPT Images」または「Nano Banana / 汎用」を選ぶことをおすすめします。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="q-mark">Q</span>追加条件と差し込み項目は両方使える？</div>
+          <div class="faq-a"><span class="a-mark">A</span>　はい。差し込み項目はテンプレ内の変数を置換し、追加条件はプロンプト末尾に連結されます。両方入力すると、より細かい指示をAIに渡せます。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="q-mark">Q</span>日本語プロンプトでも画像生成AIは理解してくれる？</div>
+          <div class="faq-a"><span class="a-mark">A</span>　ChatGPT Images・Nano Banana は日本語プロンプトで問題なく動作します。Midjourney は英語が推奨されているため、必要に応じて英語に翻訳してから使ってください。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="q-mark">Q</span>イラストカテゴリのテンプレはキャラ画像の添付が必要？</div>
+          <div class="faq-a"><span class="a-mark">A</span>　テンプレ本文に「このキャラクターを…」という記載があるものは、参照したいキャラクター画像の添付が前提です。「添付画像の使い方」を「添付画像のキャラクターを維持して入れ替える」に設定してから使ってください。</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="q-mark">Q</span>自作のテンプレを追加できる？</div>
+          <div class="faq-a"><span class="a-mark">A</span>　「元テンプレを直接編集する」エリアで既存テンプレを改変して使うことはできますが、HTMLファイルに新テンプレを永続追加するにはファイルを直接編集する必要があります。ソース内の <code>TEMPLATES</code> 配列に同じ形式のオブジェクトを追加してください。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-foot">
+      <div class="left"><b>KITACORE</b> &nbsp;×&nbsp; Prompt Builder Series — Manual v1.0</div>
+      <div class="right">Less, but better. — Dieter Rams</div>
+    </footer>
+
+  </div><!-- /.main -->
+</div><!-- /.app -->
+</body>
+</html>
