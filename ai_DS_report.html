@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIブームの裏側：銅と光の物理層レポート | KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:           #E9E9E9;
+  --surface:      #FFFFFF;
+  --surface-v:    #F4F4F2;
+  --text:         #111111;
+  --text-sub:     #333333;
+  --muted:        #6B6B6B;
+  --border:       #DDDDDD;
+  --accent:       #000000;
+  --accent-mid:   #333333;
+  --accent-blue:  #4A66AC;
+  --accent-blue-soft: rgba(74, 102, 172, 0.08);
+  --warn:         #C44536;
+
+  --font-display: 'Inter', 'Helvetica Now', sans-serif;
+  --font-body:    'Noto Sans JP', 'Hiragino Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', 'IBM Plex Mono', monospace;
+
+  --sp-1:  4px;  --sp-2:  8px;  --sp-3:  12px; --sp-4:  16px;
+  --sp-6:  24px; --sp-8:  32px; --sp-12: 48px; --sp-16: 64px; --sp-24: 96px;
+
+  --max-w: 1200px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============ Header ============ */
+.report-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: var(--sp-12) var(--sp-8) var(--sp-8);
+  position: relative;
+}
+.header-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+.brand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-12);
+}
+.brand-row .brand { color: var(--text); font-weight: 600; }
+.report-title-block {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-12);
+  align-items: end;
+  margin-bottom: var(--sp-8);
+}
+.report-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  margin-bottom: var(--sp-4);
+  font-weight: 500;
+}
+.report-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.report-title-jp {
+  font-family: var(--font-body);
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: var(--sp-4);
+  color: var(--text);
+}
+.report-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: right;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.report-meta div { margin-bottom: var(--sp-1); }
+.report-meta strong { color: var(--text); font-weight: 600; }
+
+.subtitle-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--border);
+}
+.subtitle-divider .label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.subtitle-divider .value {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-sub);
+}
+
+/* ============ Layout ============ */
+.layout {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--sp-12) var(--sp-8);
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--sp-12);
+  align-items: start;
+}
+
+/* ============ TOC Sidebar ============ */
+.toc {
+  position: sticky;
+  top: var(--sp-6);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border-left: 1px solid var(--border);
+  padding-left: var(--sp-4);
+}
+.toc-label {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-6);
+  font-size: 10px;
+}
+.toc ol {
+  list-style: none;
+}
+.toc li {
+  margin-bottom: var(--sp-3);
+  display: flex;
+  gap: var(--sp-3);
+  align-items: baseline;
+}
+.toc a {
+  color: var(--text-sub);
+  text-decoration: none;
+  transition: color 150ms ease;
+  display: block;
+}
+.toc a:hover { color: var(--accent-blue); }
+.toc .num {
+  color: var(--muted);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* ============ Main ============ */
+.main { min-width: 0; }
+.section {
+  margin-bottom: var(--sp-24);
+  scroll-margin-top: var(--sp-6);
+}
+.section-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--sp-8);
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  padding: 2px var(--sp-2);
+  border: 1px solid var(--accent-blue);
+  border-radius: 2px;
+}
+.section-title {
+  font-family: var(--font-body);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--sp-3);
+}
+.section-subtitle {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-bottom: var(--sp-8);
+  letter-spacing: 0.02em;
+}
+.section h3 {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: var(--sp-12);
+  margin-bottom: var(--sp-4);
+  letter-spacing: -0.005em;
+}
+.section h4 {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: var(--sp-6);
+  margin-bottom: var(--sp-3);
+  color: var(--text-sub);
+}
+.section p {
+  margin-bottom: var(--sp-4);
+  color: var(--text-sub);
+}
+
+/* ============ Lead / Pull-quote ============ */
+.lead {
+  font-size: 18px;
+  line-height: 1.7;
+  font-weight: 400;
+  color: var(--text);
+  border-left: 2px solid var(--accent);
+  padding: var(--sp-2) 0 var(--sp-2) var(--sp-6);
+  margin-bottom: var(--sp-8);
+}
+.pull-quote {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  color: var(--text);
+  padding: var(--sp-8);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin: var(--sp-8) 0;
+  position: relative;
+}
+.pull-quote::before {
+  content: "❝";
+  position: absolute;
+  top: var(--sp-2);
+  left: var(--sp-4);
+  font-size: 32px;
+  color: var(--accent-blue);
+  font-family: serif;
+  line-height: 1;
+}
+.pull-quote .source {
+  display: block;
+  margin-top: var(--sp-4);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* ============ KPI Cards ============ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-4);
+  margin: var(--sp-8) 0;
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--sp-6);
+  border-radius: 4px;
+}
+.kpi .kpi-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-3);
+}
+.kpi .kpi-value {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text);
+}
+.kpi .kpi-unit {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: var(--sp-1);
+}
+.kpi .kpi-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: var(--sp-2);
+  line-height: 1.4;
+}
+.kpi.accent {
+  background: var(--accent);
+  color: #FFF;
+  border-color: var(--accent);
+}
+.kpi.accent .kpi-label,
+.kpi.accent .kpi-unit,
+.kpi.accent .kpi-note { color: rgba(255,255,255,0.7); }
+.kpi.accent .kpi-value { color: #FFF; }
+.kpi.blue {
+  background: var(--accent-blue);
+  color: #FFF;
+  border-color: var(--accent-blue);
+}
+.kpi.blue .kpi-label,
+.kpi.blue .kpi-unit,
+.kpi.blue .kpi-note { color: rgba(255,255,255,0.7); }
+.kpi.blue .kpi-value { color: #FFF; }
+
+/* ============ Tables ============ */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: var(--sp-6) 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  background: var(--surface-v);
+  text-align: left;
+  padding: var(--sp-3) var(--sp-4);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+tbody td {
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--surface-v); }
+.numeric { font-family: var(--font-mono); text-align: right; }
+.cell-strong { font-weight: 600; color: var(--text); }
+.cell-muted { color: var(--muted); }
+.score {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+.score-high { background: var(--accent); color: #FFF; }
+.score-mid  { background: var(--accent-blue); color: #FFF; }
+.score-low  { background: var(--surface-v); color: var(--text-sub); border: 1px solid var(--border); }
+.score-none { background: transparent; color: var(--muted); }
+
+/* ============ Charts ============ */
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--sp-6);
+  margin: var(--sp-6) 0;
+}
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--sp-2);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+.chart-title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.chart-source {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.chart-container {
+  position: relative;
+  height: 320px;
+  margin-top: var(--sp-4);
+}
+.chart-caption {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: var(--sp-3);
+  line-height: 1.5;
+}
+
+/* ============ Callout / Note ============ */
+.callout {
+  background: var(--accent-blue-soft);
+  border-left: 2px solid var(--accent-blue);
+  padding: var(--sp-6);
+  margin: var(--sp-6) 0;
+  border-radius: 0 4px 4px 0;
+}
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  font-weight: 600;
+  margin-bottom: var(--sp-2);
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout.warn {
+  background: rgba(196, 69, 54, 0.06);
+  border-left-color: var(--warn);
+}
+.callout.warn .callout-label { color: var(--warn); }
+
+/* ============ Two-Column ============ */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  margin: var(--sp-6) 0;
+}
+.tc-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--sp-6);
+  border-radius: 4px;
+}
+.tc-block h4 {
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  margin-top: 0;
+  margin-bottom: var(--sp-3);
+  font-weight: 500;
+}
+.tc-block .headline {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: var(--sp-4);
+}
+
+/* ============ Lists ============ */
+.bullet-list {
+  list-style: none;
+  margin: var(--sp-4) 0;
+}
+.bullet-list li {
+  position: relative;
+  padding-left: var(--sp-6);
+  margin-bottom: var(--sp-3);
+  color: var(--text-sub);
+  font-size: 14px;
+}
+.bullet-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 8px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.checklist {
+  list-style: none;
+  margin: var(--sp-4) 0;
+}
+.checklist li {
+  position: relative;
+  padding-left: var(--sp-8);
+  margin-bottom: var(--sp-3);
+  color: var(--text-sub);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.checklist li::before {
+  content: "▢";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-mono);
+  color: var(--accent-blue);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+/* ============ Layer Diagram ============ */
+.layer-stack {
+  margin: var(--sp-6) 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.layer-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 200px 200px;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  font-size: 13px;
+}
+.layer-row:last-child { border-bottom: none; }
+.layer-row.head {
+  background: var(--surface-v);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+.layer-num {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent-blue);
+  font-size: 14px;
+}
+.layer-name { font-weight: 600; color: var(--text); }
+.layer-desc { color: var(--muted); font-size: 12px; }
+.layer-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+.layer-cu  { color: var(--accent); }
+.layer-light { color: var(--accent-blue); }
+
+/* ============ References ============ */
+.refs {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--sp-8);
+  margin-top: var(--sp-12);
+}
+.refs ol {
+  list-style: none;
+  counter-reset: ref;
+}
+.refs li {
+  counter-increment: ref;
+  padding-left: var(--sp-12);
+  position: relative;
+  margin-bottom: var(--sp-4);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-sub);
+}
+.refs li::before {
+  content: "[" counter(ref) "]";
+  position: absolute;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  top: 0.2em;
+}
+.refs strong { color: var(--text); font-weight: 600; }
+.refs em { color: var(--muted); font-style: normal; font-family: var(--font-mono); font-size: 11px; }
+
+/* ============ Footer ============ */
+.report-footer {
+  margin-top: var(--sp-24);
+  padding: var(--sp-12) 0 var(--sp-8);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-8);
+  align-items: end;
+}
+.footer-text {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 520px;
+}
+.footer-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: right;
+}
+.footer-meta strong { color: var(--text); }
+
+/* ============ Responsive ============ */
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; gap: var(--sp-6); }
+  .toc { position: static; }
+  .two-col { grid-template-columns: 1fr; }
+  .layer-row {
+    grid-template-columns: 50px 1fr;
+    grid-template-areas: "num name" "num desc" ". cu" ". light";
+  }
+  .layer-num { grid-area: num; }
+  .layer-name { grid-area: name; }
+  .layer-desc { grid-area: desc; }
+  .layer-row > :nth-child(3) { grid-area: cu; }
+  .layer-row > :nth-child(4) { grid-area: light; }
+  .layer-row.head { display: none; }
+  .report-title-block { grid-template-columns: 1fr; }
+  .report-meta { text-align: left; }
+}
+
+/* ============ Print ============ */
+@media print {
+  body { background: #FFF; }
+  .toc, .report-footer { display: none; }
+  .layout { grid-template-columns: 1fr; padding: 0; }
+  .section { page-break-inside: avoid; }
+  .chart-container { height: 240px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="report-header">
+  <div class="header-inner">
+    <div class="brand-row">
+      <span class="brand">KITAcore / Research Note</span>
+      <span>Vol. 001 — Physical Layer</span>
+    </div>
+    <div class="report-title-block">
+      <div>
+        <div class="report-eyebrow">Industry Map · AI Infrastructure</div>
+        <h1 class="report-title">Beneath the AI Boom</h1>
+        <div class="report-title-jp">AIブームの裏側 ── 銅と光の物理層レポート</div>
+      </div>
+      <div class="report-meta">
+        <div><strong>ISSUE</strong> 2026-04</div>
+        <div>AUTHOR / にーさん</div>
+        <div>SECTORS / 7</div>
+        <div>CHARTS / 7</div>
+      </div>
+    </div>
+    <div class="subtitle-divider">
+      <span class="label">Thesis</span>
+      <span class="value">AI周辺産業の話を聞いたら、結局「銅と光」に見えてきた。</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ============ TOC ============ -->
+  <nav class="toc">
+    <div class="toc-label">Table of Contents</div>
+    <ol>
+      <li><span class="num">01.</span><a href="#s1">Executive Summary</a></li>
+      <li><span class="num">02.</span><a href="#s2">隠れたレイヤー</a></li>
+      <li><span class="num">03.</span><a href="#s3">銅 ── 逃げられない金属</a></li>
+      <li><span class="num">04.</span><a href="#s4">材料屋の視点</a></li>
+      <li><span class="num">05.</span><a href="#s5">光 ── IOWNとCPO</a></li>
+      <li><span class="num">06.</span><a href="#s6">役割分担マトリクス</a></li>
+      <li><span class="num">07.</span><a href="#s7">投資レンズ</a></li>
+      <li><span class="num">08.</span><a href="#s8">結論</a></li>
+      <li><span class="num">09.</span><a href="#refs">参考文献</a></li>
+    </ol>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- ============ SECTION 01 ============ -->
+    <section class="section" id="s1">
+      <div class="section-nav">
+        <span class="section-num">01. Executive Summary</span>
+        <span class="section-tag">Overview</span>
+      </div>
+      <h2 class="section-title">サマリー：AIの正体は素材＋光のフィジカルブームでもある</h2>
+      <div class="section-subtitle">A Physical-Layer Reading of the AI Boom</div>
+
+      <p class="lead">
+        AIブームはソフトウェアブームであると同時に、強烈なフィジカルブームでもある。GPUは"見える主役"やが、その下には電気を運ぶ銅と、データをつなぐ光がいる。
+        本レポートは、展示会で見た「AI周辺産業」の6カテゴリを、材料屋の視点で物理層に分解し、需給構造と投資レイヤーを再整理したものや。
+      </p>
+
+      <div class="kpi-grid">
+        <div class="kpi accent">
+          <div class="kpi-label">AI Hyperscale DC</div>
+          <div class="kpi-value">50,000<span class="kpi-unit">tonnes</span></div>
+          <div class="kpi-note">1施設あたりの銅消費（CDA推定）。従来型の3〜10倍。</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Global Cu Demand</div>
+          <div class="kpi-value">~33<span class="kpi-unit">Mt</span></div>
+          <div class="kpi-note">2035年予測（IEA STEPS）。2024年は約27Mt。</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Supply Shortfall</div>
+          <div class="kpi-value">30<span class="kpi-unit">%</span></div>
+          <div class="kpi-note">2035年までのIEA予測供給不足（STEPS）。</div>
+        </div>
+        <div class="kpi blue">
+          <div class="kpi-label">IOWN APN Target</div>
+          <div class="kpi-value">100<span class="kpi-unit">x</span></div>
+          <div class="kpi-note">2030年目標：電力効率100倍、伝送容量125倍、遅延1/200。</div>
+        </div>
+      </div>
+
+      <h3>Key Takeaways</h3>
+      <ul class="bullet-list">
+        <li>AI周辺産業6カテゴリのうち、市場規模上位3つは銅とIOWN（光）が物理層で支えている</li>
+        <li>銅はAI時代に構造的供給不足（IEA：2035年までに30%の不足見込み）。AIデータセンターだけで2030年に年間25〜55万トンを消費する見通し</li>
+        <li>光の主役はCPO（Co-Packaged Optics）。NVIDIAは2025年3月のGTC 2025でSpectrum-X / Quantum-X Photonicsを発表、電力効率3.5倍を主張。NTTもPEC-2デバイスを2026年Q4商用化予定</li>
+        <li>銅と光は競合ではなく役割分担。電力は銅、高速通信は光、AI全体の拡大で両方が伸びる</li>
+        <li>投資視点では「AIっぽい会社」より「AIインフラのどの物理層にいるか」を見るべき</li>
+      </ul>
+    </section>
+
+    <!-- ============ SECTION 02 ============ -->
+    <section class="section" id="s2">
+      <div class="section-nav">
+        <span class="section-num">02. The Hidden Layer</span>
+        <span class="section-tag">Framing</span>
+      </div>
+      <h2 class="section-title">展示会のスライドが、別の地図に変換された</h2>
+      <div class="section-subtitle">Six Categories, Read from the Material Side</div>
+
+      <p>展示会で、AI周辺産業についての講演を聞いた。サイバーセキュリティ、リスキリング、電力・データセンター、半導体、データ基盤、AIガバナンス。きれいに整理されてた。</p>
+      <p>……んやけど、わいの脳内では途中からちょっと違う絵に変換されていた。表面上はAIの周辺産業の話やけど、かなりの部分は <strong>フィジカルレイヤーの話</strong> やないか、と。</p>
+
+      <div class="pull-quote">
+        AIモデルやGPUは表の主役。でも、そのGPUに電気を届けるものがいる。熱を逃がすものがいる。GPU同士、サーバー同士、データセンター同士をつなぐものがいる。
+        <span class="source">— 本レポートの出発点</span>
+      </div>
+
+      <h3>6カテゴリを物理層で再採点</h3>
+      <p>講演で示された6カテゴリを、銅と光の関与度合いで採点しなおすと、以下のような分布になる。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>カテゴリ</th>
+              <th style="text-align:center">銅 / Cu</th>
+              <th style="text-align:center">光 / Light</th>
+              <th>主な物理関与</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cell-strong">POWER & DATACENTER</td>
+              <td>電力・データセンター</td>
+              <td style="text-align:center"><span class="score score-high">◎ HIGH</span></td>
+              <td style="text-align:center"><span class="score score-high">◎ HIGH</span></td>
+              <td class="cell-muted">配電・冷却の銅、長距離&チップ間の光</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">SEMICONDUCTOR</td>
+              <td>半導体・AIチップ</td>
+              <td style="text-align:center"><span class="score score-high">◎ HIGH</span></td>
+              <td style="text-align:center"><span class="score score-mid">○ MID→HIGH</span></td>
+              <td class="cell-muted">Cu interconnect・HBM接続。CPOで光が侵食中</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">DATA INFRASTRUCTURE</td>
+              <td>データ基盤・MLOps</td>
+              <td style="text-align:center"><span class="score score-mid">○ MID</span></td>
+              <td style="text-align:center"><span class="score score-mid">○ MID</span></td>
+              <td class="cell-muted">物理レイヤーで両方が支える</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">CYBERSECURITY</td>
+              <td>サイバーセキュリティ</td>
+              <td style="text-align:center"><span class="score score-low">△ LOW</span></td>
+              <td style="text-align:center"><span class="score score-low">△ LOW</span></td>
+              <td class="cell-muted">HSM等、物理層に少し関与</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">RESKILLING</td>
+              <td>リスキリング・教育</td>
+              <td style="text-align:center"><span class="score score-none">— NONE</span></td>
+              <td style="text-align:center"><span class="score score-none">— NONE</span></td>
+              <td class="cell-muted">物理層と無関係</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">AI GOVERNANCE</td>
+              <td>AIガバナンス・法務</td>
+              <td style="text-align:center"><span class="score score-none">— NONE</span></td>
+              <td style="text-align:center"><span class="score score-none">— NONE</span></td>
+              <td class="cell-muted">物理層と無関係</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>結論はシンプル。<strong>市場規模が大きい上位3カテゴリは、ほぼ完全に銅×光の世界</strong>。残りの3つはサービス・コンサル系として独立した市場と考えるべき。本レポートはこの上位3カテゴリにフォーカスする。</p>
+    </section>
+
+    <!-- ============ SECTION 03 ============ -->
+    <section class="section" id="s3">
+      <div class="section-nav">
+        <span class="section-num">03. Copper</span>
+        <span class="section-tag">Demand × Supply</span>
+      </div>
+      <h2 class="section-title">銅 ── 地味やけど逃げられない</h2>
+      <div class="section-subtitle">The Red Bottleneck</div>
+
+      <p>AIと聞くと、GPUや半導体に目が行きがち。でも、GPUは電気がなければ動かん。どれだけ高性能でも、電気が来なければただの高い板である。そして、その電気を運ぶには銅がいる。</p>
+      <p>銅は、電線、バスバー、配電、接地、液冷の銅プレートや銅パイプなど、データセンターの裏側でかなり広く使われる。特にAI向けは電力密度・発熱量が大きいため、銅の重要性が一段上がる。</p>
+
+      <h3>3.1 AIハイパースケールDCの銅消費</h3>
+      <p>米Copper Development Association（CDA）の推定では、AI向けハイパースケール施設は1カ所あたり<strong>最大50,000トン</strong>の銅を使う可能性がある。従来型データセンターの3〜10倍。</p>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">DC種別ごとの銅消費量レンジ（推定値）</span>
+          <span class="chart-source">Source: CDA</span>
+        </div>
+        <div class="chart-container"><canvas id="chartDcCu"></canvas></div>
+        <p class="chart-caption">AIハイパースケール施設は、従来型に比べて最大3.3〜10倍の銅を使う。1施設で「金属の塊が立ち上がる」スケール感。</p>
+      </div>
+
+      <h3>3.2 世界銅需要の長期見通し</h3>
+      <p>IEAの<em>Global Critical Minerals Outlook 2025</em>によれば、世界の精錬銅需要は2024年の約27Mtから、2035年には約33Mt（STEPS：表明政策シナリオ）に達する見通し。さらに2050年には約37Mt。</p>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Global Refined Copper Demand vs. Mined Supply</span>
+          <span class="chart-source">Source: IEA Global Critical Minerals Outlook 2025</span>
+        </div>
+        <div class="chart-container"><canvas id="chartCuSupply"></canvas></div>
+        <p class="chart-caption">需要は伸び続けるが、計画中プロジェクトベースの鉱山生産は2020年代後半にピークを打ち、2035年には19Mt以下に減退。<strong>STEPSで30%、APSで35%、NZEで40%超の供給不足</strong>が見込まれる。</p>
+      </div>
+
+      <h3>3.3 鉱石品位の長期低下</h3>
+      <p>銅の供給不足の根本原因は鉱石品位（ore grade）の低下。1991年以降、世界平均の銅鉱石品位は約40%低下している。同じ量の銅を得るのに、より多くの岩石を掘り、より多くのエネルギーを使う必要がある。</p>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Average Copper Ore Grade Trend (Indexed)</span>
+          <span class="chart-source">Conceptual: based on IEA / industry reports</span>
+        </div>
+        <div class="chart-container"><canvas id="chartOreGrade"></canvas></div>
+        <p class="chart-caption">鉱石品位の低下トレンドは構造的。Solvent extraction / electrowinningなどの技術進化で部分的にカバーしてきたが、それも限界が見えつつある。</p>
+      </div>
+
+      <h3>3.4 AIだけが原因ではない、が、AIが上乗せする</h3>
+      <p>銅需要を押し上げているのはAIだけではない。EV、再エネ、送電網、データセンター。電化の流れがすべて銅に向かう。IEAは<strong>AIデータセンターの銅消費だけで2030年に年間25〜55万トン</strong>と推定。世界需要の1〜2%相当を、新規にAIが要求する形になる。</p>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">2030年銅需要：セクター別寄与イメージ（概算）</span>
+          <span class="chart-source">Composite estimate: based on IEA / industry sources</span>
+        </div>
+        <div class="chart-container"><canvas id="chartCuSegments"></canvas></div>
+        <p class="chart-caption">セグメント別の数値は複数業界レポートを参考にした概算値。AIデータセンター（IEA推定 1〜2%）寄与は数字だけ見ると小さく見える。が、それを「すでに不足している市場に上乗せされる需要」と読むと、構造的な意味は大きい。</p>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">⚠ Structural Risk</div>
+        <p>銅鉱山の新規開発には<strong>10年以上</strong>かかる。今から動き出しても2035年までの不足にはほぼ間に合わない。需要が減速しない限り、価格は構造的に上方圧力を受ける見通し。</p>
+      </div>
+    </section>
+
+    <!-- ============ SECTION 04 ============ -->
+    <section class="section" id="s4">
+      <div class="section-nav">
+        <span class="section-num">04. Material Science Lens</span>
+        <span class="section-tag">Why Copper</span>
+      </div>
+      <h2 class="section-title">材料屋の視点で見ると、結局かなり銅に落ちる</h2>
+      <div class="section-subtitle">A Comparative Look at Au, Ag, Cu, Al</div>
+
+      <p>銅が「逃げられない」のは、単にAI需要のせいだけやない。<strong>配線金属の選択肢が、そもそもめっちゃ少ない</strong>からや。ここは材料系バックグラウンドが効く話。</p>
+
+      <h3>4.1 候補金属の比較</h3>
+      <p>配線・電気接続に使えそうな金属を並べると、実用候補は事実上 金（Au）、銀（Ag）、銅（Cu）、アルミニウム（Al）の4種類しかない。それぞれに強みと致命的弱みがある。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Metal</th>
+              <th>導電率<br>(% IACS)</th>
+              <th>熱伝導率<br>(W/m·K)</th>
+              <th>主な弱点</th>
+              <th>用途</th>
+              <th class="numeric">総合評価</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cell-strong">銀 / Silver</td>
+              <td class="numeric">106%</td>
+              <td class="numeric">429</td>
+              <td>イオンマイグレーション・高価格</td>
+              <td class="cell-muted">高周波接点、限定用途</td>
+              <td class="numeric"><span class="score score-low">条件付き</span></td>
+            </tr>
+            <tr>
+              <td class="cell-strong">銅 / Copper</td>
+              <td class="numeric">100%</td>
+              <td class="numeric">401</td>
+              <td>酸化（要メッキ・処理）</td>
+              <td class="cell-muted">電線・配線・冷却・基板の主流</td>
+              <td class="numeric"><span class="score score-high">主流</span></td>
+            </tr>
+            <tr>
+              <td class="cell-strong">金 / Gold</td>
+              <td class="numeric">70%</td>
+              <td class="numeric">317</td>
+              <td>圧倒的に高価</td>
+              <td class="cell-muted">接点・ボンディング限定</td>
+              <td class="numeric"><span class="score score-low">条件付き</span></td>
+            </tr>
+            <tr>
+              <td class="cell-strong">アルミ / Aluminum</td>
+              <td class="numeric">61%</td>
+              <td class="numeric">237</td>
+              <td>導電率が銅の6割、太くなる</td>
+              <td class="cell-muted">送電線・軽量配線</td>
+              <td class="numeric"><span class="score score-mid">代替候補</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">配線金属のバランススコア比較</span>
+          <span class="chart-source">Composite: based on material properties</span>
+        </div>
+        <div class="chart-container"><canvas id="chartMetalRadar"></canvas></div>
+        <p class="chart-caption">5軸で評価：導電率／熱伝導率／加工性／信頼性／コスト効率。銅は最高性能ではないが、<strong>5軸全体の総合点が圧倒的に高い</strong>。これが「実装上、銅から逃げられない」根拠。</p>
+      </div>
+
+      <h3>4.2 銀のイオンマイグレーション問題</h3>
+      <p>銀は導電率だけ見れば最強クラス。それでも主流配線材にならんのは、<strong>イオンマイグレーション</strong>という現象があるから。</p>
+
+      <div class="callout">
+        <div class="callout-label">⚙ Phenomenon — Silver Electrochemical Migration</div>
+        <p>湿度＋電界の影響で銀イオン（Ag⁺）が移動し、対向電極側でデンドライト（樹枝状結晶）として析出する。デンドライトが伸びて両極を繋ぐと、<strong>絶縁抵抗が低下し、最終的に短絡（ショート）</strong>に至る。電子部品・プリント基板の信頼性課題として広く報告されている現象。</p>
+        <p>つまり、細い配線・高密度実装・湿度・電界・長期信頼性が絡む世界では、銀は「電気をよく通すから最強」では終わらない。</p>
+      </div>
+
+      <h3>4.3 金は接点には強いが、配線に使うのは現実的でない</h3>
+      <p>金は酸化しにくく、接点材料としては優秀。ただし価格が高すぎて、AIサーバー1ラック分の配線を金で組むなんて誰もやらん。マイクロ単位の薄膜（Au bonding wire）など、ピンポイント用途に限定される。</p>
+
+      <h3>4.4 アルミは「太くなる」問題</h3>
+      <p>アルミは軽くて安い。送電線では強い（軽量化メリット）。ただし導電率は銅の約6割。同じ電流を流すには断面積を約1.6倍にする必要がある。AIサーバー内部のように<strong>高密度に詰める世界では「太くなる」のは致命的</strong>。だからアルミは送電線・大型ケーブルのスケールでしか勝てない。</p>
+
+      <div class="pull-quote">
+        銅は最高性能の金属ではない。でも、実装上の総合点が高い。AIデータセンターのように、大電流を流し、高密度に機器を詰め込み、大量の熱を逃がす世界では、この「総合点の高さ」が決定的に効く。
+        <span class="source">— Material Science Lens</span>
+      </div>
+    </section>
+
+    <!-- ============ SECTION 05 ============ -->
+    <section class="section" id="s5">
+      <div class="section-nav">
+        <span class="section-num">05. The Light Side</span>
+        <span class="section-tag">IOWN × CPO</span>
+      </div>
+      <h2 class="section-title">光 ── IOWN構想とCPOが本格実装に入る</h2>
+      <div class="section-subtitle">From Concept to Deployment</div>
+
+      <p>もう一つの主役が光である。AIが巨大化すると、GPU性能だけでは足りなくなる。GPU同士、サーバー同士、データセンター同士をどう繋ぐか。<strong>ボトルネックは「計算」から「接続」へ移っている</strong>。そこに光が入ってくる。</p>
+
+      <h3>5.1 IOWN（NTT）── 国家プロジェクトとしての光化</h3>
+      <p>IOWN（Innovative Optical and Wireless Network）はNTTが提唱する次世代通信基盤構想。中核技術であるAPN（All-Photonics Network）は、端末からネットワークまで全てに光ベース技術を導入し、エンドツーエンドの光波長パスを提供する。</p>
+
+      <div class="kpi-grid">
+        <div class="kpi blue">
+          <div class="kpi-label">Power Efficiency</div>
+          <div class="kpi-value">100<span class="kpi-unit">x</span></div>
+          <div class="kpi-note">2030年目標値（vs 現行ネットワーク）</div>
+        </div>
+        <div class="kpi blue">
+          <div class="kpi-label">Capacity</div>
+          <div class="kpi-value">125<span class="kpi-unit">x</span></div>
+          <div class="kpi-note">2030年目標伝送容量</div>
+        </div>
+        <div class="kpi blue">
+          <div class="kpi-label">Latency</div>
+          <div class="kpi-value">1/200</div>
+          <div class="kpi-note">2030年目標エンドツーエンド遅延</div>
+        </div>
+      </div>
+
+      <p>2023年3月16日にAPN IOWN1.0が商用サービスを開始。2025年大阪・関西万博のNTTパビリオン内ではAPN関連技術のデモが展示された。2024年には<strong>IOWN 2.0</strong>がlaunchされ、ネットワーク領域からコンピューティング領域への拡張が始まっている。さらに<strong>2025年10月6日</strong>、NTTは光電融合デバイス「PEC-2」を組み込んだ次世代スイッチを<strong>2026年Q4に商用化</strong>する計画を発表。共同開発パートナーはBroadcom、Shinko、Acctonで、<strong>データセンター電力消費を最大50%削減</strong>、処理速度と容量を2倍にすることを目指している。実証フェーズから実装フェーズへの移行がいま起きている。</p>
+
+      <h3>5.2 NVIDIA Spectrum-X / Quantum-X Photonics</h3>
+      <p>2025年3月18日、GTC 2025でNVIDIAはシリコンフォトニクスを採用したネットワークスイッチ <strong>Spectrum-X Photonics（Ethernet）</strong>と<strong>Quantum-X Photonics（InfiniBand）</strong>を発表。CPO（Co-Packaged Optics）をスイッチに直接統合し、AIファクトリーを百万GPU規模で接続する設計や。</p>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">NVIDIA Photonics Switch — Performance Multipliers (vs Traditional)</span>
+          <span class="chart-source">Source: NVIDIA Press Release, GTC 2025 (Mar 18, 2025)</span>
+        </div>
+        <div class="chart-container"><canvas id="chartNvidia"></canvas></div>
+        <p class="chart-caption">NVIDIA公式発表値。電力効率3.5倍、信号品質63倍、レジリエンス10倍、デプロイ速度1.3倍、レーザー数1/4。Quantum-X Photonicsは2025年後半、Spectrum-X Photonicsは2026年に提供予定。</p>
+      </div>
+
+      <h4>パートナー：シリコン×光のサプライチェーン</h4>
+      <p>NVIDIAはCPO実装にあたり、TSMC、Coherent、Corning、Foxconn、Lumentum、SENKO、住友電工などとパートナーシップを構築。<strong>光半導体エコシステム全体が動員される</strong>規模感や。</p>
+
+      <h3>5.3 CPO（Co-Packaged Optics）が変えるもの</h3>
+      <p>CPOはASICチップに光モジュールを近接配置（または直接統合）する技術。従来の「pluggable transceiver（プラガブル光モジュール）」と比べて：</p>
+      <ul class="bullet-list">
+        <li><strong>電力削減：</strong>1.6T pluggableが約30Wに対し、1.6T CPOポートあたり約9W（70%減）と試算される</li>
+        <li><strong>レーザー集約：</strong>外部レーザーソースで本数を1/4に削減（NVIDIA発表）</li>
+        <li><strong>シグナルインテグリティ向上：</strong>ASICから光ファイバまでの距離が短くなり、損失・歪みが減る</li>
+      </ul>
+      <p>2027年までに、NVIDIAとBroadcomの両者が200G/lane CPOスイッチを量産する見込み。CPOエコシステムが本格的な成熟期に入る。</p>
+    </section>
+
+    <!-- ============ SECTION 06 ============ -->
+    <section class="section" id="s6">
+      <div class="section-nav">
+        <span class="section-num">06. Division of Labor</span>
+        <span class="section-tag">Cu × Light</span>
+      </div>
+      <h2 class="section-title">銅と光は、敵ではなく役割分担</h2>
+      <div class="section-subtitle">Where Each Metal/Photon Wins</div>
+
+      <p>「光が増えたら銅はいらなくなるんちゃうの？」── たぶん、そんな単純な話ではない。電力を運ぶ領域では銅、高速通信や長距離・低遅延の接続では光。役割分担に近い構図や。</p>
+
+      <h3>6.1 領域別の主役マッピング</h3>
+
+      <div class="layer-stack">
+        <div class="layer-row head">
+          <div>Layer</div>
+          <div>領域 / Domain</div>
+          <div>銅 / Cu</div>
+          <div>光 / Light</div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-num">L1</div>
+          <div>
+            <div class="layer-name">電力供給・配電</div>
+            <div class="layer-desc">変電所→DC、配電盤、バスバー</div>
+          </div>
+          <div class="layer-tag layer-cu">■■■■■ DOMINANT</div>
+          <div class="layer-tag layer-light">— N/A</div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-num">L2</div>
+          <div>
+            <div class="layer-name">液冷・熱伝導</div>
+            <div class="layer-desc">コールドプレート、銅パイプ、CDU</div>
+          </div>
+          <div class="layer-tag layer-cu">■■■■■ DOMINANT</div>
+          <div class="layer-tag layer-light">— N/A</div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-num">L3</div>
+          <div>
+            <div class="layer-name">ラック内配線（数十Gbps〜）</div>
+            <div class="layer-desc">DAC（Direct Attach Copper）</div>
+          </div>
+          <div class="layer-tag layer-cu">■■■■□ MAINSTAY</div>
+          <div class="layer-tag layer-light">■□□□□ EMERGING</div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-num">L4</div>
+          <div>
+            <div class="layer-name">スイッチ間接続（数百Gbps〜Tbps）</div>
+            <div class="layer-desc">AOC、光トランシーバ、CPO</div>
+          </div>
+          <div class="layer-tag layer-cu">■■□□□ TIGHTENING</div>
+          <div class="layer-tag layer-light">■■■■□ DOMINANT</div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-num">L5</div>
+          <div>
+            <div class="layer-name">チップ間通信（GPU間 NVLink）</div>
+            <div class="layer-desc">CPO、シリコンフォトニクス</div>
+          </div>
+          <div class="layer-tag layer-cu">■□□□□ RECEDING</div>
+          <div class="layer-tag layer-light">■■■■■ TAKING OVER</div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-num">L6</div>
+          <div>
+            <div class="layer-name">DC間接続（中長距離）</div>
+            <div class="layer-desc">光ファイバ、IOWN APN</div>
+          </div>
+          <div class="layer-tag layer-cu">— N/A</div>
+          <div class="layer-tag layer-light">■■■■■ DOMINANT</div>
+        </div>
+      </div>
+
+      <p>つまり、L1〜L2の電力・冷却は完全に銅、L4〜L6の高速・長距離は光、L3〜L5は両者がせめぎ合うグレーゾーン。<strong>AIインフラ全体が拡大すれば、銅の絶対需要も光の絶対需要も両方が増える</strong>。短期的には銅が、中長期的には光がより速く伸びる構図。</p>
+
+      <div class="two-col">
+        <div class="tc-block">
+          <h4>Short Term (2026–2028)</h4>
+          <div class="headline">銅の天下が続く</div>
+          <p>DC建設ラッシュ、電力インフラ増強、液冷システム拡大。すべてが銅需要を押し上げる。CPOはまだ初期市場で、量的インパクトは限定的。</p>
+        </div>
+        <div class="tc-block">
+          <h4>Medium / Long Term (2028–2035+)</h4>
+          <div class="headline">光が侵食を加速</div>
+          <p>CPOがAIスイッチで主流化し、ラック内・チップ間まで光化が進む。電力・配電のレイヤーは銅が維持。両軸が並走するエコシステムへ。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION 07 ============ -->
+    <section class="section" id="s7">
+      <div class="section-nav">
+        <span class="section-num">07. Investment Lens</span>
+        <span class="section-tag">Sector Mapping</span>
+      </div>
+      <h2 class="section-title">投資視点 ── 銘柄名より「どのレイヤーにいるか」</h2>
+      <div class="section-subtitle">Mapping the Physical Stack to Sectors</div>
+
+      <div class="callout warn">
+        <div class="callout-label">⚠ Disclaimer</div>
+        <p>本セクションは個別銘柄の売買推奨ではない。あくまでセクター構造の整理を目的とする。気になった企業があれば、必ず自分でIR資料を読んで判断してください。<strong>投資は自己責任で。</strong></p>
+      </div>
+
+      <h3>7.1 物理層レイヤー × 関連セクター</h3>
+      <p>AIインフラの物理層を上から下に分解し、各レイヤーで主要なプレイヤーが属するセクターを整理した。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Physical Layer</th>
+              <th>役割</th>
+              <th>関連セクター</th>
+              <th>代表的な業種</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cell-strong">L0 鉱山・素材</td>
+              <td class="cell-muted">銅鉱石採掘・製錬</td>
+              <td>商社、非鉄金属</td>
+              <td class="cell-muted">資源権益、銅製錬</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">L1 電力・配電</td>
+              <td class="cell-muted">送電網、変電、配電盤</td>
+              <td>重電、電線</td>
+              <td class="cell-muted">電力ケーブル、変圧器</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">L2 冷却・熱管理</td>
+              <td class="cell-muted">液冷システム、銅プレート</td>
+              <td>冷却機器、空調</td>
+              <td class="cell-muted">CDU、コールドプレート、熱交換</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">L3 配線・ハーネス</td>
+              <td class="cell-muted">ラック内ケーブル、DAC</td>
+              <td>電線、コネクタ</td>
+              <td class="cell-muted">銅電線、ハーネス、コネクタ</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">L4 光モジュール</td>
+              <td class="cell-muted">光トランシーバ、AOC</td>
+              <td>光通信機器</td>
+              <td class="cell-muted">CWDM、PAM4、CPO</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">L5 光半導体・装置</td>
+              <td class="cell-muted">レーザー、変調器、検査</td>
+              <td>光半導体、計測</td>
+              <td class="cell-muted">化合物半導体、シリフォト、計測装置</td>
+            </tr>
+            <tr>
+              <td class="cell-strong">L6 通信インフラ</td>
+              <td class="cell-muted">光ファイバ網、IOWN APN</td>
+              <td>通信、ファイバ</td>
+              <td class="cell-muted">通信キャリア、光ファイバ製造</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>7.2 セクター視点で押さえるべき軸</h3>
+      <p>「AIっぽい会社」ではなく、AIインフラの<strong>どの物理層にいるか</strong>を見る。これが本レポートの中心メッセージ。具体的には以下の軸で各企業を見ていくと、ノイズが減る。</p>
+
+      <ul class="checklist">
+        <li>銅資源を持っているか（資源権益保有・JV出資）</li>
+        <li>銅を製錬しているか（電気銅・銅地金の生産能力）</li>
+        <li>電線・ケーブルを作っているか（銅／光ファイバ／両方）</li>
+        <li>光ファイバを作っているか（プリフォーム・延伸・被覆）</li>
+        <li>光デバイス／光半導体に関わっているか（レーザー・変調器・PD）</li>
+        <li>データセンター向けの電力・冷却・接続機器を作っているか</li>
+        <li>NVIDIAやハイパースケーラーのサプライチェーンに本当に組み込まれているか</li>
+      </ul>
+
+      <h3>7.3 共通の注意点</h3>
+      <div class="callout">
+        <div class="callout-label">⚠ Theme-Stock Risk</div>
+        <p>「AI」「光電融合」「データセンター」というラベルが付くと、テーマ株として先回り買いされやすい。期待が先行しすぎると、事業の成長より株価のほうが先に走る。本格的な決算インパクトが見えてくるのは早くて2026〜2027年以降。短期の熱狂と、長期の構造変化を分けて見ること。</p>
+      </div>
+
+      <p>具体的に確認したい論点：</p>
+      <ul class="bullet-list">
+        <li>売上のどれくらいがAIインフラに関係するのか（公開セグメント別売上を読む）</li>
+        <li>受注や設備投資は本当に増えているのか（ガイダンスとQoQ／YoY比較）</li>
+        <li>利益率は改善しているのか（PMI後の構造改革成果）</li>
+        <li>その企業が本当にサプライチェーンに入っているのか（パートナー公式発表で裏取り）</li>
+        <li>株価が期待を織り込みすぎていないか（PER/PBR、利益成長との乖離）</li>
+      </ul>
+    </section>
+
+    <!-- ============ SECTION 08 ============ -->
+    <section class="section" id="s8">
+      <div class="section-nav">
+        <span class="section-num">08. Conclusion</span>
+        <span class="section-tag">Closing</span>
+      </div>
+      <h2 class="section-title">AIは、画面の中だけで動いていない</h2>
+      <div class="section-subtitle">A Materials and Photonics Boom</div>
+
+      <p>展示会の講演を聞いて、改めて思った。AIは画面の中だけで動いているわけではない。電気を食う。熱を出す。データを流す。設備を建てる。金属を使う。光でつなぐ。</p>
+      <p>AIブームはソフトウェアブームであると同時に、かなり強烈な<strong>フィジカルブーム</strong>でもある。見える主役はGPU。でも、その下には銅と光がいる。</p>
+
+      <div class="two-col">
+        <div class="tc-block">
+          <h4>Cu — Copper</h4>
+          <div class="headline">電気を運び、熱を逃がす</div>
+          <p>1991年から鉱石品位40%低下。IEAは2035年までに30%の供給不足を予測。AIデータセンターで年間50万トン規模の追加需要。<strong>構造的な不足</strong>。</p>
+        </div>
+        <div class="tc-block">
+          <h4>Light — IOWN / CPO</h4>
+          <div class="headline">データをつなぎ、計算を広げる</div>
+          <p>NTT PEC-2デバイスが2026年Q4商用化予定（DC電力50%削減目標）。NVIDIA Photonicsで電力効率3.5倍。<strong>2026〜2027年が光化実装の本格化フェーズ</strong>。</p>
+        </div>
+      </div>
+
+      <p>そして材料屋の視点で見ると、銅が残っている理由も見えてくる。銀は導電率だけなら強いが、マイグレーションが怖い。金は接点には強いが高すぎる。アルミは安いが、同じ電流なら太くなる。だから、結局かなりの場面で銅に落ちる。<strong>銅は派手な未来技術ではない。でも、未来技術を現実に動かすための材料</strong>や。</p>
+
+      <div class="pull-quote">
+        AI周辺産業を見るとき、GPUやクラウドだけを見るのは少しもったいない。その下で、何が電気を運んでいるのか。何が熱を逃がしているのか。何がデータをつないでいるのか。そこまで見ていくと、AIブームの地図は少し変わる。
+        <span class="source">— Final Note</span>
+      </div>
+
+      <p>展示会のスライドは「AI周辺産業」の話だった。でも、わいの中ではこう変換された ──<strong>AIの裏側には、銅と光がいる</strong>。知らんけど。いや、今回はちょっとだけ知ってる。ただし投資は自己責任で。ここだけは、知らんけどでは済まない。</p>
+    </section>
+
+    <!-- ============ REFERENCES ============ -->
+    <section class="section" id="refs">
+      <div class="section-nav">
+        <span class="section-num">09. References</span>
+        <span class="section-tag">Sources</span>
+      </div>
+      <h2 class="section-title">参考文献・データソース</h2>
+      <div class="section-subtitle">Primary Sources & Industry Reports</div>
+
+      <div class="refs">
+        <ol>
+          <li>
+            <strong>IEA</strong> (2025). <em>Global Critical Minerals Outlook 2025</em>. International Energy Agency, Paris. <em>iea.org/reports/global-critical-minerals-outlook-2025</em>
+            <br>世界の精錬銅需要は2024年に約27Mt、2035年に約33Mt（STEPS）。AIデータセンターの銅消費は2030年に年間25〜55万トンと推定。鉱石品位は1991年以降約40%低下。
+          </li>
+          <li>
+            <strong>Copper Development Association (CDA)</strong>. AIハイパースケールデータセンターは1施設あたり最大50,000トンの銅を消費する可能性があると推定。従来型は5,000〜15,000トン。
+          </li>
+          <li>
+            <strong>NVIDIA</strong> (2025-03-18). <em>NVIDIA Announces Spectrum-X Photonics, Co-Packaged Optics Networking Switches to Scale AI Factories to Millions of GPUs</em>. Press Release, GTC 2025. 公式発表値：電力効率3.5x、信号品質63x、レジリエンス10x、デプロイ速度1.3x、レーザー数1/4。
+          </li>
+          <li>
+            <strong>NTT</strong>. <em>IOWN構想 — APN（All-Photonics Network）</em>. 2030年目標：電力効率100倍、伝送容量125倍、エンドツーエンド遅延1/200。APN IOWN1.0は2023年3月16日にNTT東日本・西日本がサービス開始（NTT東日本ニュースリリース）。<em>group.ntt/jp/group/iown/</em>
+          </li>
+          <li>
+            <strong>NTT</strong> (2025-10-06). <em>IOWNプレゼンテーション</em> — 光電融合デバイス「PEC-2」をネットワークスイッチに統合し、2026年Q4に商用化する計画を発表。共同開発はBroadcom、Shinko、Accton。データセンター電力消費を最大50%削減、処理速度・容量を2倍にすることを目指す。<em>Nikkei Asia / Mobile World Live</em>
+          </li>
+          <li>
+            <strong>LightCounting</strong> (2025-03). <em>Nvidia's CPO is the First Step in a Long Journey</em>. 1.6T CPOポートあたり約9W、pluggable 30Wから70%削減との試算。
+          </li>
+          <li>
+            <strong>銀のイオンマイグレーション</strong>：電子部品・プリント基板分野で広く報告される信頼性現象。湿度・電界下でAg⁺イオンがデンドライト形成し、絶縁抵抗低下と短絡故障に至る。
+          </li>
+          <li>
+            <strong>金属物性値</strong>：銀106% IACS、銅100% IACS（基準値）、金70% IACS、アルミニウム61% IACSは複数の業界資料および IEC IACS規格（1913年制定）に基づく。熱伝導率は標準的な物性表値（Ag 429, Cu 401, Au 317, Al 237 W/m·K）。
+          </li>
+        </ol>
+      </div>
+
+      <p style="margin-top: var(--sp-8); font-size: 12px; color: var(--muted);">
+        ※本レポートに含まれる数値は、各一次ソースの公開時点でのもの。市場動向は変動するため、投資判断時は最新の一次情報を確認すること。
+      </p>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="report-footer">
+      <div class="footer-text">
+        本レポートはKITAcoreによる独立調査で、特定の企業・銘柄の売買推奨を目的とするものではありません。記載した数値・見解は公開情報および筆者の解釈に基づくもので、投資の最終判断は読者ご自身の責任で行ってください。
+      </div>
+      <div class="footer-meta">
+        <div><strong>KITAcore</strong></div>
+        <div>RESEARCH NOTE / Vol.001</div>
+        <div>2026 / にーさん</div>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+// ============ TOC Click Handling (artifact iframe-safe) ============
+document.querySelectorAll('.toc a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const targetId = link.getAttribute('href').slice(1);
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// ============ Chart.js Common Defaults ============
+Chart.defaults.font.family = "'Inter', 'Noto Sans JP', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#6B6B6B';
+Chart.defaults.borderColor = '#DDDDDD';
+
+const COLOR = {
+  bg:      '#E9E9E9',
+  surface: '#FFFFFF',
+  text:    '#111111',
+  muted:   '#6B6B6B',
+  border:  '#DDDDDD',
+  accent:  '#000000',
+  blue:    '#4A66AC',
+  blueSoft:'rgba(74, 102, 172, 0.18)',
+  warn:    '#C44536',
+  warnSoft:'rgba(196, 69, 54, 0.18)',
+};
+
+const commonOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { labels: { color: COLOR.muted, font: { size: 11 } } },
+    tooltip: {
+      backgroundColor: COLOR.text,
+      titleFont: { family: "'JetBrains Mono', monospace", size: 11 },
+      bodyFont: { family: "'Inter', sans-serif", size: 12 },
+      padding: 10,
+      cornerRadius: 2,
+    }
+  },
+  scales: {
+    x: {
+      grid: { color: COLOR.border, drawTicks: false },
+      ticks: { color: COLOR.muted, font: { family: "'JetBrains Mono', monospace", size: 10 } }
+    },
+    y: {
+      grid: { color: COLOR.border, drawTicks: false },
+      ticks: { color: COLOR.muted, font: { family: "'JetBrains Mono', monospace", size: 10 } }
+    }
+  }
+};
+
+// ============ Chart 1: DC Cu Consumption Range ============
+new Chart(document.getElementById('chartDcCu'), {
+  type: 'bar',
+  data: {
+    labels: ['従来型DC（最小）', '従来型DC（最大）', 'AIハイパースケール（最大）'],
+    datasets: [{
+      label: '銅消費量 (tonnes)',
+      data: [5000, 15000, 50000],
+      backgroundColor: [COLOR.muted, COLOR.muted, COLOR.accent],
+      borderWidth: 0,
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    ...commonOpts,
+    indexAxis: 'y',
+    plugins: {
+      ...commonOpts.plugins,
+      legend: { display: false },
+    },
+    scales: {
+      x: { ...commonOpts.scales.x, beginAtZero: true, title: { display: true, text: 'tonnes', color: COLOR.muted, font: { family: "'JetBrains Mono', monospace", size: 10 } } },
+      y: commonOpts.scales.y
+    }
+  }
+});
+
+// ============ Chart 2: Cu Demand vs Supply ============
+new Chart(document.getElementById('chartCuSupply'), {
+  type: 'line',
+  data: {
+    labels: ['2024', '2027', '2030', '2035', '2050'],
+    datasets: [
+      {
+        label: '需要 / Demand (Mt)',
+        data: [27, 29, 31, 33, 37],
+        borderColor: COLOR.accent,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.2,
+        pointRadius: 4,
+        pointBackgroundColor: COLOR.accent,
+      },
+      {
+        label: '供給 / Mined Supply (Mt)',
+        data: [22.8, 24, 23.5, 19, 17],
+        borderColor: COLOR.warn,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderDash: [4, 4],
+        tension: 0.2,
+        pointRadius: 4,
+        pointBackgroundColor: COLOR.warn,
+      },
+      {
+        label: '不足ギャップ (Mt)',
+        data: [4.2, 5, 7.5, 14, 20],
+        borderColor: COLOR.blue,
+        backgroundColor: COLOR.blueSoft,
+        borderWidth: 1,
+        fill: true,
+        tension: 0.2,
+        pointRadius: 0,
+      }
+    ]
+  },
+  options: {
+    ...commonOpts,
+    scales: {
+      x: commonOpts.scales.x,
+      y: { ...commonOpts.scales.y, beginAtZero: false, title: { display: true, text: 'Mt', color: COLOR.muted } }
+    }
+  }
+});
+
+// ============ Chart 3: Ore Grade ============
+new Chart(document.getElementById('chartOreGrade'), {
+  type: 'line',
+  data: {
+    labels: ['1991', '1995', '2000', '2005', '2010', '2015', '2020', '2024'],
+    datasets: [{
+      label: '世界平均銅鉱石品位（1991=100）',
+      data: [100, 95, 88, 82, 75, 70, 65, 60],
+      borderColor: COLOR.accent,
+      backgroundColor: 'rgba(0,0,0,0.05)',
+      borderWidth: 2,
+      tension: 0.3,
+      fill: true,
+      pointRadius: 3,
+      pointBackgroundColor: COLOR.accent,
+    }]
+  },
+  options: {
+    ...commonOpts,
+    plugins: {
+      ...commonOpts.plugins,
+      legend: { display: false }
+    },
+    scales: {
+      x: commonOpts.scales.x,
+      y: { ...commonOpts.scales.y, min: 50, max: 105, title: { display: true, text: 'Index (1991=100)', color: COLOR.muted } }
+    }
+  }
+});
+
+// ============ Chart 4: Cu Demand Segments ============
+new Chart(document.getElementById('chartCuSegments'), {
+  type: 'doughnut',
+  data: {
+    labels: ['建設', '電力網・送電', 'EV / 自動車', '産業機器', '再エネ（風力・PV）', 'AIデータセンター', 'その他'],
+    datasets: [{
+      data: [30, 22, 12, 14, 9, 1.5, 11.5],
+      backgroundColor: [
+        '#1a1a1a', '#3d3d3d', '#5a5a5a', '#787878',
+        '#a0a0a0', COLOR.blue, '#cfcfcf'
+      ],
+      borderColor: COLOR.surface,
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    ...commonOpts,
+    cutout: '55%',
+    scales: {},
+    plugins: {
+      ...commonOpts.plugins,
+      legend: {
+        position: 'right',
+        labels: {
+          color: COLOR.muted,
+          padding: 12,
+          font: { size: 11, family: "'Inter', sans-serif" },
+          generateLabels: (chart) => {
+            const data = chart.data;
+            return data.labels.map((label, i) => ({
+              text: `${label}  ${data.datasets[0].data[i]}%`,
+              fillStyle: data.datasets[0].backgroundColor[i],
+              strokeStyle: data.datasets[0].backgroundColor[i],
+              lineWidth: 0,
+              index: i
+            }));
+          }
+        }
+      }
+    }
+  }
+});
+
+// ============ Chart 5: Metal Comparison Radar ============
+new Chart(document.getElementById('chartMetalRadar'), {
+  type: 'radar',
+  data: {
+    labels: ['導電率', '熱伝導率', '加工性', '信頼性', 'コスト効率'],
+    datasets: [
+      {
+        label: '銅 / Cu',
+        data: [85, 88, 90, 85, 88],
+        borderColor: COLOR.accent,
+        backgroundColor: 'rgba(0,0,0,0.10)',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: COLOR.accent,
+      },
+      {
+        label: '銀 / Ag',
+        data: [92, 92, 70, 35, 25],
+        borderColor: COLOR.blue,
+        backgroundColor: 'rgba(74,102,172,0.10)',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: COLOR.blue,
+      },
+      {
+        label: '金 / Au',
+        data: [70, 75, 75, 95, 10],
+        borderColor: COLOR.warn,
+        backgroundColor: 'rgba(196,69,54,0.10)',
+        borderWidth: 1.5,
+        pointRadius: 3,
+        pointBackgroundColor: COLOR.warn,
+        borderDash: [4, 4]
+      },
+      {
+        label: 'アルミ / Al',
+        data: [60, 55, 75, 70, 80],
+        borderColor: COLOR.muted,
+        backgroundColor: 'rgba(107,107,107,0.08)',
+        borderWidth: 1.5,
+        pointRadius: 3,
+        pointBackgroundColor: COLOR.muted,
+        borderDash: [2, 4]
+      }
+    ]
+  },
+  options: {
+    ...commonOpts,
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        grid: { color: COLOR.border },
+        angleLines: { color: COLOR.border },
+        pointLabels: {
+          color: COLOR.text,
+          font: { size: 12, family: "'Noto Sans JP', sans-serif", weight: '500' }
+        },
+        ticks: { display: false }
+      }
+    }
+  }
+});
+
+// ============ Chart 6: NVIDIA Photonics Multipliers ============
+new Chart(document.getElementById('chartNvidia'), {
+  type: 'bar',
+  data: {
+    labels: ['電力効率', '信号品質', 'レジリエンス', 'デプロイ速度', 'レーザー数（1/x）'],
+    datasets: [{
+      label: '従来比倍率 (x)',
+      data: [3.5, 63, 10, 1.3, 4],
+      backgroundColor: [COLOR.blue, COLOR.accent, COLOR.blue, COLOR.muted, COLOR.muted],
+      borderWidth: 0,
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    ...commonOpts,
+    plugins: {
+      ...commonOpts.plugins,
+      legend: { display: false },
+      tooltip: {
+        ...commonOpts.plugins.tooltip,
+        callbacks: {
+          label: (ctx) => `${ctx.parsed.y}x improvement`
+        }
+      }
+    },
+    scales: {
+      x: commonOpts.scales.x,
+      y: { ...commonOpts.scales.y, beginAtZero: true, type: 'logarithmic', title: { display: true, text: '倍率 (log scale)', color: COLOR.muted } }
+    }
+  }
+});
+
+</script>
+
+</body>
+</html>
