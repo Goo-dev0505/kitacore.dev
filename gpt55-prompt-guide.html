@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPT-5.5 のたのみ方、変わったで — KITAcore統合ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #E9E9E9;
+  --surface: #FFFFFF;
+  --surface-v: #F4F4F2;
+  --surface-dark: #111111;
+  --text: #111111;
+  --text-sub: #2A2A2A;
+  --muted: #6B6B6B;
+  --border: #DDDDDD;
+  --accent: #000000;
+
+  --font-display: 'Inter', sans-serif;
+  --font-body: 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 60px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.95;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ========== TOP NAV ========== */
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(233,233,233,0.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.topnav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  max-width: 1180px;
+  margin: 0 auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.topnav-meta { color: var(--muted); }
+.topnav-quick { display: flex; gap: 16px; }
+.topnav-quick a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 150ms ease;
+}
+.topnav-quick a:hover { opacity: 0.5; }
+@media (max-width: 640px) { .topnav-quick { display: none; } }
+
+/* ========== HERO ========== */
+.hero {
+  padding: 88px 0 56px;
+  border-bottom: 1px solid var(--border);
+}
+.hero-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hero-meta span:not(:last-child)::after {
+  content: "·";
+  margin-left: 12px;
+  color: var(--border);
+}
+.hero h1 {
+  font-family: var(--font-body);
+  font-size: clamp(40px, 8vw, 80px);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  margin-bottom: 32px;
+}
+.hero h1 .mark {
+  background: var(--accent);
+  color: var(--surface);
+  padding: 0 0.16em;
+}
+.hero-sub {
+  font-size: 18px;
+  color: var(--text-sub);
+  line-height: 1.95;
+  font-weight: 500;
+  max-width: 680px;
+}
+
+/* ========== VERSION SELECTOR ========== */
+.selector {
+  padding: 80px 0;
+  background: var(--surface-dark);
+  color: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.selector-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.62);
+  margin-bottom: 14px;
+}
+.selector h2 {
+  font-family: var(--font-body);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  color: var(--surface);
+}
+.selector-lead {
+  font-size: 15.5px;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 48px;
+  max-width: 640px;
+  line-height: 1.85;
+}
+.selector-lead strong {
+  color: var(--surface);
+  background: rgba(255,255,255,0.08);
+  padding: 1px 8px;
+  font-weight: 700;
+}
+.selector-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+@media (max-width: 880px) {
+  .selector-cards { grid-template-columns: 1fr; }
+}
+.sc {
+  background: var(--surface-dark);
+  padding: 28px 28px 26px;
+  text-decoration: none;
+  color: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: background 200ms ease, border-top-color 200ms ease;
+  cursor: pointer;
+  position: relative;
+  border-top: 3px solid transparent;
+}
+.sc:hover {
+  background: #1A1A1A;
+  border-top-color: var(--surface);
+}
+.sc:hover .sc-meta .arrow {
+  transform: translateX(4px);
+}
+.sc-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.58);
+  font-weight: 600;
+}
+.sc-target {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.sc-title {
+  font-family: var(--font-body);
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--surface);
+}
+.sc-meta {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.18);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.78);
+  font-weight: 600;
+}
+.sc-meta .arrow {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--surface);
+  transition: transform 200ms ease;
+}
+
+/* ========== PART HEADER ========== */
+.part-marker {
+  background: var(--accent);
+  color: var(--surface);
+  padding: 56px 0;
+}
+.part-marker-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 12px;
+}
+.part-marker h2 {
+  font-family: var(--font-body);
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--surface);
+}
+.part-marker p {
+  margin-top: 14px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.75);
+  max-width: 600px;
+  line-height: 1.85;
+}
+
+/* ========== SECTION ========== */
+.section {
+  padding: 72px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-family: var(--font-body);
+  font-size: clamp(28px, 4.5vw, 40px);
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+.section-lead {
+  font-size: 17px;
+  color: var(--text-sub);
+  max-width: 720px;
+  margin-bottom: 36px;
+  line-height: 1.95;
+}
+h3.subhead {
+  font-family: var(--font-body);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 48px 0 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  line-height: 1.45;
+}
+h3.subhead::before {
+  content: "→";
+  font-family: var(--font-mono);
+  color: var(--muted);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+h4.minihead {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin: 32px 0 12px;
+  color: var(--muted);
+}
+
+p { margin-bottom: 18px; line-height: 1.95; color: var(--text-sub); }
+p strong { color: var(--text); font-weight: 700; }
+
+/* ダーク背景セクション内の強調は白で */
+.selector strong,
+.selector-lead strong,
+.part-marker p strong,
+.footer p strong,
+.footer h2 strong,
+.bubble.user p strong { color: var(--surface); }
+
+/* ========== TIP ========== */
+.tip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  padding: 24px 28px;
+  margin: 24px 0;
+}
+.tip-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tip-label::before { content: "▮"; color: var(--accent); }
+.tip h5 {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.005em;
+  line-height: 1.5;
+}
+.tip p { font-size: 14.5px; line-height: 1.85; margin-bottom: 8px; }
+.tip p:last-child { margin-bottom: 0; }
+
+/* ========== ANALOGY ========== */
+.analogy {
+  background: var(--accent);
+  color: var(--surface);
+  padding: 32px 36px;
+  margin: 28px 0;
+}
+.analogy-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 12px;
+}
+.analogy p {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.7;
+  color: var(--surface);
+  margin: 0;
+}
+.analogy p + p { margin-top: 12px; }
+.analogy strong { color: var(--surface); font-weight: 800; border-bottom: 2px solid var(--surface); padding-bottom: 1px; }
+
+/* ========== COMPARE BOX ========== */
+.compare-set {
+  margin: 28px 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.compare-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px 28px;
+  position: relative;
+}
+.compare-card.no { background: var(--surface-v); }
+.compare-tag {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  padding: 6px 14px;
+  text-transform: uppercase;
+}
+.compare-tag.no {
+  background: var(--surface-v);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.compare-tag.yes {
+  background: var(--accent);
+  color: var(--surface);
+}
+.compare-card .ex {
+  margin-top: 22px;
+  font-size: 14.5px;
+  line-height: 1.85;
+  color: var(--text);
+  background: var(--bg);
+  padding: 16px 20px;
+  border-left: 3px solid var(--muted);
+}
+.compare-card.yes .ex { border-left-color: var(--accent); }
+.compare-card .why {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ========== CHAT ========== */
+.chat {
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.bubble {
+  background: var(--surface);
+  padding: 18px 22px;
+  border: 1px solid var(--border);
+  max-width: 92%;
+}
+.bubble.user {
+  align-self: flex-end;
+  background: var(--text);
+  color: var(--surface);
+  border-color: var(--text);
+}
+.bubble.user p { color: var(--surface); }
+.bubble-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: block;
+}
+.bubble.user .bubble-label { color: rgba(255,255,255,0.5); }
+.bubble p { font-size: 15px; line-height: 1.85; margin: 0; }
+.bubble p + p { margin-top: 8px; }
+
+/* ========== HUGE NUMBER ========== */
+.huge {
+  margin: 48px 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 32px;
+  align-items: center;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.huge-num {
+  font-family: var(--font-display);
+  font-size: clamp(72px, 16vw, 120px);
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+}
+.huge-text {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--text);
+}
+.huge-text small {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.7;
+}
+@media (max-width: 640px) {
+  .huge { grid-template-columns: 1fr; gap: 12px; }
+}
+
+/* ========== KEYPOINTS ========== */
+.kp { list-style: none; margin: 24px 0; }
+.kp li {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.kp li:first-child { border-top: 1px solid var(--border); }
+.kp-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+  min-width: 32px;
+  font-weight: 500;
+  padding-top: 2px;
+}
+.kp-body strong {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  letter-spacing: -0.005em;
+  font-weight: 700;
+}
+.kp-body span {
+  color: var(--text-sub);
+  font-size: 14.5px;
+  line-height: 1.8;
+}
+
+/* ========== TABLE ========== */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.tbl th, .tbl td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.tbl th {
+  background: var(--surface-v);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl code {
+  background: var(--bg);
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border: 1px solid var(--border);
+}
+
+/* ========== CODE ========== */
+.code {
+  background: var(--surface-dark);
+  color: #E2E8F0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 22px 26px;
+  margin: 22px 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  letter-spacing: 0;
+}
+
+/* ========== TEMPLATE ========== */
+.template {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  padding: 28px 32px;
+  margin: 28px 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.95;
+}
+.template-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.template .row {
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+.template .row:last-child { margin-bottom: 0; }
+.template .row b {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 4px;
+}
+.template .row span { font-weight: 500; color: var(--text); }
+.template .row em {
+  display: block;
+  font-style: normal;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: 400;
+}
+@media (max-width: 640px) {
+  .template .row { grid-template-columns: 1fr; gap: 4px; }
+}
+
+/* ========== Q&A ========== */
+.qa-item {
+  border-bottom: 1px solid var(--border);
+  padding: 24px 0;
+}
+.qa-item:first-child { border-top: 1px solid var(--border); }
+.qa-q {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  line-height: 1.5;
+}
+.qa-q::before {
+  content: "Q.";
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.qa-a {
+  font-size: 14.5px;
+  line-height: 1.85;
+  color: var(--text-sub);
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+}
+.qa-a::before {
+  content: "A.";
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.qa-a div { flex: 1; }
+.qa-a div p { margin-bottom: 10px; line-height: 1.85; }
+.qa-a div p:last-child { margin-bottom: 0; }
+
+/* ========== CHECKLIST ========== */
+.checklist {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 28px 32px;
+  margin: 24px 0;
+}
+.checklist h4 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+}
+.checklist ul { list-style: none; }
+.checklist li {
+  padding: 8px 0 8px 28px;
+  position: relative;
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.7;
+}
+.checklist li::before {
+  content: "☐";
+  position: absolute;
+  left: 0;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  font-size: 16px;
+  top: 6px;
+}
+.checklist code {
+  background: var(--bg);
+  padding: 0 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border: 1px solid var(--border);
+}
+
+/* ========== INLINE ========== */
+mark {
+  background: #FFF066;
+  padding: 1px 4px;
+  font-weight: 700;
+  color: var(--text);
+}
+code:not(.code code):not(.tbl code):not(.checklist code) {
+  background: var(--surface-v);
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  border: 1px solid var(--border);
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  padding: 80px 0;
+  background: var(--accent);
+  color: var(--surface);
+}
+.footer-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 20px;
+}
+.footer h2 {
+  font-family: var(--font-body);
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 900;
+  letter-spacing: -0.015em;
+  margin-bottom: 20px;
+  line-height: 1.4;
+  color: var(--surface);
+}
+.footer p {
+  color: rgba(255,255,255,0.85);
+  font-size: 15px;
+  line-height: 1.85;
+  max-width: 580px;
+}
+.footer-link {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.9;
+}
+
+/* ========== INTRO ========== */
+.intro {
+  padding: 56px 0;
+  border-bottom: 1px solid var(--border);
+}
+.intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+.intro-card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 4px;
+  height: 56px;
+  background: var(--accent);
+}
+.intro-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-left: 16px;
+}
+.intro-text {
+  font-size: 15.5px;
+  line-height: 1.95;
+  color: var(--text-sub);
+  margin-left: 16px;
+}
+.intro-text p { margin: 0; color: var(--text-sub); }
+.intro-text p + p { margin-top: 14px; }
+.intro-text strong { color: var(--text); font-weight: 700; }
+.btn-official {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--accent);
+  color: var(--surface);
+  padding: 14px 22px 14px 24px;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: 0.01em;
+  transition: background 150ms ease, transform 150ms ease;
+  margin-left: 16px;
+}
+.btn-official:hover {
+  background: #1A1A1A;
+  transform: translateX(2px);
+}
+.btn-official .arrow {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 400;
+}
+.btn-official-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-left: 16px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+@media (max-width: 640px) {
+  .intro-card { padding: 28px 24px; }
+  .intro-label, .intro-text, .btn-official, .btn-official-meta { margin-left: 12px; }
+  .intro-card::before { height: 48px; }
+}
+
+/* ========== JUMP ========== */
+.jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.jump:hover { color: var(--text); border-color: var(--text); }
+
+/* ═════════════════════════════════════
+   PRELOADER
+   ═════════════════════════════════════ */
+body.preloading { overflow: hidden; }
+
+.preloader {
+  position: fixed; inset: 0;
+  background: #000;
+  z-index: 10001;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: opacity 600ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+.preloader.done {
+  opacity: 0;
+  pointer-events: none;
+}
+.preloader-inner {
+  width: 100%;
+  max-width: 440px;
+  padding: 0 36px;
+  color: #fff;
+}
+.preloader-brand {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: pre-fade 450ms cubic-bezier(0.16,1,0.3,1) 80ms forwards;
+}
+.preloader-title {
+  font-family: var(--font-body);
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: #fff;
+  margin-bottom: 44px;
+  opacity: 0;
+  animation: pre-fade 550ms cubic-bezier(0.16,1,0.3,1) 180ms forwards;
+}
+.preloader-lines { margin-bottom: 48px; }
+.preloader-line {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: pre-fade 400ms cubic-bezier(0.25,1,0.5,1) forwards;
+}
+.preloader-line:nth-child(1) { animation-delay: 380ms; }
+.preloader-line:nth-child(2) { animation-delay: 560ms; }
+.preloader-line:nth-child(3) { animation-delay: 740ms; }
+.preloader-line .label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  width: 52px;
+  flex-shrink: 0;
+}
+.preloader-line .bar {
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.preloader-line .bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%; width: 0;
+  background: #fff;
+  animation: pre-bar 700ms cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.preloader-line:nth-child(1) .bar::after { animation-delay: 430ms; }
+.preloader-line:nth-child(2) .bar::after { animation-delay: 610ms; }
+.preloader-line:nth-child(3) .bar::after { animation-delay: 790ms; }
+
+.preloader-progress {
+  opacity: 0;
+  animation: pre-fade 400ms cubic-bezier(0.25,1,0.5,1) 960ms forwards;
+}
+.preloader-progress-bar {
+  height: 2px;
+  background: rgba(255,255,255,0.1);
+  position: relative;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.preloader-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%; width: 0;
+  background: #fff;
+  animation: pre-progress 800ms cubic-bezier(0.25,1,0.5,1) 1060ms forwards;
+}
+.preloader-status {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.38);
+  text-transform: uppercase;
+}
+.preloader-status .status-label::before {
+  content: '';
+  display: inline-block;
+  width: 5px; height: 5px;
+  background: #fff;
+  margin-right: 8px;
+  vertical-align: middle;
+  animation: pre-blink 1s ease-in-out infinite;
+}
+.preloader-skip {
+  position: absolute;
+  bottom: 28px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.22);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: pre-fade 500ms ease 1500ms forwards;
+  white-space: nowrap;
+}
+
+@keyframes pre-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pre-bar {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+@keyframes pre-progress {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+@keyframes pre-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader *, .preloader *::after, .preloader *::before {
+    animation-duration: 80ms !important;
+    animation-delay: 0ms !important;
+  }
+}
+@media (max-width: 600px) {
+  .preloader-inner { padding: 0 28px; }
+  .preloader-title { margin-bottom: 36px; }
+}
+
+/* ═════════════════════════════════════
+   SCROLL PROGRESS BAR
+   ═════════════════════════════════════ */
+.scroll-progress {
+  position: fixed; top: 0; left: 0;
+  height: 2px; width: 0%;
+  background: var(--accent);
+  z-index: 200;
+  transition: width 80ms linear;
+  pointer-events: none;
+}
+</style>
+</head>
+<body class="preloading">
+
+<!-- PRELOADER -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader-inner">
+    <div class="preloader-brand">KITAcore · Prompt Guide</div>
+    <div class="preloader-title">AIへの<br>たのみ方、<br>変わったで。</div>
+    <div class="preloader-lines">
+      <div class="preloader-line"><span class="label">Easy</span><span class="bar"></span></div>
+      <div class="preloader-line"><span class="label">Deep</span><span class="bar"></span></div>
+      <div class="preloader-line"><span class="label">GPT-5.5</span><span class="bar"></span></div>
+    </div>
+    <div class="preloader-progress">
+      <div class="preloader-progress-bar"></div>
+      <div class="preloader-status">
+        <span class="status-label">Loading</span>
+        <span class="status-count">14 Sections · EASY + DEEP</span>
+      </div>
+    </div>
+  </div>
+  <div class="preloader-skip">click anywhere to skip</div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <div class="topnav-inner">
+    <span><strong>KITACORE / GUIDE</strong></span>
+    <nav class="topnav-quick">
+      <a href="#selector">選び方</a>
+      <a href="#core">基本</a>
+      <a href="#easy">EASY</a>
+      <a href="#deep">DEEP</a>
+      <a href="#close">FAQ</a>
+    </nav>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-meta">
+      <span>OPENAI / GPT-5.5</span>
+      <span>2026.05 RELEASED</span>
+      <span>EASY + DEEP / 統合版</span>
+    </div>
+    <h1>
+      AIへの<br>
+      <span class="mark">たのみ方</span>、<br>
+      変わったで。
+    </h1>
+    <p class="hero-sub">
+      GPT-5.5 が出て、ChatGPT への話しかけ方のコツがガラッと変わってん。<br>
+      ひとことで言うと、<strong>こまかい指示はもうええねん。ゴールだけ伝えたって</strong>。<br>
+      このページは普段使いの人も、実装する人も、両方ハマる統合ガイドや。
+    </p>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="intro">
+  <div class="container">
+    <div class="intro-card">
+      <span class="intro-label">▮ INTRO / なんでこれ書いたか</span>
+      <div class="intro-text">
+        <p>ある日、OpenAI が GPT-5.5 のプロンプトガイドを <strong>公式で出してくれてん</strong>。読んでみたらめっちゃ参考になったから、<strong>ワイも忘れんように自分用にまとめといたわけや</strong>。</p>
+        <p>このページはそのまとめ。要点を関西弁＋たとえ話で再構成してる。本気でガッツリ読みたい人は、下のリンクから公式を直接踏んできてな。</p>
+      </div>
+      <a href="https://developers.openai.com/api/docs/guides/prompt-guidance" class="btn-official" target="_blank" rel="noopener">
+        <span>公式ガイドを読みに行く</span>
+        <span class="arrow">→</span>
+      </a>
+      <span class="btn-official-meta">SOURCE / developers.openai.com / Prompt guidance</span>
+    </div>
+  </div>
+</section>
+
+<!-- VERSION SELECTOR -->
+<section class="selector" id="selector">
+  <div class="container">
+    <div class="selector-label">▮ HOW TO READ / 読み方の選び方</div>
+    <h2>あんたに合うルート、<br>選んでや。</h2>
+    <p class="selector-lead">
+      内容のレベルが2段階に分かれてるねん。最初の「基本」はみんな読むやつ。
+      そのあとは普段使いの <strong>EASY MODE</strong>、ガッツリ実装する人は <strong>DEEP MODE</strong> へ。
+      迷ったら一番左でええで。
+    </p>
+
+    <div class="selector-cards">
+      <a href="#core" class="sc">
+        <span class="sc-num">ROUTE 01</span>
+        <span class="sc-target">普段使い派</span>
+        <span class="sc-title">ChatGPTを<br>もっと使いこなしたい</span>
+        <div class="sc-meta">
+          <span>BASIC + EASY</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#deep" class="sc">
+        <span class="sc-num">ROUTE 02</span>
+        <span class="sc-target">実装・本格派</span>
+        <span class="sc-title">noteや業務、APIで<br>本気で使いたい</span>
+        <div class="sc-meta">
+          <span>BASIC + DEEP</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#core" class="sc">
+        <span class="sc-num">ROUTE 03</span>
+        <span class="sc-target">全部読む派</span>
+        <span class="sc-title">両方知っとこ<br>使い分けたい</span>
+        <div class="sc-meta">
+          <span>FULL READ</span>
+          <span class="arrow">↓</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- PART 1: COMMON CORE                          -->
+<!-- ============================================ -->
+<section class="part-marker" id="core">
+  <div class="container">
+    <div class="part-marker-tag">PART 01 / COMMON</div>
+    <h2>みんな読むやつ、<br>根本の話。</h2>
+    <p>
+      普段使い派も実装派も、ここだけは共通の前提や。
+      ここ押さえとけば、あとの応用は枝葉の話やと思うてくれてええ。
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 01 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">01.</span>
+    <h2 class="section-title">ベテランに頼む感じが、<br>新しい正解やで。</h2>
+
+    <p>
+      これまでのAI（GPT-5.4まで）はな、<strong>新人さんに仕事を頼む感じ</strong>やってん。
+      迷子にならんように、手順を細かく書いてあげる必要があったわけや。
+    </p>
+
+    <div class="analogy">
+      <div class="analogy-label">▮ TATOERU NARA / たとえると</div>
+      <p>
+        新人さんに「コピー10部とって、ホチキスは左上で、机Aに置いて」って<strong>手順全部書く</strong>のがいままで。
+      </p>
+      <p>
+        ベテランに「会議用に資料配れる状態にしといて」って<strong>結果だけ頼む</strong>のがこれから。
+      </p>
+    </div>
+
+    <p>
+      GPT-5.5 はかなりベテラン寄りになったんよ。
+      やから「まずA、次にB、最後にC」みたいに細かく書くと、むしろ動きがガチガチになって機械的な答えが返ってくるねん。
+    </p>
+
+    <p>
+      大事なんは <strong>「結果」を伝えること</strong>。
+      何ができてればOKか、何があってほしいか。それだけや。
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 02 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">02.</span>
+    <h2 class="section-title">5.4 → 5.5で<br>変わった4つのこと。</h2>
+
+    <ul class="kp">
+      <li>
+        <span class="kp-num">01</span>
+        <div class="kp-body">
+          <strong>古いプロンプトをそのまま持ってきたら劣化する</strong>
+          <span>「ALWAYS〜」「NEVER〜」「まずA、次にB…」みたいな指示が、5.5 ではノイズになって動きが機械的になるねん。最小のプロンプトから書き直すのが推奨や。</span>
+        </div>
+      </li>
+      <li>
+        <span class="kp-num">02</span>
+        <div class="kp-body">
+          <strong>考える深さの初期設定が medium になった</strong>
+          <span>5.4 までは <code>none</code>（考えん）が既定。5.5 は <code>medium</code> が既定や。低レベルでも賢う動くから、まず <code>low</code> や <code>medium</code> で試して、足りなんだら上げる。これが基本動作やで。</span>
+        </div>
+      </li>
+      <li>
+        <span class="kp-num">03</span>
+        <div class="kp-body">
+          <strong>デフォルトのトーンが「効率重視・直接的」</strong>
+          <span>そっけない感じすらある、っちゅうくらい簡潔。お客さん向けや温かみが必要な用途では、人格設定を明示的に書かなアカン。</span>
+        </div>
+      </li>
+      <li>
+        <span class="kp-num">04</span>
+        <div class="kp-body">
+          <strong>長時間タスク・ツール多用は preamble と phase が引き続き効く</strong>
+          <span>これは 5.4 から続く話。考え込んでる間に「ちょっと待ってくれ感」を出すには preamble、中間更新と最終回答の区別には phase。詳しいのは DEEP MODE で。</span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="tip">
+      <div class="tip-label">▮ ここポイントやで</div>
+      <h5>「必ず（ALWAYS）」「絶対に〜するな（NEVER）」は、ホンマに絶対の時だけ</h5>
+      <p>
+        プライバシー、安全、絶対に間違えたらアカンルール。これだけが「絶対」や。
+      </p>
+      <p>
+        「いつ調べるか」「どの順でやるか」みたいな <strong>判断系</strong> を全部「必ず〜」で縛ったら、AI が融通きかんくなって出力がショボくなるで。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- PART 2: EASY MODE                            -->
+<!-- ============================================ -->
+<section class="part-marker" id="easy">
+  <div class="container">
+    <div class="part-marker-tag">PART 02 / EASY MODE</div>
+    <h2>普段使い派の<br>あんたへ。</h2>
+    <p>
+      ChatGPT を普通に使うてる人向け。日常の例とたとえ話だけで進めるで。
+      実装の話は出てけぇへんから安心してや。
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 03 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">03.</span>
+    <h2 class="section-title">残念な頼み方<br>vs ええ頼み方。</h2>
+
+    <p>
+      具体例で見るのがいちばん早いわ。
+      左の「残念」は、ついやってまうやつ。右の「ええ」は、5.5 で結果が良くなる書き方や。
+    </p>
+
+    <h4 class="minihead">PATTERN 01 / 明日の天気を聞きたい</h4>
+    <div class="compare-set">
+      <div class="compare-card no">
+        <span class="compare-tag no">残念</span>
+        <div style="margin-top:24px;"><strong>手順を全部書いてまう</strong></div>
+        <div class="ex">
+          明日の天気について、まず気象庁のサイトを見て、それから関連ニュースも確認して、温度と湿度と降水確率を調べて、過去のデータも比較して、表でまとめて、最後に服装のアドバイスもつけてください。
+        </div>
+        <p class="why">
+          → 手順多すぎて、全部きっちりやろうとして長くて固い答えになるねん。
+        </p>
+      </div>
+
+      <div class="compare-card yes">
+        <span class="compare-tag yes">ええ</span>
+        <div style="margin-top:24px;"><strong>ゴールと長さだけ</strong></div>
+        <div class="ex">
+          明日の東京の天気をふまえて、何を着ていけばええか教えて。<br>
+          理由もちょっと添えて、3行くらいで。
+        </div>
+        <p class="why">
+          → ゴール（着るもの）と長さ（3行）だけ伝える。調べ方は AI が選んでくれるで。
+        </p>
+      </div>
+    </div>
+
+    <h4 class="minihead">PATTERN 02 / 文章を直してほしい</h4>
+    <div class="compare-set">
+      <div class="compare-card no">
+        <span class="compare-tag no">残念</span>
+        <div style="margin-top:24px;"><strong>全部直してと頼む</strong></div>
+        <div class="ex">
+          以下の文章を、まず誤字を直して、それから言い回しをチェックして、それから論理構成も見直して、それから読みやすくして、それから敬語も確認して…
+        </div>
+        <p class="why">
+          → 全部やろうとして、勝手に大改修されることが多いんよ。
+        </p>
+      </div>
+
+      <div class="compare-card yes">
+        <span class="compare-tag yes">ええ</span>
+        <div style="margin-top:24px;"><strong>変えてええ部分を限定する</strong></div>
+        <div class="ex">
+          この文章を、<strong>長さや構成は変えずに</strong>、読みやすさだけ整えて。<br>
+          新しい主張を足したり、宣伝っぽくしたりせんといて。
+        </div>
+        <p class="why">
+          → 「変えてええ部分」と「変えたらアカン部分」を先に伝える。これだけで暴走せえへん。
+        </p>
+      </div>
+    </div>
+
+    <h4 class="minihead">PATTERN 03 / 旅行プランを立てたい</h4>
+    <div class="compare-set">
+      <div class="compare-card no">
+        <span class="compare-tag no">残念</span>
+        <div style="margin-top:24px;"><strong>「必ず」を連発する</strong></div>
+        <div class="ex">
+          京都の旅行プランを作って。必ず観光地を10個入れて、必ず食事処も入れて、必ず移動時間も書いて、必ず予算も入れて、必ず…
+        </div>
+        <p class="why">
+          → 「必ず」が多すぎて、ぎゅうぎゅう詰めの使えんプランになるねん。
+        </p>
+      </div>
+
+      <div class="compare-card yes">
+        <span class="compare-tag yes">ええ</span>
+        <div style="margin-top:24px;"><strong>状況と判断軸を渡す</strong></div>
+        <div class="ex">
+          京都に1泊2日で行くねん。歩くの好き、人混み苦手、予算は1人3万円。<br>
+          無理のないプラン作って。足りん情報があったら聞いてや。
+        </div>
+        <p class="why">
+          → 自分の状況と判断軸を渡す。あとは AI が選ぶ。「足りん情報は聞いて」も大事や。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 04 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">04.</span>
+    <h2 class="section-title">声色（こわいろ）を<br>決めたって。</h2>
+
+    <p>
+      GPT-5.5 のデフォルトはちょっと <strong>そっけない</strong> ねん。
+      「効率重視・直接・タスク志向」がデフォ。仕事には便利やけど、相談ごとや日常チャットやと冷たく感じることもあるわ。
+    </p>
+
+    <p>
+      対策はかんたん。<strong>「どんな人として話してほしいか」を最初に書く</strong>。それだけや。
+    </p>
+
+    <div class="chat">
+      <div class="bubble user">
+        <span class="bubble-label">YOU</span>
+        <p>あなたは丁寧で穏やかな、頼れる先輩のように話してください。専門用語は使わず、たとえ話で説明して。<br><br>では質問です。○○について教えてください。</p>
+      </div>
+      <div class="bubble">
+        <span class="bubble-label">AI</span>
+        <p>はい、お聞きしますね。○○というのは、たとえると...</p>
+      </div>
+    </div>
+
+    <p>
+      これだけで、グッと温かみが出るで。
+      最初の数行で「人格設定」しとくのがコツや。ChatGPT の「カスタム指示」に書いとけば、毎回書かんでええで。
+    </p>
+
+    <div class="tip">
+      <div class="tip-label">▮ ここポイントやで</div>
+      <h5>声色は「体験」を整える道具。中身の代わりにはせえへんこと</h5>
+      <p>
+        やさしいトーンで頼んだからって、目的・条件があいまいなままやったら、結果は雰囲気だけの使えん答えになるで。
+        まず <strong>何をしてほしいか</strong>。次に <strong>どんなトーンで</strong>。順番が大事やねん。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 05 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">05.</span>
+    <h2 class="section-title">「ちょっと待ってな」を<br>言わせるねん。</h2>
+
+    <p>
+      AI に難しい質問投げると、考え込んで <strong>最初の文字が出るまで時間かかる</strong> ことがあるねん。
+      その間ユーザーは「壊れた？」って不安になりがちやろ。
+    </p>
+
+    <div class="huge">
+      <div class="huge-num">1–2</div>
+      <div class="huge-text">
+        最初に出してほしい「お返事」の長さは、1〜2文。
+        <small>長すぎたら邪魔。短い「了解です、まず○○から見ますね」だけで体感速度がグンと上がるで。</small>
+      </div>
+    </div>
+
+    <div class="chat">
+      <div class="bubble user">
+        <span class="bubble-label">指示</span>
+        <p>時間のかかる作業を始めるときは、まず1〜2文で「了解しました、最初に○○から始めます」と簡単に教えてから作業を始めてください。</p>
+      </div>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-label">▮ TATOERU NARA / たとえると</div>
+      <p>
+        レジで店員さんが何も言わんと作業始めると、ちょっと不安なるやろ。
+      </p>
+      <p>
+        「お会計108円ですね、お預かりします」って <strong>一言あるだけで</strong>、同じ時間でも「ちゃんと進んでる」って安心するやん。<strong>その一言</strong>を AI にも言うてもらうイメージや。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 06 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">06.</span>
+    <h2 class="section-title">「いつ止まるか」を<br>教えたって。</h2>
+
+    <p>
+      AI は「もっとちゃんとやろう」と思って <strong>調べすぎる</strong> ことがあるねん。
+      検索しまくったり、確認しまくったり、長い長い回答書いたり…。
+    </p>
+
+    <p>これを防ぐには、<strong>「いつ止まってええか」</strong> を伝えるんや。</p>
+
+    <div class="chat">
+      <div class="bubble user">
+        <span class="bubble-label">指示</span>
+        <p>ちゃんとした答えを出すのに必要な分だけ調べて、すぐに答えて。<br>わからない部分があったら、深追いせずに「ここは不明です」とそのまま書いて。</p>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">▮ ここポイントやで</div>
+      <h5>「念入りに調べてから答えて」が古い正解、「最小限の証拠で答えて止まる」が新しい正解や</h5>
+      <p>
+        昔は「とにかく丁寧に調べて」が安全策やってん。
+        でも GPT-5.5 では <strong>必要十分な情報で答えてサッと止まる</strong> 方が、結果の質も体感速度もええ傾向あるねん。集めすぎが偉い、ちゃうんよ。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 07 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">07.</span>
+    <h2 class="section-title">そのまま使える、<br>かんたんテンプレ。</h2>
+
+    <p>
+      ここまでの話を、ひとつのテンプレにまとめたで。<strong>必要な行だけ</strong> 使うたらええ。
+      「ゴール」と「条件」だけでも、いままでのダラダラ指示よりずっと結果が良くなるで。
+    </p>
+
+    <div class="template">
+      <div class="template-label">EASY PROMPT TEMPLATE / 普段使い向けテンプレ</div>
+
+      <div class="row">
+        <b>役割</b>
+        <span>あなたは○○です。
+          <em>例：丁寧で頼れる編集者です</em>
+        </span>
+      </div>
+      <div class="row">
+        <b>声色</b>
+        <span>○○のトーンで話してください。
+          <em>例：やさしく、でも甘くなく。専門用語は使わず</em>
+        </span>
+      </div>
+      <div class="row">
+        <b>ゴール</b>
+        <span>最終的に○○ができている状態にしてください。
+          <em>例：800字程度のブログ記事の冒頭</em>
+        </span>
+      </div>
+      <div class="row">
+        <b>条件</b>
+        <span>○○は守って、○○は変えないで。
+          <em>例：固有名詞は変えない／宣伝っぽくしない</em>
+        </span>
+      </div>
+      <div class="row">
+        <b>長さ・形</b>
+        <span>○○の長さで、○○の形式で。
+          <em>例：3段落、見出しなしのプレーン文章</em>
+        </span>
+      </div>
+      <div class="row">
+        <b>止め時</b>
+        <span>○○ができたら止まって。
+          <em>例：足りない情報があれば質問して止まる</em>
+        </span>
+      </div>
+    </div>
+
+    <a href="#close" class="jump">▶ 普段使い派はチェックリスト＆FAQへ</a>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- PART 3: DEEP MODE                            -->
+<!-- ============================================ -->
+<section class="part-marker" id="deep">
+  <div class="container">
+    <div class="part-marker-tag">PART 03 / DEEP MODE</div>
+    <h2>実装・本格派の<br>あんたへ。</h2>
+    <p>
+      note で活用したり、業務に組み込んだり、API でアプリ作ったりする人向け。
+      ここからは XML タグつきテンプレや API パラメータの話も出てくるで。
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 08 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">08.</span>
+    <h2 class="section-title">アウトカム重視で<br>構造化するんや。</h2>
+
+    <p class="section-lead">
+      EASY MODE の「ゴール伝える」を、もっと厳密に書くとこうなるねん。
+      4つの要素を意識すると、プロンプトの安定性がガッと上がるで。
+    </p>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>要素</th><th>何を書くか</th><th>例</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Goal</strong></td><td>ユーザーに見せる最終結果</td><td>顧客の問い合わせを解決する</td></tr>
+        <tr><td><strong>Success criteria</strong></td><td>「これが揃ってたら完了」の定義</td><td>判定済み・アクション完了・必要フィールド含む</td></tr>
+        <tr><td><strong>Constraints</strong></td><td>守るべきルール（安全・予算・形式）</td><td>個人情報を要約に含めへん</td></tr>
+        <tr><td><strong>Stop rules</strong></td><td>いつやめるか・いつ諦めるか</td><td>必要な証拠が揃ったら回答して止まる</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subhead">原文の推奨例（公式そのまま）</h3>
+
+    <div class="code">Resolve the customer's issue end to end.
+
+Success means:
+- the eligibility decision is made from the available policy and account data
+- any allowed action is completed before responding
+- the final answer includes completed_actions, customer_message, and blockers
+- if evidence is missing, ask for the smallest missing field</div>
+
+    <h3 class="subhead">「ALWAYS / NEVER」の使い分け</h3>
+
+    <p>
+      安全ルール、必須出力フィールド、絶対やったらアカン操作。これらは <code>ALWAYS</code> / <code>NEVER</code> でええ。
+      でも判断系（いつ検索するか、いつ確認するか）を強い言葉で縛ると、5.5 では検索空間が狭まって出力が劣化するんよ。
+      判断系は「○○の時は△△する」っていうルールの形で書こうな。
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 09 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">09.</span>
+    <h2 class="section-title">パーソナリティと<br>コラボスタイルは分ける。</h2>
+
+    <p class="section-lead">
+      公式の推奨は <strong>パーソナリティ</strong>（声・トーン）と <strong>コラボスタイル</strong>（仕事の進め方）を分けて書くこと。
+      それぞれ短く、目的・成功条件・制約の代わりにせえへんこと。
+    </p>
+
+    <h3 class="subhead">公式例：落ち着いたタスク重視タイプ</h3>
+
+    <div class="code"># Personality
+You are a capable collaborator: approachable, steady, and direct.
+Assume the user is competent and acting in good faith, and respond
+with patience, respect, and practical helpfulness.
+
+Prefer making progress over stopping for clarification when the
+request is already clear enough to attempt. Use context and
+reasonable assumptions to move forward. Ask for clarification only
+when the missing information would materially change the answer or
+create meaningful risk, and keep any question narrow.
+
+Stay concise without becoming curt. Give enough context for the user
+to understand and trust the answer, then stop. Use examples,
+comparisons, or simple analogies when they make the point easier to
+grasp. When correcting the user or disagreeing, be candid but
+constructive. When an error is pointed out, acknowledge it plainly
+and focus on fixing it.
+
+Match the user's tone within professional bounds. Avoid emojis and
+profanity by default, unless the user explicitly asks for that style.</div>
+
+    <h3 class="subhead">プリアンブル（時間稼ぎの一言）</h3>
+
+    <p>
+      ストリーミング応答で「最初の文字までの時間」を改善するパターンや。
+      ツール多用・長時間ワークフローでは特に効くで。
+    </p>
+
+    <div class="code">Before any tool calls for a multi-step task, send a short
+user-visible update that acknowledges the request and states the
+first step. Keep it to one or two sentences.</div>
+
+    <p>コーディングエージェント向けはもっと明示的にいこか：</p>
+
+    <div class="code">You must always start with an intermediary update before any content
+in the analysis channel if the task will require calling tools.
+The user update should acknowledge the request and explain your
+first step.</div>
+  </div>
+</section>
+
+<!-- SECTION 10 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">10.</span>
+    <h2 class="section-title">検索バジェット・引用・<br>創作ガード。</h2>
+
+    <p class="section-lead">
+      事実ベースの回答作る時は、<strong>「何を調べるか」「どこまで調べるか」「足りなんだらどうするか」</strong>の3つを書くねん。
+      RAG使うてる人は特に重要や。
+    </p>
+
+    <h3 class="subhead">検索バジェット：いつ検索やめるか</h3>
+
+    <div class="code">For ordinary Q&amp;A, start with one broad search using short,
+discriminative keywords. If the top results contain enough citable
+support for the core request, answer from those results instead of
+searching again.
+
+Make another retrieval call only when:
+- The top results do not answer the core question.
+- A required fact, parameter, owner, date, ID, or source is missing.
+- The user asked for exhaustive coverage, a comparison, or a list.
+- A specific document, URL, email, meeting, record, or code artifact
+  must be read.
+- The answer would otherwise contain an important unsupported claim.
+
+Do not search again to improve phrasing, add examples, cite
+nonessential details, or support wording that can safely be made
+more generic.</div>
+
+    <h3 class="subhead">創作ガード：事実と創作の境界線</h3>
+
+    <p>
+      スライド・営業コピー・要約を AI に作らせる時、引用すべき事実と言葉で繕ってええ部分を区別させるんや。
+      これがないと、AI が「導入企業 前年比132%成長」みたいな <strong>誰も言うてない数字</strong> を作文してくることがあるで。怖いやろ。
+    </p>
+
+    <div class="code">For creative or generative requests such as slides, leadership
+blurbs, outbound copy, summaries for sharing, talk tracks, or
+narrative framing, distinguish source-backed facts from creative
+wording.
+
+- Use retrieved or provided facts for concrete product, customer,
+  metric, roadmap, date, capability, and competitive claims, and
+  cite those claims.
+- Do not invent specific names, first-party data claims, metrics,
+  roadmap status, customer outcomes, or product capabilities to
+  make the draft sound stronger.
+- If there is little or no citable support, write a useful generic
+  draft with placeholders or clearly labeled assumptions rather
+  than unsupported specifics.</div>
+  </div>
+</section>
+
+<!-- SECTION 11 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">11.</span>
+    <h2 class="section-title">自己検証ループと<br>phaseパラメータ。</h2>
+
+    <h3 class="subhead">コーディングエージェントの自己検証</h3>
+
+    <p>ツールが使える環境では、AI に自分の出力をチェックさせるんや。</p>
+
+    <div class="code">After making changes, run the most relevant validation available:
+- targeted unit tests for changed behavior
+- type checks or lint checks when applicable
+- build checks for affected packages
+- a minimal smoke test when full validation is too expensive
+
+If validation cannot be run, explain why and describe the next best
+check.</div>
+
+    <h3 class="subhead">UI生成：レンダリング後の確認まで</h3>
+
+    <div class="code">Render the artifact before finalizing. Inspect the rendered output
+for layout, clipping, spacing, missing content, and visual
+consistency. Revise until the rendered output matches the
+requirements.</div>
+
+    <h3 class="subhead">phase パラメータ（API向け）</h3>
+
+    <p>
+      長時間処理で <strong>中間メッセージ</strong> と <strong>最終回答</strong> を区別するためのパラメータや。
+      これがないと、preamble が「もう答え出た」と誤認されることがあるで。
+    </p>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>phase 値</th><th>意味</th><th>使う場所</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>commentary</code></td><td>中間更新（preamble・進捗）</td><td>ツール呼ぶ前の説明とか</td></tr>
+        <tr><td><code>final_answer</code></td><td>完成した最終回答</td><td>ホンマの答え</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code">If manually replaying assistant items:
+- Preserve assistant `phase` values exactly.
+- Use `phase: "commentary"` for intermediate user-visible updates.
+- Use `phase: "final_answer"` for the completed answer.
+- Do not add `phase` to user messages.</div>
+
+    <div class="tip">
+      <div class="tip-label">▮ ここポイントやで</div>
+      <h5>previous_response_id 使うてれば自動で済むで</h5>
+      <p>
+        Responses API で <code>previous_response_id</code> 渡してる場合は、phase の保存は API 側がやってくれるねん。
+        自分で履歴を組み立て直す時だけ、phase を維持する必要があるんよ。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 12 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">12.</span>
+    <h2 class="section-title">推奨プロンプト構造<br>（DEEP用フルテンプレ）。</h2>
+
+    <p class="section-lead">
+      公式が推奨する完全な構造や。複雑なシステムプロンプト書く時の出発点として使えるで。
+      各セクションは短く、必要な行だけ。
+    </p>
+
+    <div class="code">Role: [1-2 sentences defining the model's function, context, and job]
+
+# Personality
+[tone, demeanor, and collaboration style]
+
+# Goal
+[user-visible outcome]
+
+# Success criteria
+[what must be true before the final answer]
+
+# Constraints
+[policy, safety, business, evidence, and side-effect limits]
+
+# Output
+[sections, length, and tone]
+
+# Stop rules
+[when to retry, fallback, abstain, ask, or stop]</div>
+
+    <h3 class="subhead">reasoning_effort の使い分け</h3>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>Effort</th><th>使いどころ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>low</code></td><td>レイテンシ重視。チャット、短い構造化変換、トリアージ</td></tr>
+        <tr><td><code>medium</code>（既定）</td><td>多くのケース。リサーチ寄り、長文合成、矛盾解決</td></tr>
+        <tr><td><code>high</code></td><td>medium で足りん高難度推論</td></tr>
+        <tr><td><code>xhigh</code></td><td>eval で明確な利益が出た時だけ。長時間エージェント向け</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      重要なんは <strong>「higher = better」とちゃう</strong> っちゅうこと。
+      effort 上げる前に <code>completeness_contract</code>・<code>verification_loop</code>・<code>tool_persistence_rules</code> 追加するほうが効くケースが多いねん。
+    </p>
+
+    <h3 class="subhead">5.4 → 5.5 移行スタートポイント</h3>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>現行</th><th>推奨スタート</th><th>備考</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>gpt-5.4</code></td><td>fresh baseline</td><td>同じ effort で始めずに、最小プロンプトから書き直しや</td></tr>
+        <tr><td><code>gpt-5.2</code></td><td>fresh baseline</td><td>古いプロセス指示は積極的に削除</td></tr>
+        <tr><td>研究系</td><td><code>medium</code> + 引用ゲート</td><td>research mode を明示</td></tr>
+        <tr><td>エージェント</td><td><code>medium</code> + completeness</td><td>tool persistence と stop rules を追加</td></tr>
+      </tbody>
+    </table>
+
+    <a href="#close" class="jump">▶ チェックリスト＆FAQへ</a>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- PART 4: CLOSING                              -->
+<!-- ============================================ -->
+<section class="part-marker" id="close">
+  <div class="container">
+    <div class="part-marker-tag">PART 04 / CLOSING</div>
+    <h2>最後にチェックリスト<br>＆Q&A や。</h2>
+    <p>普段使い派・実装派どっちも共通の締めパートやで。</p>
+  </div>
+</section>
+
+<!-- SECTION 13 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">13.</span>
+    <h2 class="section-title">移行チェックリスト。</h2>
+
+    <h3 class="subhead">普段使い派</h3>
+    <div class="checklist">
+      <h4>EASY CHECKLIST</h4>
+      <ul>
+        <li>「まずA、次にB、最後にC」みたいな手順指示を、ゴールに置き換えた</li>
+        <li>「必ず」「絶対に〜するな」を、ホンマの絶対ルールだけに減らした</li>
+        <li>「いつ止まるか」を1行入れた</li>
+        <li>声色（人格設定）を最初に1段落で書いた</li>
+        <li>長時間かかる作業には「先にひとこと言うて」を入れた</li>
+        <li>足りない情報があるときの動き方を書いた</li>
+        <li>「変えたらアカン部分」と「変えてええ部分」を区別した</li>
+      </ul>
+    </div>
+
+    <h3 class="subhead">実装・本格派</h3>
+    <div class="checklist">
+      <h4>DEEP CHECKLIST</h4>
+      <ul>
+        <li>古いプロンプトを fresh baseline で書き直した（drop-in 移行を避けた）</li>
+        <li>Goal / Success criteria / Constraints / Stop rules を分けて書いた</li>
+        <li><code>reasoning_effort</code> を <code>low</code> または <code>medium</code> から始めた</li>
+        <li>Personality と Collaboration style を分離して書いた</li>
+        <li>長時間タスクには preamble の指示を入れた</li>
+        <li>RAG 使うなら検索バジェット（retrieval budget）を書いた</li>
+        <li>創作系タスクには「事実 vs 創作」の区別ルールを書いた</li>
+        <li>ツール環境では自己検証コマンドの指示を入れた</li>
+        <li>API 直叩きなら <code>phase</code> を正しく扱う実装になってる</li>
+        <li>eval（評価セット）で実際に動作確認した</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 14 -->
+<section class="section">
+  <div class="container">
+    <span class="section-num">14.</span>
+    <h2 class="section-title">よくある質問。</h2>
+
+    <div>
+      <div class="qa-item">
+        <div class="qa-q">これまでの古いプロンプト、もう使えへんの？</div>
+        <div class="qa-a"><div>
+          <p>使えるけど、答えがカチコチで機械的になりがちや。</p>
+          <p>特に「ALWAYS〜」「NEVER〜」「まず〜、次に〜」みたいな指示が多い場合、書き直した方が結果ようなるで。一気に全部やらんと、よう使うプロンプトから順番にな。</p>
+        </div></div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">日本語で書いてもええんか？</div>
+        <div class="qa-a"><div>
+          <p>OKやで。普通のチャット使う分には日本語で全然いける。</p>
+          <p>ただ、開発者がアプリ作る時の「システム設定」の部分は、英語のほうが安定する傾向あるねん。これは普通の人は気にせんでええ。</p>
+        </div></div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">短くしすぎて、AI がちゃんと理解せえへんかったら？</div>
+        <div class="qa-a"><div>
+          <p>短い指示で1回試してみて、思った答えが出てこんかったら <strong>足りん部分だけ</strong> 補足してや。</p>
+          <p>いきなり全部書くより、「短く頼む → 補足する」のほうが、結果的に短くて的確なプロンプトに育っていくで。</p>
+        </div></div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">声色決めると、毎回同じ前置き書かなアカン？</div>
+        <div class="qa-a"><div>
+          <p>ChatGPT のメモリ機能やカスタム指示（Custom Instructions）に書いとけば、毎回書かんでええ。</p>
+          <p>「私は普段こういうトーンで答えてほしい」って一度設定しとけば、以降は自動で適用されるで。</p>
+        </div></div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">「考える深さ（reasoning_effort）」って気にせなアカンの？</div>
+        <div class="qa-a"><div>
+          <p>ふつうに ChatGPT 使うてる人は気にせんでええ。AI 側で勝手に調整されるねん。</p>
+          <p>API でアプリ作る人だけ、<code>reasoning_effort</code> という設定で「low / medium / high / xhigh」を選べる。GPT-5.5 は medium が標準。多くの場合 low か medium で十分や。</p>
+        </div></div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">5.4 から 5.5 へ、プロンプトそのまま移行してええ？</div>
+        <div class="qa-a"><div>
+          <p>公式は <strong>「drop-in migration やのうて、fresh baseline で書き直せ」</strong> って強く推奨してるで。</p>
+          <p>5.4 までのプロンプトは「過去の弱点をカバーするための回避策」が積み上がってるから、5.5 では <strong>ノイズ</strong> になって出力が機械的になるんよ。よく使うプロンプトから順に、最小構成で書き直すのがオススメや。</p>
+        </div></div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">結局、何から始めたらええ？</div>
+        <div class="qa-a"><div>
+          <p>いつもよう使うプロンプトを1つ選んで、<strong>「ゴールだけ書く」</strong> に書き直してみてや。</p>
+          <p>「まず○○、次に○○」を全部消して、「最終的に○○ができてればOK」っていう1〜2文だけにする。これがいちばん効くで。</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-meta">REMEMBER / おさらい</div>
+    <h2>
+      こまかく指示するの、やめや。<br>
+      ゴールと条件だけ、伝えや。<br>
+      止まる場所も、教えたって。
+    </h2>
+    <p>
+      この3つ覚えとけば、GPT-5.5 はだいたいうまく動くで。
+      迷ったら、最初の3行に「何ができてほしいか」だけ書いて投げてみい。
+    </p>
+    <div class="footer-link">
+      ▮ Source: developers.openai.com / Prompt guidance — GPT-5.5<br>
+      ▮ Compiled by KITAcore — 2026.05<br>
+      ▮ Integrated edition / EASY + DEEP / KITAcore Style
+    </div>
+  </div>
+</footer>
+
+
+<script>
+/* ── PRELOADER + SCROLL PROGRESS ── */
+(function () {
+  'use strict';
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var preloader = document.getElementById('preloader');
+  var progressEl = document.getElementById('scrollProgress');
+  var MIN_DURATION = prefersReduced ? 200 : 2000;
+  var loadStart = performance.now();
+  var done = false;
+
+  function dismiss() {
+    if (done) return;
+    done = true;
+    var elapsed = performance.now() - loadStart;
+    var wait = Math.max(0, MIN_DURATION - elapsed);
+    setTimeout(function () {
+      preloader.classList.add('done');
+      document.body.classList.remove('preloading');
+      setTimeout(function () {
+        if (preloader.parentNode) preloader.remove();
+      }, 700);
+    }, wait);
+  }
+
+  if (document.readyState === 'complete') { dismiss(); }
+  else {
+    window.addEventListener('load', dismiss);
+    setTimeout(dismiss, 4500);
+  }
+
+  preloader.addEventListener('click', function () {
+    preloader.classList.add('done');
+    document.body.classList.remove('preloading');
+    setTimeout(function () { if (preloader.parentNode) preloader.remove(); }, 500);
+    done = true;
+  });
+
+  document.addEventListener('keydown', function skipKey(e) {
+    if (done) { document.removeEventListener('keydown', skipKey); return; }
+    if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') preloader.click();
+  });
+
+  /* scroll progress */
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking || !progressEl) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var st = window.scrollY || document.documentElement.scrollTop;
+      var dh = document.documentElement.scrollHeight - window.innerHeight;
+      progressEl.style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      ticking = false;
+    });
+  }, { passive: true });
+}());
+</script>
+
+</body>
+</html>
