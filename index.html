@@ -99,8 +99,6 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;display:flex
 .sec-gy .sec-label{color:var(--or)}.sec-gy .sec-sub{color:#555}
 .sec-wh{padding:72px 0;border-bottom:2px solid var(--bk)}
 .sec-wh .sec-label{color:var(--or)}.sec-wh .sec-sub{color:var(--mu)}
-
-/* ── NEW: RESEARCH REPORT SECTION ── */
 .sec-rp{background:#0A0E1A;color:#E2E8F0;padding:72px 0;border-bottom:2px solid #000;position:relative;overflow:hidden}
 .sec-rp::before{content:'RESEARCH';position:absolute;right:-20px;top:10px;font-family:var(--fw);font-size:clamp(80px,14vw,180px);letter-spacing:.04em;color:rgba(255,255,255,.025);user-select:none;pointer-events:none;line-height:1}
 .sec-rp .sec-label{color:#00D4FF}
@@ -121,10 +119,8 @@ header{border-bottom:2px solid var(--bk);padding:0 40px;height:64px;display:flex
 .card-rp .card-date{font-family:var(--fm);font-size:9px;color:#334155;letter-spacing:.15em;text-transform:uppercase}
 .card-rp .card-arr{font-family:var(--fm);font-size:14px;color:#00D4FF;transition:transform .2s}
 .card-rp:hover .card-arr{transform:translateX(4px)}
-/* chapters / meta chips */
 .card-rp .rp-chips{display:flex;gap:4px;margin-top:12px;flex-wrap:wrap}
 .card-rp .rp-chip{font-family:var(--fm);font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border:1px solid #1E293B;color:#475569;border-radius:1px}
-
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px}
 .card-d{background:#1E1E1E;border:1px solid #2A2A2A;text-decoration:none;color:inherit;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
 .card-d::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--or);transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
@@ -195,7 +191,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 
 <div id="prog"></div>
 
-<!-- ★ ティッカーにレポートを追加 -->
 <div class="ticker-bar">
   <span class="t-live">LIVE</span>
   <div class="t-wrap">
@@ -219,6 +214,7 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
       <span class="ti">MARKETING MECE MAP — <span class="ot">LIVE</span></span>
       <span class="ti">ARRHENIUS ANALYZER — <span class="ot">LIVE</span></span>
       <span class="ti">ARRHENIUS AI GUIDE — <span class="ot">LIVE</span></span>
+      <span class="ti">★ NEW — GPT-5.5 PROMPT GUIDE — <span class="ot">LIVE</span></span>
       <span class="ti">★ NEW — CLAUDE × APPLE HEALTH RESEARCH REPORT — <span class="ot">LIVE</span></span>
       <span class="ti">note.com / @ktcrs1107</span>
       <span class="ti">DEPLOYMENT: KITACORE-2026-ALPHA</span>
@@ -256,7 +252,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
 
 <div id="tools"></div>
 
-<!-- HOW TO USE -->
 <section class="sec-dark">
   <div class="wrap">
     <div class="rv">
@@ -289,7 +284,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
-<!-- ARTICLE SUPPLEMENT -->
 <section class="sec-or">
   <div class="wrap">
     <div class="rv">
@@ -342,7 +336,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
-<!-- ★★★ NEW: RESEARCH REPORT SECTION ★★★ -->
 <section class="sec-rp" id="research">
   <div class="wrap" style="position:relative;z-index:1">
     <div class="rv">
@@ -385,7 +378,6 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
   </div>
 </section>
 
-<!-- KNOWLEDGE SHELF -->
 <section class="sec-gy">
   <div class="wrap" style="position:relative;z-index:1">
     <div class="rv">
@@ -405,11 +397,21 @@ footer{background:var(--bk);color:var(--mu);border-top:2px solid var(--or);paddi
         </div>
         <div class="cf"><span class="card-date-k">2026.04 · MECE v3</span><span class="card-arr">→</span></div>
       </a>
+      <a class="card-k rv2" href="gpt55-prompt-guide.html">
+        <div class="ct"><span class="card-num">02</span><div><div class="card-status">PROMPT GUIDE<br>14 SECTIONS</div><span class="live-badge">● LIVE</span></div></div>
+        <div class="cb">
+          <span class="card-tag">SHELF · GPT-5.5 / PROMPT</span>
+          <h3 class="card-title">GPT-5.5 の<br>たのみ方、変わったで。</h3>
+          <p class="card-hook">OpenAI公式ガイドをKITAcore流に再構成。普段使い派（EASY）と実装派（DEEP）の2ルートで読める統合プロンプトガイド。</p>
+          <span class="card-get">読むと、AIへの頼み方がアップデートされる</span>
+          <div class="card-chapters"><span class="chp">EASY</span><span class="chp">DEEP</span><span class="chp">API</span><span class="chp">RAG</span><span class="chp">AGENT</span></div>
+        </div>
+        <div class="cf"><span class="card-date-k">2026.05 · GPT-5.5</span><span class="card-arr">→</span></div>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- 3 STEPS -->
 <section class="sec-wh">
   <div class="wrap">
     <div class="rv">
@@ -439,7 +441,6 @@ if(seen){document.getElementById('boot').style.display='none';document.body.styl
 else{
   document.body.style.overflow='hidden';
   const log=document.getElementById('boot-log'),fill=document.getElementById('bfill'),pct=document.getElementById('bpct');
-  // ★ ブートログにレポートを追加
   const lines=[
     {t:'KITACORE PORTAL v2026 INITIALIZING...',c:'hi',d:0},
     {t:'LOADING: PUBLIC TOOLS & GUIDES',       c:'',  d:200},
@@ -450,9 +451,10 @@ else{
     {t:'  [補足 03]   ARRHENIUS ANALYZER            ■',c:'or',d:820},
     {t:'  [補足 04]   ARRHENIUS AI GUIDE            ■',c:'or',d:940},
     {t:'  [棚]        MARKETING MECE MAP            ■',c:'or',d:1060},
-    {t:'  [REPORT 01] CLAUDE × APPLE HEALTH         ■',c:'or',d:1180},
-    {t:'ALL SYSTEMS OPERATIONAL',              c:'hi', d:1320},
-    {t:'LAUNCHING...',                         c:'hi cur',d:1460},
+    {t:'  [棚   02]   GPT-5.5 PROMPT GUIDE          ■',c:'or',d:1180},
+    {t:'  [REPORT 01] CLAUDE × APPLE HEALTH         ■',c:'or',d:1300},
+    {t:'ALL SYSTEMS OPERATIONAL',              c:'hi', d:1440},
+    {t:'LAUNCHING...',                         c:'hi cur',d:1580},
   ];
   let max=0;
   lines.forEach((l,i)=>{
@@ -477,7 +479,7 @@ window.addEventListener('load',()=>{
     // ★ PAGES LIVE: 8 に変更
     setTimeout(()=>{const s=performance.now();const f=now=>{const t=Math.min((now-s)/900,1);el.textContent=Math.round((1-Math.pow(1-t,3))*target);if(t<1)requestAnimationFrame(f);};requestAnimationFrame(f);},delay);
   }
-  countUp('cnt-p',8,600);  // 7→8
+  countUp('cnt-p',9,600);  // 8→9
   countUp('cnt-c',4,700);  // 3→4（REPORTカテゴリ追加）
 });
 </script>
