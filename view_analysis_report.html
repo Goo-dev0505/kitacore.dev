@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIEW ANALYSIS — KITAcore note Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:           #E9E9E9;
+  --surface:      #FFFFFF;
+  --surface-v:    #F4F4F2;
+  --text:         #111111;
+  --text-sub:     #333333;
+  --muted:        #6B6B6B;
+  --border:       #DDDDDD;
+  --accent:       #000000;
+  --accent-mid:   #333333;
+  --positive:     #2D6A4F;
+  --negative:     #9D0208;
+  --font-display: 'Inter', sans-serif;
+  --font-body:    'Noto Sans JP', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  font-size: 15px;
+}
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 64px 32px;
+}
+
+/* === Header === */
+.hero {
+  padding-bottom: 64px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 96px;
+}
+.hero-nav {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 48px;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+.hero-subtitle {
+  font-size: 16px;
+  color: var(--text-sub);
+  max-width: 640px;
+  margin-bottom: 48px;
+}
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.meta-item {
+  display: flex;
+  flex-direction: column;
+}
+.meta-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.meta-value {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* === Sections === */
+section {
+  margin-bottom: 128px;
+  scroll-margin-top: 40px;
+}
+.section-nav {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.section-jp {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+.section-intro {
+  max-width: 720px;
+  margin-bottom: 48px;
+  font-size: 15px;
+  color: var(--text-sub);
+}
+.section-intro strong { font-weight: 600; color: var(--text); }
+
+/* === Cards === */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 420px;
+}
+.chart-wrap.small { height: 320px; }
+.chart-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 768px) {
+  .chart-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* === Observation block === */
+.observation {
+  background: var(--surface-v);
+  border-left: 3px solid var(--accent);
+  padding: 24px 32px;
+  margin: 32px 0;
+}
+.observation-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.observation p { font-size: 15px; color: var(--text-sub); }
+.observation p + p { margin-top: 12px; }
+.observation strong { color: var(--text); font-weight: 600; }
+
+/* === Stat strip === */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 32px 0;
+}
+.stat-cell {
+  background: var(--surface);
+  padding: 24px;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.stat-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* === Table === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  background: var(--surface-v);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-sub);
+}
+tbody tr:hover { background: var(--surface-v); }
+td.mono, th.mono { font-family: var(--font-mono); }
+td.num { text-align: right; font-family: var(--font-mono); }
+td.title-cell { max-width: 480px; }
+
+/* === Conclusion === */
+.conclusion {
+  background: #0A0E1A;
+  color: #E2E8F0;
+  padding: 64px;
+  border-radius: 4px;
+  margin-top: 64px;
+}
+.conclusion .section-nav { color: #64748B; }
+.conclusion .section-title { color: #FFFFFF; }
+.conclusion-answer {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 32px 0;
+  letter-spacing: -0.01em;
+}
+.conclusion p { color: #CBD5E0; max-width: 720px; margin-bottom: 16px; }
+.conclusion strong { color: #FFFFFF; }
+.conclusion .observation {
+  background: #111827;
+  border-left-color: #00D4FF;
+}
+.conclusion .observation p { color: #E2E8F0; }
+.conclusion .observation-label { color: #64748B; }
+
+/* === Footer === */
+footer {
+  padding: 48px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 96px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* === Step tag === */
+.step-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  margin-bottom: 24px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-nav">KITAcore / Analysis / 2026-05-12</div>
+  <h1 class="hero-title">VIEW ANALYSIS<br>
+    <span style="font-size: 24px; font-weight: 400; color: var(--muted);">noteビュー編 — フォロワー数依存度の検証</span>
+  </h1>
+  <p class="hero-subtitle">ビューはフォロワー数に依存するか。113記事の累積ビューと公開前日フォロワー数を用いて、純粋な散布図から回帰モデルまで段階的に検証する。観測期間7日以上 かつ 観測遅延7日以内の真の新規記事のみが対象（リライト・既存記事を除外）。</p>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <span class="meta-label">Articles</span>
+      <span class="meta-value" id="m-n">—</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Period</span>
+      <span class="meta-value" id="m-period" style="font-size: 14px;">—</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Follower Range</span>
+      <span class="meta-value" id="m-fol">—</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Analysis Date</span>
+      <span class="meta-value" style="font-size: 14px;">2026-05-12</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 01. RAW SCATTER ============ -->
+<section id="s01">
+  <div class="section-nav">01. RAW SCATTER</div>
+  <h2 class="section-title">純粋な散布図</h2>
+  <p class="section-jp">First look. 何も加工せず、公開前日フォロワー数と公開後7日累積ビューの2変数を素のままプロットする。</p>
+  <div class="section-intro">
+    まず<strong>加工せずに見る</strong>。横軸：公開前日のフォロワー数、縦軸：公開後7日累積ビュー。各点が1記事。
+  </div>
+  <div class="card">
+    <span class="step-tag">RAW</span>
+    <div class="chart-wrap"><canvas id="ch01"></canvas></div>
+  </div>
+  <div class="observation">
+    <div class="observation-label">Observation</div>
+    <p>右上がりの傾向はあるが、<strong>同じフォロワー数でもビューが大きくばらつく</strong>。フォロワー900人台でビュー100〜800まで広く分布。点群は線形というより雲のような形をしている。</p>
+    <p>→ 次のステップ：スケールを変えて見直す（log-log）。</p>
+  </div>
+</section>
+
+<!-- ============ 02. LOG-LOG ============ -->
+<section id="s02">
+  <div class="section-nav">02. SCALE TRANSFORM</div>
+  <h2 class="section-title">対数スケールで見直す</h2>
+  <p class="section-jp">Log-Log view. 縦軸・横軸ともに対数変換すると、線形関係が見やすくなる。</p>
+  <div class="section-intro">
+    フォロワー数とビュー数は<strong>桁が違う</strong>ので、対数で見ると関係性が見えやすい。回帰線も引いてみる。
+  </div>
+  <div class="card">
+    <span class="step-tag">LOG-LOG + OLS</span>
+    <div class="chart-wrap"><canvas id="ch02"></canvas></div>
+  </div>
+  <div class="stat-strip">
+    <div class="stat-cell">
+      <div class="stat-label">Pearson r</div>
+      <div class="stat-value" id="s-r">—</div>
+      <div class="stat-sub">線形相関係数</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Spearman r</div>
+      <div class="stat-value" id="s-rs">—</div>
+      <div class="stat-sub">順位相関</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">β (Elasticity)</div>
+      <div class="stat-value" id="s-beta">—</div>
+      <div class="stat-sub">弾力性</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">R²</div>
+      <div class="stat-value" id="s-r2">—</div>
+      <div class="stat-sub">説明力</div>
+    </div>
+  </div>
+  <div class="observation">
+    <div class="observation-label">Observation</div>
+    <p>相関は<strong>r ≈ 0.30</strong>。p値は有意（p&lt;0.005）だが、相関の強さは中程度〜弱い。R² = 8.0%は、<strong>ビューのばらつきのうちフォロワー数で説明できるのはわずか8%</strong>であることを意味する。</p>
+    <p><strong>β = 0.83 は「フォロワー10%増 → ビュー約8%増」を示す（劣線形）</strong>。信頼区間 [0.30, 1.35] は完全に1未満寄り、フォロワー増の効率が下がる「飽和」の構造が見える。</p>
+  </div>
+</section>
+
+<!-- ============ 03. PERIOD COMPARISON ============ -->
+<section id="s03">
+  <div class="section-nav">03. PERIOD COMPARISON</div>
+  <h2 class="section-title">累積期間別の比較</h2>
+  <p class="section-jp">Does the relationship change over time? 1日・3日・5日・7日累積で見比べる。</p>
+  <div class="section-intro">
+    期間を変えても傾向は同じか。1日累積（公開当日のみ）、3日、5日、7日で並べてみる。
+  </div>
+  <div class="card">
+    <span class="step-tag">FOUR PERIODS</span>
+    <div class="chart-grid-2">
+      <div class="chart-wrap small"><canvas id="ch03-1"></canvas></div>
+      <div class="chart-wrap small"><canvas id="ch03-3"></canvas></div>
+      <div class="chart-wrap small"><canvas id="ch03-5"></canvas></div>
+      <div class="chart-wrap small"><canvas id="ch03-7"></canvas></div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Period</th>
+        <th class="mono">Pearson r</th>
+        <th class="mono">Spearman r</th>
+        <th class="mono">β</th>
+        <th class="mono">R²</th>
+      </tr>
+    </thead>
+    <tbody id="period-table"></tbody>
+  </table>
+  <div class="observation">
+    <div class="observation-label">Observation</div>
+    <p>1日 → 7日と期間を伸ばしても、<strong>相関係数はほぼ横ばい</strong>（r = 0.30〜0.38）。ただし<strong>初日（1d）だけβ=1.52と超線形</strong>、3日以降はβ≈0.8 の劣線形に落ち着く。</p>
+    <p>→ <strong>初日のビューはフォロワー数とほぼ比例（β=1.52）</strong> — 通知・タイムライン配信の効果が直接出る。しかし3日目以降は外部流入が重なり、フォロワー数との関係が弱まる。</p>
+  </div>
+</section>
+
+<!-- ============ 04. NORMALIZATION ============ -->
+<section id="s04">
+  <div class="section-nav">04. NORMALIZATION</div>
+  <h2 class="section-title">割る — 転換率の分布</h2>
+  <p class="section-jp">Views per follower. ビューをフォロワー数で割って、フォロワー1人あたりの到達効率を見る。</p>
+  <div class="section-intro">
+    ここで初めて<strong>加工</strong>する。ビューをフォロワー数で割ると、記事間のフェアな比較ができる。「フォロワー1人あたり何ビュー取れたか」が指標になる。
+  </div>
+  <div class="card">
+    <span class="step-tag">VIEW / FOLLOWER</span>
+    <div class="chart-wrap"><canvas id="ch04"></canvas></div>
+  </div>
+  <div class="stat-strip">
+    <div class="stat-cell">
+      <div class="stat-label">Median (7d)</div>
+      <div class="stat-value" id="s-rate-med">—</div>
+      <div class="stat-sub">フォロワー1人あたり</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">P25-P75</div>
+      <div class="stat-value" id="s-rate-iqr" style="font-size: 18px;">—</div>
+      <div class="stat-sub">四分位範囲</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">1d → 7d</div>
+      <div class="stat-value" id="s-rate-growth">—</div>
+      <div class="stat-sub">1日と7日の比率</div>
+    </div>
+  </div>
+  <div class="observation">
+    <div class="observation-label">Observation</div>
+    <p>7日累積で、<strong>フォロワー1人あたり0.47ビュー</strong>が中央値。1日（0.28）と7日（0.47）の差は約1.6倍 — つまり<strong>残り6日かけて1.6倍に伸びる</strong>。</p>
+    <p>分布は綺麗な単峰型。極端な外れ値は少なく、KITAcoreのビュー転換率は<strong>記事に関わらず比較的安定</strong>している。</p>
+  </div>
+</section>
+
+<!-- ============ 05. DECAY CURVE ============ -->
+<section id="s05">
+  <div class="section-nav">05. DECAY CURVE</div>
+  <h2 class="section-title">減衰カーブ</h2>
+  <p class="section-jp">How fast does a note die? 公開から7日間、日次ビューがどう減衰するか。</p>
+  <div class="section-intro">
+    記事の<strong>寿命</strong>を見る。day0（公開日）からday6まで、各日のビューを並べる。
+  </div>
+  <div class="card">
+    <span class="step-tag">DAILY VIEWS · DAY 0–6</span>
+    <div class="chart-wrap"><canvas id="ch05"></canvas></div>
+  </div>
+  <div class="stat-strip">
+    <div class="stat-cell">
+      <div class="stat-label">Half-life</div>
+      <div class="stat-value">1日</div>
+      <div class="stat-sub">中央値・ピーク50%到達</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Normal decay</div>
+      <div class="stat-value" id="s-normal">—</div>
+      <div class="stat-sub">標準的な減衰型</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Rapid decay</div>
+      <div class="stat-value" id="s-rapid">—</div>
+      <div class="stat-sub">急速減衰型</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Sustained</div>
+      <div class="stat-value" id="s-sustain">—</div>
+      <div class="stat-sub">持続型</div>
+    </div>
+  </div>
+  <div class="observation">
+    <div class="observation-label">Observation</div>
+    <p><strong>半減期はほぼ全記事で1日</strong>。公開翌日にはピークの半分以下に減衰している。87%の記事が「normal_decay型」で、典型的な指数減衰のパターンを示す。</p>
+    <p>→ 記事の実質寿命は<strong>1〜2日</strong>。これが「死の谷5日」記事の論拠になる構造。</p>
+  </div>
+</section>
+
+<!-- ============ 06. PHASE ANALYSIS ============ -->
+<section id="s06">
+  <div class="section-nav">06. PHASE ANALYSIS</div>
+  <h2 class="section-title">フォロワー成長フェーズ別</h2>
+  <p class="section-jp">Does conversion scale with follower growth? フォロワー数で3群に分けて転換率を比較。</p>
+  <div class="section-intro">
+    フォロワーが増えれば転換率も上がるのか。125記事を公開前日フォロワー数で3分位に分け、Low / Mid / Highの転換率を比較する。
+  </div>
+  <div class="card">
+    <span class="step-tag">TERCILES BY FOLLOWER</span>
+    <div class="chart-wrap"><canvas id="ch06"></canvas></div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th class="mono">Follower Range</th>
+        <th class="mono">n</th>
+        <th class="mono">Rate 1d</th>
+        <th class="mono">Rate 3d</th>
+        <th class="mono">Rate 7d</th>
+      </tr>
+    </thead>
+    <tbody id="phase-table"></tbody>
+  </table>
+  <div class="observation">
+    <div class="observation-label">Observation</div>
+    <p><strong>Midフェーズ（941-1031）が最も効率高い</strong>（7日転換率0.518）。High（1034-1134、直近）に行くほど転換率が<strong>下がる</strong>（0.424）。Low→Mid→Highで0.482→0.518→0.424の山型。</p>
+    <p>→ フォロワー数が増えても、ビューは比例して増えない。<strong>スケール飽和の兆候</strong>。直近のフォロワー獲得が「アクティブでないフォロワー」を増やしている可能性がある。</p>
+  </div>
+</section>
+
+<!-- ============ 07. RESIDUAL ============ -->
+<section id="s07">
+  <div class="section-nav">07. RESIDUAL ANALYSIS</div>
+  <h2 class="section-title">残差分析 — モデルが説明できない記事</h2>
+  <p class="section-jp">Which articles defied the model? 回帰モデルの予測と実測の比をプロットする。</p>
+  <div class="section-intro">
+    回帰モデルが説明できない部分（残差）を見ると、<strong>フォロワー数以外の何が効いているか</strong>のヒントになる。
+  </div>
+  <div class="card">
+    <span class="step-tag">ACTUAL / PREDICTED</span>
+    <div class="chart-wrap"><canvas id="ch07"></canvas></div>
+  </div>
+  <h3 style="font-size: 18px; margin-top: 32px; margin-bottom: 16px;">上振れ Top 10</h3>
+  <table>
+    <thead>
+      <tr>
+        <th class="mono">Multiplier</th>
+        <th class="mono">Follower</th>
+        <th class="mono">View 7d</th>
+        <th>Title</th>
+      </tr>
+    </thead>
+    <tbody id="top-table"></tbody>
+  </table>
+  <h3 style="font-size: 18px; margin-top: 32px; margin-bottom: 16px;">下振れ Bottom 10</h3>
+  <table>
+    <thead>
+      <tr>
+        <th class="mono">Multiplier</th>
+        <th class="mono">Follower</th>
+        <th class="mono">View 7d</th>
+        <th>Title</th>
+      </tr>
+    </thead>
+    <tbody id="bot-table"></tbody>
+  </table>
+  <div class="observation">
+    <div class="observation-label">Observation</div>
+    <p>同じフォロワー数でも、ビューは<strong>0.03〜1.92倍まで開く</strong>（約64倍の差）。上振れは話題性・キャッチーなタイトル・コラボ要素を持つ記事、下振れは「テスト記事」「シリーズ番号のみ」など内容・タイトルの工夫が薄い記事。</p>
+    <p>→ フォロワー数以外の要因こそが、ビューを決めている。</p>
+  </div>
+</section>
+
+
+<!-- ============ 08. HYPOTHESIS ============ -->
+<section id="s08-hyp">
+  <div class="section-nav">08. HYPOTHESIS — ACTIVE REACH</div>
+  <h2 class="section-title">仮説：ノンアクティブに引っ張られているのでは？</h2>
+  <p class="section-jp">Are inactive followers diluting the signal? β &lt; 1 の劣線形性をどう説明するか。</p>
+  <div class="section-intro">
+    フォロワー数が増えるほど効率が下がる（β=0.83、Low→Mid→High山型）。<strong>これは「フォロワー数の中に通知を見ない人＝ノンアクティブが混ざってる」せいではないか</strong>という仮説。
+  </div>
+
+  <div class="card">
+    <span class="step-tag">DEFINITION</span>
+    <p style="font-size: 15px; color: var(--text-sub); margin-bottom: 16px;"><strong>アクティブリーチの定義</strong>：記事公開日の直前N日間に、KITAcoreの記事に少なくとも1回スキを押したユニークユーザー数。</p>
+    <p style="font-size: 14px; color: var(--muted);">N = 30日 / 60日 / 90日の3パターンで比較。</p>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-cell">
+      <div class="stat-label">Total Like Events</div>
+      <div class="stat-value" id="h-events">—</div>
+      <div class="stat-sub">2024-06〜2026-05</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Unique Likers</div>
+      <div class="stat-value" id="h-likers">—</div>
+      <div class="stat-sub">フォロワー数の約2.6倍</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Active 30d (median)</div>
+      <div class="stat-value" id="h-active30">—</div>
+      <div class="stat-sub">公開前30日アクティブ数</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Follower (median)</div>
+      <div class="stat-value" id="h-fol">—</div>
+      <div class="stat-sub">参考比較</div>
+    </div>
+  </div>
+
+  <div class="observation">
+    <div class="observation-label">Prediction</div>
+    <p>仮説が正しければ、ビューを<strong>アクティブ数で割ると</strong>：</p>
+    <p>① β が 1 に近づく（ノンアクティブのノイズが消える）<br>
+       ② R² が上がる（説明力が増す）<br>
+       ③ 転換率の分布が安定する</p>
+  </div>
+</section>
+
+<!-- ============ 09. HYPOTHESIS TEST ============ -->
+<section id="s09-test">
+  <div class="section-nav">09. HYPOTHESIS TEST</div>
+  <h2 class="section-title">分母を変えて回帰モデルを比較</h2>
+  <p class="section-jp">Comparing 4 denominators. フォロワー数 vs アクティブ30d/60d/90d。</p>
+  <div class="section-intro">
+    113記事について、ビューを4つの異なる分母で割って回帰モデルを推定する。仮説通りなら、アクティブ数の方が「真の関係」を捉えるはず。
+  </div>
+
+  <div class="card">
+    <span class="step-tag">REGRESSION COMPARISON · 7d cumulative</span>
+    <div class="chart-wrap"><canvas id="ch-hyp"></canvas></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Denominator</th>
+        <th class="mono">β (Elasticity)</th>
+        <th class="mono">95% CI</th>
+        <th class="mono">R²</th>
+        <th class="mono">Pearson r</th>
+        <th class="mono">Conv. rate (median)</th>
+      </tr>
+    </thead>
+    <tbody id="hyp-table"></tbody>
+  </table>
+
+  <div class="chart-grid-2" style="margin-top: 32px;">
+    <div class="card">
+      <span class="step-tag">FOLLOWER · log-log</span>
+      <div class="chart-wrap small"><canvas id="ch-hyp-fol"></canvas></div>
+    </div>
+    <div class="card">
+      <span class="step-tag">ACTIVE 30d · log-log</span>
+      <div class="chart-wrap small"><canvas id="ch-hyp-act"></canvas></div>
+    </div>
+  </div>
+
+  <div class="observation">
+    <div class="observation-label">Result — Hypothesis Rejected</div>
+    <p>予想に反して、<strong>アクティブ数で割ると β は更に小さくなり（0.83 → 0.42）、R² も下がった</strong>。仮説は<strong>反証された</strong>。</p>
+    <p>つまり、ビューの劣線形性は<strong>「ノンアクティブ汚染」では説明できない</strong>。アクティブユーザーの数も、ビュー数の主要な決定要因ではなかった。</p>
+  </div>
+</section>
+
+<!-- ============ 10. REINTERPRETATION ============ -->
+<section id="s10-reinterp">
+  <div class="section-nav">10. REINTERPRETATION</div>
+  <h2 class="section-title">再解釈：ビューの主役はフォロワー圏外</h2>
+  <p class="section-jp">A new understanding. ビュー供給源の構造をモデル直す。</p>
+  <div class="section-intro">
+    フォロワー数でもアクティブ数でもビューが説明できない、ということが意味するのは：<strong>ビューの主たる供給源は両者の外側にある</strong>ということ。
+  </div>
+
+  <div class="card" style="background: var(--bg);">
+    <span class="step-tag">VIEW SOURCE STRUCTURE</span>
+    <div style="font-family: var(--font-mono); font-size: 13px; line-height: 2.2; padding: 24px 0; color: var(--text-sub);">
+      <div><strong style="font-family: var(--font-display); font-size: 16px;">DAY 1（配信効果）</strong></div>
+      <div>└─ フォロワーへの通知 / タイムライン</div>
+      <div>└─ アクティブユーザーが反応</div>
+      <div>└─ β(1d) ≈ 0.88〜1.52 → ほぼ比例</div>
+      <br>
+      <div><strong style="font-family: var(--font-display); font-size: 16px;">DAY 2-7（外部要因）</strong></div>
+      <div>└─ 共同マガジン回遊</div>
+      <div>└─ SNS拡散（X、Bluesky等）</div>
+      <div>└─ noteタグ・検索流入</div>
+      <div>└─ noteアルゴリズム露出（公式マガジン等）</div>
+      <div>└─ β(7d) ≈ 0.42〜0.83 → 劣線形</div>
+    </div>
+  </div>
+
+  <div class="observation">
+    <div class="observation-label">Implication</div>
+    <p><strong>「フォロワー圏外」のユーザーがビューの大半を生んでいる。</strong>likes.db のユニークユーザー数は3,035人で、フォロワー約1,170人の<strong>2.6倍</strong>。実態としては、KITAcoreの記事に触れる人の大多数はフォロワーではない。</p>
+    <p>→ フォロワー獲得の限界効用が下がる構造は、<strong>「ノンアクティブ汚染」ではなく「そもそもビュー源が外部経路」</strong>であることに起因する。これは、ビュー最大化戦略が「フォロワー増」から「外部流入経路の強化」にシフトすべきことを示唆する。</p>
+  </div>
+</section>
+
+<!-- ============ FINDINGS ============ -->
+<section id="s11-conclusion" class="conclusion">
+  <div class="section-nav">11. FINDINGS</div>
+  <h2 class="section-title">結論</h2>
+  <div class="conclusion-answer">
+    ビューはフォロワーの数で決まらない。<br>
+    ビューの主役は、フォロワー圏外にある。
+  </div>
+  <p>113記事を3段階で絞り込んだ末の結論。フォロワー数で説明できるビューのばらつきはわずか<strong>8%</strong>、β = 0.83（劣線形）。「ノンアクティブ汚染」仮説を検証したが、<strong>アクティブ数で割っても改善せず、むしろβは更に小さくなった（0.42）</strong>。</p>
+
+  <div class="observation">
+    <div class="observation-label">Key Findings</div>
+    <p><strong>1. ビュー供給源は二段階構造になっている。</strong><br>
+      Day 1：フォロワー＆アクティブが直接反応（β≈1）。Day 2-7：外部経路（マガジン・SNS・タグ・検索）が支配的（β≈0.4）。記事寿命は1〜2日、その後は外部流入で生き延びる。</p>
+    <p><strong>2. フォロワー獲得の限界効用は構造的に逓減する。</strong><br>
+      Low→Mid→Highで転換率は0.482→0.518→0.424の山型。これは「ノンアクティブ汚染」ではなく、「ビュー源が外部経路にシフトしてるのに、フォロワーだけ増え続けている」結果。</p>
+    <p><strong>3. 同じフォロワー数でもビューは数十倍開く。</strong><br>
+      フォロワー数を統制した残差分析から、上振れと下振れの比は<strong>約60倍</strong>。内容・タイトル・タイミングがビューを決めている。</p>
+    <p><strong>4. KITAcoreのスキ実績ユーザーは3,035人 — フォロワー数の2.6倍。</strong><br>
+      実際のリーチ規模はフォロワー数だけでは測れない。「フォロワー圏外の継続的な接触」がブランドの実態。</p>
+  </div>
+
+  <p style="margin-top: 32px;"><strong>戦略的含意：</strong><br>
+    ビュー最大化を目指すなら、フォロワー獲得への投資効率は低い。注力すべきは「外部流入経路」 — マガジン参加、タグ最適化、SNS拡散、検索流入、内部リコメンドへの露出。これらはデータからは直接観測できないが、本解析の残差（92%の説明されない分散）に潜んでいる。</p>
+
+  <p style="margin-top: 24px;"><strong>次の解析：</strong><br>
+    マガジン参加情報を取得して、外部流入経路の効果を分離。スキ獲得者の「初接触経路」推定。タイトル・テーマ別の上振れパターン抽出。</p>
+</section>
+
+<footer>
+  KITAcore Analysis / View Edition / 2026-05-12 — Generated with Python · Chart.js
+</footer>
+
+</div>
+
+<script>
+// === DATA LOAD ===
+const DATA = {"meta": {"n_articles": 113, "period_start": "2026-02-05", "period_end": "2026-05-05", "fol_min": 787, "fol_max": 1134, "total_unique_likers": 3035, "total_like_events": 13263}, "articles": [{"title": "【検証】noteのView数が伸びる仕組みを、数式なしで整理してみた：Re", "first_day": "2026-02-11", "follower_prev": 839.0, "view_1d": 183.0, "view_3d": 389.0, "view_5d": 422.0, "view_7d": 451.0, "rate_1d": 0.2181168057210965, "rate_3d": 0.4636471990464839, "rate_5d": 0.5029797377830751, "rate_7d": 0.5375446960667462, "daily": [183.0, 163.0, 43.0, 23.0, 10.0, 24.0, 5.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "OASOBI第7回|参加表明|文字の中にみんなを住まわせた|OとIは敵｜2/20公開", "first_day": "2026-02-16", "follower_prev": 870.0, "view_1d": 237.0, "view_3d": 379.0, "view_5d": 427.0, "view_7d": 433.0, "rate_1d": 0.2724137931034482, "rate_3d": 0.435632183908046, "rate_5d": 0.4908045977011494, "rate_7d": 0.4977011494252873, "daily": [237.0, 119.0, 23.0, 20.0, 28.0, 2.0, 4.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "【PR】Pollo AIのSeedance2.0でMidjourneyの静止画キャラクターを動画化してみた｜PolloA", "first_day": "2026-04-23", "follower_prev": 1061.0, "view_1d": 364.0, "view_3d": 398.0, "view_5d": 405.0, "view_7d": 413.0, "rate_1d": 0.3430725730442978, "rate_3d": 0.3751178133836004, "rate_5d": 0.3817153628652215, "rate_7d": 0.3892554194156456, "daily": [364.0, 21.0, 13.0, 4.0, 3.0, 5.0, 3.0], "curve_type": "rapid_decay", "fol_phase": "high"}, {"title": "「群衆で構成された巨大な○○」をもっと自由に作る｜動物・神話生物・シンボル編｜Midjourney｜構造化｜プロンプト|", "first_day": "2026-03-13", "follower_prev": 966.0, "view_1d": 223.0, "view_3d": 517.0, "view_5d": 554.0, "view_7d": 575.0, "rate_1d": 0.2308488612836439, "rate_3d": 0.5351966873706004, "rate_5d": 0.5734989648033126, "rate_7d": 0.5952380952380952, "daily": [223.0, 225.0, 69.0, 22.0, 15.0, 12.0, 9.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "愛を数値化したら、ちょっと怖くてめちゃくちゃ面白かった｜note運用｜フォロワー｜つながり｜コラム｜", "first_day": "2026-03-24", "follower_prev": 1001.0, "view_1d": 507.0, "view_3d": 621.0, "view_5d": 640.0, "view_7d": 646.0, "rate_1d": 0.5064935064935064, "rate_3d": 0.6203796203796204, "rate_5d": 0.6393606393606394, "rate_7d": 0.6453546453546454, "daily": [507.0, 83.0, 31.0, 9.0, 10.0, 2.0, 4.0], "curve_type": "rapid_decay", "fol_phase": "mid"}, {"title": "AIの7つの力・2026版 ｜「プロンプトが消える時代」の地図を描いてみた話 ｜AIエージェント｜MCP｜プロンプト｜コ", "first_day": "2026-04-20", "follower_prev": 1060.0, "view_1d": 324.0, "view_3d": 466.0, "view_5d": 526.0, "view_7d": 563.0, "rate_1d": 0.3056603773584905, "rate_3d": 0.439622641509434, "rate_5d": 0.4962264150943396, "rate_7d": 0.5311320754716982, "daily": [324.0, 115.0, 27.0, 39.0, 21.0, 19.0, 18.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "プロンプト教、構造派に入信した話｜AI活用|生成AI|ChatGPT|note運用|最近の学び|", "first_day": "2026-03-29", "follower_prev": 1007.0, "view_1d": 304.0, "view_3d": 510.0, "view_5d": 539.0, "view_7d": 569.0, "rate_1d": 0.3018867924528302, "rate_3d": 0.506454816285998, "rate_5d": 0.535253227408143, "rate_7d": 0.5650446871896723, "daily": [304.0, 157.0, 49.0, 17.0, 12.0, 11.0, 19.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "顔だけのリファレンスシートを作る｜実写→イラスト｜イラスト→実写｜AI活用｜創作｜", "first_day": "2026-04-11", "follower_prev": 1045.0, "view_1d": 220.0, "view_3d": 334.0, "view_5d": 351.0, "view_7d": 361.0, "rate_1d": 0.2105263157894736, "rate_3d": 0.3196172248803828, "rate_5d": 0.3358851674641148, "rate_7d": 0.3454545454545454, "daily": [220.0, 65.0, 49.0, 11.0, 6.0, 3.0, 7.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "noteダッシュボードを“見る画面”から“眺めたくなる画面”にしてみた｜note運営｜データ分析｜", "first_day": "2026-03-07", "follower_prev": 938.0, "view_1d": 273.0, "view_3d": 382.0, "view_5d": 392.0, "view_7d": 404.0, "rate_1d": 0.291044776119403, "rate_3d": 0.4072494669509595, "rate_5d": 0.417910447761194, "rate_7d": 0.4307036247334754, "daily": [273.0, 66.0, 43.0, 6.0, 4.0, 7.0, 5.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "【自己紹介】データ×生成AIで遊ぶログプレイヤー｜note運営｜プロンプト設計｜はじめてのnote｜自己紹介", "first_day": "2026-02-15", "follower_prev": 864.0, "view_1d": 248.0, "view_3d": 462.0, "view_5d": 467.0, "view_7d": 476.0, "rate_1d": 0.287037037037037, "rate_3d": 0.5347222222222222, "rate_5d": 0.5405092592592593, "rate_7d": 0.5509259259259259, "daily": [248.0, 181.0, 33.0, 3.0, 2.0, 5.0, 4.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "【AIアート】捨てるのは紙か、未来か。", "first_day": "2026-02-05", "follower_prev": 787.0, "view_1d": 167.0, "view_3d": 255.0, "view_5d": 267.0, "view_7d": 270.0, "rate_1d": 0.2121982210927573, "rate_3d": 0.3240152477763659, "rate_5d": 0.3392630241423126, "rate_7d": 0.3430749682337992, "daily": [167.0, 69.0, 19.0, 3.0, 9.0, 2.0, 1.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "黒髪と白髪に偏りすぎた、ワイ的AI美女8選｜生成AI｜画像生成AI｜", "first_day": "2026-04-13", "follower_prev": 1046.0, "view_1d": 301.0, "view_3d": 401.0, "view_5d": 411.0, "view_7d": 429.0, "rate_1d": 0.2877629063097514, "rate_3d": 0.3833652007648183, "rate_5d": 0.392925430210325, "rate_7d": 0.4101338432122371, "daily": [301.0, 85.0, 15.0, 8.0, 2.0, 9.0, 9.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "3つの見せ方で楽しむファンタジーキャラクター制作ログ｜デザイン｜創作｜試行錯誤｜最近の学び｜", "first_day": "2026-04-03", "follower_prev": 1019.0, "view_1d": 252.0, "view_3d": 523.0, "view_5d": 567.0, "view_7d": 571.0, "rate_1d": 0.2473012757605495, "rate_3d": 0.5132482826300294, "rate_5d": 0.5564278704612365, "rate_7d": 0.5603532875368008, "daily": [252.0, 230.0, 41.0, 34.0, 10.0, 0.0, 4.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "ワイが裏で仕掛けてたnote実験、まとめて白状しとく。", "first_day": "2026-03-05", "follower_prev": 936.0, "view_1d": 307.0, "view_3d": 436.0, "view_5d": 452.0, "view_7d": 457.0, "rate_1d": 0.327991452991453, "rate_3d": 0.4658119658119658, "rate_5d": 0.4829059829059829, "rate_7d": 0.4882478632478632, "daily": [307.0, 105.0, 24.0, 8.0, 8.0, 1.0, 4.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "『宇宙珍獣ユル勇者あかね』祭りに乗ったら、創作が暴走した｜AIイラスト｜AIアート｜", "first_day": "2026-03-17", "follower_prev": 973.0, "view_1d": 354.0, "view_3d": 480.0, "view_5d": 508.0, "view_7d": 572.0, "rate_1d": 0.3638232271325796, "rate_3d": 0.4933196300102775, "rate_5d": 0.5220966084275437, "rate_7d": 0.5878725590955807, "daily": [354.0, 103.0, 23.0, 11.0, 17.0, 37.0, 27.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "【プロンプトエンジニアリング】プロンプト順序が生成結果に与える影響｜観測ログと構造化テンプレ", "first_day": "2026-02-13", "follower_prev": 855.0, "view_1d": 103.0, "view_3d": 360.0, "view_5d": 374.0, "view_7d": 378.0, "rate_1d": 0.1204678362573099, "rate_3d": 0.4210526315789473, "rate_5d": 0.4374269005847953, "rate_7d": 0.4421052631578947, "daily": [103.0, 192.0, 65.0, 9.0, 5.0, 1.0, 3.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "【ロジック解説】データ構造から逆算したnoteタグ戦略の深淵", "first_day": "2026-02-24", "follower_prev": 911.0, "view_1d": 209.0, "view_3d": 289.0, "view_5d": 293.0, "view_7d": 297.0, "rate_1d": 0.2294182217343578, "rate_3d": 0.3172338090010977, "rate_5d": 0.3216245883644347, "rate_7d": 0.3260153677277717, "daily": [209.0, 66.0, 14.0, 1.0, 3.0, 1.0, 3.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "朝の曲に「お前、ほんまに本音で生きてるか」って言われた気がした｜エッセイ｜気づき｜人生｜コラム｜", "first_day": "2026-04-11", "follower_prev": 1045.0, "view_1d": 356.0, "view_3d": 536.0, "view_5d": 551.0, "view_7d": 560.0, "rate_1d": 0.3406698564593301, "rate_3d": 0.5129186602870813, "rate_5d": 0.5272727272727272, "rate_7d": 0.5358851674641149, "daily": [356.0, 121.0, 59.0, 11.0, 4.0, 3.0, 6.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "メンシプβ版終了と新プラン開始のお知らせ｜note運用｜note収益化｜学び｜試行錯誤｜", "first_day": "2026-04-02", "follower_prev": 1021.0, "view_1d": 309.0, "view_3d": 406.0, "view_5d": 422.0, "view_7d": 425.0, "rate_1d": 0.3026444662095984, "rate_3d": 0.3976493633692458, "rate_5d": 0.4133202742409402, "rate_7d": 0.4162585700293829, "daily": [309.0, 63.0, 34.0, 10.0, 6.0, 1.0, 2.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "AIを毎日召喚してた人を、召喚してみた話｜創作｜AI活用｜召喚企画｜", "first_day": "2026-04-06", "follower_prev": 1031.0, "view_1d": 445.0, "view_3d": 552.0, "view_5d": 577.0, "view_7d": 594.0, "rate_1d": 0.4316197866149369, "rate_3d": 0.5354025218234724, "rate_5d": 0.5596508244422891, "rate_7d": 0.5761396702230844, "daily": [445.0, 84.0, 23.0, 14.0, 11.0, 12.0, 5.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "noteが“推したい記事”を公開情報から逆算してみた", "first_day": "2026-02-14", "follower_prev": 861.0, "view_1d": 199.0, "view_3d": 367.0, "view_5d": 411.0, "view_7d": 429.0, "rate_1d": 0.2311265969802555, "rate_3d": 0.4262485481997677, "rate_5d": 0.4773519163763066, "rate_7d": 0.4982578397212543, "daily": [199.0, 135.0, 33.0, 23.0, 21.0, 5.0, 13.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "V2とV3、ひとつにまとめた。KITAcore Name Generator v5｜AI漫画｜ネーム｜AI活用｜生成AI", "first_day": "2026-04-19", "follower_prev": 1059.0, "view_1d": 163.0, "view_3d": 247.0, "view_5d": 258.0, "view_7d": 264.0, "rate_1d": 0.153918791312559, "rate_3d": 0.2332389046270066, "rate_5d": 0.2436260623229461, "rate_7d": 0.2492917847025495, "daily": [163.0, 65.0, 19.0, 4.0, 7.0, 2.0, 4.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "備忘録｜発行済み｜ 会員証｜ダルメイ｜", "first_day": "2026-03-19", "follower_prev": 981.0, "view_1d": 50.0, "view_3d": 536.0, "view_5d": 561.0, "view_7d": 590.0, "rate_1d": 0.0509683995922528, "rate_3d": 0.54638124362895, "rate_5d": 0.5718654434250765, "rate_7d": 0.601427115188583, "daily": [50.0, 447.0, 39.0, 19.0, 6.0, 16.0, 13.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "わかってても折れかける。アニメ顔の再現ってほんま難しい｜画像生成AI｜創作｜デザイン｜試行錯誤｜", "first_day": "2026-04-18", "follower_prev": 1061.0, "view_1d": 301.0, "view_3d": 572.0, "view_5d": 594.0, "view_7d": 602.0, "rate_1d": 0.2836946277097078, "rate_3d": 0.5391140433553252, "rate_5d": 0.5598491988689915, "rate_7d": 0.5673892554194157, "daily": [301.0, 207.0, 64.0, 19.0, 3.0, 6.0, 2.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "コラボ企画｜過去作を再利用してクリエイターを召喚する企画｜コラボ創作の新しい形｜画像生成AI｜創作｜実験｜note運用｜", "first_day": "2026-03-22", "follower_prev": 990.0, "view_1d": 309.0, "view_3d": 469.0, "view_5d": 502.0, "view_7d": 513.0, "rate_1d": 0.3121212121212121, "rate_3d": 0.4737373737373737, "rate_5d": 0.5070707070707071, "rate_7d": 0.5181818181818182, "daily": [309.0, 118.0, 42.0, 15.0, 18.0, 6.0, 5.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "「奇跡の1枚」はいらない。再現できる異常性がほしい｜AIアート｜生成AI｜プロンプト｜", "first_day": "2026-03-21", "follower_prev": 986.0, "view_1d": 256.0, "view_3d": 337.0, "view_5d": 369.0, "view_7d": 382.0, "rate_1d": 0.2596348884381338, "rate_3d": 0.3417849898580121, "rate_5d": 0.3742393509127789, "rate_7d": 0.3874239350912778, "daily": [256.0, 70.0, 11.0, 24.0, 8.0, 5.0, 8.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "GPTに「ちょっと相談やで」と言ったら、向こうはもう案件として受けていた話｜AI活用｜生成AI｜ChatGPT｜", "first_day": "2026-04-24", "follower_prev": 1068.0, "view_1d": 285.0, "view_3d": 434.0, "view_5d": 462.0, "view_7d": 470.0, "rate_1d": 0.2668539325842696, "rate_3d": 0.4063670411985018, "rate_5d": 0.4325842696629213, "rate_7d": 0.4400749063670412, "daily": [285.0, 110.0, 39.0, 24.0, 4.0, 6.0, 2.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "未完でも使える。漫画の演出理論をAIにやらせるV4構想｜AI漫画｜ネーム｜やってみた｜", "first_day": "2026-04-18", "follower_prev": 1061.0, "view_1d": 206.0, "view_3d": 298.0, "view_5d": 316.0, "view_7d": 326.0, "rate_1d": 0.1941564561734213, "rate_3d": 0.2808671065032987, "rate_5d": 0.297832233741753, "rate_7d": 0.3072573044297832, "daily": [206.0, 62.0, 30.0, 15.0, 3.0, 7.0, 3.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "応援｜Youtuber、創ってみませんか？！｜PROJECT：HUNK｜創作大賞｜やってみた｜創作｜", "first_day": "2026-04-26", "follower_prev": 1079.0, "view_1d": 393.0, "view_3d": 576.0, "view_5d": 599.0, "view_7d": 612.0, "rate_1d": 0.3642261353104726, "rate_3d": 0.5338276181649676, "rate_5d": 0.5551436515291936, "rate_7d": 0.567191844300278, "daily": [393.0, 162.0, 21.0, 11.0, 12.0, 7.0, 6.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "あの314文字の記事が、ちゃんと実験になった話", "first_day": "2026-02-28", "follower_prev": 928.0, "view_1d": 381.0, "view_3d": 507.0, "view_5d": 540.0, "view_7d": 547.0, "rate_1d": 0.4105603448275862, "rate_3d": 0.5463362068965517, "rate_5d": 0.5818965517241379, "rate_7d": 0.5894396551724138, "daily": [381.0, 87.0, 39.0, 27.0, 6.0, 3.0, 4.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "Note非公式APIでできることを整理してみた", "first_day": "2026-02-06", "follower_prev": 798.0, "view_1d": 175.0, "view_3d": 312.0, "view_5d": 332.0, "view_7d": 355.0, "rate_1d": 0.219298245614035, "rate_3d": 0.3909774436090225, "rate_5d": 0.4160401002506265, "rate_7d": 0.4448621553884712, "daily": [175.0, 100.0, 37.0, 12.0, 8.0, 13.0, 10.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "AIを「予約」する時代が来た！？GeminiのScheduled Actions攻略", "first_day": "2026-02-18", "follower_prev": 886.0, "view_1d": 225.0, "view_3d": 362.0, "view_5d": 397.0, "view_7d": 414.0, "rate_1d": 0.2539503386004514, "rate_3d": 0.4085778781038374, "rate_5d": 0.4480812641083521, "rate_7d": 0.4672686230248307, "daily": [225.0, 116.0, 21.0, 14.0, 21.0, 9.0, 8.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "あなたのNoteを「資産」に変える！？たった2つの数式｜note運用｜学び｜試行錯誤｜気づき｜", "first_day": "2026-04-14", "follower_prev": 1049.0, "view_1d": 271.0, "view_3d": 371.0, "view_5d": 386.0, "view_7d": 400.0, "rate_1d": 0.2583412774070543, "rate_3d": 0.3536701620591039, "rate_5d": 0.3679694947569113, "rate_7d": 0.3813155386081983, "daily": [271.0, 64.0, 36.0, 9.0, 6.0, 7.0, 7.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "検証不足の過去記事を見直して気づいた、プロンプト設計の変化|AI活用｜生成AI｜ChatGPT｜Gemini｜", "first_day": "2026-03-26", "follower_prev": 1008.0, "view_1d": 319.0, "view_3d": 460.0, "view_5d": 484.0, "view_7d": 501.0, "rate_1d": 0.3164682539682539, "rate_3d": 0.4563492063492063, "rate_5d": 0.4801587301587302, "rate_7d": 0.4970238095238095, "daily": [319.0, 72.0, 69.0, 9.0, 15.0, 11.0, 6.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "“見た側が考え始める絵”はつくれるのか｜アート｜創作｜ペンアート｜", "first_day": "2026-04-26", "follower_prev": 1079.0, "view_1d": 266.0, "view_3d": 361.0, "view_5d": 368.0, "view_7d": 378.0, "rate_1d": 0.2465245597775718, "rate_3d": 0.3345690454124189, "rate_5d": 0.3410565338276182, "rate_7d": 0.35032437442076, "daily": [266.0, 68.0, 27.0, 6.0, 1.0, 7.0, 3.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "AIイラストで“その人らしさ”が出せへん時、どう向き合うか｜画像生成AI｜デザイン｜創作｜", "first_day": "2026-04-12", "follower_prev": 1046.0, "view_1d": 290.0, "view_3d": 468.0, "view_5d": 487.0, "view_7d": 492.0, "rate_1d": 0.277246653919694, "rate_3d": 0.4474187380497132, "rate_5d": 0.4655831739961759, "rate_7d": 0.4703632887189292, "daily": [290.0, 147.0, 31.0, 13.0, 6.0, 1.0, 4.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "300本以上書いて、自分のnoteを一番わかってなかったのはワイやった｜AI活用｜note運営｜データ分析｜自己紹介｜", "first_day": "2026-04-10", "follower_prev": 1042.0, "view_1d": 214.0, "view_3d": 279.0, "view_5d": 294.0, "view_7d": 306.0, "rate_1d": 0.2053742802303263, "rate_3d": 0.2677543186180422, "rate_5d": 0.2821497120921305, "rate_7d": 0.2936660268714011, "daily": [214.0, 51.0, 14.0, 6.0, 9.0, 10.0, 2.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "「癒し×気づき×笑い」を画像に翻訳しようとしたら、キノコが出てきた話｜創作｜AI活用｜生成AI｜画像生成AI｜", "first_day": "2026-04-07", "follower_prev": 1031.0, "view_1d": 293.0, "view_3d": 446.0, "view_5d": 522.0, "view_7d": 536.0, "rate_1d": 0.2841901066925315, "rate_3d": 0.4325897187196896, "rate_5d": 0.5063045586808923, "rate_7d": 0.5198836081474297, "daily": [293.0, 130.0, 23.0, 59.0, 17.0, 11.0, 3.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "やさしい顔の裏に、設計図がおった話｜創作｜AI活用｜生成AI｜画像生成AI｜", "first_day": "2026-03-30", "follower_prev": 1012.0, "view_1d": 381.0, "view_3d": 511.0, "view_5d": 528.0, "view_7d": 544.0, "rate_1d": 0.3764822134387351, "rate_3d": 0.5049407114624506, "rate_5d": 0.5217391304347826, "rate_7d": 0.5375494071146245, "daily": [381.0, 104.0, 26.0, 7.0, 10.0, 10.0, 6.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "Midjourneyの“自分用メモ”を、HTMLの呪文棚に改造した｜Midjourney｜画像生成AI｜AI活用｜生成A", "first_day": "2026-04-26", "follower_prev": 1079.0, "view_1d": 341.0, "view_3d": 392.0, "view_5d": 409.0, "view_7d": 423.0, "rate_1d": 0.3160333642261353, "rate_3d": 0.3632993512511585, "rate_5d": 0.3790546802594995, "rate_7d": 0.392029657089898, "daily": [341.0, 37.0, 14.0, 7.0, 10.0, 11.0, 3.0], "curve_type": "rapid_decay", "fol_phase": "high"}, {"title": "1行の問いで見直す、売れると売れ続けるの違い｜note運用｜note収益化｜学び｜最近の学び｜", "first_day": "2026-04-21", "follower_prev": 1058.0, "view_1d": 246.0, "view_3d": 371.0, "view_5d": 398.0, "view_7d": 407.0, "rate_1d": 0.2325141776937618, "rate_3d": 0.3506616257088847, "rate_5d": 0.3761814744801512, "rate_7d": 0.3846880907372401, "daily": [246.0, 49.0, 76.0, 21.0, 6.0, 5.0, 4.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "noteの「初速スキ」とバズはほんまに関係あるんか？|Note運営|データ分析|", "first_day": "2026-03-14", "follower_prev": 971.0, "view_1d": 239.0, "view_3d": 350.0, "view_5d": 364.0, "view_7d": 378.0, "rate_1d": 0.2461380020597322, "rate_3d": 0.3604531410916581, "rate_5d": 0.3748712667353244, "rate_7d": 0.3892893923789907, "daily": [239.0, 86.0, 25.0, 11.0, 3.0, 3.0, 11.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "【詳細版】Platformは、なぜ推しのアルゴリズムを公開したのか。", "first_day": "2026-02-21", "follower_prev": 909.0, "view_1d": 80.0, "view_3d": 370.0, "view_5d": 379.0, "view_7d": 406.0, "rate_1d": 0.088008800880088, "rate_3d": 0.407040704070407, "rate_5d": 0.4169416941694169, "rate_7d": 0.4466446644664466, "daily": [80.0, 255.0, 35.0, 8.0, 1.0, 19.0, 8.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "noteのViewが伸びる『仕組み』を33記事のログで検証｜フォロワー数は打ち上げ台｜飛距離は記事の設計次第｜", "first_day": "2026-03-11", "follower_prev": 955.0, "view_1d": 232.0, "view_3d": 377.0, "view_5d": 408.0, "view_7d": 421.0, "rate_1d": 0.2429319371727748, "rate_3d": 0.3947643979057592, "rate_5d": 0.4272251308900524, "rate_7d": 0.4408376963350785, "daily": [232.0, 106.0, 39.0, 22.0, 9.0, 9.0, 4.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "「群衆で構成された巨大な○○」を再現する構造化プロンプト設計書｜人物・動物・建築テンプレ編｜Midjourney｜メンシ", "first_day": "2026-05-04", "follower_prev": 1133.0, "view_1d": 264.0, "view_3d": 374.0, "view_5d": 409.0, "view_7d": 417.0, "rate_1d": 0.233009708737864, "rate_3d": 0.3300970873786408, "rate_5d": 0.3609885260370697, "rate_7d": 0.3680494263018535, "daily": [264.0, 96.0, 14.0, 28.0, 7.0, 4.0, 4.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "AI検索に最適化しようとしたら、自分の関西弁が戦犯やった｜AI活用｜生成AI｜書き方｜", "first_day": "2026-04-09", "follower_prev": 1040.0, "view_1d": 196.0, "view_3d": 300.0, "view_5d": 316.0, "view_7d": 326.0, "rate_1d": 0.1884615384615384, "rate_3d": 0.2884615384615384, "rate_5d": 0.3038461538461538, "rate_7d": 0.3134615384615384, "daily": [196.0, 71.0, 33.0, 10.0, 6.0, 8.0, 2.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "余白の妖精を召喚したはずが、静かな構造体が出てきた話｜創作｜AI活用｜生成AI｜画像生成AI｜", "first_day": "2026-04-04", "follower_prev": 1018.0, "view_1d": 315.0, "view_3d": 550.0, "view_5d": 589.0, "view_7d": 603.0, "rate_1d": 0.3094302554027505, "rate_3d": 0.5402750491159135, "rate_5d": 0.5785854616895875, "rate_7d": 0.5923379174852652, "daily": [315.0, 155.0, 80.0, 17.0, 22.0, 11.0, 3.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "【AIイラスト】記事サムネの振り返り｜2026年2月の制作ログ｜イラスト｜アート｜サムネ｜", "first_day": "2026-03-10", "follower_prev": 950.0, "view_1d": 169.0, "view_3d": 333.0, "view_5d": 355.0, "view_7d": 360.0, "rate_1d": 0.1778947368421052, "rate_3d": 0.3505263157894737, "rate_5d": 0.3736842105263158, "rate_7d": 0.3789473684210526, "daily": [169.0, 128.0, 36.0, 12.0, 10.0, 3.0, 2.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "4月の月間ランキング発表｜応援の軌跡を残すアーカイブ｜note運用｜学び｜日記｜日常｜振り返り｜", "first_day": "2026-05-02", "follower_prev": 1111.0, "view_1d": 275.0, "view_3d": 384.0, "view_5d": 426.0, "view_7d": 447.0, "rate_1d": 0.2475247524752475, "rate_3d": 0.3456345634563456, "rate_5d": 0.3834383438343834, "rate_7d": 0.4023402340234023, "daily": [275.0, 74.0, 35.0, 32.0, 10.0, 19.0, 2.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "【AIアート/イラスト】動物AIアートがむずいので、生物を「護符」にして突破した。", "first_day": "2026-02-10", "follower_prev": 839.0, "view_1d": 206.0, "view_3d": 358.0, "view_5d": 380.0, "view_7d": 403.0, "rate_1d": 0.2455303933253873, "rate_3d": 0.4266984505363528, "rate_5d": 0.4529201430274135, "rate_7d": 0.4803337306317044, "daily": [206.0, 92.0, 60.0, 15.0, 7.0, 16.0, 7.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "AIに「こんな感じで作って」が一発で伝わる魔法のファイルを知ってる？｜生成AI｜デザイン｜AI活用｜", "first_day": "2026-04-08", "follower_prev": 1034.0, "view_1d": 268.0, "view_3d": 369.0, "view_5d": 395.0, "view_7d": 491.0, "rate_1d": 0.2591876208897485, "rate_3d": 0.3568665377176016, "rate_5d": 0.3820116054158607, "rate_7d": 0.4748549323017408, "daily": [268.0, 60.0, 41.0, 11.0, 15.0, 47.0, 49.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "テスト記事", "first_day": "2026-04-18", "follower_prev": 1061.0, "view_1d": 254.0, "view_3d": 254.0, "view_5d": 254.0, "view_7d": 254.0, "rate_1d": 0.239396795475966, "rate_3d": 0.239396795475966, "rate_5d": 0.239396795475966, "rate_7d": 0.239396795475966, "daily": [254.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "curve_type": "rapid_decay", "fol_phase": "high"}, {"title": "他人のキャラを自分の世界に混ぜるのはアリか？を遊びながら試した話｜創作｜AI活用｜生成AI｜画像生成AI｜", "first_day": "2026-03-25", "follower_prev": 1006.0, "view_1d": 443.0, "view_3d": 568.0, "view_5d": 597.0, "view_7d": 608.0, "rate_1d": 0.4403578528827038, "rate_3d": 0.5646123260437376, "rate_5d": 0.5934393638170974, "rate_7d": 0.6043737574552683, "daily": [443.0, 106.0, 19.0, 21.0, 8.0, 6.0, 5.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "会員証のついでに、FC動画まで作ってもうた話｜ファンクラブ｜ダルメイ｜AI動画｜", "first_day": "2026-03-21", "follower_prev": 986.0, "view_1d": 313.0, "view_3d": 474.0, "view_5d": 486.0, "view_7d": 498.0, "rate_1d": 0.3174442190669371, "rate_3d": 0.4807302231237322, "rate_5d": 0.4929006085192697, "rate_7d": 0.5050709939148073, "daily": [313.0, 139.0, 22.0, 12.0, 0.0, 5.0, 7.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "【383文字の実験】Noteのアルゴリズムをハックしたい。", "first_day": "2026-03-01", "follower_prev": 931.0, "view_1d": 345.0, "view_3d": 533.0, "view_5d": 571.0, "view_7d": 579.0, "rate_1d": 0.3705692803437164, "rate_3d": 0.5725026852846402, "rate_5d": 0.6133190118152524, "rate_7d": 0.6219119226638024, "daily": [345.0, 134.0, 54.0, 29.0, 9.0, 2.0, 6.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "noteダッシュボードを“分析画面”から“ハブ”に作り直した話｜note運営｜ダッシュボード｜データ分析｜UXデザイン｜", "first_day": "2026-03-20", "follower_prev": 984.0, "view_1d": 287.0, "view_3d": 395.0, "view_5d": 409.0, "view_7d": 426.0, "rate_1d": 0.2916666666666667, "rate_3d": 0.4014227642276423, "rate_5d": 0.415650406504065, "rate_7d": 0.4329268292682927, "daily": [287.0, 82.0, 26.0, 8.0, 6.0, 4.0, 13.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "月曜に見かけるあの存在を、勝手に推すことにした｜非公認クラブ｜Monday｜ダルメイ｜", "first_day": "2026-03-18", "follower_prev": 980.0, "view_1d": 346.0, "view_3d": 610.0, "view_5d": 638.0, "view_7d": 673.0, "rate_1d": 0.3530612244897959, "rate_3d": 0.6224489795918368, "rate_5d": 0.6510204081632653, "rate_7d": 0.686734693877551, "daily": [346.0, 187.0, 77.0, 12.0, 16.0, 8.0, 27.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "「肩見せて、誘惑しないと」と言われたので、ワイも本気を出してみた。", "first_day": "2026-03-16", "follower_prev": 973.0, "view_1d": 368.0, "view_3d": 524.0, "view_5d": 559.0, "view_7d": 582.0, "rate_1d": 0.3782117163412127, "rate_3d": 0.538540596094553, "rate_5d": 0.5745118191161357, "rate_7d": 0.5981500513874615, "daily": [368.0, 111.0, 45.0, 30.0, 5.0, 7.0, 16.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "604人に支えられて見えた、4月後半のランキングの熱量｜note運用｜note企画｜スキランキング｜", "first_day": "2026-04-19", "follower_prev": 1059.0, "view_1d": 203.0, "view_3d": 370.0, "view_5d": 393.0, "view_7d": 398.0, "rate_1d": 0.1916902738432483, "rate_3d": 0.3493862134088763, "rate_5d": 0.3711048158640226, "rate_7d": 0.3758262511803588, "daily": [203.0, 134.0, 33.0, 6.0, 17.0, 2.0, 3.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "【プロンプト公開版】切り抜き×逆光×投影の再現", "first_day": "2026-02-09", "follower_prev": 831.0, "view_1d": 138.0, "view_3d": 202.0, "view_5d": 209.0, "view_7d": 216.0, "rate_1d": 0.1660649819494584, "rate_3d": 0.2430806257521059, "rate_5d": 0.2515042117930204, "rate_7d": 0.259927797833935, "daily": [138.0, 52.0, 12.0, 2.0, 5.0, 6.0, 1.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "投資家って何者なん？を理解するとIRが、ちょっと面白くなる ｜株式投資｜IR｜", "first_day": "2026-03-09", "follower_prev": 941.0, "view_1d": 242.0, "view_3d": 382.0, "view_5d": 396.0, "view_7d": 400.0, "rate_1d": 0.257173219978746, "rate_3d": 0.4059511158342189, "rate_5d": 0.4208289054197662, "rate_7d": 0.4250797024442083, "daily": [242.0, 109.0, 31.0, 11.0, 3.0, 2.0, 2.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "読まれ方でViewは変わるのか。314文字と383文字で実験してみた結果｜note運営｜記事｜", "first_day": "2026-03-23", "follower_prev": 994.0, "view_1d": 262.0, "view_3d": 353.0, "view_5d": 369.0, "view_7d": 372.0, "rate_1d": 0.2635814889336016, "rate_3d": 0.3551307847082495, "rate_5d": 0.3712273641851106, "rate_7d": 0.3742454728370221, "daily": [262.0, 76.0, 15.0, 8.0, 8.0, 1.0, 2.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "拡散で無料｜マンガのネーム、HTMLファイル1つで作れるようにした｜AI漫画｜ネーム｜生成AI｜", "first_day": "2026-04-15", "follower_prev": 1053.0, "view_1d": 382.0, "view_3d": 529.0, "view_5d": 573.0, "view_7d": 595.0, "rate_1d": 0.3627730294396961, "rate_3d": 0.5023741690408358, "rate_5d": 0.5441595441595442, "rate_7d": 0.5650522317188984, "daily": [382.0, 110.0, 37.0, 14.0, 30.0, 18.0, 4.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "何を作ったのかを“雰囲気ごと”受け取る最近の学び｜試行錯誤｜日記｜エッセイ｜capcut｜", "first_day": "2026-03-28", "follower_prev": 1010.0, "view_1d": 303.0, "view_3d": 428.0, "view_5d": 453.0, "view_7d": 460.0, "rate_1d": 0.3, "rate_3d": 0.4237623762376237, "rate_5d": 0.4485148514851485, "rate_7d": 0.4554455445544554, "daily": [303.0, 104.0, 21.0, 18.0, 7.0, 3.0, 4.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "企業アカのnote、正直“教科書”になるんちゃうん？｜キリン公式の設計図を解剖してみた", "first_day": "2026-02-19", "follower_prev": 889.0, "view_1d": 263.0, "view_3d": 419.0, "view_5d": 446.0, "view_7d": 449.0, "rate_1d": 0.2958380202474691, "rate_3d": 0.4713160854893138, "rate_5d": 0.5016872890888638, "rate_7d": 0.5050618672665916, "daily": [263.0, 120.0, 36.0, 23.0, 4.0, 3.0, 0.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "Note運営｜ビュー数とスキで見る“成長の品質”｜毎日ログの4象限", "first_day": "2026-02-17", "follower_prev": 879.0, "view_1d": 237.0, "view_3d": 425.0, "view_5d": 462.0, "view_7d": 471.0, "rate_1d": 0.2696245733788396, "rate_3d": 0.4835039817974971, "rate_5d": 0.5255972696245734, "rate_7d": 0.5358361774744027, "daily": [237.0, 140.0, 48.0, 26.0, 11.0, 6.0, 3.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "5名予定がXX名に。KITAcore召喚企画を5名＋αで続行します｜note｜創作｜AI活用｜生成AI｜", "first_day": "2026-03-24", "follower_prev": 1001.0, "view_1d": 311.0, "view_3d": 500.0, "view_5d": 525.0, "view_7d": 542.0, "rate_1d": 0.3106893106893107, "rate_3d": 0.4995004995004995, "rate_5d": 0.5244755244755245, "rate_7d": 0.5414585414585414, "daily": [311.0, 158.0, 31.0, 8.0, 17.0, 11.0, 6.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "架空のファッションブランドを、深夜のノリで作ったで｜GPT-Image-2｜画像生成AI｜ChatGPT｜デザイン｜ブラ", "first_day": "2026-04-28", "follower_prev": 1085.0, "view_1d": 357.0, "view_3d": 574.0, "view_5d": 618.0, "view_7d": 640.0, "rate_1d": 0.3290322580645161, "rate_3d": 0.5290322580645161, "rate_5d": 0.5695852534562212, "rate_7d": 0.5898617511520737, "daily": [357.0, 164.0, 53.0, 35.0, 9.0, 16.0, 6.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "プロンプト教・構造派が拗らせるとこうなる｜生成AI｜プロンプト｜", "first_day": "2026-04-05", "follower_prev": 1025.0, "view_1d": 125.0, "view_3d": 399.0, "view_5d": 410.0, "view_7d": 423.0, "rate_1d": 0.1219512195121951, "rate_3d": 0.3892682926829268, "rate_5d": 0.4, "rate_7d": 0.4126829268292682, "daily": [125.0, 259.0, 15.0, 5.0, 6.0, 6.0, 7.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "3月の月間ランキング発表｜応援の軌跡を残すアーカイブ｜note運用｜学び｜日記｜日常｜振り返り｜", "first_day": "2026-04-01", "follower_prev": 1021.0, "view_1d": 324.0, "view_3d": 381.0, "view_5d": 398.0, "view_7d": 403.0, "rate_1d": 0.3173359451518119, "rate_3d": 0.3731635651322233, "rate_5d": 0.3898139079333986, "rate_7d": 0.3947110675808031, "daily": [324.0, 49.0, 8.0, 17.0, 0.0, 3.0, 2.0], "curve_type": "rapid_decay", "fol_phase": "mid"}, {"title": "noteのタグを1万件ほど、数理モデルでコネコネしてみた話ｗ", "first_day": "2026-02-08", "follower_prev": 821.0, "view_1d": 174.0, "view_3d": 327.0, "view_5d": 346.0, "view_7d": 363.0, "rate_1d": 0.2119366626065773, "rate_3d": 0.3982947624847747, "rate_5d": 0.4214372716199756, "rate_7d": 0.4421437271619975, "daily": [174.0, 117.0, 36.0, 10.0, 9.0, 6.0, 11.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "小人の世界が、やっとつながりはじめた｜AIアート｜AIイラスト｜生成AI｜", "first_day": "2026-03-12", "follower_prev": 961.0, "view_1d": 322.0, "view_3d": 496.0, "view_5d": 518.0, "view_7d": 522.0, "rate_1d": 0.3350676378772112, "rate_3d": 0.5161290322580645, "rate_5d": 0.5390218522372529, "rate_7d": 0.5431841831425598, "daily": [322.0, 155.0, 19.0, 15.0, 7.0, 1.0, 3.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "軽いノリで始めた会員証が、気づけば祭りになっていた話｜note運用｜記事｜つながり｜デザイン｜創作｜", "first_day": "2026-03-27", "follower_prev": 1012.0, "view_1d": 337.0, "view_3d": 479.0, "view_5d": 519.0, "view_7d": 535.0, "rate_1d": 0.33300395256917, "rate_3d": 0.4733201581027668, "rate_5d": 0.5128458498023716, "rate_7d": 0.5286561264822134, "daily": [337.0, 125.0, 17.0, 26.0, 14.0, 13.0, 3.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "AIアート｜コラボ｜覗いたら終わる。マーコ展示録（火野枝馬子）", "first_day": "2026-02-24", "follower_prev": 911.0, "view_1d": 288.0, "view_3d": 473.0, "view_5d": 483.0, "view_7d": 506.0, "rate_1d": 0.3161361141602634, "rate_3d": 0.5192096597145993, "rate_5d": 0.5301866081229418, "rate_7d": 0.5554335894621295, "daily": [288.0, 163.0, 22.0, 7.0, 3.0, 18.0, 5.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "今回はほんまに寿命が削れた話｜画像生成AI｜デザイン｜学び｜気づき｜", "first_day": "2026-04-23", "follower_prev": 1061.0, "view_1d": 279.0, "view_3d": 388.0, "view_5d": 427.0, "view_7d": 432.0, "rate_1d": 0.2629594721960415, "rate_3d": 0.3656927426955702, "rate_5d": 0.4024505183788878, "rate_7d": 0.4071630537229029, "daily": [279.0, 79.0, 30.0, 26.0, 13.0, 4.0, 1.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "note記事のPVとスキをデータ分析して見えたこと|人・仕掛け・フォロワーが届き方を変える|分析|データ| note運用", "first_day": "2026-03-06", "follower_prev": 935.0, "view_1d": 275.0, "view_3d": 449.0, "view_5d": 479.0, "view_7d": 489.0, "rate_1d": 0.2941176470588235, "rate_3d": 0.4802139037433155, "rate_5d": 0.5122994652406417, "rate_7d": 0.5229946524064171, "daily": [275.0, 144.0, 30.0, 20.0, 10.0, 3.0, 7.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "【簡易版】Platformは、なぜ推しのアルゴリズムを公開したのか。", "first_day": "2026-02-27", "follower_prev": 927.0, "view_1d": 420.0, "view_3d": 422.0, "view_5d": 430.0, "view_7d": 432.0, "rate_1d": 0.4530744336569579, "rate_3d": 0.4552319309600863, "rate_5d": 0.4638619201725998, "rate_7d": 0.4660194174757281, "daily": [420.0, 2.0, 0.0, 6.0, 2.0, 1.0, 1.0], "curve_type": "rapid_decay", "fol_phase": "low"}, {"title": "やらかした会員証｜KITAcore美術館｜ゆきよみ｜ファンクラブ｜", "first_day": "2026-05-03", "follower_prev": 1126.0, "view_1d": 352.0, "view_3d": 764.0, "view_5d": 880.0, "view_7d": 968.0, "rate_1d": 0.3126110124333925, "rate_3d": 0.6785079928952042, "rate_5d": 0.7815275310834814, "rate_7d": 0.8596802841918295, "daily": [352.0, 261.0, 151.0, 55.0, 61.0, 37.0, 51.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "AIに任せるか、自分で割るか。漫画ネームの2つのルート｜AI漫画｜ネーム｜AI活用｜生成AI｜", "first_day": "2026-04-17", "follower_prev": 1061.0, "view_1d": 179.0, "view_3d": 249.0, "view_5d": 273.0, "view_7d": 282.0, "rate_1d": 0.1687087653157398, "rate_3d": 0.2346842601319509, "rate_5d": 0.2573044297832234, "rate_7d": 0.2657869934024505, "daily": [179.0, 53.0, 17.0, 16.0, 8.0, 4.0, 5.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "表紙の一枚から写真集をつくれるのか。｜AIアート｜画像生成｜クリエイティブ｜", "first_day": "2026-03-19", "follower_prev": 981.0, "view_1d": 370.0, "view_3d": 507.0, "view_5d": 526.0, "view_7d": 539.0, "rate_1d": 0.3771661569826707, "rate_3d": 0.5168195718654435, "rate_5d": 0.5361875637104995, "rate_7d": 0.5494393476044852, "daily": [370.0, 116.0, 21.0, 16.0, 3.0, 4.0, 9.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "OASOBI第7回・後日談｜同じワードで、世界線がいっぱい生えた件", "first_day": "2026-02-23", "follower_prev": 909.0, "view_1d": 212.0, "view_3d": 344.0, "view_5d": 369.0, "view_7d": 382.0, "rate_1d": 0.2332233223322332, "rate_3d": 0.3784378437843784, "rate_5d": 0.4059405940594059, "rate_7d": 0.4202420242024202, "daily": [212.0, 103.0, 29.0, 21.0, 4.0, 3.0, 10.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "これは事故か、作品か。｜イラスト｜アート｜生成AI｜", "first_day": "2026-03-13", "follower_prev": 966.0, "view_1d": 310.0, "view_3d": 468.0, "view_5d": 485.0, "view_7d": 496.0, "rate_1d": 0.3209109730848861, "rate_3d": 0.484472049689441, "rate_5d": 0.5020703933747412, "rate_7d": 0.5134575569358178, "daily": [310.0, 106.0, 52.0, 10.0, 7.0, 8.0, 3.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "プロンプト、毎回ゼロから書いてしんどくない？｜生成AI｜プロンプト｜制作ログ｜", "first_day": "2026-04-05", "follower_prev": 1025.0, "view_1d": 326.0, "view_3d": 425.0, "view_5d": 540.0, "view_7d": 554.0, "rate_1d": 0.3180487804878049, "rate_3d": 0.4146341463414634, "rate_5d": 0.526829268292683, "rate_7d": 0.5404878048780488, "daily": [326.0, 84.0, 15.0, 110.0, 5.0, 7.0, 7.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "noteの週次・月次データを自動集計する方法｜振り返り運営｜Python｜", "first_day": "2026-04-03", "follower_prev": 1019.0, "view_1d": 193.0, "view_3d": 249.0, "view_5d": 281.0, "view_7d": 287.0, "rate_1d": 0.1894013738959764, "rate_3d": 0.2443572129538763, "rate_5d": 0.2757605495583906, "rate_7d": 0.281648675171737, "daily": [193.0, 42.0, 14.0, 27.0, 5.0, 5.0, 1.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "昔のサムネを見返したら、下手さより“その時の熱”が残ってた話｜Gemini｜デザイン｜note運用｜最近の学び｜", "first_day": "2026-03-31", "follower_prev": 1018.0, "view_1d": 295.0, "view_3d": 390.0, "view_5d": 415.0, "view_7d": 416.0, "rate_1d": 0.2897838899803536, "rate_3d": 0.3831041257367387, "rate_5d": 0.4076620825147348, "rate_7d": 0.4086444007858546, "daily": [295.0, 60.0, 35.0, 20.0, 5.0, 1.0, 0.0], "curve_type": "normal_decay", "fol_phase": "mid"}, {"title": "寝てもスッキリせん人へ：朝の光と朝食が効く理由", "first_day": "2026-02-25", "follower_prev": 913.0, "view_1d": 199.0, "view_3d": 300.0, "view_5d": 332.0, "view_7d": 340.0, "rate_1d": 0.2179627601314348, "rate_3d": 0.3285870755750273, "rate_5d": 0.3636363636363636, "rate_7d": 0.3723986856516977, "daily": [199.0, 81.0, 20.0, 30.0, 2.0, 3.0, 5.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "【PR】クマだけが知る酒の商業ポスターを、Pollo AIで作ってみた｜PolloAI｜GPT Image 2｜", "first_day": "2026-04-25", "follower_prev": 1075.0, "view_1d": 245.0, "view_3d": 444.0, "view_5d": 455.0, "view_7d": 469.0, "rate_1d": 0.227906976744186, "rate_3d": 0.4130232558139535, "rate_5d": 0.4232558139534884, "rate_7d": 0.4362790697674418, "daily": [245.0, 178.0, 21.0, 8.0, 3.0, 0.0, 14.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "note記事の寿命はわずか5日間？ワイが自分のデータで暴いた『死の谷』の正体", "first_day": "2026-02-07", "follower_prev": 802.0, "view_1d": 254.0, "view_3d": 480.0, "view_5d": 520.0, "view_7d": 546.0, "rate_1d": 0.3167082294264339, "rate_3d": 0.5985037406483791, "rate_5d": 0.6483790523690773, "rate_7d": 0.6807980049875312, "daily": [254.0, 193.0, 33.0, 28.0, 12.0, 11.0, 15.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "知ってる人は知ってるゲーム『CRIMSON RONIN』をレビューしてみる｜画像生成AI｜ゲームレビュー｜やってみた｜", "first_day": "2026-05-01", "follower_prev": 1100.0, "view_1d": 321.0, "view_3d": 471.0, "view_5d": 521.0, "view_7d": 537.0, "rate_1d": 0.2918181818181818, "rate_3d": 0.4281818181818181, "rate_5d": 0.4736363636363636, "rate_7d": 0.4881818181818181, "daily": [321.0, 121.0, 29.0, 31.0, 19.0, 2.0, 14.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "コラボしても初日は普通やった。でも翌日が全然ちがう話｜note実験｜", "first_day": "2026-03-15", "follower_prev": 975.0, "view_1d": 339.0, "view_3d": 419.0, "view_5d": 434.0, "view_7d": 439.0, "rate_1d": 0.3476923076923077, "rate_3d": 0.4297435897435897, "rate_5d": 0.4451282051282051, "rate_7d": 0.4502564102564103, "daily": [339.0, 54.0, 26.0, 7.0, 8.0, 4.0, 1.0], "curve_type": "rapid_decay", "fol_phase": "mid"}, {"title": "GPT-Image-2用のブランドポスタービルダー、HTMLで作ったで｜GPT-Image-2｜画像生成AI｜ChatG", "first_day": "2026-04-23", "follower_prev": 1061.0, "view_1d": 559.0, "view_3d": 766.0, "view_5d": 839.0, "view_7d": 915.0, "rate_1d": 0.5268614514608859, "rate_3d": 0.7219604147031102, "rate_5d": 0.7907634307257304, "rate_7d": 0.8623939679547596, "daily": [559.0, 151.0, 56.0, 37.0, 36.0, 32.0, 44.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "ちょっとやらかした。昨日V1を出したのに、もうV5ができた話｜AI活用｜生成AI｜試行錯誤｜", "first_day": "2026-04-16", "follower_prev": 1061.0, "view_1d": 258.0, "view_3d": 346.0, "view_5d": 374.0, "view_7d": 376.0, "rate_1d": 0.2431668237511781, "rate_3d": 0.3261074458058435, "rate_5d": 0.352497643732328, "rate_7d": 0.354382657869934, "daily": [258.0, 74.0, 14.0, 18.0, 10.0, 1.0, 1.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "全記事PV/スキ/コメント＋投稿日を吸い上げてスプシに保存する方法（Colab運用ログ）", "first_day": "2026-02-08", "follower_prev": 821.0, "view_1d": 255.0, "view_3d": 362.0, "view_5d": 371.0, "view_7d": 381.0, "rate_1d": 0.3105968331303289, "rate_3d": 0.440925700365408, "rate_5d": 0.4518879415347138, "rate_7d": 0.464068209500609, "daily": [255.0, 87.0, 20.0, 6.0, 3.0, 6.0, 4.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "AIアート｜過去のサムネをリライト", "first_day": "2026-03-04", "follower_prev": 934.0, "view_1d": 376.0, "view_3d": 556.0, "view_5d": 578.0, "view_7d": 592.0, "rate_1d": 0.4025695931477516, "rate_3d": 0.5952890792291221, "rate_5d": 0.6188436830835118, "rate_7d": 0.6338329764453962, "daily": [376.0, 146.0, 34.0, 6.0, 16.0, 8.0, 6.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "「タラヲさんを推してくれ」から始まり、なぜか漫画を作る仕組みまで育った話｜AI活用｜生成AI｜画像生成AI｜", "first_day": "2026-04-14", "follower_prev": 1049.0, "view_1d": 594.0, "view_3d": 792.0, "view_5d": 808.0, "view_7d": 877.0, "rate_1d": 0.5662535748331744, "rate_3d": 0.7550047664442326, "rate_5d": 0.7702573879885606, "rate_7d": 0.8360343183984748, "daily": [594.0, 147.0, 51.0, 13.0, 3.0, 54.0, 15.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "【AIアート/イラスト】7th OASOBI企画 ＃266", "first_day": "2026-02-21", "follower_prev": 909.0, "view_1d": 230.0, "view_3d": 297.0, "view_5d": 297.0, "view_7d": 576.0, "rate_1d": 0.253025302530253, "rate_3d": 0.3267326732673267, "rate_5d": 0.3267326732673267, "rate_7d": 0.6336633663366337, "daily": [230.0, 67.0, 0.0, 0.0, 0.0, 0.0, 279.0], "curve_type": "sustained", "fol_phase": "low"}, {"title": "IRを読むと、裏側の配管が見える！？（noteで遊ぶコスト構造）", "first_day": "2026-02-27", "follower_prev": 927.0, "view_1d": 137.0, "view_3d": 337.0, "view_5d": 361.0, "view_7d": 366.0, "rate_1d": 0.1477885652642934, "rate_3d": 0.3635382955771305, "rate_5d": 0.389428263214671, "rate_7d": 0.3948220064724919, "daily": [137.0, 170.0, 30.0, 14.0, 10.0, 1.0, 4.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "Noteの閲覧数・スキ数を自動で収集する方法｜GitHub｜クリエイター支援｜データ分析｜Note運営｜", "first_day": "2026-03-08", "follower_prev": 939.0, "view_1d": 330.0, "view_3d": 415.0, "view_5d": 442.0, "view_7d": 453.0, "rate_1d": 0.3514376996805112, "rate_3d": 0.4419595314164004, "rate_5d": 0.470713525026624, "rate_7d": 0.4824281150159744, "daily": [330.0, 69.0, 16.0, 15.0, 12.0, 7.0, 4.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "ModayCafeってなんやんねん。｜AIアート｜Cafe｜イラスト｜", "first_day": "2026-04-27", "follower_prev": 1080.0, "view_1d": 309.0, "view_3d": 430.0, "view_5d": 458.0, "view_7d": 466.0, "rate_1d": 0.2861111111111111, "rate_3d": 0.3981481481481481, "rate_5d": 0.424074074074074, "rate_7d": 0.4314814814814814, "daily": [309.0, 99.0, 22.0, 4.0, 24.0, 5.0, 3.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "「初速は効く」はほんまに頑健なんか？ 4,166本で見直した話|Note運営|データ分析|", "first_day": "2026-03-28", "follower_prev": 1010.0, "view_1d": 287.0, "view_3d": 314.0, "view_5d": 336.0, "view_7d": 341.0, "rate_1d": 0.2841584158415841, "rate_3d": 0.3108910891089109, "rate_5d": 0.3326732673267327, "rate_7d": 0.3376237623762376, "daily": [287.0, 15.0, 12.0, 16.0, 6.0, 2.0, 3.0], "curve_type": "rapid_decay", "fol_phase": "mid"}, {"title": "note運営を“感覚”から“見える化”へ｜GitHub Pagesでダッシュボードを作る｜データ分析｜", "first_day": "2026-03-08", "follower_prev": 939.0, "view_1d": 176.0, "view_3d": 473.0, "view_5d": 515.0, "view_7d": 522.0, "rate_1d": 0.1874334398296059, "rate_3d": 0.503727369542066, "rate_5d": 0.5484558040468583, "rate_7d": 0.5559105431309904, "daily": [176.0, 261.0, 36.0, 26.0, 16.0, 4.0, 3.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "Apple WatchとClaudeが変えるApple Health健康データ活用の未来｜AI活用｜生成AI｜Claud", "first_day": "2026-04-30", "follower_prev": 1098.0, "view_1d": 235.0, "view_3d": 451.0, "view_5d": 473.0, "view_7d": 495.0, "rate_1d": 0.2140255009107468, "rate_3d": 0.4107468123861566, "rate_5d": 0.4307832422586521, "rate_7d": 0.4508196721311475, "daily": [235.0, 189.0, 27.0, 13.0, 9.0, 16.0, 6.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "V8来るで。Midjourneyが「審美眼貸して」って言うてきた", "first_day": "2026-02-19", "follower_prev": 889.0, "view_1d": 231.0, "view_3d": 334.0, "view_5d": 343.0, "view_7d": 344.0, "rate_1d": 0.2598425196850393, "rate_3d": 0.3757030371203599, "rate_5d": 0.3858267716535433, "rate_7d": 0.3869516310461192, "daily": [231.0, 69.0, 34.0, 5.0, 4.0, 1.0, 0.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "【AIアート/イラスト】ガソリンスタンドからなにか生み出せるのか。", "first_day": "2026-02-13", "follower_prev": 855.0, "view_1d": 232.0, "view_3d": 357.0, "view_5d": 371.0, "view_7d": 375.0, "rate_1d": 0.271345029239766, "rate_3d": 0.4175438596491228, "rate_5d": 0.4339181286549707, "rate_7d": 0.4385964912280701, "daily": [232.0, 95.0, 30.0, 10.0, 4.0, 2.0, 2.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "初期の実写を掘り返したら、まだ普通に好きやった｜AIアート｜創作｜", "first_day": "2026-03-08", "follower_prev": 939.0, "view_1d": 217.0, "view_3d": 380.0, "view_5d": 398.0, "view_7d": 407.0, "rate_1d": 0.2310969116080937, "rate_3d": 0.4046858359957401, "rate_5d": 0.4238551650692225, "rate_7d": 0.4334398296059638, "daily": [217.0, 120.0, 43.0, 11.0, 7.0, 3.0, 6.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "【314文字の実験】Noteのアルゴリズムをハックしたい。", "first_day": "2026-02-26", "follower_prev": 920.0, "view_1d": 217.0, "view_3d": 364.0, "view_5d": 392.0, "view_7d": 403.0, "rate_1d": 0.2358695652173913, "rate_3d": 0.3956521739130434, "rate_5d": 0.4260869565217391, "rate_7d": 0.4380434782608696, "daily": [217.0, 120.0, 27.0, 21.0, 7.0, 9.0, 2.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "ワイが手伝えるnote運用とAI活用のこと｜note運用｜AI活用｜生成AI｜ChatGPT｜画像生成AI｜", "first_day": "2026-04-29", "follower_prev": 1090.0, "view_1d": 272.0, "view_3d": 432.0, "view_5d": 452.0, "view_7d": 462.0, "rate_1d": 0.2495412844036697, "rate_3d": 0.3963302752293578, "rate_5d": 0.4146788990825688, "rate_7d": 0.4238532110091743, "daily": [272.0, 107.0, 53.0, 11.0, 9.0, 5.0, 5.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "誰かの創作に火をつけられて、自分も動画を作っていた", "first_day": "2026-03-03", "follower_prev": 934.0, "view_1d": 256.0, "view_3d": 454.0, "view_5d": 462.0, "view_7d": 480.0, "rate_1d": 0.2740899357601713, "rate_3d": 0.4860813704496788, "rate_5d": 0.4946466809421841, "rate_7d": 0.5139186295503212, "daily": [256.0, 166.0, 32.0, 7.0, 1.0, 3.0, 15.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "プロンプトビルダーの取説、今さら作ったで｜AI活用｜生成AI｜ChatGPT｜画像生成AI｜デザイン｜", "first_day": "2026-04-29", "follower_prev": 1090.0, "view_1d": 283.0, "view_3d": 443.0, "view_5d": 471.0, "view_7d": 493.0, "rate_1d": 0.2596330275229357, "rate_3d": 0.4064220183486238, "rate_5d": 0.4321100917431192, "rate_7d": 0.4522935779816514, "daily": [283.0, 91.0, 69.0, 19.0, 9.0, 11.0, 11.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "【検証】noteのView数が伸びる仕組みを、数式で「構造化」してみた結果", "first_day": "2026-02-09", "follower_prev": 831.0, "view_1d": 255.0, "view_3d": 407.0, "view_5d": 439.0, "view_7d": 456.0, "rate_1d": 0.3068592057761732, "rate_3d": 0.4897713598074609, "rate_5d": 0.5282791817087846, "rate_7d": 0.5487364620938628, "daily": [255.0, 122.0, 30.0, 20.0, 12.0, 11.0, 6.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "続・note記事には「消費期限」がある（気がする）。経過日数ごとの“日次ビュー減衰”を箱ひげ図で可視化する手法", "first_day": "2026-02-12", "follower_prev": 851.0, "view_1d": 179.0, "view_3d": 378.0, "view_5d": 396.0, "view_7d": 414.0, "rate_1d": 0.2103407755581668, "rate_3d": 0.4441833137485311, "rate_5d": 0.4653349001175088, "rate_7d": 0.4864864864864865, "daily": [179.0, 181.0, 18.0, 10.0, 8.0, 9.0, 9.0], "curve_type": "normal_decay", "fol_phase": "low"}, {"title": "GPT-5.5で変わったプロンプトの書き方4つ｜ChatGPT｜生成AI｜AI活用｜プロンプト｜GPT-5.5｜", "first_day": "2026-05-05", "follower_prev": 1134.0, "view_1d": 354.0, "view_3d": 627.0, "view_5d": 705.0, "view_7d": 808.0, "rate_1d": 0.3121693121693121, "rate_3d": 0.5529100529100529, "rate_5d": 0.6216931216931217, "rate_7d": 0.7125220458553791, "daily": [354.0, 93.0, 180.0, 57.0, 21.0, 36.0, 67.0], "curve_type": "normal_decay", "fol_phase": "high"}, {"title": "「ハッシュタグ」はデータで選べ。フォロワー外に届けるための“新・タグ設計術”", "first_day": "2026-02-22", "follower_prev": 907.0, "view_1d": 286.0, "view_3d": 468.0, "view_5d": 480.0, "view_7d": 489.0, "rate_1d": 0.3153252480705623, "rate_3d": 0.515986769570011, "rate_5d": 0.5292171995589857, "rate_7d": 0.5391400220507166, "daily": [286.0, 151.0, 31.0, 7.0, 5.0, 4.0, 5.0], "curve_type": "normal_decay", "fol_phase": "low"}], "stats": {"period_1d": {"pearson_r": 0.38, "spearman_r": 0.38, "p_value": 3.2e-05, "rate_median": 0.277, "rate_p25": 0.233, "rate_p75": 0.317, "rate_mean": 0.28, "beta": 1.522, "beta_ci_low": 0.815, "beta_ci_high": 2.228, "r_squared": 0.141, "n": 113, "intercept": -4.911}, "period_3d": {"pearson_r": 0.296, "spearman_r": 0.235, "p_value": 0.00144, "rate_median": 0.424, "rate_p25": 0.366, "rate_p75": 0.504, "rate_mean": 0.435, "beta": 0.796, "beta_ci_low": 0.293, "beta_ci_high": 1.3, "r_squared": 0.081, "n": 113, "intercept": 0.543}, "period_5d": {"pearson_r": 0.314, "spearman_r": 0.244, "p_value": 0.000715, "rate_median": 0.449, "rate_p25": 0.386, "rate_p75": 0.528, "rate_mean": 0.461, "beta": 0.852, "beta_ci_low": 0.341, "beta_ci_high": 1.363, "r_squared": 0.089, "n": 113, "intercept": 0.22}, "period_7d": {"pearson_r": 0.302, "spearman_r": 0.214, "p_value": 0.001153, "rate_median": 0.467, "rate_p25": 0.402, "rate_p75": 0.549, "rate_mean": 0.48, "beta": 0.826, "beta_ci_low": 0.299, "beta_ci_high": 1.353, "r_squared": 0.08, "n": 113, "intercept": 0.434}}, "phase": {"low": {"fol_min": 787, "fol_max": 939, "n": 39, "rate_1d": 0.26, "rate_3d": 0.436, "rate_7d": 0.482}, "mid": {"fol_min": 941, "fol_max": 1031, "n": 37, "rate_1d": 0.309, "rate_3d": 0.473, "rate_7d": 0.518}, "high": {"fol_min": 1034, "fol_max": 1134, "n": 37, "rate_1d": 0.26, "rate_3d": 0.383, "rate_7d": 0.424}}, "decay": {"median": [272.0, 106.0, 30.0, 13.0, 8.0, 6.0, 5.0], "mean": [276.23893805309734, 115.91150442477876, 34.256637168141594, 16.75221238938053, 9.43362831858407, 8.212389380530974, 10.0], "p25": [223.0, 72.0, 21.0, 8.0, 4.0, 3.0, 3.0], "p75": [322.0, 147.0, 39.0, 21.0, 12.0, 11.0, 8.0]}, "curve_types": {"rapid_decay": {"n": 8, "median": [340.0, 29.0, 12.5, 7.0, 4.5, 2.5, 2.5]}, "normal_decay": {"n": 104, "median": [267.0, 110.5, 31.0, 14.0, 8.0, 6.0, 5.0]}, "sustained": {"n": 1, "median": [230.0, 67.0, 0.0, 0.0, 0.0, 0.0, 279.0]}}, "curve_counts": {"normal_decay": 104, "rapid_decay": 8, "sustained": 1}, "residuals": [{"title": "やらかした会員証｜KITAcore美術館｜ゆきよみ｜ファンクラブ｜", "follower_prev": 1126.0, "view_7d": 968.0, "multiplier": 1.892}, {"title": "GPT-Image-2用のブランドポスタービルダー、HTMLで作ったで｜GPT-Image-2｜画像生成AI｜ChatG", "follower_prev": 1061.0, "view_7d": 915.0, "multiplier": 1.878}, {"title": "「タラヲさんを推してくれ」から始まり、なぜか漫画を作る仕組みまで育った話｜AI活用｜生成AI｜画像生成AI｜", "follower_prev": 1049.0, "view_7d": 877.0, "multiplier": 1.817}, {"title": "GPT-5.5で変わったプロンプトの書き方4つ｜ChatGPT｜生成AI｜AI活用｜プロンプト｜GPT-5.5｜", "follower_prev": 1134.0, "view_7d": 808.0, "multiplier": 1.57}, {"title": "月曜に見かけるあの存在を、勝手に推すことにした｜非公認クラブ｜Monday｜ダルメイ｜", "follower_prev": 980.0, "view_7d": 673.0, "multiplier": 1.475}, {"title": "note記事の寿命はわずか5日間？ワイが自分のデータで暴いた『死の谷』の正体", "follower_prev": 802.0, "view_7d": 546.0, "multiplier": 1.412}, {"title": "愛を数値化したら、ちょっと怖くてめちゃくちゃ面白かった｜note運用｜フォロワー｜つながり｜コラム｜", "follower_prev": 1001.0, "view_7d": 646.0, "multiplier": 1.391}, {"title": "AIアート｜過去のサムネをリライト", "follower_prev": 934.0, "view_7d": 592.0, "multiplier": 1.35}, {"title": "【AIアート/イラスト】7th OASOBI企画 ＃266", "follower_prev": 909.0, "view_7d": 576.0, "multiplier": 1.343}, {"title": "【383文字の実験】Noteのアルゴリズムをハックしたい。", "follower_prev": 931.0, "view_7d": 579.0, "multiplier": 1.324}, {"title": "他人のキャラを自分の世界に混ぜるのはアリか？を遊びながら試した話｜創作｜AI活用｜生成AI｜画像生成AI｜", "follower_prev": 1006.0, "view_7d": 608.0, "multiplier": 1.304}, {"title": "備忘録｜発行済み｜ 会員証｜ダルメイ｜", "follower_prev": 981.0, "view_7d": 590.0, "multiplier": 1.292}, {"title": "架空のファッションブランドを、深夜のノリで作ったで｜GPT-Image-2｜画像生成AI｜ChatGPT｜デザイン｜ブラ", "follower_prev": 1085.0, "view_7d": 640.0, "multiplier": 1.29}, {"title": "「肩見せて、誘惑しないと」と言われたので、ワイも本気を出してみた。", "follower_prev": 973.0, "view_7d": 582.0, "multiplier": 1.283}, {"title": "余白の妖精を召喚したはずが、静かな構造体が出てきた話｜創作｜AI活用｜生成AI｜画像生成AI｜", "follower_prev": 1018.0, "view_7d": 603.0, "multiplier": 1.281}, {"title": "「群衆で構成された巨大な○○」をもっと自由に作る｜動物・神話生物・シンボル編｜Midjourney｜構造化｜プロンプト|", "follower_prev": 966.0, "view_7d": 575.0, "multiplier": 1.275}, {"title": "『宇宙珍獣ユル勇者あかね』祭りに乗ったら、創作が暴走した｜AIイラスト｜AIアート｜", "follower_prev": 973.0, "view_7d": 572.0, "multiplier": 1.261}, {"title": "あの314文字の記事が、ちゃんと実験になった話", "follower_prev": 928.0, "view_7d": 547.0, "multiplier": 1.254}, {"title": "AIを毎日召喚してた人を、召喚してみた話｜創作｜AI活用｜召喚企画｜", "follower_prev": 1031.0, "view_7d": 594.0, "multiplier": 1.248}, {"title": "応援｜Youtuber、創ってみませんか？！｜PROJECT：HUNK｜創作大賞｜やってみた｜創作｜", "follower_prev": 1079.0, "view_7d": 612.0, "multiplier": 1.239}, {"title": "わかってても折れかける。アニメ顔の再現ってほんま難しい｜画像生成AI｜創作｜デザイン｜試行錯誤｜", "follower_prev": 1061.0, "view_7d": 602.0, "multiplier": 1.236}, {"title": "拡散で無料｜マンガのネーム、HTMLファイル1つで作れるようにした｜AI漫画｜ネーム｜生成AI｜", "follower_prev": 1053.0, "view_7d": 595.0, "multiplier": 1.229}, {"title": "プロンプト教、構造派に入信した話｜AI活用|生成AI|ChatGPT|note運用|最近の学び|", "follower_prev": 1007.0, "view_7d": 569.0, "multiplier": 1.219}, {"title": "3つの見せ方で楽しむファンタジーキャラクター制作ログ｜デザイン｜創作｜試行錯誤｜最近の学び｜", "follower_prev": 1019.0, "view_7d": 571.0, "multiplier": 1.212}, {"title": "note運営を“感覚”から“見える化”へ｜GitHub Pagesでダッシュボードを作る｜データ分析｜", "follower_prev": 939.0, "view_7d": 522.0, "multiplier": 1.185}, {"title": "表紙の一枚から写真集をつくれるのか。｜AIアート｜画像生成｜クリエイティブ｜", "follower_prev": 981.0, "view_7d": 539.0, "multiplier": 1.18}, {"title": "AIアート｜コラボ｜覗いたら終わる。マーコ展示録（火野枝馬子）", "follower_prev": 911.0, "view_7d": 506.0, "multiplier": 1.178}, {"title": "プロンプト、毎回ゼロから書いてしんどくない？｜生成AI｜プロンプト｜制作ログ｜", "follower_prev": 1025.0, "view_7d": 554.0, "multiplier": 1.17}, {"title": "5名予定がXX名に。KITAcore召喚企画を5名＋αで続行します｜note｜創作｜AI活用｜生成AI｜", "follower_prev": 1001.0, "view_7d": 542.0, "multiplier": 1.167}, {"title": "朝の曲に「お前、ほんまに本音で生きてるか」って言われた気がした｜エッセイ｜気づき｜人生｜コラム｜", "follower_prev": 1045.0, "view_7d": 560.0, "multiplier": 1.164}, {"title": "小人の世界が、やっとつながりはじめた｜AIアート｜AIイラスト｜生成AI｜", "follower_prev": 961.0, "view_7d": 522.0, "multiplier": 1.163}, {"title": "やさしい顔の裏に、設計図がおった話｜創作｜AI活用｜生成AI｜画像生成AI｜", "follower_prev": 1012.0, "view_7d": 544.0, "multiplier": 1.161}, {"title": "【自己紹介】データ×生成AIで遊ぶログプレイヤー｜note運営｜プロンプト設計｜はじめてのnote｜自己紹介", "follower_prev": 864.0, "view_7d": 476.0, "multiplier": 1.158}, {"title": "AIの7つの力・2026版 ｜「プロンプトが消える時代」の地図を描いてみた話 ｜AIエージェント｜MCP｜プロンプト｜コ", "follower_prev": 1060.0, "view_7d": 563.0, "multiplier": 1.156}, {"title": "【検証】noteのView数が伸びる仕組みを、数式で「構造化」してみた結果", "follower_prev": 831.0, "view_7d": 456.0, "multiplier": 1.145}, {"title": "軽いノリで始めた会員証が、気づけば祭りになっていた話｜note運用｜記事｜つながり｜デザイン｜創作｜", "follower_prev": 1012.0, "view_7d": 535.0, "multiplier": 1.142}, {"title": "「ハッシュタグ」はデータで選べ。フォロワー外に届けるための“新・タグ設計術”", "follower_prev": 907.0, "view_7d": 489.0, "multiplier": 1.142}, {"title": "Note運営｜ビュー数とスキで見る“成長の品質”｜毎日ログの4象限", "follower_prev": 879.0, "view_7d": 471.0, "multiplier": 1.129}, {"title": "「癒し×気づき×笑い」を画像に翻訳しようとしたら、キノコが出てきた話｜創作｜AI活用｜生成AI｜画像生成AI｜", "follower_prev": 1031.0, "view_7d": 536.0, "multiplier": 1.126}, {"title": "【検証】noteのView数が伸びる仕組みを、数式なしで整理してみた：Re", "follower_prev": 839.0, "view_7d": 451.0, "multiplier": 1.124}, {"title": "コラボ企画｜過去作を再利用してクリエイターを召喚する企画｜コラボ創作の新しい形｜画像生成AI｜創作｜実験｜note運用｜", "follower_prev": 990.0, "view_7d": 513.0, "multiplier": 1.115}, {"title": "note記事のPVとスキをデータ分析して見えたこと|人・仕掛け・フォロワーが届き方を変える|分析|データ| note運用", "follower_prev": 935.0, "view_7d": 489.0, "multiplier": 1.114}, {"title": "これは事故か、作品か。｜イラスト｜アート｜生成AI｜", "follower_prev": 966.0, "view_7d": 496.0, "multiplier": 1.1}, {"title": "誰かの創作に火をつけられて、自分も動画を作っていた", "follower_prev": 934.0, "view_7d": 480.0, "multiplier": 1.095}, {"title": "会員証のついでに、FC動画まで作ってもうた話｜ファンクラブ｜ダルメイ｜AI動画｜", "follower_prev": 986.0, "view_7d": 498.0, "multiplier": 1.086}, {"title": "検証不足の過去記事を見直して気づいた、プロンプト設計の変化|AI活用｜生成AI｜ChatGPT｜Gemini｜", "follower_prev": 1008.0, "view_7d": 501.0, "multiplier": 1.073}, {"title": "知ってる人は知ってるゲーム『CRIMSON RONIN』をレビューしてみる｜画像生成AI｜ゲームレビュー｜やってみた｜", "follower_prev": 1100.0, "view_7d": 537.0, "multiplier": 1.07}, {"title": "企業アカのnote、正直“教科書”になるんちゃうん？｜キリン公式の設計図を解剖してみた", "follower_prev": 889.0, "view_7d": 449.0, "multiplier": 1.067}, {"title": "OASOBI第7回|参加表明|文字の中にみんなを住まわせた|OとIは敵｜2/20公開", "follower_prev": 870.0, "view_7d": 433.0, "multiplier": 1.047}, {"title": "noteが“推したい記事”を公開情報から逆算してみた", "follower_prev": 861.0, "view_7d": 429.0, "multiplier": 1.046}, {"title": "ワイが裏で仕掛けてたnote実験、まとめて白状しとく。", "follower_prev": 936.0, "view_7d": 457.0, "multiplier": 1.04}, {"title": "AIに「こんな感じで作って」が一発で伝わる魔法のファイルを知ってる？｜生成AI｜デザイン｜AI活用｜", "follower_prev": 1034.0, "view_7d": 491.0, "multiplier": 1.029}, {"title": "Noteの閲覧数・スキ数を自動で収集する方法｜GitHub｜クリエイター支援｜データ分析｜Note運営｜", "follower_prev": 939.0, "view_7d": 453.0, "multiplier": 1.028}, {"title": "AIイラストで“その人らしさ”が出せへん時、どう向き合うか｜画像生成AI｜デザイン｜創作｜", "follower_prev": 1046.0, "view_7d": 492.0, "multiplier": 1.022}, {"title": "続・note記事には「消費期限」がある（気がする）。経過日数ごとの“日次ビュー減衰”を箱ひげ図で可視化する手法", "follower_prev": 851.0, "view_7d": 414.0, "multiplier": 1.02}, {"title": "【AIアート/イラスト】動物AIアートがむずいので、生物を「護符」にして突破した。", "follower_prev": 839.0, "view_7d": 403.0, "multiplier": 1.004}, {"title": "【簡易版】Platformは、なぜ推しのアルゴリズムを公開したのか。", "follower_prev": 927.0, "view_7d": 432.0, "multiplier": 0.991}, {"title": "プロンプトビルダーの取説、今さら作ったで｜AI活用｜生成AI｜ChatGPT｜画像生成AI｜デザイン｜", "follower_prev": 1090.0, "view_7d": 493.0, "multiplier": 0.99}, {"title": "Apple WatchとClaudeが変えるApple Health健康データ活用の未来｜AI活用｜生成AI｜Claud", "follower_prev": 1098.0, "view_7d": 495.0, "multiplier": 0.988}, {"title": "AIを「予約」する時代が来た！？GeminiのScheduled Actions攻略", "follower_prev": 886.0, "view_7d": 414.0, "multiplier": 0.986}, {"title": "何を作ったのかを“雰囲気ごと”受け取る最近の学び｜試行錯誤｜日記｜エッセイ｜capcut｜", "follower_prev": 1010.0, "view_7d": 460.0, "multiplier": 0.983}, {"title": "コラボしても初日は普通やった。でも翌日が全然ちがう話｜note実験｜", "follower_prev": 975.0, "view_7d": 439.0, "multiplier": 0.966}, {"title": "全記事PV/スキ/コメント＋投稿日を吸い上げてスプシに保存する方法（Colab運用ログ）", "follower_prev": 821.0, "view_7d": 381.0, "multiplier": 0.966}, {"title": "GPTに「ちょっと相談やで」と言ったら、向こうはもう案件として受けていた話｜AI活用｜生成AI｜ChatGPT｜", "follower_prev": 1068.0, "view_7d": 470.0, "multiplier": 0.959}, {"title": "【PR】クマだけが知る酒の商業ポスターを、Pollo AIで作ってみた｜PolloAI｜GPT Image 2｜", "follower_prev": 1075.0, "view_7d": 469.0, "multiplier": 0.952}, {"title": "【詳細版】Platformは、なぜ推しのアルゴリズムを公開したのか。", "follower_prev": 909.0, "view_7d": 406.0, "multiplier": 0.947}, {"title": "noteのViewが伸びる『仕組み』を33記事のログで検証｜フォロワー数は打ち上げ台｜飛距離は記事の設計次第｜", "follower_prev": 955.0, "view_7d": 421.0, "multiplier": 0.943}, {"title": "ModayCafeってなんやんねん。｜AIアート｜Cafe｜イラスト｜", "follower_prev": 1080.0, "view_7d": 466.0, "multiplier": 0.943}, {"title": "【314文字の実験】Noteのアルゴリズムをハックしたい。", "follower_prev": 920.0, "view_7d": 403.0, "multiplier": 0.931}, {"title": "noteダッシュボードを“分析画面”から“ハブ”に作り直した話｜note運営｜ダッシュボード｜データ分析｜UXデザイン｜", "follower_prev": 984.0, "view_7d": 426.0, "multiplier": 0.93}, {"title": "【プロンプトエンジニアリング】プロンプト順序が生成結果に与える影響｜観測ログと構造化テンプレ", "follower_prev": 855.0, "view_7d": 378.0, "multiplier": 0.927}, {"title": "ワイが手伝えるnote運用とAI活用のこと｜note運用｜AI活用｜生成AI｜ChatGPT｜画像生成AI｜", "follower_prev": 1090.0, "view_7d": 462.0, "multiplier": 0.927}, {"title": "初期の実写を掘り返したら、まだ普通に好きやった｜AIアート｜創作｜", "follower_prev": 939.0, "view_7d": 407.0, "multiplier": 0.924}, {"title": "Note非公式APIでできることを整理してみた", "follower_prev": 798.0, "view_7d": 355.0, "multiplier": 0.922}, {"title": "noteのタグを1万件ほど、数理モデルでコネコネしてみた話ｗ", "follower_prev": 821.0, "view_7d": 363.0, "multiplier": 0.921}, {"title": "【AIアート/イラスト】ガソリンスタンドからなにか生み出せるのか。", "follower_prev": 855.0, "view_7d": 375.0, "multiplier": 0.92}, {"title": "noteダッシュボードを“見る画面”から“眺めたくなる画面”にしてみた｜note運営｜データ分析｜", "follower_prev": 938.0, "view_7d": 404.0, "multiplier": 0.918}, {"title": "投資家って何者なん？を理解するとIRが、ちょっと面白くなる ｜株式投資｜IR｜", "follower_prev": 941.0, "view_7d": 400.0, "multiplier": 0.907}, {"title": "メンシプβ版終了と新プラン開始のお知らせ｜note運用｜note収益化｜学び｜試行錯誤｜", "follower_prev": 1021.0, "view_7d": 425.0, "multiplier": 0.9}, {"title": "プロンプト教・構造派が拗らせるとこうなる｜生成AI｜プロンプト｜", "follower_prev": 1025.0, "view_7d": 423.0, "multiplier": 0.893}, {"title": "黒髪と白髪に偏りすぎた、ワイ的AI美女8選｜生成AI｜画像生成AI｜", "follower_prev": 1046.0, "view_7d": 429.0, "multiplier": 0.891}, {"title": "OASOBI第7回・後日談｜同じワードで、世界線がいっぱい生えた件", "follower_prev": 909.0, "view_7d": 382.0, "multiplier": 0.891}, {"title": "今回はほんまに寿命が削れた話｜画像生成AI｜デザイン｜学び｜気づき｜", "follower_prev": 1061.0, "view_7d": 432.0, "multiplier": 0.887}, {"title": "昔のサムネを見返したら、下手さより“その時の熱”が残ってた話｜Gemini｜デザイン｜note運用｜最近の学び｜", "follower_prev": 1018.0, "view_7d": 416.0, "multiplier": 0.884}, {"title": "4月の月間ランキング発表｜応援の軌跡を残すアーカイブ｜note運用｜学び｜日記｜日常｜振り返り｜", "follower_prev": 1111.0, "view_7d": 447.0, "multiplier": 0.883}, {"title": "Midjourneyの“自分用メモ”を、HTMLの呪文棚に改造した｜Midjourney｜画像生成AI｜AI活用｜生成A", "follower_prev": 1079.0, "view_7d": 423.0, "multiplier": 0.856}, {"title": "3月の月間ランキング発表｜応援の軌跡を残すアーカイブ｜note運用｜学び｜日記｜日常｜振り返り｜", "follower_prev": 1021.0, "view_7d": 403.0, "multiplier": 0.854}, {"title": "【PR】Pollo AIのSeedance2.0でMidjourneyの静止画キャラクターを動画化してみた｜PolloA", "follower_prev": 1061.0, "view_7d": 413.0, "multiplier": 0.848}, {"title": "IRを読むと、裏側の配管が見える！？（noteで遊ぶコスト構造）", "follower_prev": 927.0, "view_7d": 366.0, "multiplier": 0.84}, {"title": "1行の問いで見直す、売れると売れ続けるの違い｜note運用｜note収益化｜学び｜最近の学び｜", "follower_prev": 1058.0, "view_7d": 407.0, "multiplier": 0.837}, {"title": "noteの「初速スキ」とバズはほんまに関係あるんか？|Note運営|データ分析|", "follower_prev": 971.0, "view_7d": 378.0, "multiplier": 0.835}, {"title": "「奇跡の1枚」はいらない。再現できる異常性がほしい｜AIアート｜生成AI｜プロンプト｜", "follower_prev": 986.0, "view_7d": 382.0, "multiplier": 0.833}, {"title": "あなたのNoteを「資産」に変える！？たった2つの数式｜note運用｜学び｜試行錯誤｜気づき｜", "follower_prev": 1049.0, "view_7d": 400.0, "multiplier": 0.829}, {"title": "604人に支えられて見えた、4月後半のランキングの熱量｜note運用｜note企画｜スキランキング｜", "follower_prev": 1059.0, "view_7d": 398.0, "multiplier": 0.818}, {"title": "V8来るで。Midjourneyが「審美眼貸して」って言うてきた", "follower_prev": 889.0, "view_7d": 344.0, "multiplier": 0.817}, {"title": "「群衆で構成された巨大な○○」を再現する構造化プロンプト設計書｜人物・動物・建築テンプレ編｜Midjourney｜メンシ", "follower_prev": 1133.0, "view_7d": 417.0, "multiplier": 0.811}, {"title": "【AIイラスト】記事サムネの振り返り｜2026年2月の制作ログ｜イラスト｜アート｜サムネ｜", "follower_prev": 950.0, "view_7d": 360.0, "multiplier": 0.81}, {"title": "読まれ方でViewは変わるのか。314文字と383文字で実験してみた結果｜note運営｜記事｜", "follower_prev": 994.0, "view_7d": 372.0, "multiplier": 0.806}, {"title": "寝てもスッキリせん人へ：朝の光と朝食が効く理由", "follower_prev": 913.0, "view_7d": 340.0, "multiplier": 0.79}, {"title": "ちょっとやらかした。昨日V1を出したのに、もうV5ができた話｜AI活用｜生成AI｜試行錯誤｜", "follower_prev": 1061.0, "view_7d": 376.0, "multiplier": 0.772}, {"title": "“見た側が考え始める絵”はつくれるのか｜アート｜創作｜ペンアート｜", "follower_prev": 1079.0, "view_7d": 378.0, "multiplier": 0.765}, {"title": "顔だけのリファレンスシートを作る｜実写→イラスト｜イラスト→実写｜AI活用｜創作｜", "follower_prev": 1045.0, "view_7d": 361.0, "multiplier": 0.75}, {"title": "「初速は効く」はほんまに頑健なんか？ 4,166本で見直した話|Note運営|データ分析|", "follower_prev": 1010.0, "view_7d": 341.0, "multiplier": 0.729}, {"title": "【AIアート】捨てるのは紙か、未来か。", "follower_prev": 787.0, "view_7d": 270.0, "multiplier": 0.709}, {"title": "【ロジック解説】データ構造から逆算したnoteタグ戦略の深淵", "follower_prev": 911.0, "view_7d": 297.0, "multiplier": 0.691}, {"title": "AI検索に最適化しようとしたら、自分の関西弁が戦犯やった｜AI活用｜生成AI｜書き方｜", "follower_prev": 1040.0, "view_7d": 326.0, "multiplier": 0.68}, {"title": "未完でも使える。漫画の演出理論をAIにやらせるV4構想｜AI漫画｜ネーム｜やってみた｜", "follower_prev": 1061.0, "view_7d": 326.0, "multiplier": 0.669}, {"title": "300本以上書いて、自分のnoteを一番わかってなかったのはワイやった｜AI活用｜note運営｜データ分析｜自己紹介｜", "follower_prev": 1042.0, "view_7d": 306.0, "multiplier": 0.637}, {"title": "noteの週次・月次データを自動集計する方法｜振り返り運営｜Python｜", "follower_prev": 1019.0, "view_7d": 287.0, "multiplier": 0.609}, {"title": "AIに任せるか、自分で割るか。漫画ネームの2つのルート｜AI漫画｜ネーム｜AI活用｜生成AI｜", "follower_prev": 1061.0, "view_7d": 282.0, "multiplier": 0.579}, {"title": "V2とV3、ひとつにまとめた。KITAcore Name Generator v5｜AI漫画｜ネーム｜AI活用｜生成AI", "follower_prev": 1059.0, "view_7d": 264.0, "multiplier": 0.543}, {"title": "【プロンプト公開版】切り抜き×逆光×投影の再現", "follower_prev": 831.0, "view_7d": 216.0, "multiplier": 0.542}, {"title": "テスト記事", "follower_prev": 1061.0, "view_7d": 254.0, "multiplier": 0.521}], "hypothesis": {"follower_prev_1d": {"pearson_r": 0.38, "beta": 1.522, "beta_ci_low": 0.815, "beta_ci_high": 2.228, "r_squared": 0.141, "intercept": -4.911, "rate_median": 0.277, "rate_p25": 0.233, "rate_p75": 0.317, "n": 113}, "follower_prev_3d": {"pearson_r": 0.296, "beta": 0.796, "beta_ci_low": 0.293, "beta_ci_high": 1.3, "r_squared": 0.081, "intercept": 0.543, "rate_median": 0.424, "rate_p25": 0.366, "rate_p75": 0.504, "n": 113}, "follower_prev_5d": {"pearson_r": 0.314, "beta": 0.852, "beta_ci_low": 0.341, "beta_ci_high": 1.363, "r_squared": 0.089, "intercept": 0.22, "rate_median": 0.449, "rate_p25": 0.386, "rate_p75": 0.528, "n": 113}, "follower_prev_7d": {"pearson_r": 0.302, "beta": 0.826, "beta_ci_low": 0.299, "beta_ci_high": 1.353, "r_squared": 0.08, "intercept": 0.434, "rate_median": 0.467, "rate_p25": 0.402, "rate_p75": 0.549, "n": 113}, "active_30d_1d": {"pearson_r": 0.318, "beta": 0.877, "beta_ci_low": 0.411, "beta_ci_high": 1.343, "r_squared": 0.111, "intercept": -0.222, "rate_median": 0.365, "rate_p25": 0.31, "rate_p75": 0.431, "n": 113}, "active_30d_3d": {"pearson_r": 0.23, "beta": 0.389, "beta_ci_low": 0.056, "beta_ci_high": 0.722, "r_squared": 0.046, "intercept": 3.459, "rate_median": 0.569, "rate_p25": 0.487, "rate_p75": 0.671, "n": 113}, "active_30d_5d": {"pearson_r": 0.257, "beta": 0.436, "beta_ci_low": 0.098, "beta_ci_high": 0.774, "r_squared": 0.056, "intercept": 3.206, "rate_median": 0.613, "rate_p25": 0.508, "rate_p75": 0.713, "n": 113}, "active_30d_7d": {"pearson_r": 0.25, "beta": 0.421, "beta_ci_low": 0.074, "beta_ci_high": 0.769, "r_squared": 0.049, "intercept": 3.341, "rate_median": 0.631, "rate_p25": 0.528, "rate_p75": 0.73, "n": 113}, "active_60d_1d": {"pearson_r": 0.332, "beta": 0.927, "beta_ci_low": 0.444, "beta_ci_high": 1.41, "r_squared": 0.115, "intercept": -0.958, "rate_median": 0.235, "rate_p25": 0.197, "rate_p75": 0.278, "n": 113}, "active_60d_3d": {"pearson_r": 0.256, "beta": 0.451, "beta_ci_low": 0.107, "beta_ci_high": 0.795, "r_squared": 0.057, "intercept": 2.851, "rate_median": 0.366, "rate_p25": 0.313, "rate_p75": 0.438, "n": 113}, "active_60d_5d": {"pearson_r": 0.281, "beta": 0.497, "beta_ci_low": 0.148, "beta_ci_high": 0.845, "r_squared": 0.067, "intercept": 2.588, "rate_median": 0.394, "rate_p25": 0.332, "rate_p75": 0.459, "n": 113}, "active_60d_7d": {"pearson_r": 0.277, "beta": 0.489, "beta_ci_low": 0.13, "beta_ci_high": 0.848, "r_squared": 0.062, "intercept": 2.678, "rate_median": 0.402, "rate_p25": 0.342, "rate_p75": 0.477, "n": 113}, "active_90d_1d": {"pearson_r": 0.35, "beta": 0.948, "beta_ci_low": 0.481, "beta_ci_high": 1.414, "r_squared": 0.127, "intercept": -1.327, "rate_median": 0.189, "rate_p25": 0.157, "rate_p75": 0.218, "n": 113}, "active_90d_3d": {"pearson_r": 0.273, "beta": 0.476, "beta_ci_low": 0.144, "beta_ci_high": 0.809, "r_squared": 0.068, "intercept": 2.563, "rate_median": 0.292, "rate_p25": 0.248, "rate_p75": 0.343, "n": 113}, "active_90d_5d": {"pearson_r": 0.295, "beta": 0.518, "beta_ci_low": 0.181, "beta_ci_high": 0.855, "r_squared": 0.077, "intercept": 2.318, "rate_median": 0.313, "rate_p25": 0.259, "rate_p75": 0.361, "n": 113}, "active_90d_7d": {"pearson_r": 0.286, "beta": 0.5, "beta_ci_low": 0.152, "beta_ci_high": 0.847, "r_squared": 0.068, "intercept": 2.488, "rate_median": 0.321, "rate_p25": 0.269, "rate_p75": 0.374, "n": 113}}, "hypothesis_points": [{"title": "【検証】noteのView数が伸びる仕組みを、数式なしで整理してみた：Re", "view_7d": 451.0, "view_1d": 183.0, "follower_prev": 839.0, "active_30d": 591.0, "active_60d": 939.0, "active_90d": 1158.0}, {"title": "OASOBI第7回|参加表明|文字の中にみんなを住まわせた|OとIは敵｜2/20公開", "view_7d": 433.0, "view_1d": 237.0, "follower_prev": 870.0, "active_30d": 642.0, "active_60d": 991.0, "active_90d": 1221.0}, {"title": "【PR】Pollo AIのSeedance2.0でMidjourneyの静止画キャラクターを動画化してみた｜PolloA", "view_7d": 413.0, "view_1d": 364.0, "follower_prev": 1061.0, "active_30d": 854.0, "active_60d": 1330.0, "active_90d": 1684.0}, {"title": "「群衆で構成された巨大な○○」をもっと自由に作る｜動物・神話生物・シンボル編｜Midjourney｜構造化｜プロンプト|", "view_7d": 575.0, "view_1d": 223.0, "follower_prev": 966.0, "active_30d": 711.0, "active_60d": 1089.0, "active_90d": 1402.0}, {"title": "愛を数値化したら、ちょっと怖くてめちゃくちゃ面白かった｜note運用｜フォロワー｜つながり｜コラム｜", "view_7d": 646.0, "view_1d": 507.0, "follower_prev": 1001.0, "active_30d": 729.0, "active_60d": 1137.0, "active_90d": 1457.0}, {"title": "AIの7つの力・2026版 ｜「プロンプトが消える時代」の地図を描いてみた話 ｜AIエージェント｜MCP｜プロンプト｜コ", "view_7d": 563.0, "view_1d": 324.0, "follower_prev": 1060.0, "active_30d": 858.0, "active_60d": 1306.0, "active_90d": 1654.0}, {"title": "プロンプト教、構造派に入信した話｜AI活用|生成AI|ChatGPT|note運用|最近の学び|", "view_7d": 569.0, "view_1d": 304.0, "follower_prev": 1007.0, "active_30d": 744.0, "active_60d": 1150.0, "active_90d": 1487.0}, {"title": "顔だけのリファレンスシートを作る｜実写→イラスト｜イラスト→実写｜AI活用｜創作｜", "view_7d": 361.0, "view_1d": 220.0, "follower_prev": 1045.0, "active_30d": 815.0, "active_60d": 1274.0, "active_90d": 1588.0}, {"title": "noteダッシュボードを“見る画面”から“眺めたくなる画面”にしてみた｜note運営｜データ分析｜", "view_7d": 404.0, "view_1d": 273.0, "follower_prev": 938.0, "active_30d": 671.0, "active_60d": 1044.0, "active_90d": 1341.0}, {"title": "【自己紹介】データ×生成AIで遊ぶログプレイヤー｜note運営｜プロンプト設計｜はじめてのnote｜自己紹介", "view_7d": 476.0, "view_1d": 248.0, "follower_prev": 864.0, "active_30d": 629.0, "active_60d": 978.0, "active_90d": 1210.0}, {"title": "【AIアート】捨てるのは紙か、未来か。", "view_7d": 270.0, "view_1d": 167.0, "follower_prev": 787.0, "active_30d": 573.0, "active_60d": 894.0, "active_90d": 1119.0}, {"title": "黒髪と白髪に偏りすぎた、ワイ的AI美女8選｜生成AI｜画像生成AI｜", "view_7d": 429.0, "view_1d": 301.0, "follower_prev": 1046.0, "active_30d": 813.0, "active_60d": 1278.0, "active_90d": 1594.0}, {"title": "3つの見せ方で楽しむファンタジーキャラクター制作ログ｜デザイン｜創作｜試行錯誤｜最近の学び｜", "view_7d": 571.0, "view_1d": 252.0, "follower_prev": 1019.0, "active_30d": 795.0, "active_60d": 1191.0, "active_90d": 1525.0}, {"title": "ワイが裏で仕掛けてたnote実験、まとめて白状しとく。", "view_7d": 457.0, "view_1d": 307.0, "follower_prev": 936.0, "active_30d": 664.0, "active_60d": 1050.0, "active_90d": 1329.0}, {"title": "『宇宙珍獣ユル勇者あかね』祭りに乗ったら、創作が暴走した｜AIイラスト｜AIアート｜", "view_7d": 572.0, "view_1d": 354.0, "follower_prev": 973.0, "active_30d": 695.0, "active_60d": 1095.0, "active_90d": 1409.0}, {"title": "【プロンプトエンジニアリング】プロンプト順序が生成結果に与える影響｜観測ログと構造化テンプレ", "view_7d": 378.0, "view_1d": 103.0, "follower_prev": 855.0, "active_30d": 605.0, "active_60d": 954.0, "active_90d": 1186.0}, {"title": "【ロジック解説】データ構造から逆算したnoteタグ戦略の深淵", "view_7d": 297.0, "view_1d": 209.0, "follower_prev": 911.0, "active_30d": 673.0, "active_60d": 1024.0, "active_90d": 1277.0}, {"title": "朝の曲に「お前、ほんまに本音で生きてるか」って言われた気がした｜エッセイ｜気づき｜人生｜コラム｜", "view_7d": 560.0, "view_1d": 356.0, "follower_prev": 1045.0, "active_30d": 815.0, "active_60d": 1274.0, "active_90d": 1588.0}, {"title": "メンシプβ版終了と新プラン開始のお知らせ｜note運用｜note収益化｜学び｜試行錯誤｜", "view_7d": 425.0, "view_1d": 309.0, "follower_prev": 1021.0, "active_30d": 797.0, "active_60d": 1196.0, "active_90d": 1521.0}, {"title": "AIを毎日召喚してた人を、召喚してみた話｜創作｜AI活用｜召喚企画｜", "view_7d": 594.0, "view_1d": 445.0, "follower_prev": 1031.0, "active_30d": 803.0, "active_60d": 1226.0, "active_90d": 1544.0}, {"title": "noteが“推したい記事”を公開情報から逆算してみた", "view_7d": 429.0, "view_1d": 199.0, "follower_prev": 861.0, "active_30d": 620.0, "active_60d": 964.0, "active_90d": 1197.0}, {"title": "V2とV3、ひとつにまとめた。KITAcore Name Generator v5｜AI漫画｜ネーム｜AI活用｜生成AI", "view_7d": 264.0, "view_1d": 163.0, "follower_prev": 1059.0, "active_30d": 854.0, "active_60d": 1298.0, "active_90d": 1644.0}, {"title": "備忘録｜発行済み｜ 会員証｜ダルメイ｜", "view_7d": 590.0, "view_1d": 50.0, "follower_prev": 981.0, "active_30d": 696.0, "active_60d": 1107.0, "active_90d": 1421.0}, {"title": "わかってても折れかける。アニメ顔の再現ってほんま難しい｜画像生成AI｜創作｜デザイン｜試行錯誤｜", "view_7d": 602.0, "view_1d": 301.0, "follower_prev": 1061.0, "active_30d": 857.0, "active_60d": 1293.0, "active_90d": 1647.0}, {"title": "コラボ企画｜過去作を再利用してクリエイターを召喚する企画｜コラボ創作の新しい形｜画像生成AI｜創作｜実験｜note運用｜", "view_7d": 513.0, "view_1d": 309.0, "follower_prev": 990.0, "active_30d": 709.0, "active_60d": 1111.0, "active_90d": 1439.0}, {"title": "「奇跡の1枚」はいらない。再現できる異常性がほしい｜AIアート｜生成AI｜プロンプト｜", "view_7d": 382.0, "view_1d": 256.0, "follower_prev": 986.0, "active_30d": 711.0, "active_60d": 1112.0, "active_90d": 1438.0}, {"title": "GPTに「ちょっと相談やで」と言ったら、向こうはもう案件として受けていた話｜AI活用｜生成AI｜ChatGPT｜", "view_7d": 470.0, "view_1d": 285.0, "follower_prev": 1068.0, "active_30d": 843.0, "active_60d": 1334.0, "active_90d": 1691.0}, {"title": "未完でも使える。漫画の演出理論をAIにやらせるV4構想｜AI漫画｜ネーム｜やってみた｜", "view_7d": 326.0, "view_1d": 206.0, "follower_prev": 1061.0, "active_30d": 857.0, "active_60d": 1293.0, "active_90d": 1647.0}, {"title": "応援｜Youtuber、創ってみませんか？！｜PROJECT：HUNK｜創作大賞｜やってみた｜創作｜", "view_7d": 612.0, "view_1d": 393.0, "follower_prev": 1079.0, "active_30d": 855.0, "active_60d": 1344.0, "active_90d": 1698.0}, {"title": "あの314文字の記事が、ちゃんと実験になった話", "view_7d": 547.0, "view_1d": 381.0, "follower_prev": 928.0, "active_30d": 661.0, "active_60d": 1033.0, "active_90d": 1299.0}, {"title": "Note非公式APIでできることを整理してみた", "view_7d": 355.0, "view_1d": 175.0, "follower_prev": 798.0, "active_30d": 565.0, "active_60d": 895.0, "active_90d": 1125.0}, {"title": "AIを「予約」する時代が来た！？GeminiのScheduled Actions攻略", "view_7d": 414.0, "view_1d": 225.0, "follower_prev": 886.0, "active_30d": 642.0, "active_60d": 1008.0, "active_90d": 1240.0}, {"title": "あなたのNoteを「資産」に変える！？たった2つの数式｜note運用｜学び｜試行錯誤｜気づき｜", "view_7d": 400.0, "view_1d": 271.0, "follower_prev": 1049.0, "active_30d": 821.0, "active_60d": 1278.0, "active_90d": 1603.0}, {"title": "検証不足の過去記事を見直して気づいた、プロンプト設計の変化|AI活用｜生成AI｜ChatGPT｜Gemini｜", "view_7d": 501.0, "view_1d": 319.0, "follower_prev": 1008.0, "active_30d": 746.0, "active_60d": 1155.0, "active_90d": 1469.0}, {"title": "“見た側が考え始める絵”はつくれるのか｜アート｜創作｜ペンアート｜", "view_7d": 378.0, "view_1d": 266.0, "follower_prev": 1079.0, "active_30d": 855.0, "active_60d": 1344.0, "active_90d": 1698.0}, {"title": "AIイラストで“その人らしさ”が出せへん時、どう向き合うか｜画像生成AI｜デザイン｜創作｜", "view_7d": 492.0, "view_1d": 290.0, "follower_prev": 1046.0, "active_30d": 813.0, "active_60d": 1271.0, "active_90d": 1591.0}, {"title": "300本以上書いて、自分のnoteを一番わかってなかったのはワイやった｜AI活用｜note運営｜データ分析｜自己紹介｜", "view_7d": 306.0, "view_1d": 214.0, "follower_prev": 1042.0, "active_30d": 824.0, "active_60d": 1274.0, "active_90d": 1588.0}, {"title": "「癒し×気づき×笑い」を画像に翻訳しようとしたら、キノコが出てきた話｜創作｜AI活用｜生成AI｜画像生成AI｜", "view_7d": 536.0, "view_1d": 293.0, "follower_prev": 1031.0, "active_30d": 819.0, "active_60d": 1247.0, "active_90d": 1551.0}, {"title": "やさしい顔の裏に、設計図がおった話｜創作｜AI活用｜生成AI｜画像生成AI｜", "view_7d": 544.0, "view_1d": 381.0, "follower_prev": 1012.0, "active_30d": 762.0, "active_60d": 1165.0, "active_90d": 1493.0}, {"title": "Midjourneyの“自分用メモ”を、HTMLの呪文棚に改造した｜Midjourney｜画像生成AI｜AI活用｜生成A", "view_7d": 423.0, "view_1d": 341.0, "follower_prev": 1079.0, "active_30d": 855.0, "active_60d": 1344.0, "active_90d": 1698.0}, {"title": "1行の問いで見直す、売れると売れ続けるの違い｜note運用｜note収益化｜学び｜最近の学び｜", "view_7d": 407.0, "view_1d": 246.0, "follower_prev": 1058.0, "active_30d": 844.0, "active_60d": 1304.0, "active_90d": 1655.0}, {"title": "noteの「初速スキ」とバズはほんまに関係あるんか？|Note運営|データ分析|", "view_7d": 378.0, "view_1d": 239.0, "follower_prev": 971.0, "active_30d": 720.0, "active_60d": 1093.0, "active_90d": 1406.0}, {"title": "【詳細版】Platformは、なぜ推しのアルゴリズムを公開したのか。", "view_7d": 406.0, "view_1d": 80.0, "follower_prev": 909.0, "active_30d": 656.0, "active_60d": 1027.0, "active_90d": 1268.0}, {"title": "noteのViewが伸びる『仕組み』を33記事のログで検証｜フォロワー数は打ち上げ台｜飛距離は記事の設計次第｜", "view_7d": 421.0, "view_1d": 232.0, "follower_prev": 955.0, "active_30d": 696.0, "active_60d": 1068.0, "active_90d": 1378.0}, {"title": "「群衆で構成された巨大な○○」を再現する構造化プロンプト設計書｜人物・動物・建築テンプレ編｜Midjourney｜メンシ", "view_7d": 417.0, "view_1d": 264.0, "follower_prev": 1133.0, "active_30d": 935.0, "active_60d": 1446.0, "active_90d": 1818.0}, {"title": "AI検索に最適化しようとしたら、自分の関西弁が戦犯やった｜AI活用｜生成AI｜書き方｜", "view_7d": 326.0, "view_1d": 196.0, "follower_prev": 1040.0, "active_30d": 828.0, "active_60d": 1279.0, "active_90d": 1581.0}, {"title": "余白の妖精を召喚したはずが、静かな構造体が出てきた話｜創作｜AI活用｜生成AI｜画像生成AI｜", "view_7d": 603.0, "view_1d": 315.0, "follower_prev": 1018.0, "active_30d": 783.0, "active_60d": 1191.0, "active_90d": 1522.0}, {"title": "【AIイラスト】記事サムネの振り返り｜2026年2月の制作ログ｜イラスト｜アート｜サムネ｜", "view_7d": 360.0, "view_1d": 169.0, "follower_prev": 950.0, "active_30d": 704.0, "active_60d": 1063.0, "active_90d": 1370.0}, {"title": "4月の月間ランキング発表｜応援の軌跡を残すアーカイブ｜note運用｜学び｜日記｜日常｜振り返り｜", "view_7d": 447.0, "view_1d": 275.0, "follower_prev": 1111.0, "active_30d": 914.0, "active_60d": 1438.0, "active_90d": 1795.0}, {"title": "【AIアート/イラスト】動物AIアートがむずいので、生物を「護符」にして突破した。", "view_7d": 403.0, "view_1d": 206.0, "follower_prev": 839.0, "active_30d": 585.0, "active_60d": 929.0, "active_90d": 1144.0}, {"title": "AIに「こんな感じで作って」が一発で伝わる魔法のファイルを知ってる？｜生成AI｜デザイン｜AI活用｜", "view_7d": 491.0, "view_1d": 268.0, "follower_prev": 1034.0, "active_30d": 829.0, "active_60d": 1268.0, "active_90d": 1568.0}, {"title": "テスト記事", "view_7d": 254.0, "view_1d": 254.0, "follower_prev": 1061.0, "active_30d": 857.0, "active_60d": 1293.0, "active_90d": 1647.0}, {"title": "他人のキャラを自分の世界に混ぜるのはアリか？を遊びながら試した話｜創作｜AI活用｜生成AI｜画像生成AI｜", "view_7d": 608.0, "view_1d": 443.0, "follower_prev": 1006.0, "active_30d": 745.0, "active_60d": 1154.0, "active_90d": 1466.0}, {"title": "会員証のついでに、FC動画まで作ってもうた話｜ファンクラブ｜ダルメイ｜AI動画｜", "view_7d": 498.0, "view_1d": 313.0, "follower_prev": 986.0, "active_30d": 711.0, "active_60d": 1112.0, "active_90d": 1438.0}, {"title": "【383文字の実験】Noteのアルゴリズムをハックしたい。", "view_7d": 579.0, "view_1d": 345.0, "follower_prev": 931.0, "active_30d": 662.0, "active_60d": 1031.0, "active_90d": 1306.0}, {"title": "noteダッシュボードを“分析画面”から“ハブ”に作り直した話｜note運営｜ダッシュボード｜データ分析｜UXデザイン｜", "view_7d": 426.0, "view_1d": 287.0, "follower_prev": 984.0, "active_30d": 705.0, "active_60d": 1104.0, "active_90d": 1433.0}, {"title": "月曜に見かけるあの存在を、勝手に推すことにした｜非公認クラブ｜Monday｜ダルメイ｜", "view_7d": 673.0, "view_1d": 346.0, "follower_prev": 980.0, "active_30d": 698.0, "active_60d": 1107.0, "active_90d": 1420.0}, {"title": "「肩見せて、誘惑しないと」と言われたので、ワイも本気を出してみた。", "view_7d": 582.0, "view_1d": 368.0, "follower_prev": 973.0, "active_30d": 702.0, "active_60d": 1095.0, "active_90d": 1407.0}, {"title": "604人に支えられて見えた、4月後半のランキングの熱量｜note運用｜note企画｜スキランキング｜", "view_7d": 398.0, "view_1d": 203.0, "follower_prev": 1059.0, "active_30d": 854.0, "active_60d": 1298.0, "active_90d": 1644.0}, {"title": "【プロンプト公開版】切り抜き×逆光×投影の再現", "view_7d": 216.0, "view_1d": 138.0, "follower_prev": 831.0, "active_30d": 583.0, "active_60d": 922.0, "active_90d": 1134.0}, {"title": "投資家って何者なん？を理解するとIRが、ちょっと面白くなる ｜株式投資｜IR｜", "view_7d": 400.0, "view_1d": 242.0, "follower_prev": 941.0, "active_30d": 693.0, "active_60d": 1049.0, "active_90d": 1358.0}, {"title": "読まれ方でViewは変わるのか。314文字と383文字で実験してみた結果｜note運営｜記事｜", "view_7d": 372.0, "view_1d": 262.0, "follower_prev": 994.0, "active_30d": 717.0, "active_60d": 1126.0, "active_90d": 1454.0}, {"title": "拡散で無料｜マンガのネーム、HTMLファイル1つで作れるようにした｜AI漫画｜ネーム｜生成AI｜", "view_7d": 595.0, "view_1d": 382.0, "follower_prev": 1053.0, "active_30d": 855.0, "active_60d": 1296.0, "active_90d": 1631.0}, {"title": "何を作ったのかを“雰囲気ごと”受け取る最近の学び｜試行錯誤｜日記｜エッセイ｜capcut｜", "view_7d": 460.0, "view_1d": 303.0, "follower_prev": 1010.0, "active_30d": 745.0, "active_60d": 1150.0, "active_90d": 1484.0}, {"title": "企業アカのnote、正直“教科書”になるんちゃうん？｜キリン公式の設計図を解剖してみた", "view_7d": 449.0, "view_1d": 263.0, "follower_prev": 889.0, "active_30d": 644.0, "active_60d": 1006.0, "active_90d": 1243.0}, {"title": "Note運営｜ビュー数とスキで見る“成長の品質”｜毎日ログの4象限", "view_7d": 471.0, "view_1d": 237.0, "follower_prev": 879.0, "active_30d": 646.0, "active_60d": 997.0, "active_90d": 1231.0}, {"title": "5名予定がXX名に。KITAcore召喚企画を5名＋αで続行します｜note｜創作｜AI活用｜生成AI｜", "view_7d": 542.0, "view_1d": 311.0, "follower_prev": 1001.0, "active_30d": 729.0, "active_60d": 1137.0, "active_90d": 1457.0}, {"title": "架空のファッションブランドを、深夜のノリで作ったで｜GPT-Image-2｜画像生成AI｜ChatGPT｜デザイン｜ブラ", "view_7d": 640.0, "view_1d": 357.0, "follower_prev": 1085.0, "active_30d": 877.0, "active_60d": 1361.0, "active_90d": 1716.0}, {"title": "プロンプト教・構造派が拗らせるとこうなる｜生成AI｜プロンプト｜", "view_7d": 423.0, "view_1d": 125.0, "follower_prev": 1025.0, "active_30d": 794.0, "active_60d": 1214.0, "active_90d": 1535.0}, {"title": "3月の月間ランキング発表｜応援の軌跡を残すアーカイブ｜note運用｜学び｜日記｜日常｜振り返り｜", "view_7d": 403.0, "view_1d": 324.0, "follower_prev": 1021.0, "active_30d": 783.0, "active_60d": 1187.0, "active_90d": 1506.0}, {"title": "noteのタグを1万件ほど、数理モデルでコネコネしてみた話ｗ", "view_7d": 363.0, "view_1d": 174.0, "follower_prev": 821.0, "active_30d": 575.0, "active_60d": 911.0, "active_90d": 1131.0}, {"title": "小人の世界が、やっとつながりはじめた｜AIアート｜AIイラスト｜生成AI｜", "view_7d": 522.0, "view_1d": 322.0, "follower_prev": 961.0, "active_30d": 709.0, "active_60d": 1079.0, "active_90d": 1390.0}, {"title": "軽いノリで始めた会員証が、気づけば祭りになっていた話｜note運用｜記事｜つながり｜デザイン｜創作｜", "view_7d": 535.0, "view_1d": 337.0, "follower_prev": 1012.0, "active_30d": 746.0, "active_60d": 1154.0, "active_90d": 1482.0}, {"title": "AIアート｜コラボ｜覗いたら終わる。マーコ展示録（火野枝馬子）", "view_7d": 506.0, "view_1d": 288.0, "follower_prev": 911.0, "active_30d": 673.0, "active_60d": 1024.0, "active_90d": 1277.0}, {"title": "今回はほんまに寿命が削れた話｜画像生成AI｜デザイン｜学び｜気づき｜", "view_7d": 432.0, "view_1d": 279.0, "follower_prev": 1061.0, "active_30d": 854.0, "active_60d": 1330.0, "active_90d": 1684.0}, {"title": "note記事のPVとスキをデータ分析して見えたこと|人・仕掛け・フォロワーが届き方を変える|分析|データ| note運用", "view_7d": 489.0, "view_1d": 275.0, "follower_prev": 935.0, "active_30d": 672.0, "active_60d": 1046.0, "active_90d": 1334.0}, {"title": "【簡易版】Platformは、なぜ推しのアルゴリズムを公開したのか。", "view_7d": 432.0, "view_1d": 420.0, "follower_prev": 927.0, "active_30d": 666.0, "active_60d": 1046.0, "active_90d": 1300.0}, {"title": "やらかした会員証｜KITAcore美術館｜ゆきよみ｜ファンクラブ｜", "view_7d": 968.0, "view_1d": 352.0, "follower_prev": 1126.0, "active_30d": 934.0, "active_60d": 1450.0, "active_90d": 1811.0}, {"title": "AIに任せるか、自分で割るか。漫画ネームの2つのルート｜AI漫画｜ネーム｜AI活用｜生成AI｜", "view_7d": 282.0, "view_1d": 179.0, "follower_prev": 1061.0, "active_30d": 862.0, "active_60d": 1298.0, "active_90d": 1648.0}, {"title": "表紙の一枚から写真集をつくれるのか。｜AIアート｜画像生成｜クリエイティブ｜", "view_7d": 539.0, "view_1d": 370.0, "follower_prev": 981.0, "active_30d": 696.0, "active_60d": 1107.0, "active_90d": 1421.0}, {"title": "OASOBI第7回・後日談｜同じワードで、世界線がいっぱい生えた件", "view_7d": 382.0, "view_1d": 212.0, "follower_prev": 909.0, "active_30d": 667.0, "active_60d": 1017.0, "active_90d": 1268.0}, {"title": "これは事故か、作品か。｜イラスト｜アート｜生成AI｜", "view_7d": 496.0, "view_1d": 310.0, "follower_prev": 966.0, "active_30d": 711.0, "active_60d": 1089.0, "active_90d": 1402.0}, {"title": "プロンプト、毎回ゼロから書いてしんどくない？｜生成AI｜プロンプト｜制作ログ｜", "view_7d": 554.0, "view_1d": 326.0, "follower_prev": 1025.0, "active_30d": 794.0, "active_60d": 1214.0, "active_90d": 1535.0}, {"title": "noteの週次・月次データを自動集計する方法｜振り返り運営｜Python｜", "view_7d": 287.0, "view_1d": 193.0, "follower_prev": 1019.0, "active_30d": 795.0, "active_60d": 1191.0, "active_90d": 1525.0}, {"title": "昔のサムネを見返したら、下手さより“その時の熱”が残ってた話｜Gemini｜デザイン｜note運用｜最近の学び｜", "view_7d": 416.0, "view_1d": 295.0, "follower_prev": 1018.0, "active_30d": 778.0, "active_60d": 1181.0, "active_90d": 1507.0}, {"title": "寝てもスッキリせん人へ：朝の光と朝食が効く理由", "view_7d": 340.0, "view_1d": 199.0, "follower_prev": 913.0, "active_30d": 666.0, "active_60d": 1033.0, "active_90d": 1290.0}, {"title": "【PR】クマだけが知る酒の商業ポスターを、Pollo AIで作ってみた｜PolloAI｜GPT Image 2｜", "view_7d": 469.0, "view_1d": 245.0, "follower_prev": 1075.0, "active_30d": 846.0, "active_60d": 1335.0, "active_90d": 1695.0}, {"title": "note記事の寿命はわずか5日間？ワイが自分のデータで暴いた『死の谷』の正体", "view_7d": 546.0, "view_1d": 254.0, "follower_prev": 802.0, "active_30d": 569.0, "active_60d": 903.0, "active_90d": 1131.0}, {"title": "知ってる人は知ってるゲーム『CRIMSON RONIN』をレビューしてみる｜画像生成AI｜ゲームレビュー｜やってみた｜", "view_7d": 537.0, "view_1d": 321.0, "follower_prev": 1100.0, "active_30d": 904.0, "active_60d": 1420.0, "active_90d": 1776.0}, {"title": "コラボしても初日は普通やった。でも翌日が全然ちがう話｜note実験｜", "view_7d": 439.0, "view_1d": 339.0, "follower_prev": 975.0, "active_30d": 711.0, "active_60d": 1093.0, "active_90d": 1408.0}, {"title": "GPT-Image-2用のブランドポスタービルダー、HTMLで作ったで｜GPT-Image-2｜画像生成AI｜ChatG", "view_7d": 915.0, "view_1d": 559.0, "follower_prev": 1061.0, "active_30d": 854.0, "active_60d": 1330.0, "active_90d": 1684.0}, {"title": "ちょっとやらかした。昨日V1を出したのに、もうV5ができた話｜AI活用｜生成AI｜試行錯誤｜", "view_7d": 376.0, "view_1d": 258.0, "follower_prev": 1061.0, "active_30d": 872.0, "active_60d": 1304.0, "active_90d": 1644.0}, {"title": "全記事PV/スキ/コメント＋投稿日を吸い上げてスプシに保存する方法（Colab運用ログ）", "view_7d": 381.0, "view_1d": 255.0, "follower_prev": 821.0, "active_30d": 575.0, "active_60d": 911.0, "active_90d": 1131.0}, {"title": "AIアート｜過去のサムネをリライト", "view_7d": 592.0, "view_1d": 376.0, "follower_prev": 934.0, "active_30d": 654.0, "active_60d": 1041.0, "active_90d": 1319.0}, {"title": "「タラヲさんを推してくれ」から始まり、なぜか漫画を作る仕組みまで育った話｜AI活用｜生成AI｜画像生成AI｜", "view_7d": 877.0, "view_1d": 594.0, "follower_prev": 1049.0, "active_30d": 821.0, "active_60d": 1278.0, "active_90d": 1603.0}, {"title": "【AIアート/イラスト】7th OASOBI企画 ＃266", "view_7d": 576.0, "view_1d": 230.0, "follower_prev": 909.0, "active_30d": 656.0, "active_60d": 1027.0, "active_90d": 1268.0}, {"title": "IRを読むと、裏側の配管が見える！？（noteで遊ぶコスト構造）", "view_7d": 366.0, "view_1d": 137.0, "follower_prev": 927.0, "active_30d": 666.0, "active_60d": 1046.0, "active_90d": 1300.0}, {"title": "Noteの閲覧数・スキ数を自動で収集する方法｜GitHub｜クリエイター支援｜データ分析｜Note運営｜", "view_7d": 453.0, "view_1d": 330.0, "follower_prev": 939.0, "active_30d": 684.0, "active_60d": 1045.0, "active_90d": 1350.0}, {"title": "ModayCafeってなんやんねん。｜AIアート｜Cafe｜イラスト｜", "view_7d": 466.0, "view_1d": 309.0, "follower_prev": 1080.0, "active_30d": 872.0, "active_60d": 1359.0, "active_90d": 1714.0}, {"title": "「初速は効く」はほんまに頑健なんか？ 4,166本で見直した話|Note運営|データ分析|", "view_7d": 341.0, "view_1d": 287.0, "follower_prev": 1010.0, "active_30d": 745.0, "active_60d": 1150.0, "active_90d": 1484.0}, {"title": "note運営を“感覚”から“見える化”へ｜GitHub Pagesでダッシュボードを作る｜データ分析｜", "view_7d": 522.0, "view_1d": 176.0, "follower_prev": 939.0, "active_30d": 684.0, "active_60d": 1045.0, "active_90d": 1350.0}, {"title": "Apple WatchとClaudeが変えるApple Health健康データ活用の未来｜AI活用｜生成AI｜Claud", "view_7d": 495.0, "view_1d": 235.0, "follower_prev": 1098.0, "active_30d": 885.0, "active_60d": 1397.0, "active_90d": 1753.0}, {"title": "V8来るで。Midjourneyが「審美眼貸して」って言うてきた", "view_7d": 344.0, "view_1d": 231.0, "follower_prev": 889.0, "active_30d": 644.0, "active_60d": 1006.0, "active_90d": 1243.0}, {"title": "【AIアート/イラスト】ガソリンスタンドからなにか生み出せるのか。", "view_7d": 375.0, "view_1d": 232.0, "follower_prev": 855.0, "active_30d": 605.0, "active_60d": 954.0, "active_90d": 1186.0}, {"title": "初期の実写を掘り返したら、まだ普通に好きやった｜AIアート｜創作｜", "view_7d": 407.0, "view_1d": 217.0, "follower_prev": 939.0, "active_30d": 684.0, "active_60d": 1045.0, "active_90d": 1350.0}, {"title": "【314文字の実験】Noteのアルゴリズムをハックしたい。", "view_7d": 403.0, "view_1d": 217.0, "follower_prev": 920.0, "active_30d": 669.0, "active_60d": 1045.0, "active_90d": 1296.0}, {"title": "ワイが手伝えるnote運用とAI活用のこと｜note運用｜AI活用｜生成AI｜ChatGPT｜画像生成AI｜", "view_7d": 462.0, "view_1d": 272.0, "follower_prev": 1090.0, "active_30d": 886.0, "active_60d": 1383.0, "active_90d": 1740.0}, {"title": "誰かの創作に火をつけられて、自分も動画を作っていた", "view_7d": 480.0, "view_1d": 256.0, "follower_prev": 934.0, "active_30d": 667.0, "active_60d": 1037.0, "active_90d": 1314.0}, {"title": "プロンプトビルダーの取説、今さら作ったで｜AI活用｜生成AI｜ChatGPT｜画像生成AI｜デザイン｜", "view_7d": 493.0, "view_1d": 283.0, "follower_prev": 1090.0, "active_30d": 886.0, "active_60d": 1383.0, "active_90d": 1740.0}, {"title": "【検証】noteのView数が伸びる仕組みを、数式で「構造化」してみた結果", "view_7d": 456.0, "view_1d": 255.0, "follower_prev": 831.0, "active_30d": 583.0, "active_60d": 922.0, "active_90d": 1134.0}, {"title": "続・note記事には「消費期限」がある（気がする）。経過日数ごとの“日次ビュー減衰”を箱ひげ図で可視化する手法", "view_7d": 414.0, "view_1d": 179.0, "follower_prev": 851.0, "active_30d": 593.0, "active_60d": 941.0, "active_90d": 1168.0}, {"title": "GPT-5.5で変わったプロンプトの書き方4つ｜ChatGPT｜生成AI｜AI活用｜プロンプト｜GPT-5.5｜", "view_7d": 808.0, "view_1d": 354.0, "follower_prev": 1134.0, "active_30d": 917.0, "active_60d": 1440.0, "active_90d": 1823.0}, {"title": "「ハッシュタグ」はデータで選べ。フォロワー外に届けるための“新・タグ設計術”", "view_7d": 489.0, "view_1d": 286.0, "follower_prev": 907.0, "active_30d": 663.0, "active_60d": 1022.0, "active_90d": 1273.0}], "active_timeseries": [{"date": "2026-02-05", "active_30d": 573}, {"date": "2026-02-06", "active_30d": 565}, {"date": "2026-02-07", "active_30d": 569}, {"date": "2026-02-08", "active_30d": 575}, {"date": "2026-02-09", "active_30d": 583}, {"date": "2026-02-10", "active_30d": 585}, {"date": "2026-02-11", "active_30d": 591}, {"date": "2026-02-12", "active_30d": 593}, {"date": "2026-02-13", "active_30d": 605}, {"date": "2026-02-14", "active_30d": 620}, {"date": "2026-02-15", "active_30d": 629}, {"date": "2026-02-16", "active_30d": 642}, {"date": "2026-02-17", "active_30d": 646}, {"date": "2026-02-18", "active_30d": 642}, {"date": "2026-02-19", "active_30d": 644}, {"date": "2026-02-20", "active_30d": 654}, {"date": "2026-02-21", "active_30d": 656}, {"date": "2026-02-22", "active_30d": 663}, {"date": "2026-02-23", "active_30d": 667}, {"date": "2026-02-24", "active_30d": 673}, {"date": "2026-02-25", "active_30d": 666}, {"date": "2026-02-26", "active_30d": 669}, {"date": "2026-02-27", "active_30d": 666}, {"date": "2026-02-28", "active_30d": 661}, {"date": "2026-03-01", "active_30d": 662}, {"date": "2026-03-02", "active_30d": 667}, {"date": "2026-03-03", "active_30d": 667}, {"date": "2026-03-04", "active_30d": 654}, {"date": "2026-03-05", "active_30d": 664}, {"date": "2026-03-06", "active_30d": 672}, {"date": "2026-03-07", "active_30d": 671}, {"date": "2026-03-08", "active_30d": 684}, {"date": "2026-03-09", "active_30d": 693}, {"date": "2026-03-10", "active_30d": 704}, {"date": "2026-03-11", "active_30d": 696}, {"date": "2026-03-12", "active_30d": 709}, {"date": "2026-03-13", "active_30d": 711}, {"date": "2026-03-14", "active_30d": 720}, {"date": "2026-03-15", "active_30d": 711}, {"date": "2026-03-16", "active_30d": 702}, {"date": "2026-03-17", "active_30d": 695}, {"date": "2026-03-18", "active_30d": 698}, {"date": "2026-03-19", "active_30d": 696}, {"date": "2026-03-20", "active_30d": 705}, {"date": "2026-03-21", "active_30d": 711}, {"date": "2026-03-22", "active_30d": 709}, {"date": "2026-03-23", "active_30d": 717}, {"date": "2026-03-24", "active_30d": 729}, {"date": "2026-03-25", "active_30d": 745}, {"date": "2026-03-26", "active_30d": 746}, {"date": "2026-03-27", "active_30d": 746}, {"date": "2026-03-28", "active_30d": 745}, {"date": "2026-03-29", "active_30d": 744}, {"date": "2026-03-30", "active_30d": 762}, {"date": "2026-03-31", "active_30d": 778}, {"date": "2026-04-01", "active_30d": 783}, {"date": "2026-04-02", "active_30d": 797}, {"date": "2026-04-03", "active_30d": 795}, {"date": "2026-04-04", "active_30d": 783}, {"date": "2026-04-05", "active_30d": 794}, {"date": "2026-04-06", "active_30d": 803}, {"date": "2026-04-07", "active_30d": 819}, {"date": "2026-04-08", "active_30d": 829}, {"date": "2026-04-09", "active_30d": 828}, {"date": "2026-04-10", "active_30d": 824}, {"date": "2026-04-11", "active_30d": 815}, {"date": "2026-04-12", "active_30d": 813}, {"date": "2026-04-13", "active_30d": 813}, {"date": "2026-04-14", "active_30d": 821}, {"date": "2026-04-15", "active_30d": 855}, {"date": "2026-04-16", "active_30d": 872}, {"date": "2026-04-17", "active_30d": 862}, {"date": "2026-04-18", "active_30d": 857}, {"date": "2026-04-19", "active_30d": 854}, {"date": "2026-04-20", "active_30d": 858}, {"date": "2026-04-21", "active_30d": 844}, {"date": "2026-04-22", "active_30d": 859}, {"date": "2026-04-23", "active_30d": 854}, {"date": "2026-04-24", "active_30d": 843}, {"date": "2026-04-25", "active_30d": 846}, {"date": "2026-04-26", "active_30d": 855}, {"date": "2026-04-27", "active_30d": 872}, {"date": "2026-04-28", "active_30d": 877}, {"date": "2026-04-29", "active_30d": 886}, {"date": "2026-04-30", "active_30d": 885}, {"date": "2026-05-01", "active_30d": 904}, {"date": "2026-05-02", "active_30d": 914}, {"date": "2026-05-03", "active_30d": 934}, {"date": "2026-05-04", "active_30d": 935}, {"date": "2026-05-05", "active_30d": 917}]};
+
+// === Hero meta ===
+document.getElementById('m-n').textContent = DATA.meta.n_articles;
+document.getElementById('m-period').textContent = DATA.meta.period_start + ' → ' + DATA.meta.period_end;
+document.getElementById('m-fol').textContent = DATA.meta.fol_min + ' – ' + DATA.meta.fol_max;
+
+// === Common Chart.js defaults ===
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#6B6B6B';
+
+const gridColor = '#DDDDDD';
+const axisColor = '#6B6B6B';
+const dataColor = '#111111';
+const dataColorMuted = 'rgba(17, 17, 17, 0.4)';
+
+// === 01. Raw scatter ===
+new Chart(document.getElementById('ch01'), {
+  type: 'scatter',
+  data: {
+    datasets: [{
+      label: 'Article',
+      data: DATA.articles.map(a => ({x: a.follower_prev, y: a.view_7d, title: a.title})),
+      backgroundColor: dataColorMuted,
+      borderColor: dataColor,
+      borderWidth: 1,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => [
+            'Follower: ' + ctx.raw.x,
+            'View 7d: ' + ctx.raw.y,
+            ctx.raw.title.slice(0, 50)
+          ]
+        }
+      }
+    },
+    scales: {
+      x: {
+        type: 'linear',
+        title: { display: true, text: 'Follower (previous day)', font: {size: 12} },
+        grid: { color: gridColor },
+        ticks: { color: axisColor }
+      },
+      y: {
+        type: 'linear',
+        title: { display: true, text: 'Cumulative View 7 days', font: {size: 12} },
+        grid: { color: gridColor },
+        ticks: { color: axisColor }
+      }
+    }
+  }
+});
+
+// === 02. Log-log scatter with regression line ===
+const s7 = DATA.stats.period_7d;
+const xMin = Math.min(...DATA.articles.map(a => a.follower_prev));
+const xMax = Math.max(...DATA.articles.map(a => a.follower_prev));
+const lineX = [xMin, xMax];
+const lineY = lineX.map(x => Math.exp(s7.intercept + s7.beta * Math.log(x)));
+
+new Chart(document.getElementById('ch02'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        label: 'Article',
+        data: DATA.articles.map(a => ({x: a.follower_prev, y: a.view_7d, title: a.title})),
+        backgroundColor: dataColorMuted,
+        borderColor: dataColor,
+        borderWidth: 1,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+      {
+        label: 'OLS regression',
+        type: 'line',
+        data: lineX.map((x, i) => ({x: x, y: lineY[i]})),
+        borderColor: '#9D0208',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 0,
+        showLine: true,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', align: 'end', labels: {usePointStyle: true, padding: 16} },
+      tooltip: {
+        callbacks: {
+          label: ctx => ctx.dataset.label === 'Article' ? [
+            'Follower: ' + ctx.raw.x,
+            'View 7d: ' + ctx.raw.y,
+            ctx.raw.title.slice(0, 50)
+          ] : null
+        }
+      }
+    },
+    scales: {
+      x: { type: 'logarithmic', title: { display: true, text: 'Follower (log scale)', font: {size: 12} }, grid: { color: gridColor }, ticks: { color: axisColor } },
+      y: { type: 'logarithmic', title: { display: true, text: 'View 7d (log scale)', font: {size: 12} }, grid: { color: gridColor }, ticks: { color: axisColor } }
+    }
+  }
+});
+
+document.getElementById('s-r').textContent = s7.pearson_r.toFixed(3);
+document.getElementById('s-rs').textContent = s7.spearman_r.toFixed(3);
+document.getElementById('s-beta').textContent = s7.beta.toFixed(2);
+document.getElementById('s-r2').textContent = s7.r_squared.toFixed(3);
+
+// === 03. Period comparison (4 small scatters) ===
+function makePeriodScatter(canvasId, period) {
+  const stat = DATA.stats[`period_${period}d`];
+  const lineX = [xMin, xMax];
+  const lineY = lineX.map(x => Math.exp(stat.intercept + stat.beta * Math.log(x)));
+  new Chart(document.getElementById(canvasId), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: `View ${period}d`,
+          data: DATA.articles.map(a => ({x: a.follower_prev, y: a[`view_${period}d`]})),
+          backgroundColor: dataColorMuted,
+          borderColor: dataColor,
+          borderWidth: 1,
+          pointRadius: 3,
+        },
+        {
+          label: 'OLS',
+          type: 'line',
+          data: lineX.map((x, i) => ({x: x, y: lineY[i]})),
+          borderColor: '#9D0208',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          showLine: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: `${period}d cumulative · r=${stat.pearson_r}, R²=${stat.r_squared}`, font: {size: 12, weight: '600'}, color: '#111' }
+      },
+      scales: {
+        x: { type: 'logarithmic', title: { display: true, text: 'Follower (log)' }, grid: { color: gridColor } },
+        y: { type: 'logarithmic', title: { display: true, text: `View ${period}d (log)` }, grid: { color: gridColor } }
+      }
+    }
+  });
+}
+[1, 3, 5, 7].forEach(p => makePeriodScatter(`ch03-${p}`, p));
+
+// Period comparison table
+const periodTbody = document.getElementById('period-table');
+[1, 3, 5, 7].forEach(p => {
+  const s = DATA.stats[`period_${p}d`];
+  periodTbody.innerHTML += `
+    <tr>
+      <td>${p} day cumulative</td>
+      <td class="num">${s.pearson_r}</td>
+      <td class="num">${s.spearman_r}</td>
+      <td class="num">${s.beta}</td>
+      <td class="num">${s.r_squared}</td>
+    </tr>`;
+});
+
+// === 04. Conversion rate distribution (histogram) ===
+const rates = DATA.articles.map(a => a.rate_7d);
+const binEdges = [];
+const nBins = 25;
+const rMin = 0, rMax = Math.max(...rates) * 1.05;
+const binW = (rMax - rMin) / nBins;
+for (let i = 0; i <= nBins; i++) binEdges.push(rMin + i * binW);
+const bins = new Array(nBins).fill(0);
+rates.forEach(r => {
+  const idx = Math.min(Math.floor((r - rMin) / binW), nBins - 1);
+  bins[idx]++;
+});
+const binLabels = binEdges.slice(0, -1).map((e, i) => ((e + binEdges[i+1]) / 2).toFixed(2));
+
+new Chart(document.getElementById('ch04'), {
+  type: 'bar',
+  data: {
+    labels: binLabels,
+    datasets: [{
+      label: 'Article count',
+      data: bins,
+      backgroundColor: dataColor,
+      borderColor: dataColor,
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      annotation: {}
+    },
+    scales: {
+      x: { title: { display: true, text: 'View 7d / Follower (bin center)' }, grid: { display: false } },
+      y: { title: { display: true, text: 'Article count' }, grid: { color: gridColor }, beginAtZero: true }
+    }
+  }
+});
+
+document.getElementById('s-rate-med').textContent = s7.rate_median.toFixed(3);
+document.getElementById('s-rate-iqr').textContent = s7.rate_p25.toFixed(2) + ' – ' + s7.rate_p75.toFixed(2);
+const rate1d = DATA.stats.period_1d.rate_median;
+const rate7d = s7.rate_median;
+document.getElementById('s-rate-growth').textContent = (rate7d / rate1d).toFixed(2) + 'x';
+
+// === 05. Decay curve ===
+const days = [0, 1, 2, 3, 4, 5, 6];
+new Chart(document.getElementById('ch05'), {
+  type: 'line',
+  data: {
+    labels: days.map(d => 'Day ' + d),
+    datasets: [
+      {
+        label: 'P25-P75 band',
+        data: DATA.decay.p75,
+        borderColor: 'transparent',
+        backgroundColor: 'rgba(17, 17, 17, 0.08)',
+        fill: '+1',
+        pointRadius: 0,
+      },
+      {
+        label: 'P25',
+        data: DATA.decay.p25,
+        borderColor: 'transparent',
+        backgroundColor: 'transparent',
+        pointRadius: 0,
+      },
+      {
+        label: 'Median',
+        data: DATA.decay.median,
+        borderColor: dataColor,
+        backgroundColor: dataColor,
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointBackgroundColor: dataColor,
+        tension: 0.1,
+      },
+      {
+        label: 'Mean',
+        data: DATA.decay.mean,
+        borderColor: '#9D0208',
+        backgroundColor: '#9D0208',
+        borderWidth: 1.5,
+        borderDash: [4, 4],
+        pointRadius: 3,
+        tension: 0.1,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', align: 'end', labels: { usePointStyle: true, padding: 16, filter: (item) => item.text === 'Median' || item.text === 'Mean' || item.text === 'P25-P75 band' } },
+    },
+    scales: {
+      x: { title: { display: true, text: 'Days since publish' }, grid: { display: false } },
+      y: { title: { display: true, text: 'Daily Views' }, grid: { color: gridColor }, beginAtZero: true }
+    }
+  }
+});
+
+document.getElementById('s-normal').textContent = DATA.curve_counts.normal_decay || 0;
+document.getElementById('s-rapid').textContent = DATA.curve_counts.rapid_decay || 0;
+document.getElementById('s-sustain').textContent = DATA.curve_counts.sustained || 0;
+
+// === 06. Phase analysis (box-plot like via bars showing quartiles) ===
+const phases = ['low', 'mid', 'high'];
+const phaseLabels = phases.map(p => `${p.toUpperCase()}\n${DATA.phase[p].fol_min}-${DATA.phase[p].fol_max}\nn=${DATA.phase[p].n}`);
+
+// Use scatter to show each article + median markers
+const phaseColors = {low: '#27AE60', mid: '#F39C12', high: '#9D0208'};
+const phaseDatasets = phases.map((ph, i) => ({
+  label: ph.toUpperCase(),
+  data: DATA.articles
+    .filter(a => a.fol_phase === ph)
+    .map(a => ({x: i + 0.5 + (Math.random() - 0.5) * 0.4, y: a.rate_7d})),
+  backgroundColor: phaseColors[ph] + 'AA',
+  borderColor: phaseColors[ph],
+  borderWidth: 1,
+  pointRadius: 4,
+}));
+
+// Add median lines
+const medianPoints = phases.map((ph, i) => ({x: i + 0.5, y: DATA.phase[ph].rate_7d}));
+phaseDatasets.push({
+  label: 'Median',
+  data: medianPoints,
+  backgroundColor: '#000',
+  borderColor: '#000',
+  pointStyle: 'rect',
+  pointRadius: 14,
+  borderWidth: 2,
+  showLine: false,
+});
+
+new Chart(document.getElementById('ch06'), {
+  type: 'scatter',
+  data: { datasets: phaseDatasets },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', align: 'end', labels: { usePointStyle: true, padding: 16 } },
+      tooltip: {
+        callbacks: {
+          label: ctx => 'Rate 7d: ' + ctx.raw.y.toFixed(3)
+        }
+      }
+    },
+    scales: {
+      x: {
+        min: 0, max: 3,
+        ticks: {
+          stepSize: 1,
+          callback: (v) => {
+            const idx = Math.floor(v);
+            return idx >= 0 && idx < 3 ? phases[idx].toUpperCase() : '';
+          }
+        },
+        title: { display: true, text: 'Follower Phase (Low / Mid / High)' },
+        grid: { color: gridColor }
+      },
+      y: {
+        title: { display: true, text: 'View 7d / Follower (conversion rate)' },
+        grid: { color: gridColor },
+        beginAtZero: true,
+      }
+    }
+  }
+});
+
+// Phase table
+const phaseTbody = document.getElementById('phase-table');
+phases.forEach(ph => {
+  const p = DATA.phase[ph];
+  phaseTbody.innerHTML += `
+    <tr>
+      <td>${ph.toUpperCase()}</td>
+      <td class="mono">${p.fol_min} – ${p.fol_max}</td>
+      <td class="num">${p.n}</td>
+      <td class="num">${p.rate_1d.toFixed(3)}</td>
+      <td class="num">${p.rate_3d.toFixed(3)}</td>
+      <td class="num">${p.rate_7d.toFixed(3)}</td>
+    </tr>`;
+});
+
+// === 07. Residual plot ===
+new Chart(document.getElementById('ch07'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        label: 'Article',
+        data: DATA.residuals.map(r => ({x: r.follower_prev, y: r.multiplier, title: r.title, view: r.view_7d})),
+        backgroundColor: ctx => {
+          if (!ctx.raw) return dataColorMuted;
+          if (ctx.raw.y > 1.5) return 'rgba(45, 106, 79, 0.6)';
+          if (ctx.raw.y < 0.5) return 'rgba(157, 2, 8, 0.6)';
+          return dataColorMuted;
+        },
+        borderColor: dataColor,
+        borderWidth: 1,
+        pointRadius: 4,
+      },
+      {
+        label: 'Predicted (1.0x)',
+        type: 'line',
+        data: [{x: xMin, y: 1}, {x: xMax, y: 1}],
+        borderColor: dataColor,
+        borderWidth: 1.5,
+        borderDash: [4, 4],
+        pointRadius: 0,
+        showLine: true,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', align: 'end', labels: { usePointStyle: true, padding: 16 } },
+      tooltip: {
+        callbacks: {
+          label: ctx => ctx.dataset.label === 'Article' ? [
+            ctx.raw.y.toFixed(2) + 'x predicted',
+            'F=' + ctx.raw.x + ' V=' + ctx.raw.view,
+            ctx.raw.title.slice(0, 50)
+          ] : null
+        }
+      }
+    },
+    scales: {
+      x: { title: { display: true, text: 'Follower (previous day)' }, grid: { color: gridColor } },
+      y: { type: 'logarithmic', title: { display: true, text: 'Actual / Predicted (multiplier, log)' }, grid: { color: gridColor } }
+    }
+  }
+});
+
+// Top/Bottom tables
+const topTbody = document.getElementById('top-table');
+const botTbody = document.getElementById('bot-table');
+DATA.residuals.slice(0, 10).forEach(r => {
+  topTbody.innerHTML += `
+    <tr>
+      <td class="num" style="color: #2D6A4F; font-weight: 600;">${r.multiplier.toFixed(2)}x</td>
+      <td class="num">${r.follower_prev}</td>
+      <td class="num">${r.view_7d}</td>
+      <td class="title-cell">${r.title}</td>
+    </tr>`;
+});
+DATA.residuals.slice(-10).reverse().forEach(r => {
+  botTbody.innerHTML += `
+    <tr>
+      <td class="num" style="color: #9D0208; font-weight: 600;">${r.multiplier.toFixed(2)}x</td>
+      <td class="num">${r.follower_prev}</td>
+      <td class="num">${r.view_7d}</td>
+      <td class="title-cell">${r.title}</td>
+    </tr>`;
+});
+
+// === 08. HYPOTHESIS STAT STRIP ===
+document.getElementById('h-events').textContent = (DATA.meta.total_like_events || 0).toLocaleString();
+document.getElementById('h-likers').textContent = (DATA.meta.total_unique_likers || 0).toLocaleString();
+const med30 = DATA.hypothesis_points.map(p => p.active_30d).sort((a,b)=>a-b);
+const medFol = DATA.hypothesis_points.map(p => p.follower_prev).sort((a,b)=>a-b);
+document.getElementById('h-active30').textContent = Math.round(med30[Math.floor(med30.length/2)]);
+document.getElementById('h-fol').textContent = Math.round(medFol[Math.floor(medFol.length/2)]);
+
+// === 09. HYPOTHESIS COMPARISON BAR ===
+const divNames = ['follower_prev', 'active_30d', 'active_60d', 'active_90d'];
+const divLabels = ['Follower', 'Active 30d', 'Active 60d', 'Active 90d'];
+const betas = divNames.map(n => DATA.hypothesis[`${n}_7d`].beta);
+const ciLows = divNames.map(n => DATA.hypothesis[`${n}_7d`].beta_ci_low);
+const ciHighs = divNames.map(n => DATA.hypothesis[`${n}_7d`].beta_ci_high);
+const r2s = divNames.map(n => DATA.hypothesis[`${n}_7d`].r_squared);
+
+new Chart(document.getElementById('ch-hyp'), {
+  type: 'bar',
+  data: {
+    labels: divLabels,
+    datasets: [
+      {
+        label: 'β (elasticity)',
+        data: betas,
+        backgroundColor: divNames.map(n => n === 'follower_prev' ? '#111' : 'rgba(17,17,17,0.4)'),
+        borderColor: dataColor,
+        borderWidth: 1,
+        yAxisID: 'y',
+      },
+      {
+        label: 'R²',
+        type: 'line',
+        data: r2s,
+        borderColor: '#9D0208',
+        backgroundColor: '#9D0208',
+        pointRadius: 6,
+        pointBackgroundColor: '#9D0208',
+        borderWidth: 2,
+        yAxisID: 'y1',
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', align: 'end', labels: { usePointStyle: true, padding: 16 } },
+      tooltip: {
+        callbacks: {
+          afterLabel: ctx => {
+            if (ctx.dataset.label === 'β (elasticity)') {
+              return `95% CI: [${ciLows[ctx.dataIndex].toFixed(2)}, ${ciHighs[ctx.dataIndex].toFixed(2)}]`;
+            }
+            return '';
+          }
+        }
+      },
+      annotation: {}
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        type: 'linear',
+        position: 'left',
+        title: { display: true, text: 'β (elasticity)' },
+        beginAtZero: true,
+        max: 1.5,
+        grid: { color: gridColor }
+      },
+      y1: {
+        type: 'linear',
+        position: 'right',
+        title: { display: true, text: 'R² (explanatory power)' },
+        beginAtZero: true,
+        max: 0.2,
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// Hypothesis table
+const hypTbody = document.getElementById('hyp-table');
+divNames.forEach((n, i) => {
+  const r = DATA.hypothesis[`${n}_7d`];
+  const isBaseline = n === 'follower_prev';
+  hypTbody.innerHTML += `
+    <tr ${isBaseline ? 'style="background: var(--surface-v); font-weight: 600;"' : ''}>
+      <td>${divLabels[i]}${isBaseline ? ' (baseline)' : ''}</td>
+      <td class="num">${r.beta.toFixed(3)}</td>
+      <td class="num">[${r.beta_ci_low.toFixed(2)}, ${r.beta_ci_high.toFixed(2)}]</td>
+      <td class="num">${r.r_squared.toFixed(3)}</td>
+      <td class="num">${r.pearson_r.toFixed(3)}</td>
+      <td class="num">${r.rate_median.toFixed(2)}</td>
+    </tr>`;
+});
+
+// === Side-by-side scatters ===
+function makeHypScatter(canvasId, divCol, label) {
+  const stat = DATA.hypothesis[`${divCol}_7d`];
+  const points = DATA.hypothesis_points.map(p => ({x: p[divCol], y: p.view_7d, title: p.title}));
+  const xVals = points.map(p => p.x);
+  const xMin = Math.min(...xVals), xMax = Math.max(...xVals);
+  const lineX = [xMin, xMax];
+  const lineY = lineX.map(x => Math.exp(stat.intercept + stat.beta * Math.log(x)));
+  new Chart(document.getElementById(canvasId), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Article',
+          data: points,
+          backgroundColor: dataColorMuted,
+          borderColor: dataColor,
+          borderWidth: 1,
+          pointRadius: 3,
+        },
+        {
+          label: 'OLS',
+          type: 'line',
+          data: lineX.map((x, i) => ({x: x, y: lineY[i]})),
+          borderColor: '#9D0208',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          showLine: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: `${label}: β=${stat.beta}, R²=${stat.r_squared}`, font: {size: 12, weight: '600'}, color: '#111' }
+      },
+      scales: {
+        x: { type: 'logarithmic', title: { display: true, text: `${label} (log)` }, grid: { color: gridColor } },
+        y: { type: 'logarithmic', title: { display: true, text: 'View 7d (log)' }, grid: { color: gridColor } }
+      }
+    }
+  });
+}
+makeHypScatter('ch-hyp-fol', 'follower_prev', 'Follower');
+makeHypScatter('ch-hyp-act', 'active_30d', 'Active 30d');
+
+</script>
+
+</body>
+</html>
