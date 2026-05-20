@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROMPT ATLAS — KITAcore Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   PROMPT ATLAS — KITAcore Edition
+   Design: Architectural Minimalism × Light Mode
+========================================================= */
+
+:root {
+  --bg:           #E9E9E9;
+  --surface:      #FFFFFF;
+  --surface-v:    #F4F4F2;
+  --surface-hov:  #EFEFED;
+  --text:         #111111;
+  --text-sub:     #333333;
+  --muted:        #6B6B6B;
+  --border:       #DDDDDD;
+  --border-light: #CCCCCC;
+  --accent:       #000000;
+  --accent-dim:   rgba(0,0,0,0.06);
+  --accent-glow:  rgba(0,0,0,0.04);
+  --red:          #CC2200;
+  --green:        #007744;
+
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-6: 24px; --sp-8: 32px; --sp-12: 48px;
+
+  --font-display: 'Anton', 'Inter', sans-serif;
+  --font-body:    'Noto Sans JP', sans-serif;
+  --font-mono:    'JetBrains Mono', 'Space Mono', monospace;
+  --font-inter:   'Inter', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 14px; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #BBBBBB; border-radius: 2px; }
+
+/* =========================================================
+   HEADER
+========================================================= */
+.pa-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(233,233,233,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-8);
+  height: 56px;
+}
+
+.pa-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+}
+
+.pa-nav-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.pa-logo {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.pa-logo span {
+  color: var(--accent);
+}
+
+.pa-version {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  padding: 2px 6px;
+  border: 1px solid var(--border-light);
+  border-radius: 2px;
+}
+
+.pa-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px;
+}
+
+.pa-tab {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.pa-tab.is-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.pa-tab:hover:not(.is-active) {
+  color: var(--text-sub);
+  background: var(--surface-v);
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+.pa-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr 300px;
+  height: calc(100vh - 56px);
+}
+
+/* ── Sidebar ── */
+.pa-side {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pa-side-inner {
+  overflow-y: auto;
+  flex: 1;
+  padding: var(--sp-4);
+}
+
+.pa-search-wrap {
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.pa-search {
+  width: 100%;
+  background: var(--surface-v);
+  border: 1px solid var(--border-light);
+  border-radius: 2px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.pa-search:focus { border-color: var(--accent); }
+.pa-search::placeholder { color: var(--muted); }
+
+.pa-side-section {
+  margin-bottom: var(--sp-4);
+}
+
+.pa-side-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--sp-2);
+  padding: 0 var(--sp-2);
+}
+
+.pa-cat-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 6px var(--sp-2);
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--text-sub);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pa-cat-btn:hover { background: var(--surface-hov); color: var(--text); }
+
+.pa-cat-btn.is-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.pa-cat-count { color: var(--muted); }
+.pa-cat-btn.is-active .pa-cat-count { color: rgba(255,255,255,0.6); }
+
+/* ── Main ── */
+.pa-main {
+  overflow-y: auto;
+  padding: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.pa-main-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-4);
+}
+
+.pa-main-head-left { }
+
+.pa-main-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.pa-main-title {
+  font-family: var(--font-inter);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pa-main-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── Card Grid ── */
+.pa-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--sp-3);
+}
+
+.pa-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  transition: border-color 150ms ease;
+}
+
+.pa-card:hover { border-color: var(--border-light); }
+
+.pa-card-cat {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.pa-card-name {
+  font-family: var(--font-inter);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.pa-card-desc {
+  font-size: 12px;
+  color: var(--text-sub);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.pa-card-prompt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-sub);
+  background: var(--surface-v);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 4px 8px;
+  word-break: break-all;
+}
+
+.pa-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pa-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-v);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 2px 5px;
+}
+
+.pa-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+/* ── Buttons ── */
+.pa-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 7px 10px;
+  border-radius: 2px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.pa-btn:hover { background: var(--surface-v); color: var(--text); border-color: var(--accent); }
+
+.pa-btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.pa-btn-primary:hover {
+  background: #333333;
+  border-color: #333333;
+  color: #fff;
+}
+
+.pa-btn-full {
+  grid-column: 1 / -1;
+}
+
+.pa-btn-danger {
+  border-color: var(--red);
+  color: var(--red);
+}
+.pa-btn-danger:hover { background: rgba(255,68,68,0.08); }
+
+.pa-btn-success {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(0,255,136,0.08);
+}
+
+/* ── Builder (Right) ── */
+.pa-builder {
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pa-builder-head {
+  padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.pa-builder-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+.pa-builder-clear {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 2px;
+  transition: all 150ms ease;
+}
+.pa-builder-clear:hover { color: var(--red); background: rgba(255,68,68,0.08); }
+
+.pa-builder-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.pa-builder-empty {
+  text-align: center;
+  padding: var(--sp-8) var(--sp-4);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+  font-family: var(--font-mono);
+}
+
+.pa-builder-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 8px 10px;
+  transition: border-color 150ms ease;
+}
+.pa-builder-item:hover { border-color: var(--border-light); }
+
+.pa-builder-item-body { flex: 1; min-width: 0; }
+
+.pa-builder-item-name {
+  font-family: var(--font-inter);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.pa-builder-item-prompt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.pa-builder-item-remove {
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: color 150ms ease;
+}
+.pa-builder-item-remove:hover { color: var(--red); }
+
+.pa-builder-output {
+  border-top: 1px solid var(--border);
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  flex-shrink: 0;
+}
+
+.pa-output-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.pa-output-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-sub);
+  background: var(--surface-v);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 10px 12px;
+  line-height: 1.7;
+  word-break: break-all;
+  min-height: 80px;
+  resize: none;
+  width: 100%;
+  outline: none;
+}
+
+.pa-output-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/* ── PARAMS Config ── */
+.pa-params {
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.pa-params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+.pa-param-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pa-param-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pa-param-input {
+  background: var(--surface-v);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 5px 8px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  outline: none;
+  width: 100%;
+  transition: border-color 150ms ease;
+}
+.pa-param-input:focus { border-color: var(--accent); }
+
+/* ── Toast ── */
+.pa-toast {
+  position: fixed;
+  bottom: var(--sp-6);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  padding: 10px 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  z-index: 9999;
+  opacity: 0;
+  transition: all 300ms ease;
+  pointer-events: none;
+}
+
+.pa-toast.is-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Empty state ── */
+.pa-no-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-12) var(--sp-8);
+  gap: var(--sp-3);
+  color: var(--muted);
+  text-align: center;
+}
+
+.pa-no-result-icon { font-size: 32px; opacity: 0.3; }
+
+.pa-no-result-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+/* ── Builder count badge ── */
+.pa-builder-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 9px;
+  padding: 0 5px;
+  margin-left: 4px;
+}
+
+.pa-builder-badge:empty { display: none; }
+
+/* ── Reverse tab content ── */
+.pa-reverse-content {
+  display: none;
+  padding: var(--sp-6);
+}
+
+.pa-reverse-content.is-active {
+  display: block;
+}
+
+.pa-reverse-input-wrap {
+  display: flex;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+}
+
+.pa-reverse-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 2px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.pa-reverse-input:focus { border-color: var(--accent); }
+.pa-reverse-input::placeholder { color: var(--muted); }
+
+/* ── Tab content panels ── */
+.pa-panel { display: none; }
+.pa-panel.is-active { display: flex; }
+
+.pa-dict-panel {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 1024px) {
+  .pa-layout {
+    grid-template-columns: 180px 1fr 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pa-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    height: auto;
+  }
+
+  .pa-side {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 200px;
+  }
+
+  .pa-builder {
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .pa-header {
+    padding: 0 var(--sp-4);
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 56px;
+    padding-top: var(--sp-2);
+    padding-bottom: var(--sp-2);
+    gap: var(--sp-2);
+  }
+
+  .pa-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+<header class="pa-header">
+  <div class="pa-header-left">
+    <span class="pa-nav-label">01. TOOL</span>
+    <div class="pa-logo">PROMPT <span>ATLAS</span></div>
+    <span class="pa-version">v1.0</span>
+  </div>
+  <div class="pa-tabs" id="mainTabs">
+    <button class="pa-tab is-active" data-panel="dict">辞典</button>
+    <button class="pa-tab" data-panel="reverse">逆引き</button>
+  </div>
+</header>
+
+<!-- =========================================================
+     DICT PANEL
+========================================================= -->
+<div class="pa-panel is-active pa-dict-panel" id="panel-dict">
+  <div class="pa-layout">
+
+    <!-- Sidebar -->
+    <aside class="pa-side">
+      <div class="pa-search-wrap">
+        <input class="pa-search" id="searchInput" type="search" placeholder="日本語で検索..." autocomplete="off">
+      </div>
+      <div class="pa-side-inner">
+        <div class="pa-side-section">
+          <div class="pa-side-label">CATEGORY</div>
+          <div id="catList"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="pa-main" id="paMain">
+      <div class="pa-main-head">
+        <div class="pa-main-head-left">
+          <div class="pa-main-eyebrow" id="mainCatLabel">PROMPT DICTIONARY</div>
+          <div class="pa-main-title" id="mainTitle">辞典一覧</div>
+        </div>
+        <span class="pa-main-count" id="mainCount">— items</span>
+      </div>
+      <div class="pa-grid" id="cardGrid"></div>
+    </main>
+
+    <!-- Builder -->
+    <aside class="pa-builder">
+      <div class="pa-builder-head">
+        <div class="pa-builder-title">
+          BUILDER <span class="pa-builder-badge" id="builderBadge"></span>
+        </div>
+        <button class="pa-builder-clear" id="btnClear">ALL CLEAR</button>
+      </div>
+
+      <div class="pa-builder-items" id="builderItems">
+        <div class="pa-builder-empty" id="builderEmpty">
+          カードを追加すると<br>ここに並びます
+        </div>
+      </div>
+
+      <div class="pa-params">
+        <div class="pa-output-label">PARAMS</div>
+        <div class="pa-params-grid">
+          <div class="pa-param-group">
+            <label class="pa-param-label">AR</label>
+            <input class="pa-param-input" id="paramAR" value="9:16">
+          </div>
+          <div class="pa-param-group">
+            <label class="pa-param-label">STYLIZE</label>
+            <input class="pa-param-input" id="paramStylize" value="250">
+          </div>
+          <div class="pa-param-group">
+            <label class="pa-param-label">CHAOS</label>
+            <input class="pa-param-input" id="paramChaos" value="8">
+          </div>
+          <div class="pa-param-group">
+            <label class="pa-param-label">VERSION</label>
+            <input class="pa-param-input" id="paramVersion" value="6.1">
+          </div>
+        </div>
+      </div>
+
+      <div class="pa-builder-output">
+        <div class="pa-output-label">GENERATED PROMPT</div>
+        <textarea class="pa-output-text" id="outputText" readonly rows="5"></textarea>
+        <div class="pa-output-actions">
+          <button class="pa-btn pa-btn-primary" id="btnCopy">COPY PROMPT</button>
+          <button class="pa-btn" id="btnReset">RESET PARAMS</button>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<!-- =========================================================
+     REVERSE PANEL
+========================================================= -->
+<div class="pa-panel" id="panel-reverse" style="padding: var(--sp-6); flex-direction: column; gap: var(--sp-6);">
+  <div style="max-width: 600px; margin: 0 auto; width: 100%;">
+    <div class="pa-main-eyebrow">REVERSE LOOKUP</div>
+    <div class="pa-main-title" style="margin-bottom: var(--sp-6);">英語から逆引き</div>
+    <div class="pa-reverse-input-wrap">
+      <input class="pa-reverse-input" id="reverseInput" type="text" placeholder="英語プロンプト（例: cyberpunk city）を入力...">
+      <button class="pa-btn pa-btn-primary" id="btnReverse">検索</button>
+    </div>
+    <div id="reverseResult"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="pa-toast" id="toast"></div>
+
+<!-- =========================================================
+     DATA + LOGIC
+========================================================= -->
+<script>
+// =========================================================
+//  PROMPT DATA
+// =========================================================
+const PROMPT_DATA = [
+  // ── ジャンル ──
+  { id:'g01', cat:'genre', catLabel:'ジャンル', name:'ファンタジー', desc:'剣と魔法の幻想世界', prompt:'fantasy world', tags:['魔法','冒険'] },
+  { id:'g02', cat:'genre', catLabel:'ジャンル', name:'サイバーパンク', desc:'ネオンと機械が支配する近未来都市', prompt:'cyberpunk', tags:['未来','機械'] },
+  { id:'g03', cat:'genre', catLabel:'ジャンル', name:'ホラー', desc:'恐怖と不気味さが漂う演出', prompt:'horror, eerie atmosphere', tags:['恐怖','暗闇'] },
+  { id:'g04', cat:'genre', catLabel:'ジャンル', name:'学園', desc:'青春感あふれる学校生活', prompt:'school life, youth', tags:['青春','学校'] },
+  { id:'g05', cat:'genre', catLabel:'ジャンル', name:'和風', desc:'日本の伝統文化とスタイル', prompt:'Japanese traditional style', tags:['和風','伝統'] },
+  { id:'g06', cat:'genre', catLabel:'ジャンル', name:'武侠', desc:'東洋の武術と侠義の世界', prompt:'wuxia, martial arts', tags:['武術','東洋'] },
+  { id:'g07', cat:'genre', catLabel:'ジャンル', name:'スチームパンク', desc:'蒸気機関と歯車が動く世界', prompt:'steampunk', tags:['蒸気','機械'] },
+  { id:'g08', cat:'genre', catLabel:'ジャンル', name:'ポストアポカリプス', desc:'文明崩壊後の廃墟世界', prompt:'post-apocalyptic', tags:['廃墟','終末'] },
+  { id:'g09', cat:'genre', catLabel:'ジャンル', name:'ダークファンタジー', desc:'暗く不穏な幻想世界', prompt:'dark fantasy', tags:['ダーク','ファンタジー'] },
+  { id:'g10', cat:'genre', catLabel:'ジャンル', name:'ローファンタジー', desc:'現実に根ざした淡い幻想', prompt:'low fantasy, subtle magic', tags:['現実','魔法'] },
+
+  // ── 感情 ──
+  { id:'e01', cat:'emotion', catLabel:'感情', name:'孤独・静寂', desc:'深い孤独と静けさの表現', prompt:'solitude, loneliness', tags:['孤独','静寂'] },
+  { id:'e02', cat:'emotion', catLabel:'感情', name:'怒り・憤怒', desc:'激しい怒りと内なる炎', prompt:'rage, fury, intense', tags:['怒り','激情'] },
+  { id:'e03', cat:'emotion', catLabel:'感情', name:'哀愁・憂鬱', desc:'物悲しく切ない情緒', prompt:'melancholy, wistful', tags:['哀愁','悲しみ'] },
+  { id:'e04', cat:'emotion', catLabel:'感情', name:'神秘・幻想', desc:'謎めいた超自然的な雰囲気', prompt:'mysterious, mystical', tags:['神秘','幻想'] },
+  { id:'e05', cat:'emotion', catLabel:'感情', name:'平和・安らぎ', desc:'穏やかで心地よい静けさ', prompt:'peaceful, serene, tranquil', tags:['平和','癒し'] },
+  { id:'e06', cat:'emotion', catLabel:'感情', name:'興奮・スリル', desc:'心が跳ねるような高揚感', prompt:'exciting, thrilling, dynamic', tags:['興奮','エネルギー'] },
+  { id:'e07', cat:'emotion', catLabel:'感情', name:'ノスタルジア', desc:'懐かしくて胸が痛くなる感覚', prompt:'nostalgic, bittersweet memories', tags:['懐かしさ','記憶'] },
+  { id:'e08', cat:'emotion', catLabel:'感情', name:'希望・光明', desc:'暗闇の中の光と希望', prompt:'hope, light in darkness', tags:['希望','光'] },
+
+  // ── デザイン ──
+  { id:'d01', cat:'designStyle', catLabel:'デザイン', name:'ミニマリスト', desc:'余計なものを削ぎ落とした洗練', prompt:'minimalist design, clean', tags:['シンプル','モダン'] },
+  { id:'d02', cat:'designStyle', catLabel:'デザイン', name:'アール・デコ', desc:'幾何学的装飾と豪華さ', prompt:'art deco style', tags:['装飾','幾何学'] },
+  { id:'d03', cat:'designStyle', catLabel:'デザイン', name:'バウハウス', desc:'機能美と幾何学の統合', prompt:'bauhaus style, geometric', tags:['幾何学','機能美'] },
+  { id:'d04', cat:'designStyle', catLabel:'デザイン', name:'ゴシック', desc:'中世的な荘厳さと暗さ', prompt:'gothic design, ornate', tags:['ゴシック','荘厳'] },
+  { id:'d05', cat:'designStyle', catLabel:'デザイン', name:'レトロフューチャー', desc:'60〜70年代の未来想像', prompt:'retrofuturism, retro sci-fi', tags:['レトロ','未来'] },
+  { id:'d06', cat:'designStyle', catLabel:'デザイン', name:'フラットデザイン', desc:'平面的でシンプルな現代感', prompt:'flat design, modern', tags:['フラット','シンプル'] },
+
+  // ── 画法 ──
+  { id:'a01', cat:'artStyle', catLabel:'画法', name:'アニメ風', desc:'日本のアニメーション的画法', prompt:'anime style', tags:['アニメ','日本'] },
+  { id:'a02', cat:'artStyle', catLabel:'画法', name:'マンガ風', desc:'日本漫画の線画スタイル', prompt:'manga style, ink drawing', tags:['漫画','線画'] },
+  { id:'a03', cat:'artStyle', catLabel:'画法', name:'水彩画', desc:'透明感のある水彩絵具の表現', prompt:'watercolor painting', tags:['水彩','透明感'] },
+  { id:'a04', cat:'artStyle', catLabel:'画法', name:'油絵', desc:'重厚感と深みのある油彩表現', prompt:'oil painting, impasto', tags:['油絵','古典'] },
+  { id:'a05', cat:'artStyle', catLabel:'画法', name:'ピクセルアート', desc:'ドット絵のレトロゲーム感', prompt:'pixel art, 16-bit', tags:['ドット絵','レトロ'] },
+  { id:'a06', cat:'artStyle', catLabel:'画法', name:'鉛筆スケッチ', desc:'繊細な鉛筆の線と陰影', prompt:'pencil sketch, detailed line art', tags:['スケッチ','鉛筆'] },
+  { id:'a07', cat:'artStyle', catLabel:'画法', name:'フォトリアル', desc:'写真と見まがう超写実', prompt:'photorealistic, ultra detailed', tags:['リアル','写真'] },
+  { id:'a08', cat:'artStyle', catLabel:'画法', name:'概念芸術', desc:'抽象的・哲学的な表現', prompt:'concept art, digital painting', tags:['コンセプト','デジタル'] },
+  { id:'a09', cat:'artStyle', catLabel:'画法', name:'木版画', desc:'日本の版画スタイル', prompt:'woodblock print, ukiyo-e style', tags:['版画','浮世絵'] },
+  { id:'a10', cat:'artStyle', catLabel:'画法', name:'グラフィティ', desc:'都市的なスプレーペイント表現', prompt:'graffiti art, street art', tags:['グラフィティ','ストリート'] },
+
+  // ── キャラ ──
+  { id:'c01', cat:'character', catLabel:'キャラ', name:'ヒロイン', desc:'主人公格の女性キャラクター', prompt:'heroine, protagonist', tags:['女性','主人公'] },
+  { id:'c02', cat:'character', catLabel:'キャラ', name:'戦士', desc:'屈強な体と意志を持つ戦闘者', prompt:'warrior, fighter', tags:['戦士','バトル'] },
+  { id:'c03', cat:'character', catLabel:'キャラ', name:'魔法使い', desc:'魔力をまとう神秘的な使い手', prompt:'mage, wizard', tags:['魔法','神秘'] },
+  { id:'c04', cat:'character', catLabel:'キャラ', name:'刀使い', desc:'日本刀をたずさえた剣士', prompt:'samurai, katana wielder', tags:['侍','刀'] },
+  { id:'c05', cat:'character', catLabel:'キャラ', name:'サイボーグ', desc:'機械と人間が融合した存在', prompt:'cyborg, half human half machine', tags:['機械','SF'] },
+  { id:'c06', cat:'character', catLabel:'キャラ', name:'悪役', desc:'圧倒的な存在感の敵キャラ', prompt:'villain, antagonist', tags:['悪役','ダーク'] },
+
+  // ── 外見 ──
+  { id:'ap01', cat:'appearance', catLabel:'外見', name:'長身スレンダー', desc:'すらりとした長い肢体', prompt:'tall, slender figure', tags:['スレンダー','長身'] },
+  { id:'ap02', cat:'appearance', catLabel:'外見', name:'筋肉質', desc:'鍛え上げられた肉体美', prompt:'muscular physique', tags:['筋肉','肉体'] },
+  { id:'ap03', cat:'appearance', catLabel:'外見', name:'少女体型', desc:'小柄で可愛らしい外見', prompt:'petite, cute figure', tags:['小柄','可愛い'] },
+  { id:'ap04', cat:'appearance', catLabel:'外見', name:'鋭い目つき', desc:'意志の強さを感じさせる眼光', prompt:'sharp piercing eyes', tags:['鋭い','意志'] },
+  { id:'ap05', cat:'appearance', catLabel:'外見', name:'エルフ耳', desc:'尖った長い耳のファンタジー種族', prompt:'elf ears, pointy ears', tags:['エルフ','ファンタジー'] },
+  { id:'ap06', cat:'appearance', catLabel:'外見', name:'翼', desc:'背中に広がる羽根', prompt:'large wings, feathered', tags:['翼','天使'] },
+  { id:'ap07', cat:'appearance', catLabel:'外見', name:'獣耳', desc:'動物の耳が生えた亜人', prompt:'animal ears, kemonomimi', tags:['獣耳','亜人'] },
+  { id:'ap08', cat:'appearance', catLabel:'外見', name:'尻尾', desc:'動物の尻尾が生えた特徴', prompt:'tail, animal tail', tags:['尻尾','亜人'] },
+
+  // ── 髪型 ──
+  { id:'h01', cat:'hairstyle', catLabel:'髪型', name:'ロングストレート', desc:'艶やかに流れる長い直毛', prompt:'long straight hair', tags:['ロング','ストレート'] },
+  { id:'h02', cat:'hairstyle', catLabel:'髪型', name:'ショートカット', desc:'爽やかなショートヘア', prompt:'short hair, bob cut', tags:['ショート','清潔感'] },
+  { id:'h03', cat:'hairstyle', catLabel:'髪型', name:'ツインテール', desc:'両耳横でまとめたツインテール', prompt:'twin tails, pigtails', tags:['ツインテール','可愛い'] },
+  { id:'h04', cat:'hairstyle', catLabel:'髪型', name:'ポニーテール', desc:'高い位置でまとめた尻尾ヘア', prompt:'high ponytail', tags:['ポニーテール','活発'] },
+  { id:'h05', cat:'hairstyle', catLabel:'髪型', name:'セミロングウェーブ', desc:'自然なウェーブのかかったセミロング', prompt:'wavy medium length hair', tags:['ウェーブ','女性'] },
+  { id:'h06', cat:'hairstyle', catLabel:'髪型', name:'白髪', desc:'神秘的な白い長髪', prompt:'white hair, silver hair', tags:['白髪','神秘'] },
+  { id:'h07', cat:'hairstyle', catLabel:'髪型', name:'グラデーション染め', desc:'根元から毛先に色が変わるグラデ', prompt:'gradient dyed hair, ombre', tags:['グラデ','カラー'] },
+  { id:'h08', cat:'hairstyle', catLabel:'髪型', name:'ドレッドロック', desc:'独特の存在感を放つドレッド', prompt:'dreadlocks, distinctive hairstyle', tags:['ドレッド','個性'] },
+
+  // ── 目 ──
+  { id:'ey01', cat:'eyes', catLabel:'目', name:'猫目', desc:'切れ長のフェロモン眼', prompt:'cat eyes, sharp almond eyes', tags:['猫','妖艶'] },
+  { id:'ey02', cat:'eyes', catLabel:'目', name:'垂れ目', desc:'優しさと温かみのある目', prompt:'gentle droopy eyes', tags:['優しい','垂れ目'] },
+  { id:'ey03', cat:'eyes', catLabel:'目', name:'紫の瞳', desc:'神秘的な紫色の目', prompt:'purple eyes, violet eyes', tags:['紫','神秘'] },
+  { id:'ey04', cat:'eyes', catLabel:'目', name:'金眼', desc:'力強い黄金色の瞳', prompt:'golden eyes, amber eyes', tags:['金眼','強力'] },
+  { id:'ey05', cat:'eyes', catLabel:'目', name:'異色瞳', desc:'左右で異なる色の瞳', prompt:'heterochromia, two different colored eyes', tags:['異色瞳','特殊'] },
+  { id:'ey06', cat:'eyes', catLabel:'目', name:'光を宿す瞳', desc:'内側から輝いているような目', prompt:'glowing eyes, luminous', tags:['光','輝き'] },
+
+  // ── 表情 ──
+  { id:'ex01', cat:'expression', catLabel:'表情', name:'無表情', desc:'感情を見せない冷たい顔', prompt:'expressionless, stoic face', tags:['無表情','クール'] },
+  { id:'ex02', cat:'expression', catLabel:'表情', name:'挑発的な微笑', desc:'余裕を感じさせる不敵な笑み', prompt:'smirk, confident smile', tags:['微笑','余裕'] },
+  { id:'ex03', cat:'expression', catLabel:'表情', name:'涙目', desc:'今にも泣き出しそうな潤んだ目', prompt:'teary eyes, crying expression', tags:['涙','感情'] },
+  { id:'ex04', cat:'expression', catLabel:'表情', name:'驚愕', desc:'目を見開いた驚きの表情', prompt:'shocked expression, eyes wide open', tags:['驚き','感情'] },
+  { id:'ex05', cat:'expression', catLabel:'表情', name:'決意の眼差し', desc:'強い意志を宿した力強い目', prompt:'determined look, focused gaze', tags:['決意','強さ'] },
+
+  // ── 服装 ──
+  { id:'ou01', cat:'outfit', catLabel:'服装', name:'セーラー服', desc:'日本の学校制服・清楚な印象', prompt:'sailor uniform, school uniform', tags:['制服','学校'] },
+  { id:'ou02', cat:'outfit', catLabel:'服装', name:'メイド服', desc:'フリルとエプロンのメイド衣装', prompt:'maid outfit, frilly apron', tags:['メイド','フリル'] },
+  { id:'ou03', cat:'outfit', catLabel:'服装', name:'軍服', desc:'威厳ある軍事制服', prompt:'military uniform, formal', tags:['軍服','威厳'] },
+  { id:'ou04', cat:'outfit', catLabel:'服装', name:'和服・着物', desc:'日本の伝統的な着物', prompt:'kimono, traditional Japanese clothing', tags:['着物','和服'] },
+  { id:'ou05', cat:'outfit', catLabel:'服装', name:'クローク', desc:'神秘的なフードマント', prompt:'hooded cloak, mysterious robe', tags:['クローク','神秘'] },
+  { id:'ou06', cat:'outfit', catLabel:'服装', name:'ガラス破り風', desc:'大胆にカットされた露出スタイル', prompt:'torn clothing, battle damaged', tags:['バトル','ダメージ'] },
+  { id:'ou07', cat:'outfit', catLabel:'服装', name:'スーツ', desc:'洗練されたビジネス/タキシード', prompt:'suit, formal attire', tags:['スーツ','フォーマル'] },
+  { id:'ou08', cat:'outfit', catLabel:'服装', name:'忍者装束', desc:'闇に紛れる黒い忍者服', prompt:'ninja outfit, black shinobi', tags:['忍者','黒'] },
+
+  // ── 武器 ──
+  { id:'w01', cat:'weapon', catLabel:'武器', name:'日本刀', desc:'美しい曲線の刃を持つ刀', prompt:'katana, Japanese sword', tags:['刀','侍'] },
+  { id:'w02', cat:'weapon', catLabel:'武器', name:'魔法の杖', desc:'魔力をまとう神秘の杖', prompt:'magic staff, glowing wand', tags:['魔法','杖'] },
+  { id:'w03', cat:'weapon', catLabel:'武器', name:'長剣', desc:'西洋の重厚な両手剣', prompt:'greatsword, longsword', tags:['剣','西洋'] },
+  { id:'w04', cat:'weapon', catLabel:'武器', name:'弓', desc:'精緻な弓と矢のセット', prompt:'bow and arrow, archery', tags:['弓','矢'] },
+  { id:'w05', cat:'weapon', catLabel:'武器', name:'銃', desc:'現代的な銃器類', prompt:'gun, firearm, pistol', tags:['銃','現代'] },
+  { id:'w06', cat:'weapon', catLabel:'武器', name:'エネルギー剣', desc:'SF的に光る光線剣', prompt:'energy blade, glowing sword', tags:['SF','光'] },
+  { id:'w07', cat:'weapon', catLabel:'武器', name:'槍', desc:'長い柄を持つ投擲武器', prompt:'spear, lance, polearm', tags:['槍','長物'] },
+  { id:'w08', cat:'weapon', catLabel:'武器', name:'鎌', desc:'死神を想起させる大鎌', prompt:'scythe, death\'s scythe', tags:['鎌','死神'] },
+
+  // ── 小物・帽子 ──
+  { id:'ac01', cat:'accessories', catLabel:'小物・帽子', name:'魔女帽子', desc:'先が尖ったとんがり帽子', prompt:'witch hat, pointed hat', tags:['魔女','帽子'] },
+  { id:'ac02', cat:'accessories', catLabel:'小物・帽子', name:'軍帽', desc:'軍事的な雰囲気の制帽', prompt:'military cap, officer hat', tags:['軍帽','軍事'] },
+  { id:'ac03', cat:'accessories', catLabel:'小物・帽子', name:'マスク', desc:'顔の一部を隠す謎めいたマスク', prompt:'mask, face covering', tags:['マスク','謎'] },
+  { id:'ac04', cat:'accessories', catLabel:'小物・帽子', name:'眼鏡', desc:'知性的な印象のメガネ', prompt:'glasses, spectacles', tags:['眼鏡','知性'] },
+  { id:'ac05', cat:'accessories', catLabel:'小物・帽子', name:'王冠', desc:'権力の象徴たる黄金の王冠', prompt:'crown, tiara, royal headpiece', tags:['王冠','貴族'] },
+  { id:'ac06', cat:'accessories', catLabel:'小物・帽子', name:'ヘッドフォン', desc:'音楽を愛するキャラの象徴', prompt:'headphones, over-ear headphones', tags:['ヘッドフォン','音楽'] },
+  { id:'ac07', cat:'accessories', catLabel:'小物・帽子', name:'羽根飾り', desc:'優雅な羽根で飾られた装身具', prompt:'feather accessories, plume', tags:['羽根','優雅'] },
+
+  // ── ポーズ ──
+  { id:'po01', cat:'pose', catLabel:'ポーズ', name:'戦闘構え', desc:'今にも動き出しそうな臨戦態勢', prompt:'battle stance, combat ready', tags:['戦闘','緊張'] },
+  { id:'po02', cat:'pose', catLabel:'ポーズ', name:'腕組み', desc:'自信たっぷりな腕を組んだ姿勢', prompt:'arms crossed, confident pose', tags:['自信','クール'] },
+  { id:'po03', cat:'pose', catLabel:'ポーズ', name:'佇む後ろ姿', desc:'静かに遠くを見る後姿', prompt:'standing from behind, looking into distance', tags:['後ろ姿','静寂'] },
+  { id:'po04', cat:'pose', catLabel:'ポーズ', name:'跳躍', desc:'躍動的に空へ飛び上がる瞬間', prompt:'jumping, leaping into the air', tags:['跳躍','動的'] },
+  { id:'po05', cat:'pose', catLabel:'ポーズ', name:'座り込み', desc:'地面や椅子に腰を落ろす姿', prompt:'sitting, seated pose', tags:['座り','リラックス'] },
+  { id:'po06', cat:'pose', catLabel:'ポーズ', name:'片膝立て', desc:'格好よく片膝をついたポーズ', prompt:'kneeling on one knee, heroic pose', tags:['片膝','英雄'] },
+
+  // ── アクション ──
+  { id:'ac_01', cat:'action', catLabel:'アクション', name:'剣を振るう', desc:'大振りに剣を空に描く', prompt:'swinging sword, slashing attack', tags:['剣','攻撃'] },
+  { id:'ac_02', cat:'action', catLabel:'アクション', name:'魔法を放つ', desc:'手から魔法エネルギーが迸る', prompt:'casting magic spell, energy blast', tags:['魔法','攻撃'] },
+  { id:'ac_03', cat:'action', catLabel:'アクション', name:'疾走', desc:'風を切って全力で走る', prompt:'running at full speed, wind effect', tags:['走る','速度'] },
+  { id:'ac_04', cat:'action', catLabel:'アクション', name:'降り立つ', desc:'どこかから着地する瞬間', prompt:'landing dramatically, impact pose', tags:['着地','迫力'] },
+  { id:'ac_05', cat:'action', catLabel:'アクション', name:'見下ろす', desc:'高い場所から睥睨する', prompt:'looking down from above, overlooking', tags:['見下ろし','威圧'] },
+
+  // ── アングル ──
+  { id:'an01', cat:'angle', catLabel:'アングル', name:'正面アップ', desc:'顔にフォーカスした正面視点', prompt:'close-up portrait, front view', tags:['正面','ポートレート'] },
+  { id:'an02', cat:'angle', catLabel:'アングル', name:'煽りアングル', desc:'下から見上げる迫力のアングル', prompt:'low angle shot, looking up', tags:['煽り','迫力'] },
+  { id:'an03', cat:'angle', catLabel:'アングル', name:'俯瞰', desc:'真上から見下ろす構図', prompt:'bird\'s eye view, top-down perspective', tags:['俯瞰','上空'] },
+  { id:'an04', cat:'angle', catLabel:'アングル', name:'斜め後ろ', desc:'後ろ斜めからの神秘的アングル', prompt:'from behind at angle, three-quarter view', tags:['後ろ','斜め'] },
+  { id:'an05', cat:'angle', catLabel:'アングル', name:'全身ショット', desc:'頭から足まで全体を写す', prompt:'full body shot', tags:['全身','全体'] },
+  { id:'an06', cat:'angle', catLabel:'アングル', name:'バストアップ', desc:'上半身にフォーカス', prompt:'upper body shot, bust-up', tags:['バスト','上半身'] },
+
+  // ── 構図 ──
+  { id:'co01', cat:'composition', catLabel:'構図', name:'三分割法', desc:'被写体を三分の一に配置', prompt:'rule of thirds composition', tags:['三分割','構図'] },
+  { id:'co02', cat:'composition', catLabel:'構図', name:'中央配置', desc:'被写体を画面中央に置く', prompt:'centered composition, symmetrical', tags:['中央','対称'] },
+  { id:'co03', cat:'composition', catLabel:'構図', name:'額縁構図', desc:'枠内で被写体を際立たせる', prompt:'framing composition', tags:['額縁','強調'] },
+  { id:'co04', cat:'composition', catLabel:'構図', name:'対角線構図', desc:'斜めの線を意識したダイナミックさ', prompt:'diagonal composition, dynamic lines', tags:['対角線','ダイナミック'] },
+  { id:'co05', cat:'composition', catLabel:'構図', name:'シルエット構図', desc:'輪郭線で語る美しい影絵', prompt:'silhouette composition, dramatic outline', tags:['シルエット','影'] },
+
+  // ── 世界観 ──
+  { id:'wv01', cat:'worldview', catLabel:'世界観', name:'近未来都市', desc:'数十年後の発展した都市', prompt:'near-future city, advanced technology', tags:['未来','都市'] },
+  { id:'wv02', cat:'worldview', catLabel:'世界観', name:'中世ヨーロッパ', desc:'騎士と城が支配する時代', prompt:'medieval Europe, castle era', tags:['中世','城'] },
+  { id:'wv03', cat:'worldview', catLabel:'世界観', name:'江戸時代', desc:'日本の江戸期の風情', prompt:'Edo period Japan, historical', tags:['江戸','歴史'] },
+  { id:'wv04', cat:'worldview', catLabel:'世界観', name:'宇宙空間', desc:'無限の宇宙に漂う孤独と壮大さ', prompt:'outer space, cosmic', tags:['宇宙','壮大'] },
+  { id:'wv05', cat:'worldview', catLabel:'世界観', name:'水中世界', desc:'海の底の神秘的な世界', prompt:'underwater world, deep sea', tags:['水中','海底'] },
+  { id:'wv06', cat:'worldview', catLabel:'世界観', name:'天空の城', desc:'雲の上に浮かぶ幻の城', prompt:'sky castle, floating fortress', tags:['天空','城'] },
+
+  // ── 背景 ──
+  { id:'bg01', cat:'background', catLabel:'背景', name:'ホログラム広告', desc:'未来都市らしさ。', prompt:'holographic advertisements', tags:['未来'] },
+  { id:'bg02', cat:'background', catLabel:'背景', name:'巨大な月', desc:'幻想感とシルエット。', prompt:'a giant moon in the background', tags:['月'] },
+  { id:'bg03', cat:'background', catLabel:'背景', name:'雨に濡れた路面', desc:'ネオン反射に強い。', prompt:'wet reflective pavement', tags:['雨','反射'] },
+  { id:'bg04', cat:'background', catLabel:'背景', name:'ステンドグラス', desc:'神聖・ゴシックに。', prompt:'stained glass windows', tags:['教会'] },
+  { id:'bg05', cat:'background', catLabel:'背景', name:'桜吹雪', desc:'和風・儚さに。', prompt:'falling cherry blossom petals', tags:['桜'] },
+  { id:'bg06', cat:'background', catLabel:'背景', name:'渋谷スクランブル交差点', desc:'渋谷を象徴する大交差点の喧騒感ある背景', prompt:'Shibuya scramble crossing', tags:['背景'] },
+  { id:'bg07', cat:'background', catLabel:'背景', name:'大阪', desc:'大阪の繁華街がランダムで生成される', prompt:'osaka', tags:['背景'] },
+  { id:'bg08', cat:'background', catLabel:'背景', name:'新宿歌舞伎町', desc:'ネオン輝く夜の歓楽街をイメージした背景', prompt:'Shinjuku Kabukicho', tags:['背景'] },
+  { id:'bg09', cat:'background', catLabel:'背景', name:'秋葉原', desc:'日本のアニメ・ゲーム文化の中心地をイメージした繁華街背景', prompt:'Akihabara', tags:['背景'] },
+  { id:'bg10', cat:'background', catLabel:'背景', name:'京都祇園', desc:'和風の街並みと石畳が印象的な歴史ある繁華街', prompt:'Kyoto Gion', tags:['背景'] },
+  { id:'bg11', cat:'background', catLabel:'背景', name:'九龍城', desc:'密集した建物と迷路のような路地が広がるカオティックな都市', prompt:'Kowloon Walled City', tags:['背景'] },
+  { id:'bg12', cat:'background', catLabel:'背景', name:'カオサン通り', desc:'バンコクの活気あふれるカオスな繁華街', prompt:'Khaosan Road', tags:['背景'] },
+  { id:'bg13', cat:'background', catLabel:'背景', name:'ラスベガス', desc:'巨大ネオン看板とカジノホテルが立ち並ぶ大通り', prompt:'Las Vegas', tags:['背景'] },
+  { id:'bg14', cat:'background', catLabel:'背景', name:'タイムズスクエア', desc:'ニューヨークを象徴する光り輝く広告街', prompt:'Times Square', tags:['背景'] },
+  { id:'bg15', cat:'background', catLabel:'背景', name:'廃墟のショッピングモール', desc:'朽ち果てた商業施設の廃墟', prompt:'Abandoned shopping mall', tags:['背景'] },
+  { id:'bg16', cat:'background', catLabel:'背景', name:'教室の廃墟', desc:'荒れ果てた机と黒板のある廃教室', prompt:'Abandoned classroom', tags:['背景'] },
+  { id:'bg17', cat:'background', catLabel:'背景', name:'学校の廃墟', desc:'人の気配が消えた廃校をイメージ', prompt:'Abandoned school', tags:['背景'] },
+  { id:'bg18', cat:'background', catLabel:'背景', name:'渋谷廃墟（100年後）', desc:'自然に侵食された未来の渋谷', prompt:'Shibuya 100 years later', tags:['背景'] },
+  { id:'bg19', cat:'background', catLabel:'背景', name:'マンハッタン廃墟（1000年後）', desc:'ビルが崩壊した文明崩壊後の都市', prompt:'Manhattan 1000 years later', tags:['背景'] },
+  { id:'bg20', cat:'background', catLabel:'背景', name:'ダム', desc:'ダムにはロマンがあります', prompt:'Dam', tags:['背景'] },
+  { id:'bg21', cat:'background', catLabel:'背景', name:'山奥', desc:'奥地の神秘的な自然風景', prompt:'Deep mountain', tags:['背景'] },
+  { id:'bg22', cat:'background', catLabel:'背景', name:'森林', desc:'深い森や幻想的な森を舞台にした背景', prompt:'Forest', tags:['背景'] },
+  { id:'bg23', cat:'background', catLabel:'背景', name:'体育館', desc:'スポーツやイベントで使われる大空間', prompt:'Gymnasium', tags:['背景'] },
+  { id:'bg24', cat:'background', catLabel:'背景', name:'学校の屋上', desc:'青空とフェンスの青春感あるシーン', prompt:'School rooftop', tags:['背景'] },
+  { id:'bg25', cat:'background', catLabel:'背景', name:'図書館', desc:'静かに本棚が並ぶ学びの空間', prompt:'Library', tags:['背景'] },
+  { id:'bg26', cat:'background', catLabel:'背景', name:'学校の廊下', desc:'放課後の静かな廊下や賑やかな場面', prompt:'School corridor', tags:['背景'] },
+  { id:'bg27', cat:'background', catLabel:'背景', name:'会議室', desc:'ガラス張りやモダンデザインの会議空間', prompt:'Meeting room', tags:['背景'] },
+  { id:'bg28', cat:'background', catLabel:'背景', name:'高層オフィスからの景色', desc:'窓越しに都市が広がる背景', prompt:'High-rise office view', tags:['背景'] },
+  { id:'bg29', cat:'background', catLabel:'背景', name:'オフィスルーム', desc:'デスクとPCが並ぶ現代的な職場', prompt:'Office room', tags:['背景'] },
+  { id:'bg30', cat:'background', catLabel:'背景', name:'教会', desc:'神秘的な教会の内部や外観', prompt:'Church', tags:['背景'] },
+  { id:'bg31', cat:'background', catLabel:'背景', name:'墓場', desc:'静かで不気味な墓地の情景', prompt:'Graveyard', tags:['背景'] },
+  { id:'bg32', cat:'background', catLabel:'背景', name:'湖の上', desc:'水面に浮かぶ神秘的な舞台', prompt:'Lake', tags:['背景'] },
+  { id:'bg33', cat:'background', catLabel:'背景', name:'浮遊島', desc:'空中に浮かぶ幻想的な大地', prompt:'Floating island', tags:['背景'] },
+  { id:'bg34', cat:'background', catLabel:'背景', name:'神社', desc:'鳥居や参道が印象的な和風背景', prompt:'Japanese shrine', tags:['背景'] },
+  { id:'bg35', cat:'background', catLabel:'背景', name:'畳の部屋', desc:'和室を舞台にした落ち着いた背景', prompt:'Tatami room', tags:['背景'] },
+  { id:'bg36', cat:'background', catLabel:'背景', name:'祭りの夜店', desc:'提灯が灯る夏祭りの背景', prompt:'Festival street', tags:['背景'] },
+  { id:'bg37', cat:'background', catLabel:'背景', name:'グラデーション', desc:'単純だが雰囲気を変える背景', prompt:'Gradient', tags:['背景'] },
+  { id:'bg38', cat:'background', catLabel:'背景', name:'ネオングリッド', desc:'サイバー感を出せる光るパターン', prompt:'Neon grid', tags:['背景'] },
+  { id:'bg39', cat:'background', catLabel:'背景', name:'宇宙コロニー', desc:'宇宙空間に浮かぶ巨大居住区', prompt:'Space colony', tags:['背景'] },
+  { id:'bg40', cat:'background', catLabel:'背景', name:'サイバーパンク都市', desc:'ネオンと雨が降る近未来都市', prompt:'Cyberpunk city', tags:['背景'] },
+  { id:'bg41', cat:'background', catLabel:'背景', name:'宇宙船内部', desc:'メカニカルでハイテク感のある船内背景', prompt:'Spaceship interior', tags:['背景'] },
+  { id:'bg42', cat:'background', catLabel:'背景', name:'異星の惑星', desc:'奇妙な地形と空模様の未知の世界', prompt:'Alien planet', tags:['背景'] },
+  { id:'bg43', cat:'background', catLabel:'背景', name:'天才ハッカーの部屋', desc:'ディスプレイが多数ある部屋', prompt:"Genius hacker's room", tags:['背景'] },
+  { id:'bg44', cat:'background', catLabel:'背景', name:'未来研究所', desc:'ホログラムや機械が並ぶ研究施設', prompt:'Futuristic laboratory', tags:['背景'] },
+  { id:'bg45', cat:'background', catLabel:'背景', name:'研究施設', desc:'理科室や科学研究所', prompt:'labo', tags:['背景'] },
+  { id:'bg46', cat:'background', catLabel:'背景', name:'花火大会', desc:'夏祭りや夜空を彩る花火', prompt:'Fireworks', tags:['背景'] },
+  { id:'bg47', cat:'background', catLabel:'背景', name:'紅葉', desc:'秋の鮮やかな紅葉風景', prompt:'Autumn leaves', tags:['背景'] },
+  { id:'bg48', cat:'background', catLabel:'背景', name:'雪の街並み', desc:'冬の雪景色とイルミネーション', prompt:'Snow city', tags:['背景'] },
+  { id:'bg49', cat:'background', catLabel:'背景', name:'ハロウィン', desc:'ジャックオランタンやお化けが漂う不気味で楽しい夜の街並み', prompt:'Halloween night', tags:['背景'] },
+  { id:'bg50', cat:'background', catLabel:'背景', name:'ハロウィンの墓場', desc:'ハロウィンの静かで不気味な墓地の情景', prompt:'Halloween night Graveyard', tags:['背景'] },
+
+  // ── 光 ──
+  { id:'l01', cat:'lighting', catLabel:'光', name:'ゴールデンアワー', desc:'日没前後の黄金色の柔らかい光', prompt:'golden hour lighting, warm sunlight', tags:['ゴールデン','夕陽'] },
+  { id:'l02', cat:'lighting', catLabel:'光', name:'ネオンライト', desc:'鮮やかなネオン管の照明', prompt:'neon lighting, colorful glow', tags:['ネオン','都市'] },
+  { id:'l03', cat:'lighting', catLabel:'光', name:'月明かり', desc:'冷たく青い月の光', prompt:'moonlight, cool blue light', tags:['月','夜'] },
+  { id:'l04', cat:'lighting', catLabel:'光', name:'逆光・シルエット', desc:'光源を背にした劇的な陰影', prompt:'backlight, silhouette, rim light', tags:['逆光','シルエット'] },
+  { id:'l05', cat:'lighting', catLabel:'光', name:'稲妻・雷光', desc:'暗夜を切り裂く稲妻の閃光', prompt:'lightning strike, dramatic flash', tags:['雷','閃光'] },
+  { id:'l06', cat:'lighting', catLabel:'光', name:'スタジオライト', desc:'均質で美しいスタジオ照明', prompt:'studio lighting, professional', tags:['スタジオ','プロ'] },
+  { id:'l07', cat:'lighting', catLabel:'光', name:'ホログラム光', desc:'SF的な半透明の投影光', prompt:'holographic light, projection', tags:['ホログラム','SF'] },
+  { id:'l08', cat:'lighting', catLabel:'光', name:'炎の光', desc:'揺らぐ炎が照らす暖かな光', prompt:'firelight, warm flickering flame', tags:['炎','暖色'] },
+
+  // ── 色 ──
+  { id:'cl01', cat:'color', catLabel:'色', name:'モノクローム', desc:'白黒の圧倒的なコントラスト', prompt:'monochrome, black and white', tags:['白黒','シンプル'] },
+  { id:'cl02', cat:'color', catLabel:'色', name:'パステルカラー', desc:'柔らかく淡い色調', prompt:'pastel colors, soft palette', tags:['パステル','淡い'] },
+  { id:'cl03', cat:'color', catLabel:'色', name:'ビビッドカラー', desc:'鮮やかで目を引く高彩度', prompt:'vivid colors, saturated palette', tags:['鮮やか','高彩度'] },
+  { id:'cl04', cat:'color', catLabel:'色', name:'セピアトーン', desc:'古写真のような温かい茶色がかった色調', prompt:'sepia tone, vintage', tags:['セピア','レトロ'] },
+  { id:'cl05', cat:'color', catLabel:'色', name:'サイバーカラー', desc:'サイバーパンク的なネオンブルー＋マゼンタ', prompt:'cyberpunk color palette, neon blue and magenta', tags:['サイバー','ネオン'] },
+  { id:'cl06', cat:'color', catLabel:'色', name:'ダークカラー', desc:'深みのある暗いトーン', prompt:'dark color palette, deep tones', tags:['ダーク','深み'] },
+  { id:'cl07', cat:'color', catLabel:'色', name:'夕焼け色', desc:'オレンジとピンクが混じる夕暮れ', prompt:'sunset color palette, orange and pink', tags:['夕焼け','暖色'] },
+  { id:'cl08', cat:'color', catLabel:'色', name:'エメラルド', desc:'神秘的な深い緑色', prompt:'emerald green, teal palette', tags:['エメラルド','緑'] },
+
+  // ── エフェクト ──
+  { id:'ef01', cat:'effect', catLabel:'エフェクト', name:'粒子・エフェクト', desc:'空中に散らばるキラキラした粒子', prompt:'particles, sparkling dust', tags:['粒子','キラキラ'] },
+  { id:'ef02', cat:'effect', catLabel:'エフェクト', name:'煙・霧', desc:'幻想的に漂う煙や霧', prompt:'smoke, fog, mist', tags:['煙','霧'] },
+  { id:'ef03', cat:'effect', catLabel:'エフェクト', name:'魔法陣', desc:'光る幾何学的な魔法の円', prompt:'magic circle, glowing sigil', tags:['魔法陣','光'] },
+  { id:'ef04', cat:'effect', catLabel:'エフェクト', name:'速度線', desc:'動きの速さを表す放射状の線', prompt:'speed lines, motion blur', tags:['速度','動き'] },
+  { id:'ef05', cat:'effect', catLabel:'エフェクト', name:'光芒・光条', desc:'眩しく広がる光の放射', prompt:'light rays, god rays, volumetric light', tags:['光芒','光条'] },
+  { id:'ef06', cat:'effect', catLabel:'エフェクト', name:'グリッチ', desc:'デジタルノイズと歪み', prompt:'glitch effect, digital distortion', tags:['グリッチ','デジタル'] },
+  { id:'ef07', cat:'effect', catLabel:'エフェクト', name:'炎のオーラ', desc:'身体を包む炎のような覇気', prompt:'flame aura, fire surrounding body', tags:['炎','オーラ'] },
+  { id:'ef08', cat:'effect', catLabel:'エフェクト', name:'水しぶき', desc:'ダイナミックな水の飛沫', prompt:'water splash, liquid dynamics', tags:['水','ダイナミック'] },
+
+  // ── 品質 ──
+  { id:'q01', cat:'quality', catLabel:'品質', name:'超高解像度', desc:'圧倒的な細部まで描き込まれた解像度', prompt:'ultra detailed, 8K resolution', tags:['高画質','細部'] },
+  { id:'q02', cat:'quality', catLabel:'品質', name:'シネマティック', desc:'映画的な構図と色彩', prompt:'cinematic, film quality', tags:['映画','シネマ'] },
+  { id:'q03', cat:'quality', catLabel:'品質', name:'フォトグラフィック', desc:'写真と区別のつかないリアリティ', prompt:'photographic quality, hyperrealistic', tags:['フォト','超写実'] },
+  { id:'q04', cat:'quality', catLabel:'品質', name:'マスターピース', desc:'傑作クラスの完成度', prompt:'masterpiece, best quality', tags:['傑作','最高'] },
+  { id:'q05', cat:'quality', catLabel:'品質', name:'シャープフォーカス', desc:'くっきりとした精細なピント', prompt:'sharp focus, crisp details', tags:['シャープ','精細'] },
+  { id:'q06', cat:'quality', catLabel:'品質', name:'被写界深度', desc:'前後にぼけを加えた表現', prompt:'depth of field, bokeh background', tags:['ボケ','奥行き'] },
+];
+
+// =========================================================
+//  CATEGORIES CONFIG
+// =========================================================
+const CATEGORIES = [
+  { key:'all',         label:'すべて' },
+  { key:'genre',       label:'ジャンル' },
+  { key:'emotion',     label:'感情' },
+  { key:'designStyle', label:'デザイン' },
+  { key:'artStyle',    label:'画法' },
+  { key:'character',   label:'キャラ' },
+  { key:'appearance',  label:'外見' },
+  { key:'hairstyle',   label:'髪型' },
+  { key:'eyes',        label:'目' },
+  { key:'expression',  label:'表情' },
+  { key:'outfit',      label:'服装' },
+  { key:'weapon',      label:'武器' },
+  { key:'accessories', label:'小物・帽子' },
+  { key:'pose',        label:'ポーズ' },
+  { key:'action',      label:'アクション' },
+  { key:'angle',       label:'アングル' },
+  { key:'composition', label:'構図' },
+  { key:'worldview',   label:'世界観' },
+  { key:'background',  label:'背景' },
+  { key:'lighting',    label:'光' },
+  { key:'color',       label:'色' },
+  { key:'effect',      label:'エフェクト' },
+  { key:'quality',     label:'品質' },
+];
+
+// =========================================================
+//  STATE
+// =========================================================
+let state = {
+  query: '',
+  cat: 'all',
+  builder: [],  // Array of prompt item ids
+  params: { ar: '9:16', stylize: '250', chaos: '8', version: '6.1' }
+};
+
+// =========================================================
+//  DOM REFS
+// =========================================================
+const $catList     = document.getElementById('catList');
+const $cardGrid    = document.getElementById('cardGrid');
+const $mainCount   = document.getElementById('mainCount');
+const $mainCatLabel= document.getElementById('mainCatLabel');
+const $mainTitle   = document.getElementById('mainTitle');
+const $builderItems= document.getElementById('builderItems');
+const $builderEmpty= document.getElementById('builderEmpty');
+const $builderBadge= document.getElementById('builderBadge');
+const $outputText  = document.getElementById('outputText');
+const $searchInput = document.getElementById('searchInput');
+const $toast       = document.getElementById('toast');
+const $paramAR     = document.getElementById('paramAR');
+const $paramStylize= document.getElementById('paramStylize');
+const $paramChaos  = document.getElementById('paramChaos');
+const $paramVersion= document.getElementById('paramVersion');
+
+// =========================================================
+//  INIT
+// =========================================================
+function init() {
+  buildCatList();
+  renderCards();
+  renderBuilder();
+  updateOutput();
+
+  // search
+  $searchInput.addEventListener('input', (e) => {
+    state.query = e.target.value.trim();
+    renderCards();
+  });
+
+  // params
+  $paramAR.addEventListener('input', () => { state.params.ar = $paramAR.value; updateOutput(); });
+  $paramStylize.addEventListener('input', () => { state.params.stylize = $paramStylize.value; updateOutput(); });
+  $paramChaos.addEventListener('input', () => { state.params.chaos = $paramChaos.value; updateOutput(); });
+  $paramVersion.addEventListener('input', () => { state.params.version = $paramVersion.value; updateOutput(); });
+
+  // copy
+  document.getElementById('btnCopy').addEventListener('click', () => {
+    copyText($outputText.value);
+  });
+
+  // clear
+  document.getElementById('btnClear').addEventListener('click', () => {
+    state.builder = [];
+    renderBuilder();
+    updateOutput();
+  });
+
+  // reset params
+  document.getElementById('btnReset').addEventListener('click', () => {
+    state.params = { ar:'9:16', stylize:'250', chaos:'8', version:'6.1' };
+    $paramAR.value = '9:16';
+    $paramStylize.value = '250';
+    $paramChaos.value = '8';
+    $paramVersion.value = '6.1';
+    updateOutput();
+  });
+
+  // tabs
+  document.getElementById('mainTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('.pa-tab');
+    if (!btn) return;
+    const panel = btn.dataset.panel;
+    document.querySelectorAll('.pa-tab').forEach(t => t.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    document.querySelectorAll('.pa-panel').forEach(p => p.classList.remove('is-active'));
+    document.getElementById('panel-' + panel).classList.add('is-active');
+  });
+
+  // reverse lookup
+  document.getElementById('btnReverse').addEventListener('click', reverseSearch);
+  document.getElementById('reverseInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') reverseSearch();
+  });
+}
+
+// =========================================================
+//  BUILD CATEGORY LIST
+// =========================================================
+function buildCatList() {
+  $catList.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const count = cat.key === 'all'
+      ? PROMPT_DATA.length
+      : PROMPT_DATA.filter(d => d.cat === cat.key).length;
+
+    const btn = document.createElement('button');
+    btn.className = 'pa-cat-btn' + (cat.key === state.cat ? ' is-active' : '');
+    btn.dataset.cat = cat.key;
+    btn.innerHTML = `<span>${cat.label}</span><span class="pa-cat-count">${count}</span>`;
+    btn.addEventListener('click', () => {
+      state.cat = cat.key;
+      document.querySelectorAll('.pa-cat-btn').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      updateMainHead();
+      renderCards();
+    });
+    $catList.appendChild(btn);
+  });
+}
+
+function updateMainHead() {
+  const catInfo = CATEGORIES.find(c => c.key === state.cat);
+  if (state.cat === 'all') {
+    $mainCatLabel.textContent = 'PROMPT DICTIONARY';
+    $mainTitle.textContent = '辞典一覧';
+  } else {
+    $mainCatLabel.textContent = catInfo.key.toUpperCase();
+    $mainTitle.textContent = catInfo.label;
+  }
+}
+
+// =========================================================
+//  RENDER CARDS
+// =========================================================
+function renderCards() {
+  const q = state.query.toLowerCase();
+  let filtered = PROMPT_DATA;
+
+  if (state.cat !== 'all') {
+    filtered = filtered.filter(d => d.cat === state.cat);
+  }
+
+  if (q) {
+    filtered = filtered.filter(d =>
+      d.name.toLowerCase().includes(q) ||
+      d.desc.toLowerCase().includes(q) ||
+      d.tags.some(t => t.toLowerCase().includes(q)) ||
+      d.prompt.toLowerCase().includes(q)
+    );
+  }
+
+  $mainCount.textContent = `${filtered.length} items`;
+
+  if (filtered.length === 0) {
+    $cardGrid.innerHTML = `
+      <div class="pa-no-result" style="grid-column:1/-1">
+        <div class="pa-no-result-icon">⌀</div>
+        <div class="pa-no-result-text">「${state.query}」に一致するプロンプトが見つかりません</div>
+      </div>`;
+    return;
+  }
+
+  $cardGrid.innerHTML = filtered.map(item => `
+    <article class="pa-card">
+      <div class="pa-card-cat">${item.catLabel}</div>
+      <div class="pa-card-name">${item.name}</div>
+      <div class="pa-card-desc">${item.desc}</div>
+      <div class="pa-card-prompt">${item.prompt}</div>
+      <div class="pa-card-tags">${item.tags.map(t => `<span class="pa-tag">${t}</span>`).join('')}</div>
+      <div class="pa-card-actions">
+        <button class="pa-btn pa-btn-primary" data-add="${item.id}">＋ Builder</button>
+        <button class="pa-btn" data-copy="${item.prompt}">コピー</button>
+      </div>
+    </article>
+  `).join('');
+
+  // card action events
+  $cardGrid.querySelectorAll('[data-add]').forEach(btn => {
+    btn.addEventListener('click', () => addToBuilder(btn.dataset.add));
+  });
+  $cardGrid.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', () => copyText(btn.dataset.copy));
+  });
+}
+
+// =========================================================
+//  BUILDER
+// =========================================================
+function addToBuilder(id) {
+  if (state.builder.includes(id)) {
+    showToast('既に追加済みです');
+    return;
+  }
+  state.builder.push(id);
+  renderBuilder();
+  updateOutput();
+  showToast('Builder に追加しました');
+}
+
+function removeFromBuilder(id) {
+  state.builder = state.builder.filter(i => i !== id);
+  renderBuilder();
+  updateOutput();
+}
+
+function renderBuilder() {
+  $builderBadge.textContent = state.builder.length || '';
+
+  if (state.builder.length === 0) {
+    $builderEmpty.style.display = 'block';
+    $builderItems.querySelectorAll('.pa-builder-item').forEach(el => el.remove());
+    return;
+  }
+
+  $builderEmpty.style.display = 'none';
+
+  // clear existing items
+  $builderItems.querySelectorAll('.pa-builder-item').forEach(el => el.remove());
+
+  state.builder.forEach(id => {
+    const item = PROMPT_DATA.find(d => d.id === id);
+    if (!item) return;
+
+    const el = document.createElement('div');
+    el.className = 'pa-builder-item';
+    el.dataset.id = id;
+    el.innerHTML = `
+      <div class="pa-builder-item-body">
+        <div class="pa-builder-item-name">${item.name}</div>
+        <div class="pa-builder-item-prompt">${item.prompt}</div>
+      </div>
+      <button class="pa-builder-item-remove" data-remove="${id}">✕</button>
+    `;
+    el.querySelector('[data-remove]').addEventListener('click', () => removeFromBuilder(id));
+    $builderItems.appendChild(el);
+  });
+}
+
+function updateOutput() {
+  const prompts = state.builder
+    .map(id => PROMPT_DATA.find(d => d.id === id)?.prompt)
+    .filter(Boolean);
+
+  const p = state.params;
+  let output = '';
+
+  if (prompts.length > 0) {
+    output = prompts.join(', ') + ', ultra detailed, high quality, sharp focus';
+  } else {
+    output = 'A beautiful character in a cinematic scene., ultra detailed, high quality, sharp focus';
+  }
+
+  const flags = [];
+  if (p.ar)       flags.push(`--ar ${p.ar}`);
+  if (p.stylize)  flags.push(`--stylize ${p.stylize}`);
+  if (p.chaos)    flags.push(`--chaos ${p.chaos}`);
+  if (p.version)  flags.push(`--v ${p.version}`);
+
+  if (flags.length) output += ' ' + flags.join(' ');
+
+  $outputText.value = output;
+}
+
+// =========================================================
+//  REVERSE SEARCH
+// =========================================================
+function reverseSearch() {
+  const q = document.getElementById('reverseInput').value.trim().toLowerCase();
+  const $result = document.getElementById('reverseResult');
+
+  if (!q) {
+    $result.innerHTML = '';
+    return;
+  }
+
+  const hits = PROMPT_DATA.filter(d =>
+    d.prompt.toLowerCase().includes(q)
+  );
+
+  if (hits.length === 0) {
+    $result.innerHTML = `<div style="color:var(--muted);font-family:var(--font-mono);font-size:12px;padding:var(--sp-4) 0;">「${q}」に一致するプロンプトが見つかりません</div>`;
+    return;
+  }
+
+  $result.innerHTML = `
+    <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--sp-3);">${hits.length} results</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${hits.map(item => `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+          <div style="flex:1;">
+            <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">${item.catLabel}</div>
+            <div style="font-family:var(--font-inter);font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;">${item.name}</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-sub);">${item.prompt}</div>
+          </div>
+          <button class="pa-btn pa-btn-primary" data-add="${item.id}" style="flex-shrink:0;">＋ Builder</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  $result.querySelectorAll('[data-add]').forEach(btn => {
+    btn.addEventListener('click', () => addToBuilder(btn.dataset.add));
+  });
+}
+
+// =========================================================
+//  COPY
+// =========================================================
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('コピーしました'))
+      .catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('コピーしました');
+  } catch {
+    showToast('コピーに失敗しました');
+  }
+  document.body.removeChild(ta);
+}
+
+// =========================================================
+//  TOAST
+// =========================================================
+let toastTimer;
+function showToast(msg) {
+  $toast.textContent = msg;
+  $toast.classList.add('is-show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $toast.classList.remove('is-show'), 2000);
+}
+
+// =========================================================
+//  BOOT
+// =========================================================
+init();
+</script>
+</body>
+</html>
