@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNAP KAITARO — Wizard v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   SNAP KAITARO — Wizard v2 (KITAcore Tool)
+   写真手描き注釈プロンプト ステップビルダー
+   Design: Architectural Minimalism × Light Mode (KITAcore)
+========================================================= */
+:root{
+  --bg:#E9E9E9; --surface:#FFFFFF; --surface-v:#F4F4F2; --surface-hov:#EFEFED;
+  --text:#111111; --text-sub:#333333; --muted:#6B6B6B;
+  --border:#DDDDDD; --border-light:#CCCCCC;
+  --accent:#000000; --accent-dim:rgba(0,0,0,0.06);
+  --red:#CC2200; --green:#007744;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px; --sp-12:48px;
+  --font-display:'Anton','Inter',sans-serif;
+  --font-body:'Noto Sans JP',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-inter:'Inter',sans-serif;
+  --step-color:#000000;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#BBBBBB;border-radius:3px;}
+
+/* HEADER */
+.pa-header{position:sticky;top:0;z-index:100;background:rgba(233,233,233,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 var(--sp-8);height:56px;}
+.pa-header-left{display:flex;align-items:center;gap:var(--sp-6);}
+.pa-nav-label{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;}
+.pa-logo{font-family:var(--font-display);font-size:20px;letter-spacing:0.06em;color:var(--text);}
+.pa-logo span{color:var(--accent);}
+.pa-version{font-family:var(--font-mono);font-size:10px;color:var(--muted);padding:2px 6px;border:1px solid var(--border-light);border-radius:2px;}
+.pa-header-mode{font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+
+/* WIZARD SHELL */
+.pa-wizard{max-width:880px;margin:0 auto;padding:var(--sp-8) var(--sp-6) var(--sp-12);}
+
+/* progress */
+.pa-progress{display:flex;align-items:center;gap:6px;margin-bottom:var(--sp-8);flex-wrap:wrap;}
+.pa-progress-step{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.pa-progress-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;font-weight:700;border:1px solid var(--border-light);background:var(--surface);color:var(--muted);transition:all 150ms ease;flex-shrink:0;}
+.pa-progress-step.is-active .pa-progress-dot{background:var(--step-color,#000);border-color:var(--step-color,#000);color:#fff;}
+.pa-progress-step.is-done .pa-progress-dot{background:var(--text);border-color:var(--text);color:#fff;}
+.pa-progress-line{width:18px;height:1px;background:var(--border-light);flex-shrink:0;}
+.pa-progress-step.is-done + .pa-progress-line{background:var(--text);}
+
+/* step card */
+.pa-step{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:var(--sp-8);}
+.pa-step-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--sp-2);display:flex;align-items:center;gap:var(--sp-2);}
+.pa-step-eyebrow .dot{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;}
+.pa-step-title{font-family:var(--font-display);font-size:26px;letter-spacing:0.04em;color:var(--text);margin-bottom:var(--sp-2);}
+.pa-step-desc{font-size:13px;color:var(--text-sub);line-height:1.8;margin-bottom:var(--sp-6);}
+
+/* items textarea */
+.pa-items-input{width:100%;background:var(--surface-v);border:1px solid var(--border-light);border-radius:2px;padding:12px 14px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;resize:vertical;min-height:90px;line-height:1.7;transition:border-color 150ms ease;}
+.pa-items-input:focus{border-color:var(--accent);}
+.pa-items-input::placeholder{color:var(--muted);}
+
+/* preset chips (intro) */
+.pa-mini-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin:var(--sp-6) 0 var(--sp-3);}
+.pa-preset-chips{display:flex;flex-wrap:wrap;gap:var(--sp-2);}
+.pa-preset-chip{font-family:var(--font-mono);font-size:11px;padding:7px 12px;border:1px solid var(--border-light);border-radius:2px;background:var(--surface-v);color:var(--text-sub);cursor:pointer;transition:all 150ms ease;}
+.pa-preset-chip:hover{border-color:var(--accent);color:var(--text);}
+.pa-preset-chip.is-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.pa-preset-chip .pid{color:var(--muted);margin-right:5px;}
+.pa-preset-chip.is-active .pid{color:rgba(255,255,255,0.6);}
+.pa-preset-hint{font-family:var(--font-body);font-size:12px;color:var(--muted);margin-top:var(--sp-3);line-height:1.7;}
+
+/* option grid */
+.pa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--sp-3);}
+.pa-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:var(--sp-3) var(--sp-4);display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:all 150ms ease;position:relative;}
+.pa-card:hover{border-color:var(--border-light);}
+.pa-card.is-selected{border-color:var(--step-color,#000);background:var(--accent-dim);}
+.pa-card.is-selected::after{content:'✓';position:absolute;top:8px;right:10px;font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--step-color,#000);}
+.pa-card-pt{font-family:var(--font-mono);font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+.pa-card-name{font-family:var(--font-inter);font-size:13px;font-weight:600;color:var(--text);line-height:1.4;}
+.pa-card-ja{font-size:11px;color:var(--text-sub);line-height:1.6;}
+.pa-card-en{font-family:var(--font-mono);font-size:10px;color:var(--muted);word-break:break-word;}
+
+/* custom add */
+.pa-customrow{background:var(--surface-v);border:1px dashed var(--border-light);border-radius:4px;padding:var(--sp-3);display:flex;flex-direction:column;gap:var(--sp-2);grid-column:1/-1;}
+.pa-customrow-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
+.pa-customrow-fields{display:grid;grid-template-columns:1fr 1fr auto;gap:var(--sp-2);}
+.pa-custom-input{background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:6px 10px;color:var(--text);font-family:var(--font-body);font-size:12px;outline:none;width:100%;transition:border-color 150ms ease;}
+.pa-custom-input:focus{border-color:var(--accent);}
+.pa-custom-input::placeholder{color:var(--muted);}
+
+/* footer nav */
+.pa-step-footer{display:flex;align-items:center;justify-content:space-between;margin-top:var(--sp-8);padding-top:var(--sp-6);border-top:1px solid var(--border);}
+.pa-step-footer-right{display:flex;gap:var(--sp-2);}
+.pa-step-selcount{font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+.pa-btn{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:10px 18px;border-radius:2px;border:1px solid var(--border-light);background:transparent;color:var(--text-sub);cursor:pointer;transition:all 150ms ease;white-space:nowrap;}
+.pa-btn:hover{background:var(--surface-v);color:var(--text);border-color:var(--accent);}
+.pa-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.pa-btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+.pa-btn-primary:hover{background:#333;border-color:#333;color:#fff;}
+.pa-btn-ghost{border-color:transparent;color:var(--muted);}
+.pa-btn-ghost:hover{background:var(--surface-v);color:var(--text-sub);border-color:transparent;}
+
+/* CONFIRM */
+.pa-confirm-summary{display:flex;flex-direction:column;gap:var(--sp-3);margin-bottom:var(--sp-6);}
+.pa-sum-row{display:flex;align-items:flex-start;gap:var(--sp-3);padding:var(--sp-3) var(--sp-4);background:var(--surface-v);border:1px solid var(--border);border-radius:2px;}
+.pa-sum-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px;}
+.pa-sum-body{flex:1;min-width:0;}
+.pa-sum-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.pa-sum-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.pa-sum-chip{font-family:var(--font-inter);font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:2px 8px;color:var(--text);}
+.pa-sum-empty{font-family:var(--font-mono);font-size:11px;color:var(--border-light);}
+.pa-sum-edit{font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);border-radius:2px;padding:4px 8px;cursor:pointer;transition:all 150ms ease;flex-shrink:0;}
+.pa-sum-edit:hover{border-color:var(--accent);color:var(--text);}
+
+/* tool + params + output */
+.pa-tool-tabs{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--surface-v);border:1px solid var(--border);border-radius:3px;padding:3px;max-width:360px;}
+.pa-tool-tab{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:8px 4px;border:none;border-radius:2px;background:transparent;color:var(--muted);cursor:pointer;transition:all 150ms ease;text-align:center;}
+.pa-tool-tab.is-active{background:var(--accent);color:#fff;}
+.pa-tool-tab:hover:not(.is-active){color:var(--text);background:var(--surface-hov);}
+.pa-output-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin:var(--sp-6) 0 6px;}
+.pa-params-grid{display:flex;flex-wrap:wrap;gap:var(--sp-3);margin-bottom:var(--sp-2);}
+.pa-param-group{display:flex;flex-direction:column;gap:3px;}
+.pa-param-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.pa-param-input{background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:6px 10px;color:var(--text);font-family:var(--font-mono);font-size:11px;outline:none;width:110px;transition:border-color 150ms ease;}
+.pa-param-input:focus{border-color:var(--accent);}
+.pa-output-text{font-family:var(--font-mono);font-size:12px;color:var(--text-sub);background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:12px 14px;line-height:1.7;word-break:break-word;white-space:pre-wrap;min-height:160px;resize:vertical;width:100%;outline:none;}
+.pa-output-text:focus{border-color:var(--accent);}
+.pa-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);margin-top:var(--sp-3);}
+
+/* GUIDE */
+.pa-guide{max-width:760px;margin:0 auto;padding:var(--sp-8) var(--sp-6);display:none;}
+.pa-guide.is-open{display:block;}
+.pa-guide-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:var(--sp-6);margin-bottom:var(--sp-4);}
+.pa-guide-title{font-family:var(--font-display);font-size:18px;letter-spacing:0.06em;margin-bottom:var(--sp-3);}
+.pa-guide-desc{font-size:13px;color:var(--text-sub);line-height:1.8;}
+.pa-guide-note{margin-top:var(--sp-4);padding:var(--sp-3) var(--sp-4);background:var(--accent-dim);border-left:2px solid var(--accent);border-radius:0 2px 2px 0;font-size:12px;color:var(--text-sub);line-height:1.7;}
+
+/* DISCLAIMER (intro) */
+.pa-disclaimer{background:var(--accent-dim);border:1px solid var(--border);border-left:2px solid var(--accent);border-radius:0 4px 4px 0;padding:var(--sp-4) var(--sp-6);margin-bottom:var(--sp-6);}
+.pa-disclaimer-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--sp-3);}
+.pa-disclaimer p{font-size:13px;color:var(--text-sub);line-height:1.9;margin:0 0 var(--sp-2);}
+.pa-disclaimer p:last-child{margin-bottom:0;}
+.pa-disclaimer .sign{text-align:right;font-weight:700;color:var(--text);margin-top:var(--sp-3);}
+
+/* TOAST */
+.pa-toast{position:fixed;bottom:var(--sp-6);left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--accent);border-radius:2px;padding:10px 20px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;color:var(--accent);z-index:9999;opacity:0;transition:all 300ms ease;pointer-events:none;}
+.pa-toast.is-show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* DISCLAIMER (intro banner) */
+.pa-disclaimer{position:relative;background:var(--accent-dim);border:1px solid var(--border);border-left:2px solid var(--accent);border-radius:0 2px 2px 0;padding:var(--sp-4) var(--sp-6);margin-bottom:var(--sp-6);}
+.pa-disclaimer.is-hidden{display:none;}
+.pa-disclaimer-head{font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--sp-3);display:flex;align-items:center;gap:var(--sp-2);}
+.pa-disclaimer-head::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:1px;flex-shrink:0;}
+.pa-disclaimer-lead{font-size:13px;color:var(--text);font-weight:600;line-height:1.8;margin-bottom:var(--sp-3);padding-right:var(--sp-6);}
+.pa-disclaimer-list{list-style:none;display:flex;flex-direction:column;gap:var(--sp-2);margin-bottom:var(--sp-3);}
+.pa-disclaimer-list li{font-size:12px;color:var(--text-sub);line-height:1.8;padding-left:16px;position:relative;}
+.pa-disclaimer-list li::before{content:'—';position:absolute;left:0;color:var(--muted);}
+.pa-disclaimer-foot{font-size:12px;color:var(--text-sub);line-height:1.8;padding-top:var(--sp-3);border-top:1px solid var(--border);}
+.pa-disclaimer-sign{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:0.04em;margin-top:var(--sp-2);}
+.pa-disclaimer-close{position:absolute;top:8px;right:10px;background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;padding:4px 6px;line-height:1;border-radius:2px;transition:color 150ms ease;}
+.pa-disclaimer-close:hover{color:var(--text);}
+
+@media (max-width:640px){
+  /* shell */
+  .pa-wizard{padding:var(--sp-4) var(--sp-3) var(--sp-8);}
+  .pa-disclaimer{padding:var(--sp-4);}
+  .pa-disclaimer-lead{padding-right:var(--sp-4);}
+  .pa-step{padding:var(--sp-6) var(--sp-4);}
+  .pa-step-title{font-size:22px;}
+  .pa-step-desc{font-size:13px;}
+  .pa-progress-step span.lbl{display:none;}
+
+  /* header — 詰めて折り返し許可、補助ラベルは隠す */
+  .pa-header{padding:0 var(--sp-4);height:auto;min-height:52px;gap:var(--sp-2);flex-wrap:nowrap;}
+  .pa-header-left{gap:var(--sp-3);min-width:0;flex:1;}
+  .pa-logo{font-size:18px;}
+  .pa-nav-label,.pa-header-mode{display:none;}
+  #btnGuideToggle{padding:8px 12px;flex-shrink:0;}
+
+  /* progress — ドット間隔を詰める */
+  .pa-progress{gap:4px;margin-bottom:var(--sp-6);}
+  .pa-progress-dot{width:24px;height:24px;}
+  .pa-progress-line{width:10px;}
+
+  /* option grid — 1列に */
+  .pa-grid{grid-template-columns:1fr;}
+
+  /* custom add — フィールド縦積み、ボタン全幅 */
+  .pa-customrow-fields{grid-template-columns:1fr;}
+  .pa-customrow-fields .pa-btn{width:100%;}
+
+  /* footer nav — 縦積み。戻る/スキップは横並び、次へは全幅で押しやすく */
+  .pa-step-footer{flex-direction:column;align-items:stretch;gap:var(--sp-3);}
+  .pa-step-selcount{text-align:center;}
+  .pa-step-footer-right{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);width:100%;}
+  .pa-step-footer-right .pa-btn{padding:12px 10px;}
+  .pa-step-footer-right .pa-btn-primary{grid-column:1/-1;}
+
+  /* confirm — ツールタブ/アクションを全幅・縦積み */
+  .pa-tool-tabs{max-width:none;}
+  .pa-confirm-actions{grid-template-columns:1fr;}
+  .pa-confirm-actions .pa-btn{padding:12px 10px;}
+
+  /* iOS のフォーカス時オートズーム防止：入力系は 16px 以上に */
+  .pa-items-input,
+  .pa-custom-input,
+  .pa-output-text,
+  .pa-param-input{font-size:16px;}
+  .pa-card-en{font-size:11px;}
+}
+</style>
+</head>
+<body>
+
+<header class="pa-header">
+  <div class="pa-header-left">
+    <span class="pa-nav-label">KITACORE TOOL</span>
+    <div class="pa-logo">SNAP <span>KAITARO</span></div>
+    <span class="pa-version">v2.0</span>
+    <span class="pa-header-mode">WIZARD</span>
+  </div>
+  <div>
+    <button class="pa-btn pa-btn-ghost" id="btnGuideToggle">使い方</button>
+  </div>
+</header>
+
+<!-- WIZARD -->
+<div class="pa-wizard" id="wizard">
+  <div class="pa-disclaimer" id="disclaimer">
+    <button class="pa-disclaimer-close" id="btnDisclaimerClose" aria-label="閉じる">✕</button>
+    <div class="pa-disclaimer-head">DISCLAIMER ─ 免責事項</div>
+    <div class="pa-disclaimer-body">
+      <p class="pa-disclaimer-lead">本ツールは個人が趣味で制作した非公式ツールです。ご利用前に以下をご確認ください。</p>
+      <ul class="pa-disclaimer-list">
+        <li>動作確認は行っていますが、不具合や意図しない挙動が生じる可能性があります。</li>
+        <li>ご利用は自己責任でお願いします。生成結果や本ツールの使用によって生じたいかなる損害についても、作者は責任を負いません。</li>
+        <li>個人開発のため、サポート・お問い合わせへの対応はできません。</li>
+      </ul>
+      <div class="pa-disclaimer-foot">
+        使い方や不具合への対処は、ChatGPT などの生成AIに尋ねると的確に教えてくれます。
+        <div class="pa-disclaimer-sign">— ほな、どうぞ。</div>
+      </div>
+    </div>
+  </div>
+  <div class="pa-progress" id="progress"></div>
+  <div class="pa-step" id="stepCard"></div>
+</div>
+
+<!-- GUIDE -->
+<div class="pa-guide" id="guide">
+  <div class="pa-guide-card">
+    <h2 class="pa-guide-title">WIZARD の使い方</h2>
+    <p class="pa-guide-desc">写真に手描き注釈を加えるプロンプトを、ステップ順に組み立てるモードです。<br>① 最初に「写ってるもの」を記入（任意でプリセットを土台に選択）→ ②〜⑥で 線・文字とトーン・コメントの中身・飾り・世界観 を1つずつ選ぶ → ⑦ 確認画面でプロンプトを生成・コピー。</p>
+    <div class="pa-guide-note">各ステップは複数選択OK。「スキップ」を押しても選択は保持されたまま次へ進みます。確認画面の各行「編集」から、そのステップへ直接戻れます。出力は GPT / Nano Banana 向けの日本語指示文。コピーしてお気に入りの写真と一緒にAIへ送るだけ。</div>
+  </div>
+  <div class="pa-guide-card">
+    <h2 class="pa-guide-title">5スロット構造</h2>
+    <p class="pa-guide-desc" id="guideSlotList"></p>
+  </div>
+</div>
+
+<div class="pa-toast" id="toast"></div>
+
+<script>
+// =========================================================
+//  SLOT DEFINITION
+// =========================================================
+const SLOTS = [
+  { n:1, key:'line',    num:'①', label:'線（ラインワーク）', sub:'LINE WORK',   color:'#B22000', heading:'線の引き方',     desc:'写真の上にどんな手描き線を引くか。フチなぞり・引き出し線・スピード線など。' },
+  { n:2, key:'text',    num:'②', label:'文字とトーン',       sub:'TEXT & TONE', color:'#B25000', heading:'文字とトーン',   desc:'注釈の文字スタイルと語り口。日記・実況・字幕・観察記録など。' },
+  { n:3, key:'comment', num:'③', label:'コメントの中身',     sub:'COMMENT',     color:'#7A6800', heading:'コメントの中身', desc:'飲み物・食べ物・空間・全体それぞれに、何を書くかの観点。' },
+  { n:4, key:'deco',    num:'④', label:'飾り',               sub:'DECO',        color:'#006633', heading:'飾り',           desc:'湯気・キラキラ・スタンプ・矢印などの飾り。やりすぎず余白を残す方向も選べる。' },
+  { n:5, key:'finish',  num:'⑤', label:'世界観',             sub:'MOOD',        color:'#4A1A99', heading:'全体の雰囲気',   desc:'全体の雰囲気。ストーリー風・図鑑・シネマ・モード誌など。' },
+];
+
+// =========================================================
+//  OPTIONS — 各スロット15部品（PT-00〜15由来）
+// =========================================================
+const OPTIONS = {
+  line:[
+    {id:'ln00',pt:'PT-00',name:'白ペン細線',ja:'白っぽい細いペンを手描き風に走らせる。きっちりしすぎず、少し歪んだ線で対象のフチをなぞる。ところどころに小さな矢印や点線を置いて視線を誘導する',en:'white thin pen line, single-stroke rough outline tracing objects, guiding arrows and dotted lines'},
+    {id:'ln01',pt:'PT-01',name:'マステ / 付箋',ja:'マスキングテープや付箋を貼った風。角を斜めに留めたテープ、パステルのマーカー数色',en:'washi tape and sticky notes, taped corners, multiple pastel marker colors'},
+    {id:'ln02',pt:'PT-02',name:'均一細線 / 引き出し線',ja:'定規で引いたような均一で几帳面な細線。各要素に引き出し線（リーダー線）でラベルを付ける',en:'neat uniform thin ruled lines, leader lines pointing to labels'},
+    {id:'ln03',pt:'PT-03',name:'太い黒インク',ja:'太い黒インクの勢いあるラフ線。動きを表すスピード線を添える',en:'bold black ink, energetic rough strokes, speed lines'},
+    {id:'ln04',pt:'PT-04',name:'字幕フレーム',ja:'最小限の細い直線でフレーミング。画面上下にレターボックス（黒帯）',en:'minimal thin framing lines, top and bottom letterbox black bars'},
+    {id:'ln05',pt:'PT-05',name:'ネオン / グリッチ',ja:'ネオン蛍光色で光る縁取り。グリッチノイズ、ぷっくりしたステッカー風のアウトライン',en:'neon glowing outline, glitch noise, puffy sticker edges'},
+    {id:'ln06',pt:'PT-06',name:'かすれ鉛筆',ja:'かすれた鉛筆や万年筆の線、少し滲み。古い紙の余白に走り書きしたような線',en:'faded pencil and fountain pen lines, slight ink bleed, scribbled on aged paper'},
+    {id:'ln07',pt:'PT-07',name:'白チョーク',ja:'白チョークのかすれ線、粉っぽい質感。指でこすった跡を残す',en:'white chalk strokes, dusty texture, smudged edges'},
+    {id:'ln08',pt:'PT-08',name:'青焼き白線',ja:'青焼き(ブループリント)地に白の正確な細線。寸法線と引き出し線',en:'blueprint white technical lines on blue ground, dimension and leader lines'},
+    {id:'ln09',pt:'PT-09',name:'値札吹き出し',ja:'吹き出し付きの値札。点線の切り取り線、商品を指す矢印',en:'price tag callouts, dashed cut lines, arrows pointing at items'},
+    {id:'ln10',pt:'PT-10',name:'HUD / 照準',ja:'ゲームHUD風の角ばった線、ステータス枠、◇の照準マーカー',en:'HUD angular UI lines, status frames, diamond target reticle markers'},
+    {id:'ln11',pt:'PT-11',name:'丸囲み引き出し',ja:'細い手書き線で材料を丸く囲み、引き出してメモする',en:'thin handwritten lines, items circled and labeled with leader lines'},
+    {id:'ln12',pt:'PT-12',name:'点線ルート / 切手',ja:'細い線と点線のルート。切手のギザギザ枠、スタンプ枠',en:'dotted travel route lines, perforated postage stamp frames'},
+    {id:'ln13',pt:'PT-13',name:'赤枠スタンプ',ja:'タイプライター下線、赤い囲み枠、指し示す矢印',en:'typewriter underlines, red frame boxes, pointing arrows'},
+    {id:'ln14',pt:'PT-14',name:'太クレヨン',ja:'太いクレヨンのぐにゃぐにゃした線、はみ出しOK',en:'thick crayon strokes, wobbly scribbly out-of-bounds lines'},
+    {id:'ln15',pt:'PT-15',name:'極細ミニマル',ja:'極細で繊細な線、洗練された引き出し、最小限',en:'ultra fine delicate lines, refined minimal leader lines'},
+  ],
+  text:[
+    {id:'tx00',pt:'PT-00',name:'日記・独り言',ja:'手書きの日本語。ひらがな多めで漢字は簡単なものだけ。長く説明せず、ぽつりと独り言みたいな短いコメントにする。トーンは日記寄りで感情がにじむ感じ',en:'handwritten Japanese diary-style murmurs, short emotional notes'},
+    {id:'tx01',pt:'PT-01',name:'コラージュ',ja:'日本語手書きにちょっと英単語(cute / yum)を混ぜる。コラージュ日記のわくわくしたトーン',en:'mixed Japanese-English collage notes, cheerful scrapbook tone'},
+    {id:'tx02',pt:'PT-02',name:'観察記録',ja:'日本語＋小さめの英語ラベル。断定口調（〜である / 100%）の観察記録トーン',en:'observation-log captions, declarative tone, small English labels'},
+    {id:'tx03',pt:'PT-03',name:'実況ツッコミ',ja:'吹き出し＋オノマトペ(ぐびっ / もぐもぐ / ふぅ〜)。大小メリハリ、実況・ツッコミのトーン',en:'speech bubbles with onomatopoeia, lively reaction commentary'},
+    {id:'tx04',pt:'PT-04',name:'字幕・詩的',ja:'画面下に字幕風の白文字。短く詩的、映画のナレーション調',en:'poetic film subtitle captions, short cinematic narration'},
+    {id:'tx05',pt:'PT-05',name:'ギャル / ポップ',ja:'日本語＋英語ミックス、ギャル/ポップ口調(マジ最高 / so good)。テンション高め',en:'Y2K pop slang, Japanese-English mix, high-energy tone'},
+    {id:'tx06',pt:'PT-06',name:'古風・しみじみ',ja:'縦書き混じりの日本語、少し古風(〜なり / 〜けり を少量)。ノスタルジックでしみじみ',en:'old-fashioned wistful Japanese handwriting, nostalgic tone'},
+    {id:'tx07',pt:'PT-07',name:'黒板接客',ja:'丸っこいチョーク文字、日本語＋英単語少し。カフェの黒板メニューのあたたかい接客トーン',en:'rounded warm cafe chalkboard lettering, friendly tone'},
+    {id:'tx08',pt:'PT-08',name:'製図・無機質',ja:'製図フォント風の英数字ラベル＋日本語注記。無機質な技術仕様トーン',en:'technical drafting font labels, mechanical neutral tone'},
+    {id:'tx09',pt:'PT-09',name:'通販・煽り',ja:'商品名＋キャッチコピー＋¥価格。ジャパネット風の煽り気味な通販トーン',en:'shopping-channel hype copy with product names and prices'},
+    {id:'tx10',pt:'PT-10',name:'ゲーム実況',ja:'英数字のステータス＋日本語スキル名。ゲームフォント風の実況トーン',en:'game status readout, English-Japanese skill names, gamer tone'},
+    {id:'tx11',pt:'PT-11',name:'レシピ',ja:'日本語手書きで分量や手順っぽく(大さじ1 / 弱火で)。おばあちゃんのレシピ帳のやさしいトーン',en:'gentle recipe-step handwriting, quantities and steps'},
+    {id:'tx12',pt:'PT-12',name:'旅日記',ja:'日本語手書き＋地名の英語。旅日記の口調、ちょっと感傷的',en:'travel-journal handwriting with place names, slightly sentimental'},
+    {id:'tx13',pt:'PT-13',name:'スタンプ調',ja:'英大文字スタンプ(CLASSIFIED / 重要)＋日本語注記。もったいぶった捜査ファイル調',en:'stamped uppercase captions, mock classified-file tone'},
+    {id:'tx14',pt:'PT-14',name:'園児・無邪気',ja:'たどたどしい子供文字、ひらがな多めで大きい。無邪気な園児の絵日記トーン',en:'clumsy oversized childlike kana writing, innocent tone'},
+    {id:'tx15',pt:'PT-15',name:'モード誌',ja:'日本語＋英語のキャプション体(明朝細め)。洒落た短文、クールで上品',en:'magazine editorial captions, refined cool and elegant tone'},
+  ],
+  comment:[
+    {id:'cm00',pt:'PT-00',name:'味・温度・気分',ja:'対象ごとに観点を変える。飲み物は味や温度や飲んだ気分、食べ物は食感やおいしさ、場所は居心地、最後に全体を短くまとめる一言を添える',en:'drink -> taste, temperature, mood; food -> texture and tastiness; space -> atmosphere; overall -> a short one-line wrap-up'},
+    {id:'cm01',pt:'PT-01',name:'ごほうび',ja:'飲み物→かわいさ、食べ物→ごほうび感、空間→お気に入り宣言、全体→今日のハイライト',en:'drink -> cuteness; food -> a reward-to-self feeling; space -> a favorite-spot declaration; overall -> the highlight of the day'},
+    {id:'cm02',pt:'PT-02',name:'データ・所見',ja:'飲み物→成分や温度のデータ風、食べ物→食感を専門用語っぽく、空間→環境スペック、全体→一行の所見',en:'drink -> spec/ingredient-style data; food -> texture in pseudo-technical terms; space -> environment specs; overall -> a one-line observation'},
+    {id:'cm03',pt:'PT-03',name:'食レポ実況',ja:'飲み物→飲んだ瞬間のリアクション、食べ物→食レポ実況、空間→心の声、全体→オチの一言',en:'drink -> the reaction the moment you sip; food -> live food-report commentary; space -> inner monologue; overall -> a punchline'},
+    {id:'cm04',pt:'PT-04',name:'比喩・余韻',ja:'飲み物→比喩で一言、食べ物→静かな幸福、空間→時間の質感、全体→ナレーション一行',en:'drink -> a one-line metaphor; food -> quiet happiness; space -> the texture of time; overall -> a single narration line'},
+    {id:'cm05',pt:'PT-05',name:'優勝・神',ja:'飲み物→盛り上げ、食べ物→「優勝」系、空間→「ここ神」、全体→絵文字盛りの一言',en:'drink -> hype; food -> a this-wins feeling; space -> a god-tier-place vibe; overall -> an emoji-heavy one-liner'},
+    {id:'cm06',pt:'PT-06',name:'記憶・懐かしさ',ja:'飲み物→記憶の手ざわり、食べ物→懐かしい味、空間→時が止まる感、全体→そっと一言',en:'drink -> the feel of a memory; food -> a nostalgic taste; space -> a time-stands-still feeling; overall -> a quiet one-liner'},
+    {id:'cm07',pt:'PT-07',name:'おすすめ・焼きたて',ja:'飲み物→本日のおすすめ口調、食べ物→焼きたて感、空間→ようこそ感、全体→Thank youの一言',en:'drink -> a recommendation-of-the-day tone; food -> fresh-baked appeal; space -> a welcoming feel; overall -> a thank-you line'},
+    {id:'cm08',pt:'PT-08',name:'構造・Fig.',ja:'飲み物→液体スペック、食べ物→構造説明、空間→図面注記、全体→Fig.1のキャプション',en:'drink -> liquid specs; food -> structural explanation; space -> blueprint-style notes; overall -> a Fig.1-style caption'},
+    {id:'cm09',pt:'PT-09',name:'限定・お得',ja:'飲み物→「今だけ」感、食べ物→「数量限定」、空間→「快適保証」、全体→「お得すぎ！」',en:'drink -> only-now urgency; food -> limited-quantity wording; space -> comfort-guaranteed; overall -> a great-deal exclamation'},
+    {id:'cm10',pt:'PT-10',name:'HP・満腹度',ja:'飲み物→HP回復+30、食べ物→満腹度MAX、空間→セーフゾーン、全体→クエストクリア表記',en:'drink -> HP +30; food -> fullness MAX; space -> safe zone; overall -> quest-clear notation'},
+    {id:'cm11',pt:'PT-11',name:'コツ・ひと工夫',ja:'飲み物→淹れ方メモ、食べ物→ひと工夫、空間→盛り付けのコツ、全体→「召し上がれ」',en:'drink -> a brewing note; food -> a little tip; space -> a plating tip; overall -> an enjoy-your-meal line'},
+    {id:'cm12',pt:'PT-12',name:'現地の味',ja:'飲み物→現地の味、食べ物→ご当地感、空間→旅先の空気、全体→「また来たい」',en:'drink -> the local taste; food -> a regional-specialty feel; space -> the air of the destination; overall -> a want-to-come-back line'},
+    {id:'cm13',pt:'PT-13',name:'証拠物件',ja:'飲み物→「証拠物件A」、食べ物→「対象を確認」、空間→「現場」、全体→「事件は美味で解決」',en:'drink -> evidence item A; food -> target confirmed; space -> the scene; overall -> case solved deliciously'},
+    {id:'cm14',pt:'PT-14',name:'おいしー・だいすき',ja:'飲み物→「おいしー！」、食べ物→「だいすき」、空間→「たのしい」、全体→「きょうさいこう」',en:'drink -> yummy; food -> love it; space -> so fun; overall -> today was the best'},
+    {id:'cm15',pt:'PT-15',name:'ムード一語',ja:'飲み物→one wordで雰囲気、食べ物→質感を一語、空間→ムード、全体→ブランド一行コピー',en:'drink -> a one-word mood; food -> texture in one word; space -> mood; overall -> a one-line brand copy'},
+  ],
+  deco:[
+    {id:'dc00',pt:'PT-00',name:'湯気・キラキラ 控えめ',ja:'湯気・きらめき・小さなハートや顔文字を、ほんの少しだけ添える。盛らずに余白を活かす',en:'subtle steam, sparkles, small hearts, minimal emoji, generous negative space'},
+    {id:'dc01',pt:'PT-01',name:'星シール 多色',ja:'星シール、丸シール、小さい花、チェックボックスを多色で(控えめに多め)',en:'colorful star and dot stickers, little flowers, checkboxes'},
+    {id:'dc02',pt:'PT-02',name:'番号・寸法線',ja:'番号①②③、矢印、寸法線、ドット罫',en:'numbered markers, arrows, dimension lines, dot grid'},
+    {id:'dc03',pt:'PT-03',name:'集中線・汗マーク',ja:'集中線、汗マーク、キラッ、ハートの吹き出し',en:'focus lines, sweat-drop marks, sparkle pops, heart bubbles'},
+    {id:'dc04',pt:'PT-04',name:'ほぼなし',ja:'装飾はほぼなし。小さなタイムコードか「— 」程度のみ',en:'almost no decoration, tiny timecode or dash only'},
+    {id:'dc05',pt:'PT-05',name:'★ハート 多め',ja:'★ハート、キラキラ、渦巻き、ぷよぷよ文字をやや多めに',en:'lots of stars, hearts, swirls, puffy bubble letters'},
+    {id:'dc06',pt:'PT-06',name:'日付スタンプ 極控えめ',ja:'日付スタンプ、小さい押し花、色褪せたシミを極控えめに',en:'date stamp, tiny pressed flower, faint faded stains, very subtle'},
+    {id:'dc07',pt:'PT-07',name:'枠囲み・小イラスト',ja:'枠囲み、星、小さいイラスト(コップ/葉っぱ)を控えめに',en:'frame borders, stars, tiny doodles like cups and leaves'},
+    {id:'dc08',pt:'PT-08',name:'方眼・スケールバー',ja:'方眼、スケールバー、①番号、断面記号',en:'graph grid, scale bar, numbered callouts, section symbols'},
+    {id:'dc09',pt:'PT-09',name:'SALE吹き出し 多め',ja:'SALE吹き出し、星評価、赤丸囲みをやや多めに',en:'SALE burst bubbles, star ratings, red circle highlights'},
+    {id:'dc10',pt:'PT-10',name:'HPバー・LEVEL UP',ja:'HPバー、☆レア度、「LEVEL UP」、ピコンとしたUI要素',en:'HP bars, rarity stars, "LEVEL UP" popups, game UI bits'},
+    {id:'dc11',pt:'PT-11',name:'☆ポイント・チェック',ja:'☆ポイント、小さい鍋や葉っぱ、チェック✓を控えめに',en:'star tips, tiny pot and leaf icons, checkmarks'},
+    {id:'dc12',pt:'PT-12',name:'飛行機点線・地図ピン',ja:'飛行機の点線、小さい地図ピン、日付スタンプを控えめに',en:'dotted airplane path, small map pins, date stamp'},
+    {id:'dc13',pt:'PT-13',name:'丸スタンプ・付箋',ja:'CONFIRMEDの丸スタンプ、少しだけ黒塗り、付箋を控えめに',en:'round CONFIRMED stamp, slight redaction bars, sticky notes'},
+    {id:'dc14',pt:'PT-14',name:'にっこり顔 多め',ja:'にっこり顔、おひさま、大きいハートを多めに(賑やかでOK)',en:'smiley faces, sun doodles, big hearts, playful and plentiful'},
+    {id:'dc15',pt:'PT-15',name:'装飾ゼロ',ja:'極小の「—」「/」記号のみ。装飾はほぼゼロ',en:'minimal dash and slash marks only, near-zero decoration'},
+  ],
+  finish:[
+    {id:'fn00',pt:'PT-00',name:'インスタストーリー',ja:'肩の力が抜けたSNSストーリー風。ラフな手帳メモのような、こなれた可愛さ。余白を残す',en:'Instagram story aesthetic, rough magazine memo, relaxed stylish with negative space'},
+    {id:'fn01',pt:'PT-01',name:'スクラップブック',ja:'手帳デコ・スクラップブック風。密度はやや高め',en:'planner-deco scrapbook style, denser layout'},
+    {id:'fn02',pt:'PT-02',name:'図鑑・取説',ja:'図鑑・取説風。落ち着いたテクニカルな印象',en:'encyclopedia and manual look, calm technical feel'},
+    {id:'fn03',pt:'PT-03',name:'4コマ・賑やか',ja:'4コマ漫画のワンシーン風。賑やかで動きがある',en:'comic-panel scene, lively and dynamic'},
+    {id:'fn04',pt:'PT-04',name:'シネマティック',ja:'シネマティック。余白とサイレンスを重視',en:'cinematic still, emphasis on space and silence'},
+    {id:'fn05',pt:'PT-05',name:'Y2Kプリクラ',ja:'2000年代のプリクラ風。ポップで派手',en:'Y2K purikura sticker-booth aesthetic, flashy and pop'},
+    {id:'fn06',pt:'PT-06',name:'古手帳・セピア',ja:'古い手帳・セピア調。静かなノスタルジー',en:'vintage notebook, sepia tone, quiet nostalgia'},
+    {id:'fn07',pt:'PT-07',name:'カフェ黒板',ja:'カフェの黒板風。ナチュラルであたたかい',en:'cafe chalkboard look, natural and warm'},
+    {id:'fn08',pt:'PT-08',name:'青写真・製図',ja:'青写真・テクニカルドローイング風',en:'blueprint technical drawing style'},
+    {id:'fn09',pt:'PT-09',name:'チラシ・高密度',ja:'チラシ・ポップな通販風。情報密度高め',en:'flyer / sales-pop layout, high information density'},
+    {id:'fn10',pt:'PT-10',name:'ゲームUI',ja:'ゲーム画面のオーバーレイ風。ドット混じり',en:'game screen UI overlay, slight pixel elements'},
+    {id:'fn11',pt:'PT-11',name:'レシピカード',ja:'手書きレシピカード風。ナチュラル',en:'handwritten recipe card, natural'},
+    {id:'fn12',pt:'PT-12',name:'トラベルジャーナル',ja:'トラベルジャーナル風。余白広め',en:'travel journal layout, airy with wide margins'},
+    {id:'fn13',pt:'PT-13',name:'機密書類',ja:'機密書類風だが遊び心あり',en:'classified document look with a playful twist'},
+    {id:'fn14',pt:'PT-14',name:'子供落書き',ja:'子供の落書き風。カラフルで元気',en:"kids' doodle style, colorful and energetic"},
+    {id:'fn15',pt:'PT-15',name:'モード誌',ja:'モード誌風。余白とタイポグラフィで魅せる',en:'fashion-magazine editorial, driven by space and typography'},
+  ],
+};
+const OPT_BY_ID = {};
+Object.entries(OPTIONS).forEach(([slotKey,arr])=> arr.forEach(o=>{ OPT_BY_ID[o.id]={...o,slotKey}; }));
+
+// =========================================================
+//  PRESETS
+// =========================================================
+const PRESET_META = [
+  {id:'PT-00',name:'白ペン日記'},{id:'PT-01',name:'スクラップブック'},{id:'PT-02',name:'図鑑観察'},
+  {id:'PT-03',name:'マンガ'},{id:'PT-04',name:'シネマ字幕'},{id:'PT-05',name:'Y2K'},
+  {id:'PT-06',name:'ビンテージ'},{id:'PT-07',name:'カフェ黒板'},{id:'PT-08',name:'ブループリント'},
+  {id:'PT-09',name:'通販タグ'},{id:'PT-10',name:'ゲームUI'},{id:'PT-11',name:'レシピ'},
+  {id:'PT-12',name:'旅のしおり'},{id:'PT-13',name:'極秘ファイル'},{id:'PT-14',name:'クレヨン'},
+  {id:'PT-15',name:'モード誌'},{id:'PT-16',name:'カスタム',custom:true},
+];
+function presetSelection(idx){
+  const i=String(idx).padStart(2,'0');
+  return { line:['ln'+i], text:['tx'+i], comment:['cm'+i], deco:['dc'+i], finish:['fn'+i] };
+}
+
+// =========================================================
+//  STATE
+// =========================================================
+// step: 0=intro, 1..5=slots, 6=confirm
+let state = {
+  step:0,
+  items:'',
+  selected:{ line:[], text:[], comment:[], deco:[], finish:[] },
+  tool:'nl',
+  activePreset:null,
+  customCounter:0,
+};
+
+const $ = id => document.getElementById(id);
+const $progress = $('progress');
+const $stepCard = $('stepCard');
+const $toast = $('toast');
+
+const STEP_LABELS = ['写ってるもの','①線','②文字','③コメント','④飾り','⑤世界観','確認'];
+
+// =========================================================
+//  INIT
+// =========================================================
+function init(){
+  $('guideSlotList').innerHTML = SLOTS.map(s=>`<strong style="color:${s.color}">${s.num} ${s.label}</strong> — ${s.desc}`).join('<br><br>');
+  $('btnDisclaimerClose').addEventListener('click', ()=> $('disclaimer').classList.add('is-hidden'));
+  $('btnGuideToggle').addEventListener('click', ()=>{
+    const g=$('guide'), w=$('wizard');
+    const open = g.classList.toggle('is-open');
+    w.style.display = open ? 'none' : '';
+    $('btnGuideToggle').textContent = open ? '← 戻る' : '使い方';
+  });
+  renderProgress();
+  renderStep();
+}
+
+// =========================================================
+//  PROGRESS
+// =========================================================
+function renderProgress(){
+  let html='';
+  STEP_LABELS.forEach((lbl,i)=>{
+    const cls = i===state.step ? 'is-active' : (i<state.step ? 'is-done' : '');
+    const color = i>=1 && i<=5 ? SLOTS[i-1].color : '#000';
+    const mark = i===6 ? '✓' : (i===0 ? '◎' : SLOTS[i-1].num);
+    html += `<div class="pa-progress-step ${cls}" data-goto="${i}" style="--step-color:${color}">
+      <span class="pa-progress-dot">${mark}</span>
+    </div>`;
+    if(i<STEP_LABELS.length-1) html += `<span class="pa-progress-line ${i<state.step?'is-done':''}"></span>`;
+  });
+  $progress.innerHTML = html;
+  $progress.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=> goStep(parseInt(el.dataset.goto)));
+  });
+}
+
+function goStep(i){
+  if(i<0||i>6) return;
+  state.step = i;
+  renderProgress();
+  renderStep();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// =========================================================
+//  RENDER STEP
+// =========================================================
+function renderStep(){
+  if(state.step===0)      renderIntro();
+  else if(state.step<=5)  renderSlotStep(SLOTS[state.step-1]);
+  else                    renderConfirm();
+}
+
+// ---- Intro ----
+function renderIntro(){
+  $stepCard.style.setProperty('--step-color','#000');
+  let chips = PRESET_META.map((p,idx)=>{
+    const act = state.activePreset===idx ? ' is-active' : '';
+    return `<button class="pa-preset-chip${act}" data-preset="${idx}"><span class="pid">${p.id}</span>${p.name}</button>`;
+  }).join('');
+
+  $stepCard.innerHTML = `
+    <div class="pa-disclaimer">
+      <div class="pa-disclaimer-label">◎ はじめに — つくった人より</div>
+      <p>テストしてて思った。やらかしたかもしれん。だから一応、言わせてな。</p>
+      <p>テストはしたけど、これ個人開発や。それも趣味の領域。サポートとか無理やでw</p>
+      <p>ワイに聞くより、身近なAIに聞いてくれw　使い方も直し方も、うまいこと教えてくれるはずや。</p>
+      <p class="sign">ほな、どうぞ。</p>
+    </div>
+    <div class="pa-step-eyebrow"><span class="dot" style="background:#000">◎</span> START / 7</div>
+    <h1 class="pa-step-title">写ってるもの</h1>
+    <p class="pa-step-desc">注釈をつけたい写真に何が写っているか、ざっくり書いてください。商品名・人・場所など。複数あれば読点で区切ってOK。</p>
+    <textarea class="pa-items-input" id="itemsInput" placeholder="例：アイスティー、ドーナツ、世界一かわいい〇〇ちゃん">${escapeHtml(state.items)}</textarea>
+
+    <div class="pa-mini-label">土台プリセット（任意 — あとで各ステップで差し替え可）</div>
+    <div class="pa-preset-chips" id="presetChips">${chips}</div>
+    <div class="pa-preset-hint" id="presetHint">${state.activePreset!=null ? `「${PRESET_META[state.activePreset].id} ${PRESET_META[state.activePreset].name}」を土台にセットしました。` : 'プリセットを選ぶと5スロットの初期値が入ります。選ばなければ空のまま進みます。'}</div>
+
+    <div class="pa-step-footer">
+      <span class="pa-step-selcount"></span>
+      <div class="pa-step-footer-right">
+        <button class="pa-btn pa-btn-primary" id="btnNext">次へ →</button>
+      </div>
+    </div>`;
+
+  $('itemsInput').addEventListener('input', e=> state.items = e.target.value);
+  $('presetChips').querySelectorAll('[data-preset]').forEach(btn=>{
+    btn.addEventListener('click', ()=> applyPresetChip(parseInt(btn.dataset.preset)));
+  });
+  $('btnNext').addEventListener('click', ()=> goStep(1));
+}
+
+function applyPresetChip(idx){
+  const p = PRESET_META[idx];
+  state.activePreset = idx;
+  if(p.custom){
+    state.selected = { line:[], text:[], comment:[], deco:[], finish:[] };
+  } else {
+    state.selected = presetSelection(idx);
+  }
+  // refresh chips + hint
+  $('presetChips').querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('is-active', parseInt(b.dataset.preset)===idx));
+  $('presetHint').textContent = p.custom
+    ? '全スロットを空にしました。各ステップで一から選びます。'
+    : `「${p.id} ${p.name}」を土台にセットしました。各ステップで差し替えられます。`;
+  showToast(`${p.id} ${p.name} をセット`);
+}
+
+// ---- Slot step ----
+function renderSlotStep(s){
+  $stepCard.style.setProperty('--step-color',s.color);
+  const sel = state.selected[s.key];
+
+  let cards = `
+    <div class="pa-customrow">
+      <div class="pa-customrow-label">＋ カスタム部品を追加（${s.label}）</div>
+      <div class="pa-customrow-fields">
+        <input class="pa-custom-input" id="custName" placeholder="名前（例: 蛍光マーカー）">
+        <input class="pa-custom-input" id="custJa" placeholder="日本語の指示文">
+        <button class="pa-btn pa-btn-primary" id="btnCustAdd">＋</button>
+      </div>
+    </div>`;
+  OPTIONS[s.key].forEach(o=>{
+    const isSel = sel.includes(o.id) ? ' is-selected' : '';
+    cards += `
+      <div class="pa-card${isSel}" data-opt="${o.id}">
+        <div class="pa-card-pt">${o.pt}</div>
+        <div class="pa-card-name">${o.name}</div>
+        <div class="pa-card-ja">${o.ja}</div>
+        ${o.en ? `<div class="pa-card-en">${o.en}</div>` : ''}
+      </div>`;
+  });
+
+  $stepCard.innerHTML = `
+    <div class="pa-step-eyebrow"><span class="dot" style="background:${s.color}">${s.num}</span> STEP ${s.n} / 5 — ${s.sub}</div>
+    <h1 class="pa-step-title">${s.heading}</h1>
+    <p class="pa-step-desc">${s.desc}　<span style="color:var(--muted)">複数選択OK。選ばずスキップも可。</span></p>
+    <div class="pa-grid" id="optGrid">${cards}</div>
+    <div class="pa-step-footer">
+      <span class="pa-step-selcount" id="selCount"></span>
+      <div class="pa-step-footer-right">
+        <button class="pa-btn" id="btnBack">← 戻る</button>
+        <button class="pa-btn pa-btn-ghost" id="btnSkip">スキップ</button>
+        <button class="pa-btn pa-btn-primary" id="btnNext">${s.n===5 ? '確認へ →' : '次へ →'}</button>
+      </div>
+    </div>`;
+
+  updateSelCount(s.key);
+  $('optGrid').querySelectorAll('[data-opt]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const id=card.dataset.opt; const arr=state.selected[s.key];
+      const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id);
+      card.classList.toggle('is-selected', arr.includes(id));
+      updateSelCount(s.key);
+    });
+  });
+  $('btnCustAdd').addEventListener('click', ()=> addCustom(s.key));
+  $('custJa').addEventListener('keydown', e=>{ if(e.key==='Enter') addCustom(s.key); });
+  $('btnBack').addEventListener('click', ()=> goStep(state.step-1));
+  $('btnSkip').addEventListener('click', ()=> goStep(state.step+1)); // 選択は保持
+  $('btnNext').addEventListener('click', ()=> goStep(state.step+1));
+}
+
+function updateSelCount(key){
+  const el=$('selCount'); if(!el) return;
+  const n=state.selected[key].length;
+  el.textContent = n ? `${n} 個選択中` : '未選択';
+}
+
+function addCustom(slotKey){
+  const name=$('custName').value.trim(), ja=$('custJa').value.trim(), en='';
+  if(!name && !ja){ showToast('名前か指示文を入力してください'); return; }
+  state.customCounter++;
+  const id='usr_'+slotKey+'_'+state.customCounter;
+  const opt={ id, pt:'CUSTOM', name:name||'カスタム', ja:ja||name, en, slotKey, custom:true };
+  OPTIONS[slotKey].push(opt); OPT_BY_ID[id]=opt;
+  state.selected[slotKey].push(id);
+  renderSlotStep(SLOTS[state.step-1]);
+  showToast(`「${opt.name}」を追加・選択`);
+}
+
+// ---- Confirm ----
+function renderConfirm(){
+  $stepCard.style.setProperty('--step-color','#000');
+  let summary='';
+  SLOTS.forEach(s=>{
+    const ids=state.selected[s.key];
+    const chips = ids.length
+      ? ids.map(id=>`<span class="pa-sum-chip">${OPT_BY_ID[id]?.name||'?'}</span>`).join('')
+      : `<span class="pa-sum-empty">— 未選択</span>`;
+    summary += `
+      <div class="pa-sum-row">
+        <span class="pa-sum-num" style="background:${s.color}">${s.num}</span>
+        <div class="pa-sum-body">
+          <div class="pa-sum-label">${s.label}</div>
+          <div class="pa-sum-chips">${chips}</div>
+        </div>
+        <button class="pa-sum-edit" data-edit="${s.n}">編集</button>
+      </div>`;
+  });
+
+  $stepCard.innerHTML = `
+    <div class="pa-step-eyebrow"><span class="dot" style="background:#000">✓</span> CONFIRM / 7</div>
+    <h1 class="pa-step-title">確認 & 出力</h1>
+    <p class="pa-step-desc">構成はこちら。各行の「編集」でそのステップに戻れます。出力ツールを選んでコピー。</p>
+
+    <div class="pa-mini-label">写ってるもの</div>
+    <div style="font-size:13px;color:var(--text-sub);padding:8px 0;">${state.items.trim()? escapeHtml(state.items) : '<span style="color:var(--border-light)">（未入力）</span>'}</div>
+
+    <div class="pa-mini-label" style="margin-top:var(--sp-4)">構成</div>
+    <div class="pa-confirm-summary">${summary}</div>
+
+    <div class="pa-mini-label">出力言語</div>
+    <div class="pa-tool-tabs" id="toolTabs">
+      <button class="pa-tool-tab ${state.tool==='nl'?'is-active':''}" data-tool="nl">日本語</button>
+      <button class="pa-tool-tab ${state.tool==='en'?'is-active':''}" data-tool="en">ENGLISH</button>
+    </div>
+
+    <div id="paramsWrap"></div>
+
+    <div class="pa-output-label">GENERATED PROMPT（GPT / Nano Banana 向け）</div>
+    <textarea class="pa-output-text" id="outputText" rows="9"></textarea>
+    <div class="pa-confirm-actions">
+      <button class="pa-btn pa-btn-primary" id="btnCopy">COPY</button>
+      <button class="pa-btn" id="btnBackToLast">← ⑤ に戻る</button>
+    </div>
+    <div class="pa-step-footer">
+      <span class="pa-step-selcount"></span>
+      <div class="pa-step-footer-right">
+        <button class="pa-btn pa-btn-ghost" id="btnRestart">最初から</button>
+      </div>
+    </div>`;
+
+  renderParams();
+  updateOutput();
+
+  $stepCard.querySelectorAll('[data-edit]').forEach(b=> b.addEventListener('click', ()=> goStep(parseInt(b.dataset.edit))));
+  $('toolTabs').querySelectorAll('[data-tool]').forEach(b=> b.addEventListener('click', ()=>{
+    state.tool=b.dataset.tool;
+    $('toolTabs').querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('is-active',x.dataset.tool===state.tool));
+    updateOutput();
+  }));
+  $('btnCopy').addEventListener('click', ()=> copyText($('outputText').value));
+  $('btnBackToLast').addEventListener('click', ()=> goStep(5));
+  $('btnRestart').addEventListener('click', ()=>{
+    state.selected={ line:[], text:[], comment:[], deco:[], finish:[] };
+    state.items=''; state.activePreset=null;
+    goStep(0);
+  });
+}
+
+function renderParams(){
+  const wrap=$('paramsWrap'); if(!wrap) return;
+  wrap.innerHTML = `
+    <div class="pa-output-label">比率メモ（任意）</div>
+    <div class="pa-params-grid">
+      <div class="pa-param-group">
+        <select class="pa-param-input" id="paramNlAR" style="width:auto;cursor:pointer;">
+          <option value="">指定なし</option>
+          <option value="9:16" selected>9:16 縦（ストーリー）</option>
+          <option value="1:1">1:1 正方形</option>
+          <option value="16:9">16:9 横</option>
+          <option value="4:5">4:5 ポスト</option>
+        </select>
+      </div>
+    </div>`;
+  $('paramNlAR').addEventListener('change', updateOutput);
+}
+
+// =========================================================
+//  OUTPUT
+// =========================================================
+function joinJa(k){ return state.selected[k].map(id=>OPT_BY_ID[id]?.ja).filter(Boolean).join('／'); }
+function joinEn(k){ return state.selected[k].map(id=>OPT_BY_ID[id]?.en).filter(Boolean).join(', '); }
+
+function updateOutput(){
+  const ta=$('outputText'); if(!ta) return;
+  const ar = $('paramNlAR') ? $('paramNlAR').value : '';
+  if(state.tool==='en'){
+    const items = state.items.trim() || '(write the items in the photo here)';
+    let out='Add hand-drawn annotations directly onto the uploaded photo. Look at each element in the photo and attach lines, text, and short comments to them. Keep all handwritten captions in natural Japanese.\n\n';
+    out += `[Subjects]\n${items}\n`;
+    [['Line work','line'],['Text & tone','text'],['Comments','comment'],['Decoration','deco'],['Mood','finish']].forEach(([h,k])=>{
+      const v=joinEn(k); if(v) out += `\n[${h}]\n${v}\n`;
+    });
+    if(ar) out += `\n[Aspect ratio]\n${ar}`;
+    ta.value=out;
+  } else {
+    const items = state.items.trim() || '（ここに写真内のアイテムを記入）';
+    let out='アップした写真の上に、手描きの注釈を描き込んでください。写っているものを見つけ、ひとつずつに線・文字・コメントを添えるイメージで仕上げてください。\n\n';
+    out += `【写ってるもの】\n${items}\n`;
+    [['線の引き方','line'],['文字とトーン','text'],['コメントの中身','comment'],['飾り','deco'],['全体の雰囲気','finish']].forEach(([h,k])=>{
+      const v=joinJa(k); if(v) out += `\n【${h}】\n${v}\n`;
+    });
+    if(ar) out += `\n【比率】\n${ar} で仕上げる`;
+    ta.value=out;
+  }
+}
+
+// =========================================================
+//  UTIL
+// =========================================================
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function copyText(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>showToast('コピーしました')).catch(()=>fallbackCopy(text));
+  } else fallbackCopy(text);
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea'); ta.value=text;
+  ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); showToast('コピーしました'); }catch{ showToast('コピーに失敗しました'); }
+  document.body.removeChild(ta);
+}
+let toastTimer;
+function showToast(msg){ $toast.textContent=msg; $toast.classList.add('is-show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>$toast.classList.remove('is-show'),2000); }
+
+init();
+</script>
+</body>
+</html>
