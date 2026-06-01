@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNAP KAITARO — Wizard v2 取扱説明書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   SNAP KAITARO — Wizard v2 / MANUAL
+   Design: Architectural Minimalism × Light Mode (KITAcore)
+   ※ ツール本体 SNAP_KAITARO-wizard_v2.html のデザインを継承
+========================================================= */
+:root{
+  --bg:#E9E9E9; --surface:#FFFFFF; --surface-v:#F4F4F2; --surface-hov:#EFEFED;
+  --text:#111111; --text-sub:#333333; --muted:#6B6B6B;
+  --border:#DDDDDD; --border-light:#CCCCCC;
+  --accent:#000000; --accent-dim:rgba(0,0,0,0.06);
+  --red:#CC2200; --green:#007744;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px; --sp-12:48px;
+  --font-display:'Anton','Inter',sans-serif;
+  --font-body:'Noto Sans JP',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-inter:'Inter',sans-serif;
+  /* slot colors */
+  --s1:#B22000; --s2:#B25000; --s3:#7A6800; --s4:#006633; --s5:#4A1A99;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;min-height:100vh;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#BBBBBB;border-radius:3px;}
+
+/* HEADER */
+.pa-header{position:sticky;top:0;z-index:100;background:rgba(233,233,233,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 var(--sp-8);height:56px;}
+.pa-header-left{display:flex;align-items:center;gap:var(--sp-6);}
+.pa-nav-label{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;}
+.pa-logo{font-family:var(--font-display);font-size:20px;letter-spacing:0.06em;color:var(--text);}
+.pa-logo span{color:var(--accent);}
+.pa-version{font-family:var(--font-mono);font-size:10px;color:var(--muted);padding:2px 6px;border:1px solid var(--border-light);border-radius:2px;}
+.pa-header-mode{font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+
+/* LAYOUT */
+.pa-guide-wrap{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 56px);max-width:1100px;margin:0 auto;width:100%;padding:var(--sp-8) var(--sp-6);gap:var(--sp-8);}
+
+/* TOC nav */
+.pa-guide-nav{position:sticky;top:calc(56px + var(--sp-8));height:fit-content;display:flex;flex-direction:column;gap:2px;}
+.pa-guide-nav-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);padding:0 var(--sp-2);margin-bottom:var(--sp-2);}
+.pa-guide-nav-item{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-decoration:none;padding:5px var(--sp-2);border-radius:2px;transition:all 150ms ease;letter-spacing:0.02em;}
+.pa-guide-nav-item:hover{color:var(--text);background:var(--surface-hov);}
+.pa-guide-nav-item.is-active{color:var(--text);background:var(--accent-dim);font-weight:500;}
+
+.pa-guide-body{display:flex;flex-direction:column;gap:var(--sp-6);min-width:0;}
+
+.pa-guide-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:var(--sp-6);}
+.pa-guide-section-num{font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;color:var(--muted);margin-bottom:var(--sp-2);}
+.pa-guide-title{font-family:var(--font-display);font-size:20px;letter-spacing:0.05em;color:var(--text);margin-bottom:var(--sp-4);}
+.pa-guide-desc{font-size:13px;color:var(--text-sub);line-height:1.85;margin-bottom:var(--sp-4);}
+.pa-guide-desc:last-child{margin-bottom:0;}
+
+/* feature grid */
+.pa-guide-feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-3);margin-top:var(--sp-2);}
+.pa-guide-feature{background:var(--surface-v);border:1px solid var(--border);border-radius:3px;padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-2);}
+.pa-guide-feature-icon{font-size:20px;}
+.pa-guide-feature-name{font-family:var(--font-inter);font-size:12px;font-weight:600;color:var(--text);}
+.pa-guide-feature-desc{font-size:11px;color:var(--muted);line-height:1.6;}
+
+/* slot list */
+.pa-guide-slots{display:flex;flex-direction:column;gap:var(--sp-2);margin-top:var(--sp-2);}
+.pa-guide-slot{display:flex;align-items:center;gap:var(--sp-3);padding:10px var(--sp-3);background:var(--surface-v);border:1px solid var(--border);border-radius:2px;}
+.pa-guide-slot-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.pa-guide-slot-label{font-family:var(--font-inter);font-size:12px;font-weight:600;color:var(--text);}
+.pa-guide-slot-cats{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:1px;}
+
+/* step flow */
+.pa-flow{display:flex;flex-direction:column;gap:var(--sp-2);margin-top:var(--sp-2);}
+.pa-flow-step{display:flex;gap:var(--sp-3);align-items:flex-start;padding:var(--sp-3) var(--sp-4);background:var(--surface-v);border:1px solid var(--border);border-radius:2px;}
+.pa-flow-n{font-family:var(--font-mono);font-size:13px;font-weight:700;color:#fff;background:var(--accent);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pa-flow-body{flex:1;min-width:0;}
+.pa-flow-h{font-family:var(--font-inter);font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.pa-flow-d{font-size:12px;color:var(--text-sub);line-height:1.7;}
+
+/* table */
+.pa-guide-table-wrap{overflow-x:auto;}
+.pa-guide-table{width:100%;border-collapse:collapse;font-size:12px;}
+.pa-guide-table thead tr{background:var(--accent);color:#fff;}
+.pa-guide-table th{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:8px 12px;text-align:left;font-weight:600;}
+.pa-guide-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub);line-height:1.6;vertical-align:top;}
+.pa-guide-table tbody tr:hover{background:var(--surface-v);}
+.pa-guide-table td:first-child{font-family:var(--font-mono);font-size:11px;color:var(--text);white-space:nowrap;}
+.pa-guide-table code{font-family:var(--font-mono);font-size:10px;background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:1px 5px;color:var(--text-sub);}
+.pa-guide-table .nm{font-family:var(--font-inter);font-weight:600;color:var(--text);white-space:normal;}
+
+/* slot accent table header */
+.pa-guide-table.s1 thead tr{background:var(--s1);}
+.pa-guide-table.s2 thead tr{background:var(--s2);}
+.pa-guide-table.s3 thead tr{background:var(--s3);}
+.pa-guide-table.s4 thead tr{background:var(--s4);}
+.pa-guide-table.s5 thead tr{background:var(--s5);}
+
+/* slot section heading bar */
+.pa-slot-bar{display:flex;align-items:center;gap:var(--sp-3);margin:var(--sp-6) 0 var(--sp-3);padding-top:var(--sp-2);}
+.pa-slot-bar:first-of-type{margin-top:var(--sp-2);}
+.pa-slot-bar-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.pa-slot-bar-text{display:flex;flex-direction:column;}
+.pa-slot-bar-h{font-family:var(--font-inter);font-size:14px;font-weight:600;color:var(--text);}
+.pa-slot-bar-sub{font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+
+/* note */
+.pa-guide-note{margin-top:var(--sp-4);padding:var(--sp-3) var(--sp-4);background:var(--accent-dim);border-left:2px solid var(--accent);border-radius:0 2px 2px 0;font-size:12px;color:var(--text-sub);line-height:1.75;font-family:var(--font-body);}
+.pa-guide-note.warn{background:rgba(204,34,0,0.06);border-left-color:var(--red);}
+
+/* output sample */
+.pa-sample{font-family:var(--font-mono);font-size:11px;color:var(--text-sub);background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:12px 14px;line-height:1.75;white-space:pre-wrap;word-break:break-word;margin-top:var(--sp-2);}
+.pa-sample-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin:var(--sp-4) 0 4px;}
+
+/* FAQ */
+.pa-guide-faq-list{display:flex;flex-direction:column;gap:var(--sp-4);}
+.pa-guide-faq{border-left:2px solid var(--border-light);padding-left:var(--sp-4);}
+.pa-guide-faq-q{font-family:var(--font-inter);font-size:13px;font-weight:600;color:var(--text);margin-bottom:var(--sp-2);}
+.pa-guide-faq-a{font-size:12px;color:var(--text-sub);line-height:1.85;}
+
+/* usecase */
+.pa-usecase{background:var(--surface-v);border:1px solid var(--border);border-radius:3px;padding:var(--sp-4);margin-bottom:var(--sp-3);}
+.pa-usecase:last-child{margin-bottom:0;}
+.pa-usecase-h{font-family:var(--font-inter);font-size:13px;font-weight:600;color:var(--text);margin-bottom:var(--sp-2);display:flex;align-items:center;gap:var(--sp-2);}
+.pa-usecase-tag{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:0.06em;color:#fff;background:var(--accent);padding:2px 7px;border-radius:2px;}
+.pa-usecase-recipe{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--sp-2);}
+.pa-usecase-chip{font-family:var(--font-mono);font-size:10px;color:var(--text-sub);background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:3px 8px;}
+.pa-usecase-chip b{color:var(--text);}
+
+@media (max-width:860px){
+  .pa-guide-wrap{grid-template-columns:1fr;padding:var(--sp-4);gap:var(--sp-4);}
+  .pa-guide-nav{position:static;flex-direction:row;flex-wrap:wrap;}
+  .pa-guide-feature-grid{grid-template-columns:1fr 1fr;}
+  .pa-header{padding:0 var(--sp-4);}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="pa-header">
+  <div class="pa-header-left">
+    <span class="pa-nav-label">KITACORE TOOL</span>
+    <div class="pa-logo">SNAP <span>KAITARO</span></div>
+    <span class="pa-version">v2.0</span>
+    <span class="pa-header-mode">MANUAL</span>
+  </div>
+  <div>
+    <span class="pa-header-mode">取扱説明書</span>
+  </div>
+</header>
+
+<div class="pa-guide-wrap">
+
+  <!-- TOC -->
+  <nav class="pa-guide-nav" id="toc">
+    <div class="pa-guide-nav-label">CONTENTS</div>
+    <a class="pa-guide-nav-item" href="#g01">01 — ツールとは</a>
+    <a class="pa-guide-nav-item" href="#g02">02 — 5スロット構造</a>
+    <a class="pa-guide-nav-item" href="#g03">03 — クイックスタート</a>
+    <a class="pa-guide-nav-item" href="#g04">04 — 写ってるもの・プリセット</a>
+    <a class="pa-guide-nav-item" href="#g05">05 — 各スロットの部品</a>
+    <a class="pa-guide-nav-item" href="#g06">06 — カスタム追加</a>
+    <a class="pa-guide-nav-item" href="#g07">07 — 確認 & 編集</a>
+    <a class="pa-guide-nav-item" href="#g08">08 — 出力・コピー</a>
+    <a class="pa-guide-nav-item" href="#g09">09 — 使い方パターン</a>
+    <a class="pa-guide-nav-item" href="#g10">10 — FAQ</a>
+  </nav>
+
+  <div class="pa-guide-body">
+
+    <!-- 01 -->
+    <section class="pa-guide-card" id="g01">
+      <div class="pa-guide-section-num">01</div>
+      <h2 class="pa-guide-title">SNAP KAITARO とは</h2>
+      <p class="pa-guide-desc">撮った写真の上に「手描きの注釈（線・文字・コメント・装飾）」を足すための画像生成プロンプトを、ステップ順に組み立てるウィザードツール。カフェの一枚、旅先のごはん、机の上のモノなどに、まるで自分で書き込んだようなメモやツッコミを乗せたビジュアルを作れる。</p>
+      <p class="pa-guide-desc">選んでいくのは「どんな線で」「どんな文字・トーンで」「何をコメントするか」「どんな飾りで」「どんな世界観に」の5項目だけ。最後の確認画面で、GPT / Nano Banana 向けの指示文を生成してコピーできる。出力は日本語と英語を切り替え可能。あとはお気に入りの写真と一緒にAIへ送るだけ。</p>
+      <div class="pa-guide-feature-grid">
+        <div class="pa-guide-feature">
+          <div class="pa-guide-feature-icon">🧭</div>
+          <div class="pa-guide-feature-name">ステップ式</div>
+          <div class="pa-guide-feature-desc">①〜⑤を1問ずつ選ぶだけ。迷子にならない</div>
+        </div>
+        <div class="pa-guide-feature">
+          <div class="pa-guide-feature-icon">🎴</div>
+          <div class="pa-guide-feature-name">17プリセット</div>
+          <div class="pa-guide-feature-desc">PT-00〜15＋カスタムで一発土台セット</div>
+        </div>
+        <div class="pa-guide-feature">
+          <div class="pa-guide-feature-icon">✎</div>
+          <div class="pa-guide-feature-name">カスタム部品</div>
+          <div class="pa-guide-feature-desc">各スロットに独自の選択肢を追加可能</div>
+        </div>
+        <div class="pa-guide-feature">
+          <div class="pa-guide-feature-icon">📋</div>
+          <div class="pa-guide-feature-name">日英で出力</div>
+          <div class="pa-guide-feature-desc">GPT・Nano Banana 向け、日本語／英語を切替</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="pa-guide-card" id="g02">
+      <div class="pa-guide-section-num">02</div>
+      <h2 class="pa-guide-title">5スロット構造</h2>
+      <p class="pa-guide-desc">注釈の組み立ては、次の5つの観点（スロット）で分解されている。各スロットには16種類の部品（PT-00〜15）が用意され、それぞれ複数選択できる。順番にレイヤーを重ねていくイメージ。</p>
+      <div class="pa-guide-slots">
+        <div class="pa-guide-slot"><span class="pa-guide-slot-num" style="background:var(--s1)">①</span><div><div class="pa-guide-slot-label">線（ラインワーク）— LINE WORK</div><div class="pa-guide-slot-cats">写真の上にどんな手描き線を引くか。フチなぞり・引き出し線・スピード線など</div></div></div>
+        <div class="pa-guide-slot"><span class="pa-guide-slot-num" style="background:var(--s2)">②</span><div><div class="pa-guide-slot-label">文字とトーン — TEXT &amp; TONE</div><div class="pa-guide-slot-cats">注釈の文字スタイルと語り口。日記・実況・字幕・観察記録など</div></div></div>
+        <div class="pa-guide-slot"><span class="pa-guide-slot-num" style="background:var(--s3)">③</span><div><div class="pa-guide-slot-label">コメントの中身 — COMMENT</div><div class="pa-guide-slot-cats">飲み物・食べ物・空間・全体それぞれに何を書くかの観点</div></div></div>
+        <div class="pa-guide-slot"><span class="pa-guide-slot-num" style="background:var(--s4)">④</span><div><div class="pa-guide-slot-label">飾り — DECO</div><div class="pa-guide-slot-cats">湯気・キラキラ・スタンプ・矢印などの飾り。余白を残す方向も選べる</div></div></div>
+        <div class="pa-guide-slot"><span class="pa-guide-slot-num" style="background:var(--s5)">⑤</span><div><div class="pa-guide-slot-label">世界観 — MOOD</div><div class="pa-guide-slot-cats">全体の雰囲気。ストーリー風・図鑑・シネマ・モード誌など</div></div></div>
+      </div>
+      <div class="pa-guide-note">スロット番号の色はツール本体のステップ進行・確認画面のバッジ色とそのまま対応している。順番にレイヤーを重ねるイメージで、上から選んでいけばよい。</div>
+    </section>
+
+    <!-- 03 -->
+    <section class="pa-guide-card" id="g03">
+      <div class="pa-guide-section-num">03</div>
+      <h2 class="pa-guide-title">クイックスタート（7ステップ）</h2>
+      <p class="pa-guide-desc">上部のプログレスバーが現在地を示す。ドットをクリックすれば任意のステップへジャンプもできる。</p>
+      <div class="pa-flow">
+        <div class="pa-flow-step"><span class="pa-flow-n" style="background:#000">0</span><div class="pa-flow-body"><div class="pa-flow-h">写ってるもの を記入</div><div class="pa-flow-d">写真に何が写っているかをテキストで入力。必要ならプリセットを選んで5スロットの土台をセット。</div></div></div>
+        <div class="pa-flow-step"><span class="pa-flow-n" style="background:var(--s1)">①</span><div class="pa-flow-body"><div class="pa-flow-h">線 を選ぶ</div><div class="pa-flow-d">手描き線のスタイルを選択（複数可）。選ばずスキップもOK。</div></div></div>
+        <div class="pa-flow-step"><span class="pa-flow-n" style="background:var(--s2)">②</span><div class="pa-flow-body"><div class="pa-flow-h">文字とトーン を選ぶ</div><div class="pa-flow-d">注釈の文字の雰囲気と語り口を選択。</div></div></div>
+        <div class="pa-flow-step"><span class="pa-flow-n" style="background:var(--s3)">③</span><div class="pa-flow-body"><div class="pa-flow-h">コメントの中身 を選ぶ</div><div class="pa-flow-d">何について書かせるかの観点を選択。</div></div></div>
+        <div class="pa-flow-step"><span class="pa-flow-n" style="background:var(--s4)">④</span><div class="pa-flow-body"><div class="pa-flow-h">飾り を選ぶ</div><div class="pa-flow-d">飾りの種類と量を選択。</div></div></div>
+        <div class="pa-flow-step"><span class="pa-flow-n" style="background:var(--s5)">⑤</span><div class="pa-flow-body"><div class="pa-flow-h">世界観 を選ぶ</div><div class="pa-flow-d">全体の世界観・トーンを選択。</div></div></div>
+        <div class="pa-flow-step"><span class="pa-flow-n" style="background:#000">✓</span><div class="pa-flow-body"><div class="pa-flow-h">確認 & 出力</div><div class="pa-flow-d">構成を確認し、出力ツールを選んでプロンプトをコピー。各行の「編集」で前のステップへ戻れる。</div></div></div>
+      </div>
+      <div class="pa-guide-note">「スキップ」を押しても、それまでの選択は保持されたまま次へ進む。気が変わったら確認画面の「編集」やプログレスのドットからいつでも戻れる。</div>
+    </section>
+
+    <!-- 04 -->
+    <section class="pa-guide-card" id="g04">
+      <div class="pa-guide-section-num">04</div>
+      <h2 class="pa-guide-title">写ってるもの・プリセット</h2>
+      <p class="pa-guide-desc">最初のステップ（Step 0）では2つのことをする。</p>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table">
+          <thead><tr><th>操作</th><th>内容</th><th>コツ</th></tr></thead>
+          <tbody>
+            <tr><td class="nm">写ってるもの入力</td><td>写真に写っている要素をテキストで記入する</td><td>「ラテ、クロワッサン、窓際の席」のようにカンマや読点区切りで具体的に。注釈の指し先になる</td></tr>
+            <tr><td class="nm">プリセット選択</td><td>チップを押すと5スロットの初期値が一括セットされる</td><td>選ばなければ空のまま進める。選んだ後でも各ステップで自由に追加・解除できる</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pa-guide-desc" style="margin-top:var(--sp-6)">プリセットは「PT-xx」のテーマ番号で、5スロットの同じ番号の部品をまとめて選んだ状態になる。雰囲気の早見表は下記の通り。</p>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table">
+          <thead><tr><th>ID</th><th>名前</th><th>ID</th><th>名前</th></tr></thead>
+          <tbody>
+            <tr><td>PT-00</td><td class="nm">白ペン日記</td><td>PT-08</td><td class="nm">ブループリント</td></tr>
+            <tr><td>PT-01</td><td class="nm">スクラップブック</td><td>PT-09</td><td class="nm">通販タグ</td></tr>
+            <tr><td>PT-02</td><td class="nm">図鑑観察</td><td>PT-10</td><td class="nm">ゲームUI</td></tr>
+            <tr><td>PT-03</td><td class="nm">マンガ</td><td>PT-11</td><td class="nm">レシピ</td></tr>
+            <tr><td>PT-04</td><td class="nm">シネマ字幕</td><td>PT-12</td><td class="nm">旅のしおり</td></tr>
+            <tr><td>PT-05</td><td class="nm">Y2K</td><td>PT-13</td><td class="nm">極秘ファイル</td></tr>
+            <tr><td>PT-06</td><td class="nm">ビンテージ</td><td>PT-14</td><td class="nm">クレヨン</td></tr>
+            <tr><td>PT-07</td><td class="nm">カフェ黒板</td><td>PT-15</td><td class="nm">モード誌</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pa-guide-note">PT-16「カスタム」は土台をセットせず、自分で一から選びたいとき用。プリセットはあくまで初期値なので、選んだ後に各スロットで部品を足し引きして自分好みに調整するのが基本の使い方。</div>
+    </section>
+
+    <!-- 05 -->
+    <section class="pa-guide-card" id="g05">
+      <div class="pa-guide-section-num">05</div>
+      <h2 class="pa-guide-title">各スロットの部品一覧</h2>
+      <p class="pa-guide-desc">各スロットには PT-00〜15 の16部品がある。すべて複数選択でき、組み合わせると注釈の表情が変わる。以下は全部品の早見表。</p>
+
+      <!-- ① line -->
+      <div class="pa-slot-bar"><span class="pa-slot-bar-num" style="background:var(--s1)">①</span><div class="pa-slot-bar-text"><span class="pa-slot-bar-h">線（ラインワーク）</span><span class="pa-slot-bar-sub">LINE WORK</span></div></div>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table s1">
+          <thead><tr><th>PT</th><th>名前</th><th>どんな線か</th></tr></thead>
+          <tbody>
+            <tr><td>00</td><td class="nm">白ペン細線</td><td>白っぽい細いペンを手描き風に。少し歪んだ線でフチをなぞり、小さな矢印・点線で視線誘導</td></tr>
+            <tr><td>01</td><td class="nm">マステ / 付箋</td><td>マスキングテープや付箋を貼った風。パステルのマーカー数色</td></tr>
+            <tr><td>02</td><td class="nm">均一細線 / 引き出し線</td><td>定規で引いた几帳面な細線。引き出し線でラベル付け</td></tr>
+            <tr><td>03</td><td class="nm">太い黒インク</td><td>勢いある太い黒インク。動きを示すスピード線</td></tr>
+            <tr><td>04</td><td class="nm">字幕フレーム</td><td>最小限の直線フレーミング＋上下のレターボックス黒帯</td></tr>
+            <tr><td>05</td><td class="nm">ネオン / グリッチ</td><td>ネオン蛍光色の縁取り、グリッチノイズ、ステッカー風</td></tr>
+            <tr><td>06</td><td class="nm">かすれ鉛筆</td><td>かすれた鉛筆・万年筆の線。古紙への走り書き風</td></tr>
+            <tr><td>07</td><td class="nm">白チョーク</td><td>白チョークのかすれ線、粉っぽい質感、こすった跡</td></tr>
+            <tr><td>08</td><td class="nm">青焼き白線</td><td>ブループリント地に白の正確な細線、寸法線・引き出し線</td></tr>
+            <tr><td>09</td><td class="nm">値札吹き出し</td><td>吹き出し付き値札、点線の切り取り線、商品を指す矢印</td></tr>
+            <tr><td>10</td><td class="nm">HUD / 照準</td><td>ゲームHUD風の角ばった線、ステータス枠、照準マーカー</td></tr>
+            <tr><td>11</td><td class="nm">丸囲み引き出し</td><td>手書き線で材料を丸囲みし、引き出してメモ</td></tr>
+            <tr><td>12</td><td class="nm">点線ルート / 切手</td><td>点線のルート、切手のギザギザ枠・スタンプ枠</td></tr>
+            <tr><td>13</td><td class="nm">赤枠スタンプ</td><td>タイプライター下線、赤い囲み枠、指し示す矢印</td></tr>
+            <tr><td>14</td><td class="nm">太クレヨン</td><td>太くぐにゃぐにゃのクレヨン線、はみ出しOK</td></tr>
+            <tr><td>15</td><td class="nm">極細ミニマル</td><td>極細で繊細な線、洗練された最小限の引き出し</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ② text -->
+      <div class="pa-slot-bar"><span class="pa-slot-bar-num" style="background:var(--s2)">②</span><div class="pa-slot-bar-text"><span class="pa-slot-bar-h">文字とトーン</span><span class="pa-slot-bar-sub">TEXT &amp; TONE</span></div></div>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table s2">
+          <thead><tr><th>PT</th><th>名前</th><th>文字・語り口</th></tr></thead>
+          <tbody>
+            <tr><td>00</td><td class="nm">日記・独り言</td><td>手書きの日本語。ひらがな多め、ぽつりと独り言。日記寄りで感情がにじむ</td></tr>
+            <tr><td>01</td><td class="nm">コラージュ</td><td>日本語＋英単語ミックス。わくわくしたスクラップ調</td></tr>
+            <tr><td>02</td><td class="nm">観察記録</td><td>日本語＋小さい英語ラベル。断定口調の観察記録</td></tr>
+            <tr><td>03</td><td class="nm">実況ツッコミ</td><td>吹き出し＋オノマトペ。大小メリハリの実況調</td></tr>
+            <tr><td>04</td><td class="nm">字幕・詩的</td><td>画面下に白い字幕。短く詩的な映画ナレーション調</td></tr>
+            <tr><td>05</td><td class="nm">ギャル / ポップ</td><td>日英ミックスのポップ口調。テンション高め</td></tr>
+            <tr><td>06</td><td class="nm">古風・しみじみ</td><td>縦書き混じり、少し古風。ノスタルジック</td></tr>
+            <tr><td>07</td><td class="nm">黒板接客</td><td>丸っこいチョーク文字。カフェ黒板のあたたかい接客調</td></tr>
+            <tr><td>08</td><td class="nm">製図・無機質</td><td>製図フォント風ラベル。無機質な技術仕様トーン</td></tr>
+            <tr><td>09</td><td class="nm">通販・煽り</td><td>商品名＋キャッチ＋¥価格。通販番組の煽り調</td></tr>
+            <tr><td>10</td><td class="nm">ゲーム実況</td><td>ステータス＋スキル名。ゲームフォント風の実況</td></tr>
+            <tr><td>11</td><td class="nm">レシピ</td><td>分量・手順っぽい手書き。やさしいレシピ帳調</td></tr>
+            <tr><td>12</td><td class="nm">旅日記</td><td>手書き＋地名の英語。ちょっと感傷的な旅日記調</td></tr>
+            <tr><td>13</td><td class="nm">スタンプ調</td><td>英大文字スタンプ＋注記。捜査ファイル調</td></tr>
+            <tr><td>14</td><td class="nm">園児・無邪気</td><td>たどたどしい大きな子供文字。無邪気な絵日記調</td></tr>
+            <tr><td>15</td><td class="nm">モード誌</td><td>明朝細めのキャプション。クールで上品</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ③ comment -->
+      <div class="pa-slot-bar"><span class="pa-slot-bar-num" style="background:var(--s3)">③</span><div class="pa-slot-bar-text"><span class="pa-slot-bar-h">コメントの中身</span><span class="pa-slot-bar-sub">COMMENT</span></div></div>
+      <p class="pa-guide-desc" style="margin-bottom:var(--sp-2)">飲み物 / 食べ物 / 空間 / 全体 の4対象に「何を書くか」の観点を指定する。</p>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table s3">
+          <thead><tr><th>PT</th><th>名前</th><th>観点（飲→食→空間→全体）</th></tr></thead>
+          <tbody>
+            <tr><td>00</td><td class="nm">味・温度・気分</td><td>味/温度・食感・雰囲気・一言まとめ</td></tr>
+            <tr><td>01</td><td class="nm">ごほうび</td><td>かわいさ・ごほうび感・お気に入り宣言・今日のハイライト</td></tr>
+            <tr><td>02</td><td class="nm">データ・所見</td><td>成分データ風・専門用語食感・環境スペック・一行所見</td></tr>
+            <tr><td>03</td><td class="nm">食レポ実況</td><td>飲んだ瞬間の反応・食レポ・心の声・オチの一言</td></tr>
+            <tr><td>04</td><td class="nm">比喩・余韻</td><td>比喩・静かな幸福・時間の質感・ナレーション一行</td></tr>
+            <tr><td>05</td><td class="nm">優勝・神</td><td>盛り上げ・「優勝」系・「ここ神」・絵文字盛り</td></tr>
+            <tr><td>06</td><td class="nm">記憶・懐かしさ</td><td>記憶の手ざわり・懐かしい味・時が止まる感・そっと一言</td></tr>
+            <tr><td>07</td><td class="nm">おすすめ・焼きたて</td><td>本日のおすすめ・焼きたて感・ようこそ感・Thank you</td></tr>
+            <tr><td>08</td><td class="nm">構造・Fig.</td><td>液体スペック・構造説明・図面注記・Fig.1キャプション</td></tr>
+            <tr><td>09</td><td class="nm">限定・お得</td><td>「今だけ」・「数量限定」・「快適保証」・「お得すぎ！」</td></tr>
+            <tr><td>10</td><td class="nm">HP・満腹度</td><td>HP回復+30・満腹度MAX・セーフゾーン・クエストクリア</td></tr>
+            <tr><td>11</td><td class="nm">コツ・ひと工夫</td><td>淹れ方メモ・ひと工夫・盛り付けのコツ・「召し上がれ」</td></tr>
+            <tr><td>12</td><td class="nm">現地の味</td><td>現地の味・ご当地感・旅先の空気・「また来たい」</td></tr>
+            <tr><td>13</td><td class="nm">証拠物件</td><td>「証拠物件A」・「対象を確認」・「現場」・「美味で解決」</td></tr>
+            <tr><td>14</td><td class="nm">おいしー・だいすき</td><td>「おいしー！」・「だいすき」・「たのしい」・「きょうさいこう」</td></tr>
+            <tr><td>15</td><td class="nm">ムード一語</td><td>one word雰囲気・質感一語・ムード・ブランド一行コピー</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ④ deco -->
+      <div class="pa-slot-bar"><span class="pa-slot-bar-num" style="background:var(--s4)">④</span><div class="pa-slot-bar-text"><span class="pa-slot-bar-h">飾り</span><span class="pa-slot-bar-sub">DECO</span></div></div>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table s4">
+          <thead><tr><th>PT</th><th>名前</th><th>飾りの内容</th></tr></thead>
+          <tbody>
+            <tr><td>00</td><td class="nm">湯気・キラキラ 控えめ</td><td>湯気・キラキラ・ハート・顔文字を控えめに、余白を残す</td></tr>
+            <tr><td>01</td><td class="nm">星シール 多色</td><td>星・丸シール・小花・チェックボックスを多色で</td></tr>
+            <tr><td>02</td><td class="nm">番号・寸法線</td><td>番号①②③・矢印・寸法線・ドット罫</td></tr>
+            <tr><td>03</td><td class="nm">集中線・汗マーク</td><td>集中線・汗マーク・キラッ・ハート吹き出し</td></tr>
+            <tr><td>04</td><td class="nm">ほぼなし</td><td>装飾ほぼなし。小さなタイムコードか「—」程度</td></tr>
+            <tr><td>05</td><td class="nm">★ハート 多め</td><td>星・ハート・渦巻き・ぷよぷよ文字をやや多めに</td></tr>
+            <tr><td>06</td><td class="nm">日付スタンプ 極控えめ</td><td>日付スタンプ・押し花・色褪せたシミを極控えめに</td></tr>
+            <tr><td>07</td><td class="nm">枠囲み・小イラスト</td><td>枠囲み・星・小さいイラスト（コップ/葉っぱ）</td></tr>
+            <tr><td>08</td><td class="nm">方眼・スケールバー</td><td>方眼・スケールバー・①番号・断面記号</td></tr>
+            <tr><td>09</td><td class="nm">SALE吹き出し 多め</td><td>SALE吹き出し・星評価・赤丸囲みをやや多めに</td></tr>
+            <tr><td>10</td><td class="nm">HPバー・LEVEL UP</td><td>HPバー・☆レア度・「LEVEL UP」・ゲームUI要素</td></tr>
+            <tr><td>11</td><td class="nm">☆ポイント・チェック</td><td>☆ポイント・小さい鍋や葉っぱ・チェック✓</td></tr>
+            <tr><td>12</td><td class="nm">飛行機点線・地図ピン</td><td>飛行機の点線・地図ピン・日付スタンプ</td></tr>
+            <tr><td>13</td><td class="nm">丸スタンプ・付箋</td><td>CONFIRMED丸スタンプ・少し黒塗り・付箋</td></tr>
+            <tr><td>14</td><td class="nm">にっこり顔 多め</td><td>にっこり顔・おひさま・大きいハートを多めに</td></tr>
+            <tr><td>15</td><td class="nm">装飾ゼロ</td><td>極小の「—」「/」のみ。装飾ほぼゼロ</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ⑤ finish -->
+      <div class="pa-slot-bar"><span class="pa-slot-bar-num" style="background:var(--s5)">⑤</span><div class="pa-slot-bar-text"><span class="pa-slot-bar-h">世界観</span><span class="pa-slot-bar-sub">MOOD</span></div></div>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table s5">
+          <thead><tr><th>PT</th><th>名前</th><th>全体の雰囲気</th></tr></thead>
+          <tbody>
+            <tr><td>00</td><td class="nm">インスタストーリー</td><td>おしゃれで力の抜けたストーリー風、余白を残す</td></tr>
+            <tr><td>01</td><td class="nm">スクラップブック</td><td>手帳デコ・スクラップ風。密度やや高め</td></tr>
+            <tr><td>02</td><td class="nm">図鑑・取説</td><td>落ち着いたテクニカルな図鑑・マニュアル風</td></tr>
+            <tr><td>03</td><td class="nm">4コマ・賑やか</td><td>4コマ漫画のワンシーン風。賑やかで動きあり</td></tr>
+            <tr><td>04</td><td class="nm">シネマティック</td><td>余白とサイレンス重視の映画スチール</td></tr>
+            <tr><td>05</td><td class="nm">Y2Kプリクラ</td><td>2000年代プリクラ風。ポップで派手</td></tr>
+            <tr><td>06</td><td class="nm">古手帳・セピア</td><td>古い手帳・セピア調。静かなノスタルジー</td></tr>
+            <tr><td>07</td><td class="nm">カフェ黒板</td><td>カフェ黒板風。ナチュラルであたたかい</td></tr>
+            <tr><td>08</td><td class="nm">青写真・製図</td><td>青写真・テクニカルドローイング風</td></tr>
+            <tr><td>09</td><td class="nm">チラシ・高密度</td><td>チラシ・通販ポップ風。情報密度高め</td></tr>
+            <tr><td>10</td><td class="nm">ゲームUI</td><td>ゲーム画面オーバーレイ風、ドット混じり</td></tr>
+            <tr><td>11</td><td class="nm">レシピカード</td><td>手書きレシピカード風、ナチュラル</td></tr>
+            <tr><td>12</td><td class="nm">トラベルジャーナル</td><td>トラベルジャーナル風、余白広め</td></tr>
+            <tr><td>13</td><td class="nm">機密書類</td><td>機密書類風だが遊び心あり</td></tr>
+            <tr><td>14</td><td class="nm">子供落書き</td><td>子供の落書き風。カラフルで元気</td></tr>
+            <tr><td>15</td><td class="nm">モード誌</td><td>余白とタイポで魅せるモード誌風</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pa-guide-note">同じPT番号で①〜⑤を揃えると、Step 0 のプリセットと同じ世界観になる。スロットをまたいで違う番号を混ぜると、自分だけのハイブリッドな仕上がりが作れる（例：①白ペン＋⑤シネマティック）。</div>
+    </section>
+
+    <!-- 06 -->
+    <section class="pa-guide-card" id="g06">
+      <div class="pa-guide-section-num">06</div>
+      <h2 class="pa-guide-title">カスタム部品の追加</h2>
+      <p class="pa-guide-desc">各スロットのカード一覧の下に、破線で囲まれた追加フォームがある。用意された16部品にないものを使いたいときは、ここから独自の選択肢を作って追加できる。</p>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table">
+          <thead><tr><th>フィールド</th><th>入力内容</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr><td class="nm">名前</td><td>カードに表示する名前</td><td>一覧での見出しになる</td></tr>
+            <tr><td class="nm">内容</td><td>そのスロットで効かせたい指示</td><td>線なら線の描写、文字なら語り口など</td></tr>
+            <tr><td class="nm">追加ボタン</td><td>押すとそのスロットのカードとして追加される</td><td>追加後はそのまま選択状態にできる</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pa-guide-note warn">追加したカスタム部品・選択・入力内容は、ページを再読み込みすると消える（保存はされない）。気に入った構成は、確認画面で生成したプロンプトをコピーしてメモやノートに残しておくのがおすすめ。</div>
+    </section>
+
+    <!-- 07 -->
+    <section class="pa-guide-card" id="g07">
+      <div class="pa-guide-section-num">07</div>
+      <h2 class="pa-guide-title">確認 & 編集</h2>
+      <p class="pa-guide-desc">最終ステップ（CONFIRM / 7）では、「写ってるもの」と①〜⑤の選択が一覧表示される。ここで全体を見渡してから出力する。</p>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table">
+          <thead><tr><th>操作</th><th>説明</th></tr></thead>
+          <tbody>
+            <tr><td class="nm">構成の確認</td><td>各スロットで選んだ部品がチップで並ぶ。未選択は「— 未選択」と表示</td></tr>
+            <tr><td class="nm">編集</td><td>各行右の「編集」を押すと、そのステップへ直接戻って選び直せる</td></tr>
+            <tr><td class="nm">← ⑤ に戻る</td><td>1つ前（仕上がり）のステップへ戻る</td></tr>
+            <tr><td class="nm">最初から</td><td>選択・入力・プリセットをすべてリセットして Step 0 へ</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section class="pa-guide-card" id="g08">
+      <div class="pa-guide-section-num">08</div>
+      <h2 class="pa-guide-title">出力・コピー</h2>
+      <p class="pa-guide-desc">確認画面では GPT / Nano Banana 向けのプロンプトが生成される。出力言語は「日本語 / English」で切り替え可能。GENERATED PROMPT のテキストは直接編集してから COPY できる。</p>
+      <div class="pa-guide-table-wrap">
+        <table class="pa-guide-table">
+          <thead><tr><th>出力言語</th><th>形式</th><th>共通</th></tr></thead>
+          <tbody>
+            <tr><td class="nm">日本語</td><td>「アップした写真の上に、手描きの注釈を…」で始まる日本語の指示文。【写ってるもの】【線の引き方】【文字とトーン】【コメントの中身】【飾り】【全体の雰囲気】を箇条で構成</td><td rowspan="2">比率メモ（任意のAR）。出力言語に関わらず、画像に乗る手書き文字は日本語のまま</td></tr>
+            <tr><td class="nm">English</td><td><code>Add hand-drawn annotations onto the uploaded photo...</code> で始まる英文の指示文。[Subjects] / [Line work] / [Text &amp; tone] / [Comments] / [Decoration] / [Mood] で構成</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pa-sample-label">出力サンプル（日本語）</div>
+      <div class="pa-sample">アップした写真の上に、手描きの注釈を描き込んでください。写っているものを見つけ、ひとつずつに線・文字・コメントを添えるイメージで仕上げてください。
+
+【写ってるもの】
+ラテ、クロワッサン、窓際の席
+
+【線の引き方】
+白っぽい細いペンを手描き風に。少し歪んだ線でフチをなぞる。…
+
+【文字とトーン】
+手書きの日本語。ひらがな多め、短い独り言。…
+
+【比率】
+9:16 で仕上げる</div>
+
+      <div class="pa-sample-label">出力サンプル（English）</div>
+      <div class="pa-sample">Add hand-drawn annotations directly onto the uploaded photo. Look at each element in the photo and attach lines, text, and short comments to them. Keep all handwritten captions in natural Japanese.
+
+[Subjects]
+latte, croissant, window seat
+
+[Line work]
+white thin pen line, single-stroke rough outline tracing objects, guiding arrows and dotted lines
+
+[Text &amp; tone]
+handwritten Japanese diary-style murmurs, short emotional notes
+
+[Aspect ratio]
+9:16</div>
+
+      <div class="pa-guide-note">出力プロンプト（日本語／英語）は、ChatGPT（GPT-image）や Gemini / Nano Banana などの画像編集系AIに、注釈をつけたい写真と一緒に送って使う。英語にしても、画像に乗る手書き文字は日本語のまま。COPY はブラウザのクリップボードAPIが使えない環境（<code>file://</code> など）でもフォールバックで動作する。</div>
+    </section>
+
+    <!-- 09 -->
+    <section class="pa-guide-card" id="g09">
+      <div class="pa-guide-section-num">09</div>
+      <h2 class="pa-guide-title">よくある使い方パターン</h2>
+
+      <div class="pa-usecase">
+        <div class="pa-usecase-h"><span class="pa-usecase-tag">CAFE</span>カフェのラテを「映える日記」に</div>
+        <div class="pa-flow-d">飲み物・食べ物に短い独り言と味コメントを乗せ、力を抜いたSNS映えに。</div>
+        <div class="pa-usecase-recipe">
+          <span class="pa-usecase-chip"><b>①</b> 白ペン細線</span>
+          <span class="pa-usecase-chip"><b>②</b> 日記・独り言</span>
+          <span class="pa-usecase-chip"><b>③</b> 味・温度・気分</span>
+          <span class="pa-usecase-chip"><b>④</b> 湯気・キラキラ 控えめ</span>
+          <span class="pa-usecase-chip"><b>⑤</b> インスタストーリー</span>
+        </div>
+      </div>
+
+      <div class="pa-usecase">
+        <div class="pa-usecase-h"><span class="pa-usecase-tag">DOC</span>持ち物・ガジェットを「図鑑」っぽく</div>
+        <div class="pa-flow-d">引き出し線とデータ風コメントで、解説図鑑・取説のような落ち着いた一枚に。</div>
+        <div class="pa-usecase-recipe">
+          <span class="pa-usecase-chip"><b>①</b> 均一細線 / 引き出し線</span>
+          <span class="pa-usecase-chip"><b>②</b> 観察記録</span>
+          <span class="pa-usecase-chip"><b>③</b> データ・所見</span>
+          <span class="pa-usecase-chip"><b>④</b> 番号・寸法線</span>
+          <span class="pa-usecase-chip"><b>⑤</b> 図鑑・取説</span>
+        </div>
+      </div>
+
+      <div class="pa-usecase">
+        <div class="pa-usecase-h"><span class="pa-usecase-tag">FUN</span>ごはんを「ゲーム画面」風にネタ化</div>
+        <div class="pa-flow-d">HUDやHPバーと実況コメントで、写真をゲームのワンシーンのように。</div>
+        <div class="pa-usecase-recipe">
+          <span class="pa-usecase-chip"><b>①</b> HUD / 照準</span>
+          <span class="pa-usecase-chip"><b>②</b> ゲーム実況</span>
+          <span class="pa-usecase-chip"><b>③</b> HP・満腹度</span>
+          <span class="pa-usecase-chip"><b>④</b> HPバー・LEVEL UP</span>
+          <span class="pa-usecase-chip"><b>⑤</b> ゲームUI</span>
+        </div>
+      </div>
+
+      <div class="pa-guide-note">迷ったら Step 0 でテーマに近いプリセットを選び、そこから1〜2スロットだけ別番号に差し替えると、手早く「ベース＋ひとひねり」が作れる。</div>
+    </section>
+
+    <!-- 10 -->
+    <section class="pa-guide-card" id="g10">
+      <div class="pa-guide-section-num">10</div>
+      <h2 class="pa-guide-title">FAQ</h2>
+      <div class="pa-guide-faq-list">
+        <div class="pa-guide-faq">
+          <div class="pa-guide-faq-q">Q. スキップすると選択は消える？</div>
+          <div class="pa-guide-faq-a">A. 消えません。「スキップ」は選択を保持したまま次のステップへ進むだけです。その時点で何も選んでいなければ未選択のまま進みます。</div>
+        </div>
+        <div class="pa-guide-faq">
+          <div class="pa-guide-faq-q">Q. 各ステップで複数選べる？</div>
+          <div class="pa-guide-faq-a">A. はい。全スロットで複数選択できます。複数選ぶと出力では「／」で連結され、注釈に複数の表情が重なります。</div>
+        </div>
+        <div class="pa-guide-faq">
+          <div class="pa-guide-faq-q">Q. 途中のステップに戻りたい</div>
+          <div class="pa-guide-faq-a">A. 上部プログレスバーのドットをクリックするか、確認画面の各行「編集」から、任意のステップへ直接ジャンプできます。</div>
+        </div>
+        <div class="pa-guide-faq">
+          <div class="pa-guide-faq-q">Q. プリセットを選んだら他は選べない？</div>
+          <div class="pa-guide-faq-a">A. プリセットは初期値をセットするだけです。選んだ後も各ステップで部品を自由に足し引きできます。</div>
+        </div>
+        <div class="pa-guide-faq">
+          <div class="pa-guide-faq-q">Q. どのAIで使えばいい？</div>
+          <div class="pa-guide-faq-a">A. アップした写真そのものに描き込むには、画像編集ができるAIが向いています。ChatGPT（GPT-image）や Gemini / Nano Banana など。生成したプロンプトと写真をセットで送ってください。Midjourney のようなテキスト→画像型は、あなたの写真に注釈を足すより別画像を生成する方に寄るため、この用途には不向きです。</div>
+        </div>
+        <div class="pa-guide-faq">
+          <div class="pa-guide-faq-q">Q. 作った構成を保存できる？</div>
+          <div class="pa-guide-faq-a">A. 現時点では保存機能はなく、再読み込みでリセットされます。気に入った構成は生成プロンプトをコピーして、ノートやメモに残しておくのが確実です。</div>
+        </div>
+        <div class="pa-guide-faq">
+          <div class="pa-guide-faq-q">Q. コピーできない</div>
+          <div class="pa-guide-faq-a">A. クリップボードAPIが制限された環境でもフォールバックで動作します。それでも失敗する場合は、GENERATED PROMPT のテキストを選択して手動でコピーしてください。</div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /.pa-guide-body -->
+</div><!-- /.pa-guide-wrap -->
+
+<script>
+// スクロールに応じてTOCのアクティブ項目をハイライト（IntersectionObserver）
+(function(){
+  const sections = document.querySelectorAll('.pa-guide-card[id]');
+  const navItems = {};
+  document.querySelectorAll('.pa-guide-nav-item').forEach(a=>{
+    navItems[a.getAttribute('href').slice(1)] = a;
+  });
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        Object.values(navItems).forEach(n=>n.classList.remove('is-active'));
+        const item = navItems[e.target.id];
+        if(item) item.classList.add('is-active');
+      }
+    });
+  }, { rootMargin:'-20% 0px -70% 0px', threshold:0 });
+  sections.forEach(s=>obs.observe(s));
+})();
+</script>
+</body>
+</html>
