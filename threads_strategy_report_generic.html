@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threads運用 MECE戦略レポート（汎用版）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9E9E9; --surface:#FFFFFF; --surface-v:#F4F4F2;
+  --text:#111111; --text-sub:#333333; --muted:#6B6B6B;
+  --border:#DDDDDD; --accent:#000000;
+  --font-display:'Inter','Helvetica Now',sans-serif;
+  --font-body:'Noto Sans JP','Hiragino Sans',sans-serif;
+  --font-mono:'JetBrains Mono','IBM Plex Mono',monospace;
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-6:24px;--sp-8:32px;--sp-12:48px;--sp-16:64px;--sp-24:96px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:15px; line-height:1.8; letter-spacing:0.02em; -webkit-font-smoothing:antialiased;}
+.wrap{max-width:1080px; margin:0 auto; padding:var(--sp-16) var(--sp-6) var(--sp-24);}
+.mono{font-family:var(--font-mono);}
+.cap{font-family:var(--font-mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);}
+
+.masthead{border-top:3px solid var(--accent); padding-top:var(--sp-6); margin-bottom:var(--sp-16);}
+.masthead .kicker{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-6);}
+.masthead .brand{font-family:var(--font-mono); font-size:12px; letter-spacing:0.2em; text-transform:uppercase; font-weight:500;}
+.masthead .eyebrow{font-size:13.5px; color:var(--muted); margin-bottom:var(--sp-3);}
+.masthead h1{font-family:var(--font-display); font-weight:700; font-size:clamp(32px,5vw,52px); line-height:1.05; letter-spacing:-0.01em; margin-bottom:var(--sp-4);}
+.masthead .disclaimer{font-size:13.5px; color:var(--muted); margin-bottom:var(--sp-6); padding-left:var(--sp-4); border-left:2px solid var(--border);}
+.masthead .sub{font-size:15px; color:var(--text-sub); max-width:60ch;}
+
+nav.toc{position:sticky; top:0; z-index:10; background:var(--bg); border-bottom:1px solid var(--border); margin-bottom:var(--sp-12); padding:var(--sp-3) 0; display:flex; flex-wrap:wrap; gap:var(--sp-1) var(--sp-4);}
+nav.toc a{font-family:var(--font-mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-decoration:none; padding:2px 0; transition:color 150ms ease;}
+nav.toc a:hover{color:var(--accent);}
+
+section{margin-bottom:var(--sp-16);}
+.sec-no{display:block; font-family:var(--font-mono); font-size:11px; letter-spacing:0.14em; color:var(--muted); margin-bottom:var(--sp-2);}
+h2{font-family:var(--font-display); font-weight:600; font-size:24px; letter-spacing:-0.01em; margin-bottom:var(--sp-6); padding-bottom:var(--sp-3); border-bottom:1px solid var(--border);}
+h3{font-size:16px; font-weight:700; margin:var(--sp-8) 0 var(--sp-3);}
+p{color:var(--text-sub); margin-bottom:var(--sp-4);}
+.lead{color:var(--text); font-size:16px;}
+ul{list-style:none; margin:var(--sp-2) 0 var(--sp-4);}
+li{position:relative; padding-left:var(--sp-6); margin-bottom:var(--sp-2); color:var(--text-sub);}
+li::before{content:"—"; position:absolute; left:0; color:var(--muted); font-family:var(--font-mono);}
+
+.card{background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:var(--sp-8); margin-bottom:var(--sp-4);}
+.note{background:var(--surface-v); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:2px; padding:var(--sp-4) var(--sp-6); font-size:14px; color:var(--text-sub); margin-bottom:var(--sp-6);}
+
+.equation{background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:var(--sp-12) var(--sp-8); text-align:center; margin:var(--sp-6) 0;}
+.equation .eq{font-family:var(--font-display); font-weight:600; font-size:clamp(15px,2.4vw,24px); line-height:1.6; letter-spacing:-0.01em;}
+.equation .eq .op{color:var(--muted); font-weight:400; padding:0 var(--sp-2);}
+.equation .eq .pen{display:block; color:var(--muted); font-size:0.7em; margin-top:var(--sp-3); font-family:var(--font-mono); letter-spacing:0.04em;}
+
+.tag{display:inline-block; font-family:var(--font-mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; padding:2px 7px; border:1px solid var(--border); border-radius:2px; color:var(--muted); background:var(--surface-v); vertical-align:middle; white-space:nowrap;}
+.tag.fact{border-color:var(--accent); color:var(--accent);}
+
+table{width:100%; border-collapse:collapse; margin:var(--sp-3) 0 var(--sp-6); font-size:13.5px;}
+th{font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; text-align:left; color:var(--muted); background:var(--surface-v); padding:var(--sp-3) var(--sp-4); border-bottom:1px solid var(--border); font-weight:500;}
+td{padding:var(--sp-3) var(--sp-4); border-bottom:1px solid var(--border); color:var(--text-sub); vertical-align:top;}
+tbody tr{transition:background 150ms ease;}
+tbody tr:hover{background:var(--surface-v);}
+td.k{font-weight:700; color:var(--text); white-space:nowrap;}
+td.c{text-align:center; white-space:nowrap;}
+a.ext{color:var(--text); text-decoration:none; border-bottom:1px solid var(--border);}
+a.ext:hover{border-color:var(--accent);}
+
+.lever{background:var(--surface); border:1px solid var(--border); border-radius:4px; margin-bottom:var(--sp-4); overflow:hidden;}
+.lever-head{display:flex; align-items:baseline; gap:var(--sp-4); padding:var(--sp-6) var(--sp-8); border-bottom:1px solid var(--border);}
+.lever-head .ln{font-family:var(--font-display); font-weight:700; font-size:40px; line-height:1; color:var(--accent);}
+.lever-head .lt{font-size:18px; font-weight:700;}
+.lever-head .le{font-family:var(--font-mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-left:auto;}
+.lever-body{padding:var(--sp-6) var(--sp-8);}
+.lever-body .basis{font-size:13.5px; color:var(--text-sub); margin-bottom:var(--sp-3); padding-bottom:var(--sp-3); border-bottom:1px solid var(--border);}
+.lever-body .basis b{font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); font-weight:500;}
+.lever-body ul{margin:0;}
+.lever-body table{margin:0;}
+
+.steps{counter-reset:step; margin-top:var(--sp-4);}
+.step{display:flex; gap:var(--sp-6); align-items:baseline; padding:var(--sp-4) 0; border-bottom:1px solid var(--border);}
+.step::before{counter-increment:step; content:counter(step,decimal-leading-zero); font-family:var(--font-display); font-weight:700; font-size:22px; color:var(--accent); min-width:36px;}
+.step .st{font-weight:700; margin-right:var(--sp-2);}
+.step .sd{color:var(--text-sub); font-size:14px;}
+
+/* checklist */
+.checklist{list-style:none; margin:var(--sp-4) 0 0;}
+.checklist li{padding-left:0; margin-bottom:0; border-bottom:1px solid var(--border);}
+.checklist li::before{content:none;}
+.checklist label{display:flex; align-items:flex-start; gap:var(--sp-3); padding:var(--sp-4) var(--sp-2); cursor:pointer; color:var(--text-sub); transition:color 150ms ease;}
+.checklist input{appearance:none; -webkit-appearance:none; width:18px; height:18px; min-width:18px; margin-top:3px; border:1px solid var(--accent); border-radius:2px; background:var(--surface); cursor:pointer; position:relative; transition:background 150ms ease;}
+.checklist input:checked{background:var(--accent);}
+.checklist input:checked::after{content:"✓"; position:absolute; inset:0; color:#fff; font-size:13px; line-height:18px; text-align:center; font-family:var(--font-mono);}
+.checklist input:checked ~ .txt{color:var(--muted); text-decoration:line-through;}
+.checklist .lv{font-family:var(--font-mono); font-size:10px; letter-spacing:0.06em; color:var(--muted); border:1px solid var(--border); border-radius:2px; padding:1px 6px; margin-left:auto; white-space:nowrap; align-self:center;}
+.checklist input:checked ~ .lv{opacity:.4;}
+
+footer{margin-top:var(--sp-16); padding-top:var(--sp-6); border-top:1px solid var(--border); font-size:12px; color:var(--muted);}
+footer .mono{font-size:11px; letter-spacing:0.1em;}
+
+@media(max-width:640px){
+  .wrap{padding:var(--sp-8) var(--sp-4) var(--sp-16);}
+  .card,.lever-body,.lever-head{padding:var(--sp-4);}
+  .lever-head .ln{font-size:32px;}
+  table{font-size:12.5px;} td,th{padding:var(--sp-2) var(--sp-3);}
+  .checklist .lv{display:none;}
+}
+@media print{ body{background:#fff;} nav.toc{display:none;} .card,.lever,.equation{break-inside:avoid;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="kicker">
+      <span class="brand">note × Threads / 運用メモ</span>
+      <span class="cap">参考メモ · 2026</span>
+    </div>
+    <p class="eyebrow">１週間ほど入り浸って、有名どころの記事も読み込んで見えてきた note × Threads 戦略。</p>
+    <h1>Threads運用<br>MECE戦略レポート</h1>
+    <p class="disclaimer">正解なのかは不明。運用の考え方をまとめた、ひとつの叩き台メモ。</p>
+    <p class="sub">アルゴリズム原理 × エビデンス × 6レバー戦略。「なぜ伸びないか」を感覚論で終わらせないために、リーチを決める要因をMECEに分解し、根拠と打ち手を紐づけた汎用版。個人・ブランド・マーケター、誰でも下敷きにできる。</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#s1">01 目的</a>
+    <a href="#s2">02 前提</a>
+    <a href="#s3">03 リーチ式</a>
+    <a href="#s4">04 アルゴリズム</a>
+    <a href="#s5">05 MECE戦略</a>
+    <a href="#s6">06 着手順</a>
+    <a href="#s7">07 30日チェック</a>
+    <a href="#s8">08 参照</a>
+  </nav>
+
+  <div class="note">
+    <strong>表記ルール：</strong>
+    <span class="tag fact">事実</span> 一次・公的情報 ／
+    <span class="tag">観測</span> 複数の運用者・分析で一致 ／
+    <span class="tag">目安</span> 条件で変動する数値。
+  </div>
+
+  <section id="s1">
+    <span class="sec-no">01. PURPOSE</span>
+    <h2>目的</h2>
+    <p class="lead">Threadsのリーチを決める要因を構造化し、「どこに手を入れれば伸びるか」を再現可能な形で示す。バズの偶然に頼らず、<strong>仕組みベースで運用判断ができる状態</strong>をつくることがゴール。</p>
+  </section>
+
+  <section id="s2">
+    <span class="sec-no">02. CONSTRAINTS</span>
+    <h2>前提・制約</h2>
+    <ul>
+      <li>Threadsは公式に全アルゴリズムを開示していない。本レポートは <strong>Meta／Adam Mosseriの公開発言＋複数データの一致点</strong> を根拠として採用する。</li>
+      <li>数値（DAU・エンゲージ率・リーチ率）は取得時点の公開値。<strong>アルゴリズムはMetaが随時変更する</strong>ため、指標監視（レバー⑥）で継続更新する前提で使う。</li>
+      <li>プラットフォーム横断の一般原則（初速・会話重視など）と、Threads固有の挙動を区別して記載している。</li>
+    </ul>
+  </section>
+
+  <section id="s3">
+    <span class="sec-no">03. CORE EQUATION</span>
+    <h2>リーチを決める基本式</h2>
+    <p>このレポートの背骨。4因子が能動的な4レバー、ペナルティが守りの保全レバー、式全体を回すのが計測レバー。この6つがMECE分解の単位になる。</p>
+    <div class="equation">
+      <div class="eq">
+        投稿リーチ <span class="op">＝ f (</span> 誰に届くか <span class="op">×</span> 何を出すか <span class="op">×</span> いつ／どう出すか <span class="op">×</span> どれだけ会話を生むか <span class="op">)</span>
+        <span class="pen">− ペナルティ（シャドウバン等）</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="s4">
+    <span class="sec-no">04. ALGORITHM</span>
+    <h2>Threadsアルゴリズムの基本原理</h2>
+    <div class="card">
+    <table>
+      <thead><tr><th style="width:26%">原理</th><th>中身とエビデンス</th><th class="c">確度</th></tr></thead>
+      <tbody>
+        <tr><td class="k">2フィード構造</td><td><strong>For You ＝ AI/機械学習ランク</strong>（複数MLモデル）、<strong>Following ＝ 純時系列</strong>。伸びは基本 For You の取り込み次第で、フォロワーが多くても乗らなければ表示は伸びない。</td><td class="c"><span class="tag fact">事実</span></td></tr>
+        <tr><td class="k">初速が最重要</td><td>投稿直後 <strong>30〜60分のエンゲージメント速度が最大の評価因子</strong>。「30分で50いいね」は「24時間で100いいね」に勝る。</td><td class="c"><span class="tag fact">事実</span></td></tr>
+        <tr><td class="k">リプライ &gt; いいね</td><td>会話の往復（reply depth）を重視。Mosseriは <strong>リプライ総量は投稿総量とほぼ同等に価値がある</strong> と繰り返し発言。</td><td class="c"><span class="tag fact">事実</span></td></tr>
+        <tr><td class="k">フォロー優先化<br>（2024/11〜）</td><td>Mosseriが公式に、フォロー中の表示を優先するよう再調整と発表。<strong>非フォロワー由来リーチ↓・フォロワー由来リーチ↑</strong>。バズ単発より固定客の蓄積が効く。</td><td class="c"><span class="tag fact">事実</span></td></tr>
+        <tr><td class="k">リンク改善</td><td>かつて抑制されがちだったリンク付き投稿が、<strong>2025年半ば以降 適切にランクされるよう改善</strong>。bioリンクも最大5本に。外部サイト送客がしやすくなった。</td><td class="c"><span class="tag fact">事実</span></td></tr>
+        <tr><td class="k">画像が強い</td><td>テキストファーストを謳いつつ、<strong>画像付き投稿はテキストのみより約60%高パフォーマンス</strong>（数百万投稿規模の分析）。</td><td class="c"><span class="tag">観測</span></td></tr>
+        <tr><td class="k">Instagram連携</td><td>ThreadsはIGアカウント必須でデータ連携。<strong>IGでのアクティブさ・プロフィール閲覧がThreads側の予測に影響</strong>。</td><td class="c"><span class="tag">観測</span></td></tr>
+        <tr><td class="k">市場の地合い</td><td>DAU 約 <span class="mono">1.4億</span>、中央エンゲージ率 約 <span class="mono">6.25%</span>（Xの約3.6%超）、1万フォロワー未満のリーチ率 <span class="mono">8〜12%</span>（IGの4〜6.5%超）。<strong>個人が初速を取りやすいフェーズ。</strong></td><td class="c"><span class="tag">目安</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="s5">
+    <span class="sec-no">05. STRATEGY (MECE)</span>
+    <h2>MECE戦略：4つの能動レバー ＋ 守り ＋ 計測</h2>
+    <p>各レバーは基本式の1因子に1対1対応（相互排他）。6つ合わせて式を全網羅（漏れなし）。</p>
+
+    <div class="lever">
+      <div class="lever-head"><span class="ln">01</span><span class="lt">設計 / Positioning</span><span class="le">誰に・何者として</span></div>
+      <div class="lever-body">
+        <p class="basis"><b>アルゴ根拠</b> ／ フォロー優先化 → 反応する固定客を作るほど connected reach が伸びる</p>
+        <ul>
+          <li>アカウントを「1人格・1テーマ・1ターゲット」に絞る</li>
+          <li>プロフィールで「誰の・何を・どう解決するか」を1行で明示</li>
+          <li>複数ジャンルを扱うならアカウントを分け、フィードの一貫性を保つ</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lever">
+      <div class="lever-head"><span class="ln">02</span><span class="lt">生成 / Creation</span><span class="le">何を出すか</span></div>
+      <div class="lever-body">
+        <p class="basis"><b>アルゴ根拠</b> ／ 会話を生む投稿が伸びる・画像が約+60%・エンゲージベイトは逆効果</p>
+        <ul>
+          <li>問いかけ・余白・賛否の分かれる論点で<strong>リプライを誘発</strong>する</li>
+          <li>主要投稿には<strong>画像を添付</strong>する（テキストのみより有利）</li>
+          <li>薄いベイトを避け、具体・数字・実体験で勝負する</li>
+          <li>「途中経過」「失敗」「気づき」は会話を生みやすい</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lever">
+      <div class="lever-head"><span class="ln">03</span><span class="lt">配信 / Distribution</span><span class="le">いつ・どう出すか</span></div>
+      <div class="lever-body">
+        <p class="basis"><b>アルゴ根拠</b> ／ 初速30〜60分が最重要・過剰投稿は希薄化・ムラ投稿は混乱を招く</p>
+        <ul>
+          <li>読者が動く時間帯に投稿する（自分のインサイトで検証）</li>
+          <li>投稿直後に自分でリプライを足し、初速を補強する</li>
+          <li><strong>量より一定リズム</strong>。毎日少数の継続が、まとめ投稿→放置より強い</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lever">
+      <div class="lever-head"><span class="ln">04</span><span class="lt">増幅 / Amplification</span><span class="le">どう広げるか</span></div>
+      <div class="lever-body">
+        <p class="basis"><b>アルゴ根拠</b> ／ Mosseri「投稿より多くリプライせよ」・IG連携が予測に効く</p>
+        <ul>
+          <li><strong>投稿数より多くリプライ</strong>する。活発なスレへ中身あるリプで露出を借りる</li>
+          <li>Instagram と相互送客し、プラットフォーム間の相乗効果をつくる</li>
+          <li>外部サイトへの導線を bio とリンク投稿で確保する</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lever">
+      <div class="lever-head"><span class="ln">05</span><span class="lt">保全 / Protection</span><span class="le">リーチを失わない</span></div>
+      <div class="lever-body">
+        <p class="basis"><b>アルゴ根拠</b> ／ シャドウバン＝無通知のリーチ低減。検索・タグ・非フォロワー露出が消える</p>
+        <table><tbody>
+          <tr><td class="k">主な誘発要因 <span class="tag">観測</span></td><td>(1) 規約抵触（軽微でも） (2) <strong>スパム的挙動：AI量産・複数垢への同文複製・低品質ベイト</strong> (3) 禁止/制限ハッシュタグ (4) 短時間の過剰アクション</td></tr>
+          <tr><td class="k">兆候</td><td>平均いいねが突然激減／検索サジェストに出ない／トレンドタグの新着・人気に載らない</td></tr>
+          <tr><td class="k">回復</td><td>原因行動を<strong>完全停止</strong>（漸減でなく停止）し、活動を数日抑える。自動化連携を見直す</td></tr>
+          <tr><td class="k">自動投稿⚠️</td><td>定型文の連投・複数垢への同時同文・タグ使い回しはスパム判定に直結。①文面分散 ②間隔を空ける ③タグを毎回変える ④別垢への同時同文を禁止 ⑤週次で兆候監視</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="lever">
+      <div class="lever-head"><span class="ln">06</span><span class="lt">計測 / Measurement</span><span class="le">式を回す土台</span></div>
+      <div class="lever-body">
+        <table>
+          <thead><tr><th style="width:42%">指標</th><th>なぜ見るか</th></tr></thead>
+          <tbody>
+            <tr><td class="k">初速エンゲージ（投稿後30/60分）</td><td>最重要因子。低い投稿は型を見直す</td></tr>
+            <tr><td class="k">リプライ比率（リプ数 / いいね数）</td><td>会話を生めているかの代理指標</td></tr>
+            <tr><td class="k">connected vs unconnected reach</td><td>固定客が育っているか／バズ依存か</td></tr>
+            <tr><td class="k">検索サジェスト・タグ可視性</td><td>シャドウバンの早期検知</td></tr>
+            <tr><td class="k">リンククリック → 外部サイト遷移</td><td>送客が機能しているか</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="s6">
+    <span class="sec-no">06. PRIORITY (80/20)</span>
+    <h2>推奨：着手順</h2>
+    <div class="steps">
+      <div class="step"><span class="sd"><span class="st">保全（⑤）を先に固める。</span>規約違反やスパム的挙動でアカウントを失うと、他の施策が全部無効になる。</span></div>
+      <div class="step"><span class="sd"><span class="st">配信（③）の初速最適化。</span>投稿時刻＋直後の自己リプ補強。最小工数で効果が大きい。</span></div>
+      <div class="step"><span class="sd"><span class="st">増幅（④）リプライ運用。</span>「投稿より多くリプ」を習慣化。connected reach が積み上がる。</span></div>
+      <div class="step"><span class="sd"><span class="st">生成（②）画像化＋問いかけ。</span>フォーマットを変えるだけで +60% の余地。</span></div>
+      <div class="step"><span class="sd"><span class="st">設計（①）枠分け。</span>中長期。テーマの一貫性でフォロー価値を高める。</span></div>
+      <div class="step"><span class="sd"><span class="st">計測（⑥）の仕組み化。</span>上記を継続的に回す土台。</span></div>
+    </div>
+  </section>
+
+  <section id="s7">
+    <span class="sec-no">07. 30-DAY STARTER</span>
+    <h2>30日スターター・チェックリスト</h2>
+    <p>各項目に対応レバー（①〜⑥）を併記。チェックは記録用（クリックで切替）。</p>
+    <ul class="checklist">
+      <li><label><input type="checkbox"><span class="txt">プロフィールを「誰の何を解決するか」1行に書き直す</span><span class="lv">① 設計</span></label></li>
+      <li><label><input type="checkbox"><span class="txt">主要投稿は必ず画像付きにするルールを決める</span><span class="lv">② 生成</span></label></li>
+      <li><label><input type="checkbox"><span class="txt">「問いかけで終わる」投稿テンプレを3本用意する</span><span class="lv">② 生成</span></label></li>
+      <li><label><input type="checkbox"><span class="txt">インサイトで反応の良い投稿時間帯を特定する</span><span class="lv">③ 配信</span></label></li>
+      <li><label><input type="checkbox"><span class="txt">投稿直後5分以内に自己リプで初速を補強する運用にする</span><span class="lv">③ 配信</span></label></li>
+      <li><label><input type="checkbox"><span class="txt">1日の投稿数より多くリプライする日を週3日つくる</span><span class="lv">④ 増幅</span></label></li>
+      <li><label><input type="checkbox"><span class="txt">Instagram と相互導線（リンク・相互言及）を設定する</span><span class="lv">④ 増幅</span></label></li>
+      <li><label><input type="checkbox"><span class="txt">自動投稿を使うなら文面分散・間隔・タグ可変のルールを文書化する</span><span class="lv">⑤ 保全</span></label></li>
+      <li><label><input type="checkbox"><span class="txt">週次で「初速／リプライ比率／検索可視性」を記録する</span><span class="lv">⑥ 計測</span></label></li>
+    </ul>
+  </section>
+
+  <section id="s8">
+    <span class="sec-no">08. EVIDENCE</span>
+    <h2>参照（エビデンス出典）</h2>
+    <div class="card">
+    <table>
+      <thead><tr><th style="width:52%">内容</th><th>出典</th></tr></thead>
+      <tbody>
+        <tr><td>フィード構造・初速・リプライ深度・画像+60%（Mosseri発言／実測の引用）</td><td><a class="ext" href="https://posteverywhere.ai/blog/how-the-threads-algorithm-works">posteverywhere.ai</a></td></tr>
+        <tr><td>会話速度モデル・リプライ重視</td><td><a class="ext" href="https://postory.io/blog/what-works-on-threads-2026">postory.io</a></td></tr>
+        <tr><td>フォロー優先への再調整（2024/11・Mosseri公式発言）</td><td><a class="ext" href="https://techcrunch.com/">TechCrunch</a> / <a class="ext" href="https://www.neowin.net/news/threads-is-finally-fixing-a-major-complaint-about-its-algorithm/">Neowin</a></td></tr>
+        <tr><td>リンクのランク改善・bio5リンク（Mosseri）</td><td><a class="ext" href="https://influencermarketinghub.com/adam-mosseri-links-on-threads-are-performing-better/">Influencer Marketing Hub</a></td></tr>
+        <tr><td>DAU/エンゲージ率・IG連携・リプライ推奨</td><td><a class="ext" href="https://posteverywhere.ai/blog/how-to-go-viral-on-threads">posteverywhere.ai</a></td></tr>
+        <tr><td>シャドウバンの仕組み・兆候・回復・誘発要因</td><td><a class="ext" href="https://sendshort.ai/guides/threads-shadowban/">sendshort.ai</a> / <a class="ext" href="https://www.markmorphew.com/shadow-banned-on-threads/">markmorphew.com</a></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:13px; color:var(--muted);">※アルゴリズムの細部はMetaが随時変更する。本レポートは取得時点の整理であり、各自のインサイト（指標監視）で検証・更新しながら使うこと。</p>
+  </section>
+
+  <footer>
+    <span class="mono">THREADS GROWTH — MECE STRATEGY REPORT (GENERIC)</span><br>
+    Source: Meta / Adam Mosseri public statements + 複数の運用分析データ · 2026 · 表記タグの定義は本文冒頭を参照
+  </footer>
+
+</div>
+</body>
+</html>
