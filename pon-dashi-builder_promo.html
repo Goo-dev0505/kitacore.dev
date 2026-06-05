@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ポン出しビルダー＋ — カードを選ぶだけで、プロンプトが完成する</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:           #E9E9E9;
+  --surface:      #FFFFFF;
+  --surface-v:    #F4F4F2;
+  --text:         #111111;
+  --text-sub:     #333333;
+  --muted:        #6B6B6B;
+  --border:       #DDDDDD;
+  --accent:       #000000;
+  --red:          #C82000;
+  --green:        #007744;
+  --bg-dark:      #0A0E1A;
+  --cyan:         #00D4FF;
+  --text-dark:    #E2E8F0;
+  --muted-dark:   #64748B;
+  --border-dark:  #1E293B;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-6:24px; --sp-8:32px; --sp-12:48px; --sp-16:64px; --sp-24:96px;
+  --font-display: 'Anton','Inter',sans-serif;
+  --font-inter:   'Inter',sans-serif;
+  --font-body:    'Noto Sans JP','Hiragino Sans',sans-serif;
+  --font-mono:    'JetBrains Mono','IBM Plex Mono',monospace;
+  --slot1:#B22000; --slot2:#B25000; --slot3:#7A6800; --slot4:#006633;
+  --slot5:#004C99; --slot6:#4A1A99; --slot7:#333333;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:15px; line-height:1.8; letter-spacing:0.02em; }
+
+.wrap { max-width:1080px; margin:0 auto; padding:0 var(--sp-6); }
+section { padding:var(--sp-24) 0; }
+.sec-label { font-family:var(--font-mono); font-size:11px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; margin-bottom:var(--sp-8); }
+
+/* ===== HERO ===== */
+.hero { padding:var(--sp-24) 0 var(--sp-16); }
+.hero-tag { font-family:var(--font-mono); font-size:11px; letter-spacing:0.24em; color:var(--muted); text-transform:uppercase; margin-bottom:var(--sp-6); }
+.hero h1 { font-family:var(--font-display); font-size:clamp(48px,11vw,128px); line-height:0.95; letter-spacing:0.01em; text-transform:uppercase; }
+.hero h1 .thin { color:var(--muted); }
+.hero-sub { font-size:clamp(16px,2.4vw,21px); font-weight:700; margin-top:var(--sp-8); }
+.hero-desc { color:var(--text-sub); max-width:600px; margin-top:var(--sp-4); }
+.hero-cta { display:flex; gap:var(--sp-3); margin-top:var(--sp-8); flex-wrap:wrap; }
+.btn { font-family:var(--font-inter); font-size:13px; font-weight:600; letter-spacing:0.04em; text-decoration:none; padding:12px 28px; border-radius:2px; transition:opacity 150ms ease; }
+.btn:hover { opacity:0.8; }
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-ghost { border:1px solid var(--accent); color:var(--accent); }
+
+/* ===== PAIN ===== */
+.pain { border-top:2px solid var(--text); }
+.pain-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:var(--sp-4); }
+.pain-item { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:var(--sp-6); }
+.pain-item .p-quote { font-weight:700; font-size:16px; }
+.pain-item .p-sub { color:var(--muted); font-size:13px; margin-top:var(--sp-2); }
+.pain-answer { margin-top:var(--sp-8); font-size:clamp(18px,3vw,26px); font-weight:700; }
+.pain-answer em { font-style:normal; border-bottom:3px solid var(--text); }
+
+/* ===== 3 STEPS ===== */
+.steps { border-top:1px solid var(--border); }
+.steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-6); }
+.step-col .s-num { font-family:var(--font-display); font-size:96px; line-height:1; color:var(--text); }
+.step-col h3 { font-size:17px; margin:var(--sp-4) 0 var(--sp-2); }
+.step-col p { color:var(--text-sub); font-size:14px; }
+.step-col .s-en { font-family:var(--font-mono); font-size:10px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; }
+
+/* ===== FORMULA ===== */
+.formula { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.formula-line { display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-2); justify-content:center; margin-top:var(--sp-8); }
+.f-chip { font-family:var(--font-mono); font-size:12px; color:#fff; padding:6px 14px; border-radius:2px; letter-spacing:0.06em; }
+.f-op { font-family:var(--font-display); font-size:28px; color:var(--muted); padding:0 var(--sp-1); }
+.f-eq { font-family:var(--font-display); font-size:36px; color:var(--text); padding:0 var(--sp-2); }
+.f-result { font-family:var(--font-display); font-size:clamp(20px,3.4vw,32px); letter-spacing:0.02em; text-transform:uppercase; }
+.formula-note { text-align:center; color:var(--muted); font-size:13px; margin-top:var(--sp-6); }
+
+/* ===== DARK DEMO ===== */
+.demo { background:var(--bg-dark); color:var(--text-dark); }
+.demo .sec-label { color:var(--muted-dark); }
+.demo h2 { font-family:var(--font-display); font-size:clamp(28px,5vw,48px); text-transform:uppercase; letter-spacing:0.02em; line-height:1.1; }
+.demo h2 .cy { color:var(--cyan); }
+.demo-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-8); margin-top:var(--sp-8); align-items:start; }
+.demo-pick { border:1px solid var(--border-dark); border-radius:4px; padding:var(--sp-6); }
+.demo-pick .d-label { font-family:var(--font-mono); font-size:10px; letter-spacing:0.2em; color:var(--muted-dark); text-transform:uppercase; margin-bottom:var(--sp-4); }
+.d-card { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-2) 0; border-bottom:1px solid var(--border-dark); font-size:14px; }
+.d-card:last-child { border-bottom:none; }
+.d-card .d-slot { font-family:var(--font-mono); font-size:10px; color:var(--cyan); width:20px; flex-shrink:0; }
+.d-card .d-en { font-family:var(--font-mono); font-size:11px; color:var(--muted-dark); margin-left:auto; text-align:right; }
+.demo-out { background:#050810; border:1px solid var(--border-dark); border-radius:4px; padding:var(--sp-6); }
+.demo-out .d-label { font-family:var(--font-mono); font-size:10px; letter-spacing:0.2em; color:var(--cyan); text-transform:uppercase; margin-bottom:var(--sp-4); }
+.demo-out pre { font-family:var(--font-mono); font-size:13px; line-height:1.9; white-space:pre-wrap; word-break:break-word; color:var(--text-dark); }
+.demo-out .flag { color:var(--cyan); }
+.demo-note { color:var(--muted-dark); font-size:13px; margin-top:var(--sp-6); }
+
+/* ===== NUMBERS ===== */
+.numbers-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:var(--sp-4); }
+.num-col { border-top:2px solid var(--text); padding-top:var(--sp-4); }
+.num-col .n-big { font-family:var(--font-display); font-size:clamp(40px,6vw,72px); line-height:1; }
+.num-col .n-label { font-family:var(--font-mono); font-size:10px; letter-spacing:0.16em; color:var(--muted); text-transform:uppercase; margin-top:var(--sp-2); }
+.num-col .n-desc { font-size:12px; color:var(--text-sub); margin-top:var(--sp-1); }
+
+/* ===== FEATURES ===== */
+.features { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-6); }
+.feat { border:1px solid var(--border); border-radius:4px; padding:var(--sp-6); background:var(--bg); }
+.feat .f-en { font-family:var(--font-mono); font-size:10px; letter-spacing:0.18em; color:var(--muted); text-transform:uppercase; }
+.feat h3 { font-size:16px; margin:var(--sp-2) 0; }
+.feat p { font-size:13px; color:var(--text-sub); }
+
+/* ===== VERSUS ===== */
+.versus-grid { display:grid; grid-template-columns:1fr 1fr; margin-top:var(--sp-8); border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+.vs-col { padding:var(--sp-8); background:var(--surface); }
+.vs-col.before { border-right:2px solid var(--text); }
+.vs-col .v-tag { font-family:var(--font-mono); font-size:10px; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:var(--sp-4); display:inline-block; padding:2px 10px; border-radius:10px; }
+.vs-col.before .v-tag { background:rgba(200,32,0,0.08); color:var(--red); border:1px solid var(--red); }
+.vs-col.after .v-tag { background:rgba(0,119,68,0.08); color:var(--green); border:1px solid var(--green); }
+.vs-col ul { list-style:none; }
+.vs-col li { padding:var(--sp-2) 0; border-bottom:1px solid var(--border); font-size:14px; color:var(--text-sub); }
+.vs-col li:last-child { border-bottom:none; }
+.vs-col li strong { color:var(--text); }
+
+/* ===== WHATS NEW ===== */
+.wn { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.wn h2 { font-family:var(--font-display); font-size:clamp(26px,4.6vw,44px); text-transform:uppercase; line-height:1.1; }
+.wn h2 .plus { font-size:1.2em; }
+.wn-lead { color:var(--text-sub); max-width:640px; margin-top:var(--sp-4); }
+.wn-table { margin-top:var(--sp-8); }
+.wn-table th:nth-child(3), .wn-table td:nth-child(3) { background:var(--surface-v); }
+.wn-table td:first-child { font-weight:700; white-space:nowrap; }
+.wn-table .old { color:var(--muted); }
+.wn-table .new strong { border-bottom:2px solid var(--text); }
+.wn-core { margin-top:var(--sp-8); border:2px solid var(--text); border-radius:4px; padding:var(--sp-8); display:grid; grid-template-columns:auto 1fr; gap:var(--sp-8); align-items:center; }
+.wn-core .w-plus { font-family:var(--font-display); font-size:clamp(64px,10vw,120px); line-height:1; }
+.wn-core p { color:var(--text-sub); }
+.wn-core p strong { color:var(--text); }
+@media (max-width:640px){ .wn-core { grid-template-columns:1fr; text-align:center; } }
+
+/* ===== CTA ===== */
+.cta { text-align:center; }
+.cta h2 { font-family:var(--font-display); font-size:clamp(32px,6vw,64px); text-transform:uppercase; line-height:1.05; }
+.cta-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-6); max-width:760px; margin:var(--sp-12) auto 0; text-align:left; }
+.cta-card { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:var(--sp-8); display:flex; flex-direction:column; }
+.cta-card.full { border:2px solid var(--text); }
+.cta-card .c-tag { font-family:var(--font-mono); font-size:10px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; }
+.cta-card .c-name { font-family:var(--font-display); font-size:28px; margin:var(--sp-2) 0; text-transform:uppercase; }
+.cta-card .c-num { font-size:13px; color:var(--text-sub); }
+.cta-card ul { list-style:none; margin:var(--sp-4) 0 var(--sp-6); flex:1; }
+.cta-card li { font-size:13px; color:var(--text-sub); padding:var(--sp-1) 0; }
+.cta-card li::before { content:"— "; color:var(--muted); }
+.cta-note { color:var(--muted); font-size:12px; margin-top:var(--sp-6); }
+
+.footer { border-top:2px solid var(--text); padding:var(--sp-6) 0 var(--sp-12); font-family:var(--font-mono); font-size:10px; letter-spacing:0.16em; color:var(--muted); text-transform:uppercase; display:flex; justify-content:space-between; flex-wrap:wrap; gap:var(--sp-2); }
+
+@media (max-width:760px) {
+  section { padding:var(--sp-16) 0; }
+  .pain-grid, .steps-grid, .demo-grid, .feat-grid, .versus-grid, .cta-grid { grid-template-columns:1fr; }
+  .numbers-grid { grid-template-columns:repeat(2,1fr); }
+  .vs-col.before { border-right:none; border-bottom:2px solid var(--text); }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-tag">KITAcore — Pon-Dashi Builder Plus</div>
+    <h1>Pon-Dashi<br>Builder<span class="thin">＋</span></h1>
+    <div class="hero-sub">カードを選ぶ。それだけで画像生成AIのプロンプトが完成する。</div>
+    <p class="hero-desc" style="margin-top:var(--sp-3);"><strong>「＋」は、中身のカードを自分で調整できるという意味。</strong>使うだけのツールやなくて、自分の定番を足して育てられる辞書付きビルダーです。</p>
+    <p class="hero-desc">英語のフレーズを思い出す時間、語順で悩む時間、前に使った呪文を探す時間。画像生成の前にあった「面倒」を、日本語カードのポン出しに置き換えたツールです。インストール不要、ブラウザだけで動く。</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#cta">体験版を試す（無料）</a>
+      <a class="btn btn-ghost" href="#demo">どう動くか見る</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PAIN ============ -->
+<section class="pain">
+  <div class="wrap">
+    <div class="sec-label">01. Problem — プロンプト、こうなってへん？</div>
+    <div class="pain-grid">
+      <div class="pain-item"><div class="p-quote">「英語でなんて言うんやっけ…」</div><div class="p-sub">逆光・俯瞰・三分割構図。日本語では分かるのに、英語が出てこない</div></div>
+      <div class="pain-item"><div class="p-quote">「語順これで合ってる？」</div><div class="p-sub">主役が先？スタイルが先？毎回なんとなくで並べている</div></div>
+      <div class="pain-item"><div class="p-quote">「前の呪文どこメモしたっけ」</div><div class="p-sub">うまくいったプロンプトがメモアプリの海に沈んでいく</div></div>
+      <div class="pain-item"><div class="p-quote">「毎回ゼロから書いてる」</div><div class="p-sub">似た絵を作るだけなのに、また最初から組み立てている</div></div>
+    </div>
+    <div class="pain-answer">この4つ、全部<em>カードを選ぶだけ</em>に置き換えました。</div>
+  </div>
+</section>
+
+<!-- ============ 3 STEPS ============ -->
+<section class="steps">
+  <div class="wrap">
+    <div class="sec-label">02. How It Works — やることは3つ</div>
+    <div class="steps-grid">
+      <div class="step-col">
+        <div class="s-num">01</div>
+        <div class="s-en">Pick Cards</div>
+        <h3>日本語のカードを選ぶ</h3>
+        <p>「ヒロイン」「サイバーパンク」「逆光」— 日本語の名前と説明を見てクリックするだけ。英語は1文字も書かない。</p>
+      </div>
+      <div class="step-col">
+        <div class="s-num">02</div>
+        <div class="s-en">Auto Order</div>
+        <h3>語順はツールが整える</h3>
+        <p>どの順番で選んでも、出力は常に「主役→詳細→行動→環境→照明→カメラ→美学」の正しいスロット順に並ぶ。</p>
+      </div>
+      <div class="step-col">
+        <div class="s-num">03</div>
+        <div class="s-en">Copy &amp; Go</div>
+        <h3>コピーして貼るだけ</h3>
+        <p>COPYボタンを押して、使っている画像生成AIに貼り付けるだけ。パラメータも選択式で自動で付く。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FORMULA ============ -->
+<section class="formula">
+  <div class="wrap">
+    <div class="sec-label">03. The Formula — 7スロットの設計</div>
+    <div class="formula-line">
+      <span class="f-chip" style="background:var(--slot1)">①主役</span><span class="f-op">×</span>
+      <span class="f-chip" style="background:var(--slot2)">②詳細</span><span class="f-op">×</span>
+      <span class="f-chip" style="background:var(--slot3)">③行動</span><span class="f-op">×</span>
+      <span class="f-chip" style="background:var(--slot4)">④環境</span><span class="f-op">×</span>
+      <span class="f-chip" style="background:var(--slot5)">⑤照明</span><span class="f-op">×</span>
+      <span class="f-chip" style="background:var(--slot6)">⑥カメラ</span><span class="f-op">×</span>
+      <span class="f-chip" style="background:var(--slot7)">⑦美学</span>
+      <span class="f-eq">=</span>
+      <span class="f-result">完成プロンプト</span>
+    </div>
+    <p class="formula-note">プロンプトの定石をスロット構造としてツールに焼き込んであるので、構造を覚える必要がない。</p>
+  </div>
+</section>
+
+<!-- ============ DEMO (DARK) ============ -->
+<section class="demo" id="demo">
+  <div class="wrap">
+    <div class="sec-label">04. Demo — 5枚選ぶと、こうなる</div>
+    <h2>5 Cards In.<br><span class="cy">1 Prompt Out.</span></h2>
+    <div class="demo-grid">
+      <div class="demo-pick">
+        <div class="d-label">Input — 選んだカード</div>
+        <div class="d-card"><span class="d-slot">①</span>ヒロイン<span class="d-en">heroine, protagonist</span></div>
+        <div class="d-card"><span class="d-slot">④</span>サイバーパンク<span class="d-en">cyberpunk city</span></div>
+        <div class="d-card"><span class="d-slot">⑤</span>ネオン照明<span class="d-en">neon lighting</span></div>
+        <div class="d-card"><span class="d-slot">⑥</span>ローアングル<span class="d-en">low angle shot</span></div>
+        <div class="d-card"><span class="d-slot">⑦</span>シネマティック<span class="d-en">cinematic</span></div>
+      </div>
+      <div class="demo-out">
+        <div class="d-label">Output — 完成プロンプト</div>
+        <pre>heroine, protagonist, neon-lit cyberpunk cityscape, vivid neon lighting, low angle shot, cinematic masterpiece <span class="flag">--ar 9:16 --stylize 250 --chaos 8 --v 6.1</span></pre>
+      </div>
+    </div>
+    <p class="demo-note">ツールタブを切り替えれば、同じカード選択のまま GPT-Image 用・Nano Banana 用の自然言語形式でも出力できる。出てほしくない要素は「ネガティブ」チップで <span style="font-family:var(--font-mono)">--no</span> に反映。</p>
+  </div>
+</section>
+
+<!-- ============ NUMBERS ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">05. By the Numbers</div>
+    <div class="numbers-grid">
+      <div class="num-col"><div class="n-big">244</div><div class="n-label">Cards</div><div class="n-desc">検証済みの英語フレーズ辞書（完全版）</div></div>
+      <div class="num-col"><div class="n-big">28</div><div class="n-label">Categories</div><div class="n-desc">キャラ・背景・照明・構図など</div></div>
+      <div class="num-col"><div class="n-big">3</div><div class="n-label">AI Tools</div><div class="n-desc">Midjourney / GPT-Image / Nano Banana</div></div>
+      <div class="num-col"><div class="n-big">0</div><div class="n-label">Install</div><div class="n-desc">ブラウザだけ。Pythonも不要</div></div>
+      <div class="num-col"><div class="n-big">∞</div><div class="n-label">Expandable</div><div class="n-desc">CSVに1行足せばカードが増える</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="features">
+  <div class="wrap">
+    <div class="sec-label">06. Features — 地味に効く機能たち</div>
+    <div class="feat-grid">
+      <div class="feat"><div class="f-en">Wizard</div><h3>⚡ ウィザードモード</h3><p>どこから選べばいいか分からん人は、STEP 1〜7の質問形式で。順番に答えるだけで完成する。</p></div>
+      <div class="feat"><div class="f-en">Search</div><h3>横断検索</h3><p>「cyberpunk」と打てば全カテゴリから一発で絞り込み。日本語・英語・タグのどれでもヒット。</p></div>
+      <div class="feat"><div class="f-en">Custom Cards</div><h3>持ちネタのカード化</h3><p>自分の定番フレーズを自作カードに。JSONで書き出して使い回せる。</p></div>
+      <div class="feat"><div class="f-en">Negative</div><h3>ネガティブ管理</h3><p>「崩れた手足」「低品質」などの定番除外セットをチップでON/OFF。--noの中身を毎回考えない。</p></div>
+      <div class="feat"><div class="f-en">Real-time</div><h3>リアルタイムプレビュー</h3><p>カードを選ぶたびに完成プロンプトが即更新。試行錯誤が速い。</p></div>
+      <div class="feat"><div class="f-en">CSV Driven</div><h3>辞書は育てられる</h3><p>カードの実体はCSV。表計算ソフトで行を足せば、自分だけの辞書に育つ。AIに差分を作らせる手順書も同梱。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VERSUS ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">07. Before / After</div>
+    <div class="versus-grid">
+      <div class="vs-col before">
+        <span class="v-tag">Before — 手書き</span>
+        <ul>
+          <li>英語フレーズを<strong>思い出す・調べる</strong>ところから</li>
+          <li>語順は毎回<strong>なんとなく</strong></li>
+          <li>うまくいった呪文は<strong>メモの海に沈む</strong></li>
+          <li>ツールを変えたら<strong>書式も書き直し</strong></li>
+        </ul>
+      </div>
+      <div class="vs-col after">
+        <span class="v-tag">After — ポン出し</span>
+        <ul>
+          <li>日本語カードを<strong>クリックするだけ</strong></li>
+          <li>語順は<strong>7スロットが自動で整える</strong></li>
+          <li>定番は<strong>カスタムカード化</strong>して再利用</li>
+          <li>タブ切替で<strong>3ツールの書式に即対応</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHATS NEW ============ -->
+<section class="wn" id="whatsnew">
+  <div class="wrap">
+    <div class="sec-label">08. What's New — 前のポン出しビルダーと何が違う？</div>
+    <h2>名前の「<span class="plus">＋</span>」が、<br>いちばん大きい違い。</h2>
+    <p class="wn-lead">旧ポン出しビルダー（v2/v3）はカードがHTMLの中に焼き込まれていて、中身は作者しか変更できんかった。＋では辞書を完全に外部化。<strong>カードはあなたのもの</strong>になりました。</p>
+
+    <table class="wn-table">
+      <thead><tr><th></th><th>旧ポン出しビルダー</th><th>ポン出しビルダー＋</th></tr></thead>
+      <tbody>
+        <tr><td>カードの中身</td><td class="old">HTML内に固定（編集不可）</td><td class="new"><strong>CSVファイルで管理</strong> — 表計算ソフトで自由に追加・修正</td></tr>
+        <tr><td>カードを増やす</td><td class="old">できない（作者の更新待ち）</td><td class="new">CSVに1行足してリロードするだけ。<strong>AIに追加候補を作らせる手順書も同梱</strong></td></tr>
+        <tr><td>カードの集め方</td><td class="old">本体に入っている分だけ</td><td class="new"><strong>トレカのデッキ構築と同じ発想</strong> — カードは外部ファイルやから、テーマ別の「拡張パック」を後から足していける設計</td></tr>
+        <tr><td>辞書の品質管理</td><td class="old">—</td><td class="new">CSV整合性チェッカー（validate_csv.py）付き。壊れたら検出できる</td></tr>
+        <tr><td>ドキュメント</td><td class="old">ツール内の説明のみ</td><td class="new">導入ガイド + 使い方マニュアル（HTML 2冊）同梱</td></tr>
+        <tr><td>変わらないこと</td><td class="old" colspan="2" style="color:var(--text-sub);">カードを選ぶだけのポン出し体験・7スロット自動整列・⚡ウィザード・3ツール切替・カスタムカード — 良かった部分はそのまま</td></tr>
+      </tbody>
+    </table>
+
+    <div class="wn-core">
+      <div class="w-plus">＋</div>
+      <p><strong>「＋」は、中身のカードを自分で作れる・調整できるという意味。</strong>トレーディングカードみたいに、背景カードを推しジャンルで固めるもよし、仕事の定番構図だけに絞るもよし、新しいカードを自作して足すもよし。配られたデッキで戦うツールから、<strong>自分のデッキを組めるツール</strong>になった。それが＋です。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta" id="cta">
+  <div class="wrap">
+    <div class="sec-label" style="text-align:center;">09. Get Started</div>
+    <h2>まず体験版で、<br>ポン出しを体感してや。</h2>
+    <div class="cta-grid">
+      <div class="cta-card">
+        <span class="c-tag">Free Trial</span>
+        <div class="c-name">体験版</div>
+        <div class="c-num">カード89枚 / 全機能使用可</div>
+        <ul>
+          <li>全28カテゴリ入り（各カテゴリ約3枚）</li>
+          <li>ウィザード・3ツール切替・検索 全部あり</li>
+          <li>機能制限なし。差はカード数だけ</li>
+        </ul>
+        <a class="btn btn-ghost" href="#" style="text-align:center;">無料でダウンロード</a>
+      </div>
+      <div class="cta-card full">
+        <span class="c-tag">Full Version</span>
+        <div class="c-name">完全版</div>
+        <div class="c-num">カード244枚 / 全カテゴリ約3倍</div>
+        <ul>
+          <li>背景50種・キャラ詳細・品質セット完備</li>
+          <li>CSVスキーマ資料 + AI辞書更新の手順書付き</li>
+          <li>idベース設計で将来の拡張パックとも互換</li>
+        </ul>
+        <a class="btn btn-primary" href="#" style="text-align:center;">完全版を手に入れる</a>
+      </div>
+    </div>
+    <p class="cta-note">※ ボタンのリンク先（note記事URL等）はあとで差し替えてください。</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap" style="display:flex; justify-content:space-between; width:100%; flex-wrap:wrap; gap:var(--sp-2);">
+    <span>ポン出しビルダー＋ — Promo</span>
+    <span>Browser Only / No Install / CSV Driven</span>
+  </div>
+</footer>
+
+</body>
+</html>
