@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v3で、できることが増えました｜ポン出しビルダー＋ KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9E9E9; --surface:#FFFFFF; --surface-v:#F4F4F2; --surface-hov:#EEEEEC;
+  --text:#111111; --text-sub:#444444; --muted:#888888;
+  --border:#E0E0E0; --border-focus:#111111; --accent:#111111; --accent-dim:rgba(17,17,17,0.06);
+  --red:#C82000; --red-dim:rgba(200,32,0,0.07); --green:#007744; --green-dim:rgba(0,119,68,0.07);
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px; --sp-12:48px;
+  --font-display:'Anton','Inter',sans-serif; --font-body:'Noto Sans JP',sans-serif;
+  --font-mono:'JetBrains Mono',monospace; --font-inter:'Inter',sans-serif;
+  --radius-sm:2px; --radius:4px; --trans:150ms ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.7;min-height:100vh;}
+::-webkit-scrollbar{width:8px;height:8px;}::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#CCCCCC;border-radius:4px;}
+a{color:inherit;}
+
+.m-header{position:sticky;top:0;z-index:100;background:rgba(233,233,233,0.94);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 var(--sp-8);height:56px;}
+.m-header-left{display:flex;align-items:center;gap:var(--sp-4);}
+.m-nav-label{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;}
+.m-logo{font-family:var(--font-display);font-size:18px;letter-spacing:0.06em;}
+.m-version{font-family:var(--font-mono);font-size:9px;color:var(--muted);padding:2px 7px;border:1px solid var(--border);border-radius:var(--radius-sm);letter-spacing:0.08em;}
+
+.m-wrap{max-width:1080px;margin:0 auto;width:100%;padding:var(--sp-8) var(--sp-6);display:flex;flex-direction:column;gap:var(--sp-6);}
+
+.m-hero{background:var(--accent);color:#fff;border-radius:var(--radius);padding:var(--sp-12) var(--sp-8);}
+.m-hero-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin-bottom:var(--sp-3);}
+.m-hero-title{font-family:var(--font-display);font-size:40px;letter-spacing:0.04em;line-height:1.1;margin-bottom:var(--sp-4);}
+.m-hero-sub{font-size:14px;line-height:1.9;opacity:0.85;max-width:680px;}
+
+.m-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--sp-8);}
+.m-sec-num{font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;color:var(--muted);margin-bottom:var(--sp-2);}
+.m-title{font-family:var(--font-display);font-size:22px;letter-spacing:0.05em;margin-bottom:var(--sp-4);}
+.m-p{font-size:13px;color:var(--text-sub);line-height:1.95;margin-bottom:var(--sp-3);}
+.m-p strong{color:var(--text);}
+
+/* ざっくり3カード */
+.v-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3);}
+.v-card{border:1px solid var(--border);border-radius:var(--radius);padding:var(--sp-6);background:var(--surface-v);display:flex;flex-direction:column;gap:var(--sp-2);}
+.v-card.is-v3{background:var(--accent);color:#fff;border-color:var(--accent);}
+.v-card.is-v3 .v-card-desc{color:rgba(255,255,255,0.78);}
+.v-card-icon{font-size:26px;line-height:1;}
+.v-card-ver{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
+.v-card.is-v3 .v-card-ver{color:rgba(255,255,255,0.55);}
+.v-card-name{font-family:var(--font-inter);font-size:15px;font-weight:700;line-height:1.5;}
+.v-card-desc{font-size:12px;color:var(--text-sub);line-height:1.85;}
+
+/* できること表 */
+.c-wrap{overflow-x:auto;margin:var(--sp-3) 0;}
+.c-table{width:100%;border-collapse:collapse;font-size:12px;min-width:600px;}
+.c-table thead tr{background:var(--accent);color:#fff;}
+.c-table th{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:10px 12px;text-align:center;font-weight:700;}
+.c-table th:first-child{text-align:left;}
+.c-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-sub);line-height:1.7;vertical-align:middle;text-align:center;font-family:var(--font-mono);font-size:12px;}
+.c-table td:first-child{font-family:var(--font-body);font-size:12.5px;font-weight:500;color:var(--text);text-align:left;}
+.c-table tr:last-child td{border-bottom:none;}
+.c-yes{color:var(--green);font-weight:700;}
+.c-no{color:#C5C5C5;}
+.c-table .v3col{background:var(--accent-dim);}
+
+/* シーンカード */
+.s-list{display:flex;flex-direction:column;gap:var(--sp-3);}
+.s-item{display:flex;gap:var(--sp-4);background:var(--surface-v);border:1px solid var(--border);border-radius:var(--radius);padding:var(--sp-4) var(--sp-6);align-items:flex-start;}
+.s-icon{flex-shrink:0;font-size:22px;line-height:1.4;}
+.s-body{flex:1;min-width:0;}
+.s-name{font-family:var(--font-inter);font-size:14px;font-weight:600;margin-bottom:3px;}
+.s-desc{font-size:12px;color:var(--text-sub);line-height:1.85;}
+.s-how{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:4px;}
+
+.m-note{margin:var(--sp-3) 0 0;padding:var(--sp-3) var(--sp-4);background:var(--accent-dim);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:12px;color:var(--text-sub);line-height:1.85;}
+.m-note.ok{background:var(--green-dim);border-left-color:var(--green);}
+.m-note-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;display:block;margin-bottom:3px;}
+.m-note.ok .m-note-label{color:var(--green);}
+
+/* FAQ */
+.m-faq{display:flex;flex-direction:column;gap:var(--sp-4);}
+.m-faq-item{border-left:2px solid var(--border);padding-left:var(--sp-4);}
+.m-faq-q{font-family:var(--font-inter);font-size:13px;font-weight:600;margin-bottom:var(--sp-2);}
+.m-faq-q::before{content:'Q. ';color:var(--muted);}
+.m-faq-a{font-size:12px;color:var(--text-sub);line-height:1.9;}
+.m-faq-a::before{content:'A. ';color:var(--green);font-weight:700;}
+
+.m-footer{text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:0.1em;padding:var(--sp-8) 0 var(--sp-4);}
+
+@media (max-width:760px){
+  .m-wrap{padding:var(--sp-4);gap:var(--sp-4);}
+  .m-card{padding:var(--sp-5);}
+  .m-hero{padding:var(--sp-8) var(--sp-5);}.m-hero-title{font-size:27px;}
+  .v-grid{grid-template-columns:1fr;}
+  .m-header{padding:0 var(--sp-4);}.m-nav-label{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="m-header">
+  <div class="m-header-left">
+    <span class="m-nav-label">DOC / WHAT'S NEW</span>
+    <span class="m-logo">v3で、できることが増えました</span>
+    <span class="m-version">v1→v3</span>
+  </div>
+</header>
+
+<div class="m-wrap">
+
+  <div class="m-hero">
+    <div class="m-hero-eyebrow">KITACORE / PON-DASHI BUILDER+</div>
+    <div class="m-hero-title">使うだけから、<br>「自分のデッキを作る」へ。</div>
+    <div class="m-hero-sub">
+      ポン出しビルダー＋は、カードを選ぶだけでAI画像のプロンプトが組めるツールです。
+      バージョンが上がるたびに、あなたができることが増えてきました。
+      このページでは <strong style="color:#fff;">v1・v2・v3 の違い</strong>を、使う人の目線でまとめます。
+    </div>
+  </div>
+
+  <!-- 01 ざっくり -->
+  <section class="m-card">
+    <div class="m-sec-num">01</div>
+    <h2 class="m-title">ざっくり言うと</h2>
+    <div class="v-grid">
+      <div class="v-card">
+        <div class="v-card-icon">🖥</div>
+        <div class="v-card-ver">v1 — はじまり</div>
+        <div class="v-card-name">パソコン専用だった</div>
+        <div class="v-card-desc">使うにはPCでちょっとした準備（サーバ起動）が必要でした。カードを選んでプロンプトを組む、という基本はここで完成。</div>
+      </div>
+      <div class="v-card">
+        <div class="v-card-icon">📱</div>
+        <div class="v-card-ver">v2 — 誰でも使える</div>
+        <div class="v-card-name">スマホでURLを開くだけに</div>
+        <div class="v-card-desc">準備ゼロ、リンクを開けばすぐ使える。デッキ（カード集CSV）はスマホから読み込めて、一度読めば次から自動で復元されます。</div>
+      </div>
+      <div class="v-card is-v3">
+        <div class="v-card-icon">🛠</div>
+        <div class="v-card-ver">v3 — いま</div>
+        <div class="v-card-name">デッキを自分で作れる・直せる</div>
+        <div class="v-card-desc">持っているデッキから好きな札だけのマイデッキを作ったり、いらない札を消したり、メモからデッキを作ったり。全部ブラウザだけでできます。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 できること表 -->
+  <section class="m-card">
+    <div class="m-sec-num">02</div>
+    <h2 class="m-title">できることくらべ</h2>
+    <p class="m-p">●＝できる ／ −＝できない。<strong>v3はv2でできたことが全部そのままできます。</strong></p>
+    <div class="c-wrap">
+      <table class="c-table">
+        <thead><tr><th>あなたができること</th><th>v1</th><th>v2</th><th>v3</th></tr></thead>
+        <tbody>
+          <tr><td>カードを選んでプロンプトを作る</td><td class="c-yes">●</td><td class="c-yes">●</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>準備なしでURLを開くだけで使う</td><td class="c-no">−</td><td class="c-yes">●</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>スマホだけで使う</td><td class="c-no">−</td><td class="c-yes">●</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>無料のサンプルデッキで試す</td><td class="c-no">−</td><td class="c-yes">●</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>デッキを読み込む・次から自動復元</td><td class="c-no">−</td><td class="c-yes">●</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>カードを1枚ずつ手で足す</td><td class="c-no">−</td><td class="c-yes">●</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>デッキの札を消す・書き直す</td><td class="c-no">−</td><td class="c-no">−</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>好きな札だけの「マイデッキ」を作る</td><td class="c-no">−</td><td class="c-no">−</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>メモや表の貼り付けからデッキを作る</td><td class="c-no">−</td><td class="c-no">−</td><td class="v3col c-yes">●</td></tr>
+          <tr><td>作ったデッキをファイルに保存・共有</td><td class="c-no">−</td><td class="c-no">−</td><td class="v3col c-yes">●</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="m-note ok"><span class="m-note-label">安心はずっと同じ</span>
+      どのバージョンでも、読み込んだデッキは<strong>あなたの端末の中だけ</strong>で処理されます。外部に送信されることはありません。
+    </div>
+  </section>
+
+  <!-- 03 v3の新機能、こう使う -->
+  <section class="m-card">
+    <div class="m-sec-num">03</div>
+    <h2 class="m-title">v3の新機能、こんなときに</h2>
+    <div class="s-list">
+      <div class="s-item">
+        <div class="s-icon">✂️</div>
+        <div class="s-body">
+          <div class="s-name">よく使う札だけの「マイデッキ」を作りたい</div>
+          <div class="s-desc">大きいデッキから、ファンタジー系だけ・背景だけ、のように好きなまとまりを選んで小さなデッキに切り出せます。</div>
+          <div class="s-how">🎴 DECK → 🛠 デッキ工房 → 読み込み中のデッキから作る</div>
+        </div>
+      </div>
+      <div class="s-item">
+        <div class="s-icon">✏️</div>
+        <div class="s-body">
+          <div class="s-name">いらない札を消したい・呪文をちょっと直したい</div>
+          <div class="s-desc">デッキの中身を一覧で見ながら、検索して、消したり書き直したり足したり。保存すれば次に開いたときもそのまま。</div>
+          <div class="s-how">🎴 DECK → ✏ デッキ編集</div>
+        </div>
+      </div>
+      <div class="s-item">
+        <div class="s-icon">📝</div>
+        <div class="s-body">
+          <div class="s-name">ためてたお気に入りフレーズをデッキにしたい</div>
+          <div class="s-desc">「日本語名と英語フレーズ」のメモや表を貼り付けるだけでカードになります。エクセルもプログラミングも不要。</div>
+          <div class="s-how">🎴 DECK → 🛠 デッキ工房 → 単語リストから変換</div>
+        </div>
+      </div>
+      <div class="s-item">
+        <div class="s-icon">💾</div>
+        <div class="s-body">
+          <div class="s-name">作ったデッキを残したい・友達と交換したい</div>
+          <div class="s-desc">工房・編集で作ったデッキはCSVファイルとして保存できます。ファイルを渡せば、相手も同じデッキで遊べます。</div>
+          <div class="s-how">各画面の「⬇ CSVを保存」</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 FAQ -->
+  <section class="m-card">
+    <div class="m-sec-num">04</div>
+    <h2 class="m-title">よくある質問</h2>
+    <div class="m-faq">
+      <div class="m-faq-item">
+        <div class="m-faq-q">いま持っているデッキは v3 でも使える？</div>
+        <div class="m-faq-a">使えます。デッキのファイル形式はv2とv3で共通なので、買ったデッキも自作デッキもそのまま読み込めます。</div>
+      </div>
+      <div class="m-faq-item">
+        <div class="m-faq-q">v3にするのに何か設定はいる？</div>
+        <div class="m-faq-a">いりません。v3のURLを開いて、いつものデッキを読み込むだけです。</div>
+      </div>
+      <div class="m-faq-item">
+        <div class="m-faq-q">デッキ編集で失敗したら元に戻せる？</div>
+        <div class="m-faq-a">「保存」を押すまでは盤面に反映されないので、閉じればなかったことにできます。また、元のCSVファイルが手元に残っていればいつでも読み直せます。大事なデッキはCSVを取っておくのがおすすめです。</div>
+      </div>
+      <div class="m-faq-item">
+        <div class="m-faq-q">難しい知識は必要？</div>
+        <div class="m-faq-a">不要です。v3の新機能はぜんぶ画面のボタン操作だけで完結します。表計算アプリすら使いません。</div>
+      </div>
+      <div class="m-faq-item">
+        <div class="m-faq-q">v1やv2はもう使えなくなる？</div>
+        <div class="m-faq-a">使えます。ただv3はv2でできることを全部含んでいるので、特別な理由がなければv3がおすすめです。</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="m-footer">© KITAcore — PON-DASHI BUILDER+ WHAT'S NEW（v1 → v2 → v3）</div>
+
+</div>
+
+</body>
+</html>
