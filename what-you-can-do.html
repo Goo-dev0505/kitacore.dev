@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>選ぶだけで、絵になる。｜ポン出しビルダー＋ — KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   ポン出しビルダー＋ — What You Can Do (Sales Edition)
+   Design: Architectural Minimalism × Light Mode
+========================================================= */
+:root{
+  --bg:#E9E9E9; --surface:#FFFFFF; --surface-v:#F4F4F2; --surface-hov:#EEEEEC;
+  --text:#111111; --text-sub:#444444; --muted:#888888;
+  --border:#E0E0E0; --accent:#111111; --accent-dim:rgba(17,17,17,0.06);
+  --red:#C82000; --green:#007744; --blue:#2563EB; --violet:#7C3AED; --gold:#B8860B;
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-6:24px;--sp-8:32px;--sp-12:48px;
+  --font-display:'Anton','Inter',sans-serif;
+  --font-body:'Noto Sans JP',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-inter:'Inter',sans-serif;
+  --radius-sm:2px;--radius:4px;--trans:150ms ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.7;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:#CCC;border-radius:2px;}
+
+.hd{position:sticky;top:0;z-index:100;background:rgba(233,233,233,0.94);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--sp-8);height:52px;}
+.hd-l{display:flex;align-items:center;gap:var(--sp-6);}
+.hd-logo{font-family:var(--font-display);font-size:18px;letter-spacing:0.08em;}
+.hd-nav{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;}
+.hd-cta{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  background:var(--accent);color:#fff;padding:7px 16px;border-radius:var(--radius-sm);text-decoration:none;}
+
+.wrap{max-width:1080px;margin:0 auto;padding:var(--sp-12) var(--sp-6);}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:var(--sp-8);}
+.hero-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--sp-4);}
+.hero-title{font-family:var(--font-display);font-size:clamp(38px,8vw,76px);line-height:1.0;letter-spacing:0.01em;margin-bottom:var(--sp-6);}
+.hero-title .em{color:var(--violet);}
+.hero-sub{font-size:16px;color:var(--text-sub);max-width:600px;margin:0 auto var(--sp-6);line-height:2.0;}
+.hero-sub b{color:var(--text);}
+.hero-kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;color:var(--muted);}
+.hero-kicker .strike{text-decoration:line-through;opacity:0.55;}
+
+/* ONE-LINER */
+.oneliner{background:var(--accent);color:#fff;border-radius:var(--radius);padding:var(--sp-12) var(--sp-8);
+  text-align:center;margin-bottom:var(--sp-12);position:relative;overflow:hidden;}
+.oneliner-q{font-family:var(--font-mono);font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:var(--sp-4);}
+.oneliner-a{font-family:var(--font-inter);font-size:clamp(18px,3vw,26px);font-weight:700;line-height:1.6;}
+.oneliner-a .hl{color:#FCD34D;}
+
+/* SECTION */
+.sec{margin-bottom:var(--sp-12);}
+.sec-head{display:flex;align-items:baseline;gap:var(--sp-3);border-bottom:1px solid var(--border);padding-bottom:var(--sp-3);margin-bottom:var(--sp-6);}
+.sec-num{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:0.2em;}
+.sec-title{font-family:var(--font-display);font-size:21px;letter-spacing:0.04em;}
+.sec-lead{font-size:14px;color:var(--text-sub);margin:-8px 0 var(--sp-6);line-height:1.9;}
+
+/* CAPABILITY CARDS */
+.caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:var(--sp-3);}
+.cap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--sp-6);
+  display:flex;flex-direction:column;gap:var(--sp-2);transition:box-shadow var(--trans),border-color var(--trans),transform var(--trans);}
+.cap:hover{border-color:#BBB;box-shadow:0 4px 14px rgba(0,0,0,0.08);transform:translateY(-2px);}
+.cap-ico{font-size:26px;}
+.cap-name{font-family:var(--font-inter);font-size:14.5px;font-weight:700;color:var(--text);line-height:1.4;}
+.cap-desc{font-size:12px;color:var(--text-sub);line-height:1.8;}
+.cap-tag{font-family:var(--font-mono);font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2px 6px;align-self:flex-start;margin-top:var(--sp-1);}
+
+/* VISION (hero ecosystem) */
+.vision{background:linear-gradient(135deg,#1a1430,#2a1840 55%,#3a1238);color:#fff;border-radius:var(--radius);
+  padding:var(--sp-12) var(--sp-8);margin-bottom:var(--sp-12);text-align:center;position:relative;overflow:hidden;}
+.vision::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 80% 10%,rgba(192,38,211,0.25),transparent 45%),
+             radial-gradient(circle at 10% 90%,rgba(37,99,235,0.22),transparent 42%);pointer-events:none;}
+.vision-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:var(--sp-4);position:relative;}
+.vision-title{font-family:var(--font-display);font-size:clamp(26px,5vw,44px);line-height:1.12;letter-spacing:0.02em;margin-bottom:var(--sp-4);position:relative;}
+.vision-title .y{color:#FCD34D;}
+.vision-sub{font-size:14.5px;color:rgba(255,255,255,0.8);max-width:620px;margin:0 auto var(--sp-8);line-height:2.0;position:relative;}
+.vision-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-4);max-width:840px;margin:0 auto;position:relative;}
+.vision-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:var(--radius);
+  padding:var(--sp-6) var(--sp-4);backdrop-filter:blur(4px);}
+.vision-card-ico{font-size:28px;margin-bottom:var(--sp-2);}
+.vision-card-t{font-family:var(--font-inter);font-size:13.5px;font-weight:700;margin-bottom:6px;}
+.vision-card-d{font-size:11.5px;color:rgba(255,255,255,0.7);line-height:1.75;}
+.vision-foot{margin-top:var(--sp-8);font-family:var(--font-inter);font-size:clamp(15px,2.4vw,19px);font-weight:700;position:relative;}
+.vision-foot .y{color:#FCD34D;}
+.vision-tag{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;
+  color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-sm);padding:3px 10px;margin-top:var(--sp-4);position:relative;}
+
+/* FLOW */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-3);position:relative;}
+.flow::before{content:'';position:absolute;top:26px;left:11%;right:11%;height:2px;background:var(--border);z-index:0;}
+.flow-step{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:var(--sp-4);text-align:center;display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);}
+.flow-n{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:12px;font-weight:700;box-shadow:0 0 0 5px var(--surface);}
+.flow-t{font-family:var(--font-inter);font-size:13px;font-weight:700;color:var(--text);}
+.flow-d{font-size:11px;color:var(--muted);line-height:1.65;}
+
+/* BEFORE / AFTER */
+.ba{display:grid;grid-template-columns:1fr auto 1fr;gap:var(--sp-4);align-items:stretch;}
+.ba-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--sp-6);}
+.ba-box.before{border-left:3px solid var(--red);}
+.ba-box.after{border-left:3px solid var(--green);}
+.ba-label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:var(--sp-3);}
+.ba-box.before .ba-label{color:var(--red);}
+.ba-box.after .ba-label{color:var(--green);}
+.ba-list{list-style:none;display:flex;flex-direction:column;gap:var(--sp-2);}
+.ba-list li{font-size:12.5px;color:var(--text-sub);line-height:1.7;padding-left:18px;position:relative;}
+.ba-box.before .ba-list li::before{content:'×';position:absolute;left:0;color:var(--red);font-weight:700;}
+.ba-box.after .ba-list li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;}
+.ba-arr{display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--muted);}
+
+/* USE CASES */
+.uses{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--sp-3);}
+.use{background:var(--surface-v);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--sp-4);
+  display:flex;gap:var(--sp-3);align-items:flex-start;}
+.use-ico{font-size:18px;flex-shrink:0;}
+.use-t{font-family:var(--font-inter);font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.use-d{font-size:11px;color:var(--muted);line-height:1.65;}
+
+/* TRUST */
+.trust{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3);}
+.trust-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--sp-6);text-align:center;}
+.trust-ico{font-size:22px;margin-bottom:var(--sp-2);}
+.trust-t{font-family:var(--font-inter);font-size:13px;font-weight:700;margin-bottom:4px;}
+.trust-d{font-size:11.5px;color:var(--muted);line-height:1.7;}
+
+/* CLOSING CTA */
+.cta{text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--sp-12) var(--sp-8);}
+.cta-title{font-family:var(--font-display);font-size:clamp(24px,4vw,36px);letter-spacing:0.02em;line-height:1.15;margin-bottom:var(--sp-4);}
+.cta-title .em{color:var(--violet);}
+.cta-sub{font-size:13.5px;color:var(--text-sub);max-width:540px;margin:0 auto var(--sp-6);line-height:1.9;}
+.cta-btn{display:inline-block;font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  background:var(--accent);color:#fff;padding:14px 36px;border-radius:var(--radius-sm);text-decoration:none;transition:background var(--trans);}
+.cta-btn:hover{background:#333;}
+
+.ft{border-top:1px solid var(--border);padding:var(--sp-6) 0 0;margin-top:var(--sp-8);
+  font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.08em;line-height:1.9;}
+
+@media(max-width:720px){
+  .hd{padding:0 var(--sp-4);} .hd-nav{display:none;}
+  .wrap{padding:var(--sp-8) var(--sp-4);}
+  .caps{grid-template-columns:1fr;}
+  .flow{grid-template-columns:repeat(2,1fr);} .flow::before{display:none;}
+  .ba{grid-template-columns:1fr;} .ba-arr{transform:rotate(90deg);}
+  .trust{grid-template-columns:1fr;}
+  .vision-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-l">
+    <span class="hd-logo">KITAcore</span>
+    <span class="hd-nav">ポン出しビルダー＋ / できること</span>
+  </div>
+  <a class="hd-cta" href="#cta">はじめる</a>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Pon-dashi Builder ＋</div>
+    <h1 class="hero-title">選ぶだけで、<br><span class="em">絵になる。</span></h1>
+    <p class="hero-sub">画像生成AIの<b>プロンプトは、もう書かない。選ぶ。</b><br>カードをポンポン置いていくだけで、そのまま使える呪文が完成する。</p>
+    <div class="hero-kicker"><span class="strike">英語の知識</span> <span class="strike">呪文の暗記</span> <span class="strike">毎回ゼロから入力</span> → ぜんぶ要らない。</div>
+  </section>
+
+  <!-- ONE-LINER -->
+  <section class="oneliner">
+    <div class="oneliner-q">ひとことで言うと</div>
+    <div class="oneliner-a">主役・服・背景・光・カメラ・画風…<br><span class="hl">カードを並べるだけ</span>で、<br>プロのようなプロンプトが“ポン出し”できる。</div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">できること</span></div>
+    <p class="sec-lead">難しい設定はぜんぶ裏側へ。あなたは「選ぶ」だけでいい。</p>
+    <div class="caps">
+      <div class="cap">
+        <div class="cap-ico">🃏</div>
+        <div class="cap-name">タップするだけ。英語ゼロでプロンプト完成</div>
+        <div class="cap-desc">カードを選んでいくだけで、英語の呪文が自動で組み上がる。語学力もセンスもいらない。</div>
+        <span class="cap-tag">Core</span>
+      </div>
+      <div class="cap">
+        <div class="cap-ico">🎚</div>
+        <div class="cap-name">7スロットが“良い構図”の道しるべ</div>
+        <div class="cap-desc">主役→細部→動き→舞台→光→カメラ→画風。順に埋めるだけで、抜け漏れのない一枚に。</div>
+        <span class="cap-tag">Build</span>
+      </div>
+      <div class="cap">
+        <div class="cap-ico">🚫</div>
+        <div class="cap-name">「描いてほしくない」も一発指定</div>
+        <div class="cap-desc">崩れや不要要素を消すネガティブも、カードでまとめて指定。仕上がりが安定する。</div>
+        <span class="cap-tag">Negative</span>
+      </div>
+      <div class="cap">
+        <div class="cap-ico">⚙️</div>
+        <div class="cap-name">3大AI対応。パラメータも画面でポチっ</div>
+        <div class="cap-desc">Midjourney / GPT-Image / Nano Banana を切替。比率や画風の強さも触るだけ。</div>
+        <span class="cap-tag">Tools</span>
+      </div>
+      <div class="cap">
+        <div class="cap-ico">📋</div>
+        <div class="cap-name">ワンタップでコピー、そのまま貼るだけ</div>
+        <div class="cap-desc">完成文をボタン一つでコピー。AIの入力欄に貼って、すぐ生成へ。</div>
+        <span class="cap-tag">Copy</span>
+      </div>
+      <div class="cap">
+        <div class="cap-ico">🧭</div>
+        <div class="cap-name">初めてでも迷わないウィザード</div>
+        <div class="cap-desc">「次は何を選ぶ？」を順番に案内。説明書を読まなくても、もう作れている。</div>
+        <span class="cap-tag">Wizard</span>
+      </div>
+      <div class="cap">
+        <div class="cap-ico">🗂</div>
+        <div class="cap-name">デッキを替えれば、世界観も総入れ替え</div>
+        <div class="cap-desc">カード集（デッキ）を差し替えるだけでジャンルが丸ごと変わる。手札を増やすほど世界が広がる。</div>
+        <span class="cap-tag">Deck</span>
+      </div>
+      <div class="cap">
+        <div class="cap-ico">🔎</div>
+        <div class="cap-name">英語から逆引き、遊びながら覚える</div>
+        <div class="cap-desc">気になる英語フレーズを入れれば、対応カードと意味がわかる。使うほど詳しくなる。</div>
+        <span class="cap-tag">Reverse</span>
+      </div>
+      <div class="cap">
+        <div class="cap-ico">➕</div>
+        <div class="cap-name">自分だけの“切り札”を増やせる</div>
+        <div class="cap-desc">よく使う言い回しをカスタムカードに登録。あなただけの手札に育っていく。</div>
+        <span class="cap-tag">Custom</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISION / ECOSYSTEM -->
+  <section class="vision">
+    <div class="vision-eyebrow">The Bigger Picture</div>
+    <h2 class="vision-title">カードを“使う”だけじゃない。<br><span class="y">作って、配って、広がっていく。</span></h2>
+    <p class="vision-sub">ポン出しビルダー＋の本当のおもしろさは、ここから。自分でデッキを組み、完成プロンプトを1ファイルで誰かに渡せる。——つまり、<b>プロンプトがカードになって流通する</b>世界。</p>
+    <div class="vision-grid">
+      <div class="vision-card">
+        <div class="vision-card-ico">🛠</div>
+        <div class="vision-card-t">自分でデッキを作る</div>
+        <div class="vision-card-d">手持ちの言葉やネタを、オリジナルのカード集に。あなた専用の“呪文帳”が作れる。</div>
+      </div>
+      <div class="vision-card">
+        <div class="vision-card-ico">📦</div>
+        <div class="vision-card-t">JSONでプロンプトを配る</div>
+        <div class="vision-card-d">作り込んだ盤面を1つのファイルに保存。配って、もらって、そのまま完全復元できる。</div>
+      </div>
+      <div class="vision-card">
+        <div class="vision-card-ico">🌐</div>
+        <div class="vision-card-t">集めて、交換して、見せ合う</div>
+        <div class="vision-card-d">人気デッキ、レアな組み合わせ、自慢の一枚。カードを介して作り手どうしがつながる。</div>
+      </div>
+    </div>
+    <div class="vision-foot">ポケモンカードみたいに——<span class="y">“プロンプトのカード文化”</span>が、ここから生まれるかも。</div>
+    <span class="vision-tag">※ デッキ自作＝v3.0 ／ JSON配布＝v3.1 の機能</span>
+  </section>
+
+  <!-- FLOW -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">作る流れは、たった4ステップ</span></div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-n">1</div><div class="flow-t">主役を選ぶ</div><div class="flow-d">キャラや被写体のカードをタップ</div></div>
+      <div class="flow-step"><div class="flow-n">2</div><div class="flow-t">要素を足す</div><div class="flow-d">服・背景・光・カメラ・画風を追加</div></div>
+      <div class="flow-step"><div class="flow-n">3</div><div class="flow-t">ツールを選ぶ</div><div class="flow-d">生成AIとパラメータを設定</div></div>
+      <div class="flow-step"><div class="flow-n">4</div><div class="flow-t">コピーして生成</div><div class="flow-d">完成文を貼り付けて画像生成へ</div></div>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">使う前 / 使った後</span></div>
+    <div class="ba">
+      <div class="ba-box before">
+        <div class="ba-label">使う前のモヤモヤ</div>
+        <ul class="ba-list">
+          <li>英語のプロンプトの書き方が分からない</li>
+          <li>呪文を毎回ゼロから打つのが面倒</li>
+          <li>何を足せば画が良くなるのか手探り</li>
+          <li>うまくいった指定を忘れてしまう</li>
+        </ul>
+      </div>
+      <div class="ba-arr">→</div>
+      <div class="ba-box after">
+        <div class="ba-label">使った後</div>
+        <ul class="ba-list">
+          <li>カードを選ぶだけで英語が完成する</li>
+          <li>定番要素が揃っていて打ち直し不要</li>
+          <li>スロットの順番が“良い構図”の道しるべ</li>
+          <li>カスタムカードや保存で、何度でも再利用</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">04</span><span class="sec-title">こんな場面で</span></div>
+    <div class="uses">
+      <div class="use"><span class="use-ico">🎨</span><div><div class="use-t">イラスト・キャラ作り</div><div class="use-d">オリジナルキャラを安定した品質で量産</div></div></div>
+      <div class="use"><span class="use-ico">🖼</span><div><div class="use-t">サムネ・アイキャッチ</div><div class="use-d">記事やSNS用のビジュアルを素早く</div></div></div>
+      <div class="use"><span class="use-ico">📚</span><div><div class="use-t">プロンプトの勉強</div><div class="use-d">逆引きで英語フレーズの意味を覚える</div></div></div>
+      <div class="use"><span class="use-ico">🔁</span><div><div class="use-t">作風の作り分け</div><div class="use-d">デッキ切替でジャンルを丸ごと変える</div></div></div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">05</span><span class="sec-title">安心して使えるポイント</span></div>
+    <div class="trust">
+      <div class="trust-item"><div class="trust-ico">🔐</div><div class="trust-t">外部送信ゼロ</div><div class="trust-d">入力もデッキもブラウザ内だけで処理。データは外に出ません。</div></div>
+      <div class="trust-item"><div class="trust-ico">📱</div><div class="trust-t">スマホでもPCでも</div><div class="trust-d">iOS Safari / Android Chrome 対応。読込後はオフラインでも動作。</div></div>
+      <div class="trust-item"><div class="trust-ico">⚡</div><div class="trust-t">インストール不要</div><div class="trust-d">単一HTMLを開くだけ。アプリ登録やサーバ準備はいりません。</div></div>
+    </div>
+  </section>
+
+  <!-- CLOSING CTA -->
+  <section class="cta" id="cta">
+    <div class="cta-title">さあ、最初の<span class="em">一枚</span>を置こう。</div>
+    <p class="cta-sub">むずかしいことは何もない。カードを選べば、もう絵になる。<br>まずはワンコインの「無印」から、カードの世界へ。</p>
+    <a class="cta-btn" href="#">はじめる</a>
+  </section>
+
+  <footer class="ft">
+    ポン出しビルダー＋ — できること（使う人向け・販売版）<br>
+    ※「保存・復元（JSON配布）」「デッキ自作・編集」は上位版（v3.0 / v3.1）の機能です。<br>
+    © KITAcore
+  </footer>
+
+</div>
+</body>
+</html>

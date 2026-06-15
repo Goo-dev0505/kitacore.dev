@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>どのバージョンを選ぶ？｜ポン出しビルダー＋ — KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   ポン出しビルダー＋ — Which Version To Buy
+   Design: Architectural Minimalism × Light Mode
+========================================================= */
+:root{
+  --bg:#E9E9E9; --surface:#FFFFFF; --surface-v:#F4F4F2; --surface-hov:#EEEEEC;
+  --text:#111111; --text-sub:#444444; --muted:#888888;
+  --border:#E0E0E0; --accent:#111111; --accent-dim:rgba(17,17,17,0.06);
+  --red:#C82000; --green:#007744; --gold:#B8860B;
+  --c-normal:#9AA0A6; --c-v2:#2563EB; --c-v3:#7C3AED; --c-v31:#C026D3;
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-6:24px;--sp-8:32px;--sp-12:48px;
+  --font-display:'Anton','Inter',sans-serif;
+  --font-body:'Noto Sans JP',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-inter:'Inter',sans-serif;
+  --radius-sm:2px;--radius:4px;--trans:150ms ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.7;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:#CCC;border-radius:2px;}
+
+/* HEADER */
+.hd{position:sticky;top:0;z-index:100;background:rgba(233,233,233,0.94);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--sp-8);height:52px;}
+.hd-l{display:flex;align-items:center;gap:var(--sp-6);}
+.hd-logo{font-family:var(--font-display);font-size:18px;letter-spacing:0.08em;}
+.hd-nav{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;}
+.hd-cta{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  background:var(--accent);color:#fff;padding:7px 16px;border-radius:var(--radius-sm);text-decoration:none;}
+
+.wrap{max-width:1080px;margin:0 auto;padding:var(--sp-12) var(--sp-6);}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:var(--sp-12);}
+.hero-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--sp-3);}
+.hero-title{font-family:var(--font-display);font-size:clamp(30px,5.5vw,52px);line-height:1.05;letter-spacing:0.02em;margin-bottom:var(--sp-4);}
+.hero-title .plus{color:var(--c-v3);}
+.hero-sub{font-size:15px;color:var(--text-sub);max-width:620px;margin:0 auto;line-height:1.9;}
+
+/* QUICK PICK */
+.sec{margin-bottom:var(--sp-12);}
+.sec-head{display:flex;align-items:baseline;gap:var(--sp-3);border-bottom:1px solid var(--border);padding-bottom:var(--sp-3);margin-bottom:var(--sp-6);}
+.sec-num{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:0.2em;}
+.sec-title{font-family:var(--font-display);font-size:20px;letter-spacing:0.04em;}
+
+.pick{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-3);}
+.pick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-2);text-align:center;}
+.pick-persona{font-size:24px;}
+.pick-who{font-family:var(--font-inter);font-size:12.5px;font-weight:700;color:var(--text);line-height:1.5;min-height:38px;}
+.pick-arrow{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.1em;}
+.pick-pin{font-family:var(--font-display);font-size:15px;color:#fff;padding:4px 0;border-radius:var(--radius-sm);letter-spacing:0.04em;}
+.pin-normal{background:var(--c-normal);} .pin-v2{background:var(--c-v2);} .pin-v3{background:var(--c-v3);} .pin-v31{background:var(--c-v31);}
+
+/* RECOMMENDED BANNER */
+.rec{background:var(--accent);color:#fff;border-radius:var(--radius);padding:var(--sp-6) var(--sp-8);
+  margin-bottom:var(--sp-12);display:flex;align-items:center;gap:var(--sp-6);flex-wrap:wrap;}
+.rec-badge{font-family:var(--font-display);font-size:13px;letter-spacing:0.06em;background:var(--gold);color:#111;
+  padding:5px 14px;border-radius:var(--radius-sm);white-space:nowrap;}
+.rec-txt{flex:1;min-width:240px;}
+.rec-txt h3{font-family:var(--font-inter);font-size:16px;font-weight:700;margin-bottom:4px;}
+.rec-txt p{font-size:12.5px;color:rgba(255,255,255,0.72);line-height:1.8;}
+
+/* COMPARISON TABLE */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:820px;}
+thead th{padding:14px;text-align:center;border-bottom:2px solid var(--accent);vertical-align:bottom;}
+thead th:first-child{text-align:left;}
+.th-name{font-family:var(--font-display);font-size:16px;letter-spacing:0.03em;display:block;}
+.th-normal .th-name{color:var(--c-normal);} .th-v2 .th-name{color:var(--c-v2);}
+.th-v3 .th-name{color:var(--c-v3);} .th-v31 .th-name{color:var(--c-v31);}
+.th-tag{font-family:var(--font-mono);font-size:8.5px;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;display:block;margin-top:4px;}
+.th-best{display:inline-block;font-family:var(--font-mono);font-size:8px;font-weight:700;background:var(--gold);color:#111;
+  padding:2px 7px;border-radius:var(--radius-sm);letter-spacing:0.08em;margin-top:6px;}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text-sub);text-align:center;line-height:1.55;}
+tbody td:first-child{text-align:left;font-family:var(--font-inter);font-weight:600;color:var(--text);white-space:nowrap;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface-v);}
+.chk{color:var(--green);font-weight:700;}
+.dash{color:#CCC;}
+.col-hl{background:rgba(192,38,211,0.04);}
+.price-row td{font-family:var(--font-mono);font-size:12px;color:var(--text);font-weight:700;}
+.price-note{font-family:var(--font-mono);font-size:8px;color:var(--muted);font-weight:400;}
+
+/* DECISION FLOW (mini) */
+.flow{display:flex;flex-direction:column;gap:var(--sp-2);}
+.flow-row{display:flex;align-items:center;gap:var(--sp-4);background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:var(--sp-4) var(--sp-6);border-left:3px solid var(--accent);}
+.flow-row.n{border-left-color:var(--c-normal);} .flow-row.a{border-left-color:var(--c-v2);}
+.flow-row.b{border-left-color:var(--c-v3);} .flow-row.c{border-left-color:var(--c-v31);}
+.flow-q{flex:1;font-size:13px;color:var(--text-sub);line-height:1.7;}
+.flow-q b{color:var(--text);}
+.flow-pin{font-family:var(--font-display);font-size:14px;color:#fff;padding:5px 14px;border-radius:var(--radius-sm);white-space:nowrap;letter-spacing:0.04em;}
+
+/* FAQ */
+.faq{display:flex;flex-direction:column;gap:var(--sp-4);}
+.faq-item{border-left:2px solid var(--border);padding-left:var(--sp-4);}
+.faq-q{font-family:var(--font-inter);font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.faq-a{font-size:12.5px;color:var(--text-sub);line-height:1.85;}
+
+.ft{border-top:1px solid var(--border);padding:var(--sp-6) 0 0;margin-top:var(--sp-8);
+  font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.08em;line-height:1.9;}
+
+@media(max-width:720px){
+  .hd{padding:0 var(--sp-4);} .hd-nav{display:none;}
+  .wrap{padding:var(--sp-8) var(--sp-4);}
+  .pick{grid-template-columns:repeat(2,1fr);}
+  .flow-row{flex-direction:column;align-items:flex-start;gap:var(--sp-2);}
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-l">
+    <span class="hd-logo">KITAcore</span>
+    <span class="hd-nav">ポン出しビルダー＋ / 版選びガイド</span>
+  </div>
+  <a class="hd-cta" href="#table">比較表へ</a>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Which version is right for you?</div>
+    <h1 class="hero-title">あなたに合うのは<br>どの<span class="plus">＋</span>？</h1>
+    <p class="hero-sub">ポン出しビルダー＋は、できることの違いで4タイプ。「買って使うだけ」から「自分でデッキを作り込む」まで。まずは下のタイプ診断から、ピンとくるものを選んでください。</p>
+  </section>
+
+  <!-- QUICK PICK -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">タイプ早見</span></div>
+    <div class="pick">
+      <div class="pick-card">
+        <div class="pick-persona">🌱</div>
+        <div class="pick-who">ワンコインで<br>触ってみたい</div>
+        <div class="pick-arrow">▼ おすすめ</div>
+        <div class="pick-pin pin-normal">無印</div>
+      </div>
+      <div class="pick-card">
+        <div class="pick-persona">🛒</div>
+        <div class="pick-who">買ったデッキを<br>選ぶだけで使いたい</div>
+        <div class="pick-arrow">▼ おすすめ</div>
+        <div class="pick-pin pin-v2">v2.0</div>
+      </div>
+      <div class="pick-card">
+        <div class="pick-persona">🛠</div>
+        <div class="pick-who">自分でデッキを<br>作り・編集したい</div>
+        <div class="pick-arrow">▼ おすすめ</div>
+        <div class="pick-pin pin-v3">v3.0</div>
+      </div>
+      <div class="pick-card">
+        <div class="pick-persona">⭐</div>
+        <div class="pick-who">作り込み＋保存で<br>本格運用したい</div>
+        <div class="pick-arrow">▼ おすすめ</div>
+        <div class="pick-pin pin-v31">v3.1</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECOMMENDED -->
+  <section class="rec">
+    <span class="rec-badge">★ 迷ったらコレ</span>
+    <div class="rec-txt">
+      <h3>とりあえず全部入りが欲しいなら → v3.1</h3>
+      <p>v3.1はv2.0・v3.0の機能をすべて含む最新の上位版です。「どれが要るか分からない」「あとで機能が足りなくなるのが不安」という方は、v3.1を選んでおけば間違いありません。</p>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE -->
+  <section class="sec" id="table">
+    <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">機能とおすすめ早見表</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>選ぶときのポイント</th>
+            <th class="th-normal"><span class="th-name">無印</span><span class="th-tag">お試し</span></th>
+            <th class="th-v2"><span class="th-name">v2.0</span><span class="th-tag">使う</span></th>
+            <th class="th-v3"><span class="th-name">v3.0</span><span class="th-tag">作る</span></th>
+            <th class="th-v31 col-hl"><span class="th-name">v3.1</span><span class="th-tag">作る＋保存</span><span class="th-best">★おすすめ</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>こんな人に</td>
+            <td>ワンコインで<br>雰囲気を掴みたい</td>
+            <td>買ったデッキで<br>サッと作りたい</td>
+            <td>オリジナル<br>デッキを作りたい</td>
+            <td class="col-hl">本格的に<br>使い倒したい</td>
+          </tr>
+          <tr>
+            <td>デッキを差し替えて使う</td>
+            <td class="dash">—</td>
+            <td class="chk">✓</td>
+            <td class="chk">✓</td>
+            <td class="col-hl"><span class="chk">✓</span></td>
+          </tr>
+          <tr>
+            <td>カードを選んでプロンプト生成</td>
+            <td class="chk">✓</td>
+            <td class="chk">✓</td>
+            <td class="chk">✓</td>
+            <td class="col-hl"><span class="chk">✓</span></td>
+          </tr>
+          <tr>
+            <td>読込デッキを端末が記憶・自動復元</td>
+            <td class="dash">—</td>
+            <td class="chk">✓</td>
+            <td class="chk">✓</td>
+            <td class="col-hl"><span class="chk">✓</span></td>
+          </tr>
+          <tr>
+            <td>自分でデッキを作る・変換する</td>
+            <td class="dash">—</td>
+            <td class="dash">—</td>
+            <td class="chk">✓</td>
+            <td class="col-hl"><span class="chk">✓</span></td>
+          </tr>
+          <tr>
+            <td>デッキをカード単位で編集する</td>
+            <td class="dash">—</td>
+            <td class="dash">—</td>
+            <td class="chk">✓</td>
+            <td class="col-hl"><span class="chk">✓</span></td>
+          </tr>
+          <tr>
+            <td>作りかけ・完成プロンプトを保存／復元</td>
+            <td class="dash">—</td>
+            <td class="dash">—</td>
+            <td class="dash">—</td>
+            <td class="col-hl"><span class="chk">✓</span></td>
+          </tr>
+          <tr>
+            <td>対応AI（共通）</td>
+            <td colspan="4">Midjourney ／ GPT-Image ／ Nano Banana</td>
+          </tr>
+          <tr class="price-row">
+            <td>価格</td>
+            <td>¥500 <span class="price-note">※ワンコイン</span></td>
+            <td>¥— <span class="price-note">※要記入</span></td>
+            <td>¥— <span class="price-note">※要記入</span></td>
+            <td class="col-hl">¥— <span class="price-note">※要記入</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- DECISION FLOW -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">3つの質問で決める</span></div>
+    <div class="flow">
+      <div class="flow-row n">
+        <div class="flow-q"><b>Q1.</b> まずはワンコイン（¥500）で気軽に試したい？ 使用感を確かめたい。</div>
+        <div class="flow-pin pin-normal">→ 無印</div>
+      </div>
+      <div class="flow-row a">
+        <div class="flow-q"><b>Q2.</b> 既成のデッキを買って<b>選ぶだけ</b>で使えれば十分？ 自作はしない。</div>
+        <div class="flow-pin pin-v2">→ v2.0</div>
+      </div>
+      <div class="flow-row b">
+        <div class="flow-q"><b>Q3.</b> <b>自分でデッキを作ったり編集</b>したい。でも保存機能はまだ要らない。</div>
+        <div class="flow-pin pin-v3">→ v3.0</div>
+      </div>
+      <div class="flow-row c">
+        <div class="flow-q"><b>上記すべて＋</b>作りかけや完成プロンプトを<b>保存して使い回したい</b>。迷ったらこれ。</div>
+        <div class="flow-pin pin-v31">→ v3.1</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">04</span><span class="sec-title">購入前のよくある質問</span></div>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q">上位版は下位版の機能を全部含みますか？</div>
+        <div class="faq-a">はい。v3.1はv3.0・v2.0の機能をすべて含む上位互換です。新しい版を選べば、古い版でできたことはそのままできます。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">デッキ（プロンプト素材）は本体に付いてきますか？</div>
+        <div class="faq-a">本体は「空の盤面」です。無料のサンプルデッキで体験でき、製品デッキは別売りのコンテンツになります。v2.0以降ならどのデッキも読み込めます。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">読み込んだデータが外部に送られませんか？</div>
+        <div class="faq-a">送られません。デッキCSVもプロンプトもすべてブラウザ内だけで処理され、外部送信はゼロです。インストールやサーバも不要で、単一HTMLとして動きます。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">スマホでも使えますか？</div>
+        <div class="faq-a">iOS Safari / Android Chrome の最新版に対応。デッキを一度読み込めばオフラインでもプロンプト生成ができます。</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="ft">
+    ポン出しビルダー＋ — 版選びガイド（購入者向け）<br>
+    ※価格欄（¥—）は確定価格を記入してください。機能はv2.0/v3.0/v3.1 READMEに準拠。<br>
+    © KITAcore
+  </footer>
+
+</div>
+</body>
+</html>
