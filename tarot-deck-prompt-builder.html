@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAROT DECK PROMPT BUILDER — KITAcore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E9E9E9;
+    --surface:#FFFFFF;
+    --surface-v:#F4F4F2;
+    --text:#111111;
+    --text-sub:#333333;
+    --muted:#6B6B6B;
+    --border:#DDDDDD;
+    --accent:#000000;
+    --font-display:'Inter','Helvetica Neue',sans-serif;
+    --font-body:'Noto Sans JP','Hiragino Sans',sans-serif;
+    --font-mono:'JetBrains Mono','IBM Plex Mono',monospace;
+    --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-6:24px;--sp-8:32px;--sp-12:48px;--sp-16:64px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.8;
+    letter-spacing:0.02em;
+    padding:var(--sp-8) var(--sp-4) var(--sp-16);
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+
+  /* ---- header ---- */
+  header{margin-bottom:var(--sp-12);}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;font-weight:500;
+    letter-spacing:0.18em;text-transform:uppercase;
+    color:var(--muted);
+    display:block;margin-bottom:var(--sp-3);
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(28px,6vw,46px);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  .lede{
+    font-size:14px;color:var(--text-sub);
+    margin-top:var(--sp-4);max-width:60ch;
+  }
+  .rule{height:1px;background:var(--accent);margin:var(--sp-6) 0;}
+
+  /* ---- section ---- */
+  section{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:var(--sp-8);
+    margin-bottom:var(--sp-6);
+  }
+  .sec-head{
+    font-family:var(--font-mono);
+    font-size:12px;font-weight:500;
+    letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--muted);
+    display:flex;align-items:baseline;gap:var(--sp-3);
+    margin-bottom:var(--sp-6);
+    padding-bottom:var(--sp-3);
+    border-bottom:1px solid var(--border);
+  }
+  .sec-head .no{color:var(--accent);font-weight:600;}
+  .sec-head .ja{font-family:var(--font-body);color:var(--text-sub);letter-spacing:0.02em;text-transform:none;}
+
+  /* ---- fields ---- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-6) var(--sp-6);}
+  .field.full{grid-column:1 / -1;}
+  label{display:block;}
+  .lab{
+    font-family:var(--font-mono);
+    font-size:11px;font-weight:500;
+    letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--muted);
+    display:flex;align-items:center;gap:var(--sp-2);
+    margin-bottom:var(--sp-2);
+  }
+  .lab .ja{font-family:var(--font-body);color:var(--text);letter-spacing:0.02em;text-transform:none;font-size:13px;}
+  .req{
+    font-family:var(--font-mono);font-size:9px;
+    border:1px solid var(--accent);color:var(--accent);
+    padding:1px 5px;border-radius:2px;letter-spacing:0.08em;
+  }
+  input[type=text],textarea,select{
+    width:100%;
+    background:var(--surface-v);
+    border:1px solid var(--border);
+    border-radius:2px;
+    padding:10px 12px;
+    font-family:var(--font-body);
+    font-size:14px;color:var(--text);
+    line-height:1.6;
+    transition:border-color 150ms ease;
+  }
+  textarea{resize:vertical;min-height:78px;}
+  input::placeholder,textarea::placeholder{color:var(--muted);opacity:.7;}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);}
+  select{appearance:none;cursor:pointer;
+    background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+    background-position:calc(100% - 16px) 18px,calc(100% - 11px) 18px;
+    background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px;}
+  .hint{font-size:11px;color:var(--muted);margin-top:var(--sp-2);font-family:var(--font-mono);letter-spacing:0.02em;}
+
+  /* ---- actions ---- */
+  .actions{display:flex;flex-wrap:wrap;gap:var(--sp-3);align-items:center;margin-top:var(--sp-2);}
+  button{
+    font-family:var(--font-mono);
+    font-size:12px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;
+    border-radius:2px;padding:11px 22px;cursor:pointer;
+    transition:all 150ms ease;border:1px solid var(--accent);
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:#222;}
+  .btn-ghost{background:transparent;color:var(--accent);}
+  .btn-ghost:hover{background:var(--surface-v);}
+  .btn-ghost:disabled{color:var(--muted);border-color:var(--border);cursor:not-allowed;background:transparent;}
+  .warn{
+    font-family:var(--font-body);font-size:13px;color:var(--text);
+    background:var(--surface-v);border:1px solid var(--accent);border-radius:2px;
+    padding:10px 14px;margin-top:var(--sp-4);display:none;
+  }
+  .warn.show{display:block;}
+
+  /* ---- output ---- */
+  #outWrap{display:none;}
+  #outWrap.show{display:block;}
+  .out-meta{
+    font-family:var(--font-mono);font-size:11px;color:var(--muted);
+    letter-spacing:0.06em;display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-3);
+  }
+  #output{
+    width:100%;min-height:340px;
+    background:#fff;border:1px solid var(--border);border-radius:2px;
+    padding:var(--sp-4);
+    font-family:var(--font-mono);font-size:12.5px;line-height:1.7;color:var(--text-sub);
+    letter-spacing:0;white-space:pre-wrap;resize:vertical;
+  }
+  footer{margin-top:var(--sp-12);text-align:center;}
+  footer .eyebrow{margin:0;}
+  footer .note{font-size:11px;color:var(--muted);font-family:var(--font-mono);letter-spacing:0.04em;margin-top:var(--sp-2);}
+
+  @media(max-width:640px){
+    body{padding:var(--sp-6) var(--sp-3) var(--sp-16);}
+    section{padding:var(--sp-6);}
+    .grid{grid-template-columns:1fr;gap:var(--sp-4);}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">KITAcore / Prompt Builder</span>
+    <h1>TAROT DECK<br>PROMPT BUILDER</h1>
+    <p class="lede">テーマと世界観を入れたら、オリジナルタロットデッキを「設計→量産」まで一気通貫で吐かせる上位プロンプトを組む。完成テキストをコピーして、生成AIにそのまま投げるだけ。全部ブラウザ内で動く。送信もアップロードも無し。</p>
+    <div class="rule"></div>
+  </header>
+
+  <!-- 01 必須 -->
+  <section>
+    <div class="sec-head"><span class="no">01.</span><span>REQUIRED</span><span class="ja">必須入力</span></div>
+    <div class="grid">
+      <div class="field">
+        <label>
+          <span class="lab">DECK NAME <span class="ja">デッキ名</span> <span class="req">REQ</span></span>
+          <input type="text" id="deckName" placeholder="例：Logplay Tarot">
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">THEME <span class="ja">テーマ</span> <span class="req">REQ</span></span>
+          <input type="text" id="theme" placeholder="例：記録・生成AI・創作・内省・成長・遊び">
+        </label>
+      </div>
+      <div class="field full">
+        <label>
+          <span class="lab">WORLD <span class="ja">世界観の説明</span> <span class="req">REQ</span></span>
+          <textarea id="world" placeholder="例：人生をログとして記録し、あとから意味を回収して遊ぶ世界観。創作・分析・ひらめき・混沌・再解釈が混ざる。"></textarea>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">COUNT <span class="ja">想定枚数</span> <span class="req">REQ</span></span>
+          <select id="count">
+            <option value="5">5 — 試作セット</option>
+            <option value="10">10 — シリーズ導入セット</option>
+            <option value="22" selected>22 — 大アルカナ構成</option>
+            <option value="78">78 — 大アルカナ22＋小アルカナ56</option>
+          </select>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">TEXT <span class="ja">文字入れ</span> <span class="req">REQ</span></span>
+          <select id="textOn">
+            <option value="あり" selected>あり</option>
+            <option value="なし">なし</option>
+          </select>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">ART STYLE <span class="ja">画風の方向性</span> <span class="req">REQ</span></span>
+          <input type="text" id="artStyle" placeholder="例：アニメ調×神秘的タロット装飾、繊細な線画、高品質">
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">ASPECT <span class="ja">アスペクト比</span> <span class="req">REQ</span></span>
+          <input type="text" id="aspect" value="2:3" placeholder="例：2:3">
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 任意 -->
+  <section>
+    <div class="sec-head"><span class="no">02.</span><span>OPTIONAL</span><span class="ja">任意入力（埋めた分だけ反映される）</span></div>
+    <div class="grid">
+      <div class="field full">
+        <label>
+          <span class="lab">RECURRING CHARACTER <span class="ja">主人公・常連キャラ</span></span>
+          <textarea id="character" placeholder="例：知的で少しひょうきんな記録者。ノートやカードを持つ。"></textarea>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">AUDIENCE <span class="ja">想定読者・ターゲット</span></span>
+          <input type="text" id="audience" placeholder="例：創作好き／AIツール興味層">
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">MOTIFS <span class="ja">使いたい象徴モチーフ</span></span>
+          <input type="text" id="motifs" placeholder="例：ノート、太陽、鍵、時計、カード、光の線、扉、星">
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">AVOID <span class="ja">避けたい要素</span></span>
+          <input type="text" id="avoid" placeholder="例：過剰ホラー、グロ、小物の乱立">
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">COLOR TONE <span class="ja">色調の方向性</span></span>
+          <input type="text" id="colorTone" placeholder="例：青金ベース、カードごとにアクセント色を変える">
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">MOOD <span class="ja">トーン</span></span>
+          <select id="mood">
+            <option value="">指定なし</option>
+            <option value="神秘寄り">神秘寄り</option>
+            <option value="ポップ寄り">ポップ寄り</option>
+            <option value="アニメ寄り">アニメ寄り</option>
+            <option value="重厚寄り">重厚寄り</option>
+          </select>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">ARCANA <span class="ja">アルカナ構成</span></span>
+          <select id="arcana">
+            <option value="">指定なし</option>
+            <option value="大アルカナ中心">大アルカナ中心</option>
+            <option value="大アルカナ＋小アルカナ">大アルカナ＋小アルカナ</option>
+          </select>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">ORIGINALITY <span class="ja">既存準拠／オリジナル</span></span>
+          <select id="originality">
+            <option value="">指定なし</option>
+            <option value="既存タロット準拠">既存タロット準拠</option>
+            <option value="オリジナルカード混在">オリジナルカード混在</option>
+            <option value="完全オリジナル">完全オリジナル</option>
+          </select>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">FRAME <span class="ja">カード枠の装飾方針</span></span>
+          <input type="text" id="frame" placeholder="例：細い線の幾何枠、上下にプレート">
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">TITLE LANG <span class="ja">タイトル言語</span></span>
+          <select id="titleLang">
+            <option value="">指定なし</option>
+            <option value="英語">英語</option>
+            <option value="日本語">日本語</option>
+            <option value="英語＋日本語">英語＋日本語</option>
+          </select>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">REVERSED <span class="ja">正位置・逆位置の重視</span></span>
+          <select id="reversed">
+            <option value="">指定なし</option>
+            <option value="重視する">重視する</option>
+            <option value="重視しない">重視しない</option>
+          </select>
+        </label>
+      </div>
+      <div class="field">
+        <label>
+          <span class="lab">NUMBERING <span class="ja">番号表記ルール</span></span>
+          <select id="numbering">
+            <option value="">指定なし</option>
+            <option value="ローマ数字">ローマ数字</option>
+            <option value="アラビア数字">アラビア数字</option>
+            <option value="なし">なし</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 出力 -->
+  <section>
+    <div class="sec-head"><span class="no">03.</span><span>BUILD</span><span class="ja">生成・コピー</span></div>
+    <div class="actions">
+      <button class="btn-primary" id="genBtn">プロンプトを生成</button>
+      <button class="btn-ghost" id="copyBtn" disabled>コピー</button>
+      <button class="btn-ghost" id="resetBtn">リセット</button>
+    </div>
+    <div class="warn" id="warn"></div>
+
+    <div id="outWrap" style="margin-top:var(--sp-6)">
+      <div class="out-meta">
+        <span id="charCount">0 chars</span>
+        <span>このまま生成AIに貼り付け → まず出力1だけ出させて、段階的に進めるのが推奨</span>
+      </div>
+      <textarea id="output" readonly spellcheck="false"></textarea>
+    </div>
+  </section>
+
+  <footer>
+    <span class="eyebrow">KITAcore — Logplay</span>
+    <p class="note">runs fully offline · no upload · no api key</p>
+  </footer>
+
+</div>
+
+<script>
+const META = `# 役割
+あなたは、
+**タロットアートディレクター × 象徴設計者 × デッキプランナー × 画像生成プロンプト設計者**
+です。
+
+あなたの仕事は、入力されたテーマ・世界観・キャラクター設定をもとに、
+**単発のイラストではなく、統一感のあるオリジナルタロットデッキ**
+を企画・設計・量産できる状態まで落とし込むことです。
+
+出力は、単なる思いつきの羅列ではなく、
+**世界観設計 → カード体系設計 → 各カード設計 → 画像生成用プロンプト → 品質チェック**
+まで一気通貫で行ってください。
+
+---
+
+# 目的
+1. タロットカードとして意味が読めること
+2. シリーズ全体で画風・構図・枠・色設計に統一感があること
+3. 1枚ごとのカードに象徴性・物語性・視覚的な読みやすさがあること
+4. 量産・再利用・シリーズ展開しやすい構造になっていること
+5. 画像生成AIで実際に使いやすいレベルまでプロンプト化されていること
+
+---
+
+# 基本方針
+- 単なる「ファンタジー風の綺麗な絵」ではなく、カードとして意味が伝わる構図を優先する
+- 各カードは、中心人物・象徴モチーフ・色・構図・感情トーンが一貫して設計されていること
+- 各カードは独立して魅力がありつつ、並べたときに同じデッキに見えること
+- 文字はカード上部・下部の所定位置に収まるよう配慮し、人物の顔や重要モチーフに重ねない
+- 手・指・顔・目線・文字崩れなど、画像生成で起きやすい破綻を想定し、回避指示を入れること
+- 情報が不足している場合は、勝手に雑に埋めず、最も妥当な仮説を補完し、その前提を明記すること
+
+---
+
+# 出力ルール（必ずこの順序で出力）
+
+## 出力1：デッキ全体設計
+1-1. デッキコンセプト（核となる思想 / 何を象徴するか / 一般的タロットとの違い / 独自性）
+1-2. 世界観サマリー（舞台 / 空気感 / 主要な感情トーン / 繰り返す概念 / ビジュアル軸）
+1-3. デッキ構成方針（枚数に応じた構成。78枚なら大アルカナ22＋小アルカナ56、スート構成も定義）
+1-4. 命名規則（カード名ルール / 英語の文体 / 日本語のトーン / 既存名orオリジナル名）
+1-5. ビジュアル統一ルール（キャラ共通要素 / 枠 / 余白 / 背景密度 / ライティング / 線画・塗り・質感）
+1-6. 色彩ルール（ベースカラー / アクセント / 種別ごとの使い分け / 光と影 / 感情トーン対応）
+1-7. タイポグラフィ・文字配置ルール（上タイトル / 下番号・副題 / 文字数目安 / 人物に重ねない）
+1-8. 象徴モチーフ辞書（モチーフ名 / 象徴する意味 / 向いてるカードタイプ / 使いすぎ注意か）
+1-9. 禁止事項（人物増殖 / 小物乱立 / 文字崩れ / 手指崩れ / 顔歪み / 背景過多 / 文字被り など）
+
+## 出力2：カード一覧設計
+指定枚数分を一覧化。各カードに以下を必ず含める：
+Card No. / Card Name(英) / Card Name(日) / 一言テーマ / 正位置の意味 / 逆位置の意味 /
+中心人物または主役要素 / 主要モチーフ(3〜7) / 補助モチーフ(0〜5) / 感情トーン /
+メインカラー / サブカラー / 構図の特徴 / 視線誘導 / 物語上の役割 /
+絶対に表現すべきこと / 避けるべきこと
+※まず一覧形式で全体を出し、そのあと各カードの詳細を順番に出す
+
+## 出力3：各カード詳細設計
+3-1. カード解説（本質 / 正逆の差 / 他カードとのつながり / 直感的に受け取る印象）
+3-2. ビジュアル設計（見た目 / 表情 / ポーズ / 視線 / 手 / 服装 / 背景 / 光 / モチーフ配置 / 余白）
+3-3. 構図指示（縦長構図 / 中央orオフセット / 前景中景後景 / 密度 / シルエット / 遠目の可読性）
+3-4. 色彩設計（主役色 / 補助色 / 光源 / 感情対応 / 差別化点。ただしデッキ統一感は崩さない）
+
+## 出力4：画像生成用プロンプト
+4-1. 完成プロンプト（カード名・構図・人物・背景・象徴・色・光・装飾・余白・画風・品質条件を含む。
+     「キャラに文字を重ねない」「上部タイトル余白」「下部番号余白」など実務指示も明記。
+     装飾枠・神秘性・物語性を入れつつ、過剰装飾で主題を埋もれさせない）
+4-2. ネガティブプロンプト（extra fingers / deformed hands / broken anatomy / distorted face /
+     unreadable text / text overlapping character / messy composition / too many objects /
+     extra people / blurry details / low resolution / cropped face / unbalanced frame など）
+4-3. 文字配置指示（上にカード名 / 下に番号と短い副題 / 重要モチーフに重ねない / 視認性優先）
+4-4. シリーズ整合メモ（並べたとき揃える点 / 差別化点 / recurring characterの扱い）
+
+## 出力5：品質チェックリスト
+5-1. 全体チェック（同じデッキに見えるか / タイトル位置 / 枠 / 色 / カード間格差 / 世界観 / 重複空白）
+5-2. 個別カードチェック（意味が伝わるか / 主役が明確か / 視線誘導 / モチーフ量 / 破綻 / 文字干渉 / 遠目）
+5-3. 再生成判断基準（意味が読めない / 手顔崩れ / 文字崩れ / 主役が弱い / ノイズ / 統一感薄 / 余白破綻）
+
+## 出力6：最終納品フォーマット
+A. 企画書形式（デッキ名 / コンセプト / 世界観 / 構成 / ビジュアルルール / 色 / 象徴辞書 / カード一覧）
+B. 実制作形式（カードごとに：Card No. / Name / 意味 / ビジュアル要約 /
+   完成プロンプト / ネガティブ / 文字配置指示 / QAメモ）
+
+---
+
+# 出力時の注意
+- 見出しと箇条書きで読みやすく整理する
+- 曖昧語を減らし、生成へ流し込みやすい具体性を持たせる（「おしゃれ」「いい感じ」だけで済ませない）
+- 生成AI向けの実務性と、タロットとしての象徴性を両立する
+- 情報不足は「補完前提」として明記する
+- 想定枚数に応じて出力量を最適化する（5〜10枚は整合性重視、22枚以上は体系性重視、78枚は小アルカナ必須）
+- 各カードの完成プロンプトは「単体で魅力的」と「並べて同じデッキに見える」を両立させ、
+  必要に応じてシリーズ共通の固定語句をプロンプト内に残す
+- 複数回に分けて作る場合は、先に作ったカードの共通要素を「シリーズ固定設定」として要約し、
+  後続カードのプロンプトに毎回反映する
+
+---
+
+# 実行
+それでは、以下の入力条件に基づいて、オリジナルタロットデッキのフルパッケージ設計を開始してください。`;
+
+const REQ = [
+  {id:'deckName', label:'デッキ名'},
+  {id:'theme',    label:'テーマ'},
+  {id:'world',    label:'世界観の説明'},
+  {id:'count',    label:'想定枚数', suffix:'枚'},
+  {id:'artStyle', label:'画風の方向性'},
+  {id:'aspect',   label:'アスペクト比'},
+  {id:'textOn',   label:'文字入れ'},
+];
+const OPT = [
+  {id:'character',   label:'主人公・recurring character'},
+  {id:'audience',    label:'想定読者・ターゲット'},
+  {id:'motifs',      label:'使用したい象徴モチーフ'},
+  {id:'avoid',       label:'避けたい要素'},
+  {id:'colorTone',   label:'色調の方向性'},
+  {id:'mood',        label:'トーン'},
+  {id:'arcana',      label:'アルカナ構成'},
+  {id:'originality', label:'既存準拠／オリジナル'},
+  {id:'frame',       label:'カード枠の装飾方針'},
+  {id:'titleLang',   label:'タイトル言語'},
+  {id:'reversed',    label:'正位置・逆位置'},
+  {id:'numbering',   label:'番号表記ルール'},
+];
+
+const $ = id => document.getElementById(id);
+const val = id => ($(id).value || '').trim();
+
+function buildBlock(){
+  const reqLines = [];
+  const missing = [];
+  REQ.forEach(f=>{
+    let v = val(f.id);
+    if(!v){ missing.push(f.label); v = '（未入力）'; }
+    else if(f.suffix){ v = v + f.suffix; }
+    reqLines.push(`- ${f.label}：${v}`);
+  });
+  const optLines = [];
+  OPT.forEach(f=>{
+    const v = val(f.id);
+    if(v) optLines.push(`- ${f.label}：${v}`);
+  });
+
+  let block = '## 入力条件\n\n### 必須\n' + reqLines.join('\n');
+  if(optLines.length){
+    block += '\n\n### 任意\n' + optLines.join('\n');
+  }
+  return {block, missing};
+}
+
+function generate(){
+  const {block, missing} = buildBlock();
+  const full = META + '\n\n' + block + '\n';
+  const out = $('output');
+  out.value = full;
+  $('outWrap').classList.add('show');
+  $('charCount').textContent = full.length.toLocaleString() + ' chars';
+  $('copyBtn').disabled = false;
+
+  const warn = $('warn');
+  if(missing.length){
+    warn.textContent = '必須項目に未入力があるで → ' + missing.join(' / ') + '。「（未入力）」のまま出力しとるから、埋めてから生成し直すのを推奨。';
+    warn.classList.add('show');
+  }else{
+    warn.classList.remove('show');
+  }
+  $('outWrap').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+async function copyOut(){
+  const text = $('output').value;
+  if(!text) return;
+  const btn = $('copyBtn');
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(e){
+    const ta = $('output');
+    ta.removeAttribute('readonly');
+    ta.select();
+    try{ document.execCommand('copy'); }catch(_){}
+    ta.setAttribute('readonly','');
+    window.getSelection().removeAllRanges();
+  }
+  const orig = btn.textContent;
+  btn.textContent = 'コピーした';
+  setTimeout(()=>{ btn.textContent = orig; }, 1400);
+}
+
+function resetAll(){
+  REQ.concat(OPT).forEach(f=>{
+    const el = $(f.id);
+    if(el.tagName === 'SELECT'){ el.selectedIndex = 0; }
+    else { el.value = ''; }
+  });
+  $('count').value = '22';
+  $('textOn').value = 'あり';
+  $('aspect').value = '2:3';
+  $('output').value = '';
+  $('outWrap').classList.remove('show');
+  $('warn').classList.remove('show');
+  $('copyBtn').disabled = true;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+$('genBtn').addEventListener('click', generate);
+$('copyBtn').addEventListener('click', copyOut);
+$('resetBtn').addEventListener('click', resetAll);
+</script>
+</body>
+</html>
