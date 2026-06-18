@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Character Prompt Builder Lite 取扱説明書</title>
+  <style>
+    :root{
+      --bg:#f3f3ef;
+      --paper:#ffffff;
+      --ink:#111;
+      --muted:#666;
+      --line:rgba(0,0,0,.12);
+      --accent:#111;
+      --soft:#f7f7f4;
+      --radius:22px;
+      --radius-sm:14px;
+      --shadow:0 16px 42px rgba(0,0,0,.06);
+      --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      --sans:Inter, "Helvetica Neue", Arial, "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:var(--sans);
+      color:var(--ink);
+      background:linear-gradient(180deg,#f7f7f3 0%, #ededE8 100%);
+      line-height:1.7;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .hero, .card, .step, .faq, .note, .toc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero{padding:28px 28px 22px;margin-bottom:18px}
+    .eyebrow,.mini{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+    }
+    h1{
+      margin:8px 0 12px;
+      font-size:clamp(34px,6vw,62px);
+      line-height:.98;
+      letter-spacing:-.05em;
+    }
+    h2{margin:0 0 10px;font-size:22px;letter-spacing:-.03em}
+    h3{margin:0 0 8px;font-size:18px;letter-spacing:-.02em}
+    p{margin:0 0 10px}
+    .lead{font-size:16px;color:#2f2f2f;max-width:760px}
+    .badges,.btns,.grid,.steps,.faq-grid{display:grid;gap:14px}
+    .badges{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-top:18px}
+    .badge{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:12px;
+      text-align:center;
+      background:var(--soft);
+    }
+    .btns{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:16px}
+    .btn{
+      display:inline-block;
+      text-decoration:none;
+      color:#fff;
+      background:#111;
+      border-radius:999px;
+      padding:12px 16px;
+      text-align:center;
+      font-size:14px;
+      border:1px solid #111;
+    }
+    .btn.secondary{background:#fff;color:#111}
+    .toc{padding:20px;margin-bottom:18px}
+    .toc ul{margin:10px 0 0;padding-left:18px}
+    .grid{grid-template-columns:1.1fr .9fr;margin-bottom:18px}
+    .card{padding:22px}
+    .steps{grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:14px}
+    .step{padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--soft);box-shadow:none}
+    .num{
+      width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;
+      border:1px solid #111;font-weight:700;font-size:13px;margin-bottom:10px;
+    }
+    ul{margin:10px 0;padding-left:18px}
+    li{margin:6px 0}
+    .tableish{display:grid;gap:10px;margin-top:12px}
+    .row{
+      display:grid;
+      grid-template-columns:220px 1fr;
+      gap:14px;
+      padding:12px 0;
+      border-top:1px solid var(--line);
+    }
+    .row:first-child{border-top:none;padding-top:0}
+    code, .kbd{
+      font-family:var(--mono);
+      background:#f3f3f3;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:2px 8px;
+      font-size:12px;
+    }
+    .note{padding:18px 20px;margin-top:14px;background:#111;color:#fff;border-color:rgba(255,255,255,.08)}
+    .note p,.note li,.note h3,.note .mini{color:#fff}
+    .faq-grid{grid-template-columns:1fr 1fr;margin-top:14px}
+    .faq{padding:18px}
+    .footer{padding:22px 0 10px;color:var(--muted);font-size:13px}
+    @media (max-width:840px){
+      .grid,.faq-grid,.row{grid-template-columns:1fr}
+      .wrap{padding:14px}
+      .hero,.card,.toc{padding:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Character Prompt Builder Lite / Manual</div>
+      <h1>Lite版の<br>HTML取扱説明書</h1>
+      <p class="lead">
+        このツールは、長いプロンプトを最初から全部書かなくても、必要な項目だけ入れて
+        「そのまま使える完成プロンプト」を作るための簡易版です。
+        初心者でも触りやすいように、入力項目とボタンをかなり絞っています。
+      </p>
+      <div class="badges">
+        <div class="badge">単体HTMLで動作</div>
+        <div class="badge">インストール不要</div>
+        <div class="badge">ローカル保存あり</div>
+        <div class="badge">Lite層向け</div>
+      </div>
+      <div class="btns">
+        <a class="btn" href="character_prompt_builder_lite.html">Lite版を開く</a>
+        <a class="btn secondary" href="./">同じフォルダで使う想定</a>
+      </div>
+    </section>
+
+    <section class="toc">
+      <div class="eyebrow">Contents</div>
+      <h2>この取説でわかること</h2>
+      <ul>
+        <li>このツールで何ができるか</li>
+        <li>最短の使い方</li>
+        <li>各入力欄の意味</li>
+        <li>ボタンの役割</li>
+        <li>つまずきやすいポイント</li>
+      </ul>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div class="eyebrow">01. What it is</div>
+        <h2>このツールは何をするもの？</h2>
+        <p>
+          キャラクター設計や画像生成向けの文章を、
+          <strong>「何を作りたいか」→「どう見せたいか」→「避けたいもの」</strong>
+          の順で整理して、完成プロンプトにまとめるツールです。
+        </p>
+        <ul>
+          <li>長文プロンプトが苦手でも使いやすい</li>
+          <li>テンプレから始められる</li>
+          <li>書き直しより「追記」で進めやすい</li>
+          <li>ローカルで完結するので扱いが軽い</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="eyebrow">02. Best for</div>
+        <h2>向いている人</h2>
+        <ul>
+          <li>まずは簡単に形にしたい人</li>
+          <li>プロンプトをゼロから書くのがしんどい人</li>
+          <li>ChatGPTや画像生成AIに貼る文章を整えたい人</li>
+          <li>重たい設計画面より、軽い実用版がほしい人</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="eyebrow">03. Quick start</div>
+      <h2>最短の使い方</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>テンプレを選ぶ</h3>
+          <p>最初はテンプレかサンプル投入から始めるのがおすすめです。空欄から全部埋める必要はありません。</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>必要な項目だけ入れる</h3>
+          <p>テーマ、雰囲気、髪、目、衣装、光、ネガティブなど、重要なところだけ追記します。</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>右側の完成文を確認</h3>
+          <p>入力に応じて自動で完成プロンプトが更新されます。全体の流れが崩れていないかを見るだけでOKです。</p>
+        </div>
+        <div class="step">
+          <div class="num">4</div>
+          <h3>コピーして使う</h3>
+          <p>完成したら <span class="kbd">コピー</span> を押して、そのままChatGPTや画像生成AIへ貼り付けます。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="eyebrow">04. Input fields</div>
+      <h2>入力欄の意味</h2>
+      <div class="tableish">
+        <div class="row">
+          <div><strong>テーマ</strong></div>
+          <div>何を作りたいか。ざっくり1文で十分です。例：近未来の女性キャラを作りたい。</div>
+        </div>
+        <div class="row">
+          <div><strong>目的</strong></div>
+          <div>何のために使うか。例：画像生成AIに貼る、キャラ案を固める、サムネ用に整える。</div>
+        </div>
+        <div class="row">
+          <div><strong>世界観 / 雰囲気</strong></div>
+          <div>全体の空気感を決める欄です。ここが土台になります。</div>
+        </div>
+        <div class="row">
+          <div><strong>顔まわり</strong></div>
+          <div>髪、目、表情など。キャラの印象が出やすいので優先度高めです。</div>
+        </div>
+        <div class="row">
+          <div><strong>衣装 / 全身</strong></div>
+          <div>服、体格、立ち姿。全身まで伸ばしたいときに入れます。</div>
+        </div>
+        <div class="row">
+          <div><strong>光 / 背景</strong></div>
+          <div>見た目の完成度に効く欄です。迷ったら「soft light」「minimal background」でも十分です。</div>
+        </div>
+        <div class="row">
+          <div><strong>避けたい表現</strong></div>
+          <div>崩れやすい点を先に止める欄です。例：extra fingers, messy anatomy, cluttered background。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div class="eyebrow">05. Buttons</div>
+        <h2>ボタンの役割</h2>
+        <ul>
+          <li><strong>コピー</strong>：今表示されている完成プロンプトをコピーします</li>
+          <li><strong>サンプル投入</strong>：例文を一気に入れます</li>
+          <li><strong>クリア</strong>：入力内容を空にします</li>
+        </ul>
+        <p>
+          Lite版は、あえて機能を絞っています。
+          「保存形式をいろいろ選ぶ」「YAMLやJSONでも見る」みたいな複雑さは削ってあります。
+        </p>
+      </div>
+      <div class="card">
+        <div class="eyebrow">06. Auto save</div>
+        <h2>入力は自動で残る</h2>
+        <p>
+          このツールはブラウザのローカル保存を使って、入力内容を自動で残します。
+          同じブラウザで開き直すと、前回の内容が残ることがあります。
+        </p>
+        <ul>
+          <li>残したくないときは <span class="kbd">クリア</span> を使う</li>
+          <li>別テーマで作るときも、最初にクリアすると混ざりにくい</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="note">
+      <div class="mini">07. Recommended workflow</div>
+      <h3>おすすめの流れ</h3>
+      <ul>
+        <li>最初はサンプルを入れる</li>
+        <li>そこから「髪」「目」「衣装」だけ変える</li>
+        <li>次に「世界観」と「ネガティブ」を足す</li>
+        <li>最後に完成文をコピーしてAIへ貼る</li>
+      </ul>
+      <p>
+        つまり、Lite版は「設計する」よりも「まず使える形にする」ための版です。
+      </p>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <div class="eyebrow">08. Tips</div>
+      <h2>うまく使うコツ</h2>
+      <ul>
+        <li>全部埋めなくていい。重要な3〜5項目だけでも動きます</li>
+        <li>世界観は文章、細部は単語で入れると整いやすいです</li>
+        <li>崩れやすいときほどネガティブ欄を先に入れるのが有効です</li>
+        <li>同じキャラを量産したいなら、世界観を固定して髪・表情・衣装だけ変えると使いやすいです</li>
+      </ul>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <div class="eyebrow">09. FAQ</div>
+      <h2>よくあるつまずき</h2>
+      <div class="faq-grid">
+        <div class="faq">
+          <h3>Q. 空欄があっても使える？</h3>
+          <p>使えます。Lite版は、全部埋めることより「まず完成文を出す」ことを優先しています。</p>
+        </div>
+        <div class="faq">
+          <h3>Q. どこから触ればいい？</h3>
+          <p>サンプル投入 → テーマ変更 → 髪と目を修正、が一番ラクです。</p>
+        </div>
+        <div class="faq">
+          <h3>Q. 元の高機能版との違いは？</h3>
+          <p>Lite版は、分岐と設定項目を減らして初見でも迷いにくくしています。</p>
+        </div>
+        <div class="faq">
+          <h3>Q. 本格運用もできる？</h3>
+          <p>できます。ただし細かい構造管理や複数出力が必要なら、上位版の方が向いています。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Character Prompt Builder Lite 用の単体HTML取説。ローカル保存の挙動はブラウザ依存です。配布する場合は、Lite本体HTMLとこの取説HTMLを同じフォルダに置くのがおすすめです。
+    </div>
+  </div>
+</body>
+</html>
