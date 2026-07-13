@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Note偏差値診断 Prompt Builder</title>
+<style>
+:root{
+  --bg:#E9E9E9; --surface:#FFFFFF; --surface-v:#F4F4F2;
+  --text:#111111; --text-sub:#333333; --muted:#6B6B6B;
+  --border:#DDDDDD; --accent:#000000;
+  --font-display:'Inter','Helvetica Neue',sans-serif;
+  --font-body:'Noto Sans JP','Hiragino Sans',sans-serif;
+  --font-mono:'JetBrains Mono','IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.8;letter-spacing:.02em}
+.wrap{max-width:720px;margin:0 auto;padding:32px 16px 96px}
+@media(min-width:600px){.wrap{padding:48px 24px 96px}}
+
+/* header */
+.nav{font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+h1{font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
+@media(min-width:600px){h1{font-size:34px}}
+.credit{margin-top:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;font-size:12px;color:var(--text-sub);line-height:1.7}
+.credit .c-row{display:flex;gap:12px;align-items:baseline}
+.credit .c-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;min-width:88px;flex-shrink:0}
+.credit a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--border)}
+.credit a:hover{border-bottom-color:var(--accent)}
+
+/* progress */
+.progress{margin:32px 0 16px}
+.p-meta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.p-step{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.p-title{font-family:var(--font-body);font-size:13px;font-weight:700;color:var(--text)}
+.p-bar{height:4px;background:var(--surface-v);border:1px solid var(--border);border-radius:1px;overflow:hidden}
+.p-bar i{display:block;height:100%;background:var(--accent);width:0%;transition:width 200ms ease}
+.dots{display:flex;gap:8px;margin-top:12px}
+.dot{flex:1;height:32px;border:1px solid var(--border);border-radius:2px;background:var(--surface);font-family:var(--font-mono);font-size:11px;color:var(--muted);cursor:pointer;transition:all 150ms ease}
+.dot.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dot.done{border-color:var(--accent);color:var(--text)}
+
+/* step cards */
+.step{display:none;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px 20px}
+@media(min-width:600px){.step{padding:32px}}
+.step.active{display:block}
+.step h2{font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.step .s-desc{font-size:12px;color:var(--muted);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+
+.field{margin-bottom:20px}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
+.field .hint{font-size:11px;color:var(--muted);margin-bottom:6px}
+.field input[type=number],.field input[type=text]{width:100%;background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:14px 12px;font-family:var(--font-mono);font-size:16px;color:var(--text);outline:none;transition:border-color 150ms ease}
+.field input:focus{border-color:var(--accent)}
+.calc{font-family:var(--font-mono);font-size:12px;color:var(--muted);background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:10px 12px;margin-bottom:20px}
+.calc b{color:var(--text);font-weight:600}
+
+.tgl{display:flex;align-items:center;justify-content:space-between;background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:14px 12px;cursor:pointer;transition:all 150ms ease;margin-bottom:12px}
+.tgl.on{border-color:var(--accent);background:#fff}
+.tgl .t-label{font-size:13px;color:var(--text-sub)}
+.tgl .t-state{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:var(--muted)}
+.tgl.on .t-state{color:var(--accent);font-weight:600}
+
+/* nav buttons */
+.btns{display:flex;gap:12px;margin-top:24px}
+button{font-family:var(--font-mono);letter-spacing:.08em;cursor:pointer;border-radius:2px;transition:opacity 150ms ease}
+.btn-next{flex:1;background:var(--accent);color:#fff;border:none;padding:16px;font-size:14px}
+.btn-next:hover{opacity:.8}
+.btn-back{background:transparent;color:var(--accent);border:1px solid var(--accent);padding:16px 20px;font-size:14px}
+
+/* result */
+.big{display:flex;align-items:baseline;gap:24px;flex-wrap:wrap;margin-bottom:20px}
+.big .lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px}
+.big .num{font-family:var(--font-display);font-size:56px;font-weight:700;line-height:1;letter-spacing:-.02em}
+.big .num2{font-family:var(--font-display);font-size:36px;font-weight:700;line-height:1}
+.uni{border:1px solid var(--accent);border-radius:2px;padding:16px;margin-bottom:20px}
+.uni .u-name{font-size:16px;font-weight:700}
+.uni .u-meta{font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:4px}
+.uni .stars{font-size:13px;letter-spacing:2px;margin-top:6px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.kpi .k{background:var(--surface-v);border:1px solid var(--border);border-radius:2px;padding:10px}
+.kpi .k .kl{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.kpi .k .kv{font-family:var(--font-mono);font-size:17px;font-weight:600;margin-top:2px}
+.kpi .k .kv small{font-size:10px;color:var(--muted);font-weight:400}
+.bar-row{margin-bottom:12px}
+.bar-head{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;margin-bottom:4px}
+.bar-head .bn{color:var(--text-sub)}
+.bar{height:6px;background:var(--surface-v);border:1px solid var(--border);border-radius:1px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0%;transition:width 150ms ease}
+.note{font-size:11px;color:var(--muted);margin-top:16px}
+
+/* prompt cards */
+.p-out{border:1px solid var(--border);border-radius:2px;margin-bottom:16px;background:var(--surface)}
+.p-out .po-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+.p-out .po-title{font-size:13px;font-weight:700}
+.p-out .po-sub{font-size:11px;color:var(--muted);display:block;font-weight:400}
+button.copy{background:var(--accent);color:#fff;border:none;padding:12px 16px;font-size:12px;white-space:nowrap;flex-shrink:0}
+button.copy.done{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+details{border-top:1px solid var(--border)}
+details summary{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--muted);padding:10px 16px;cursor:pointer;list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+pre.prompt{background:var(--surface-v);border-top:1px solid var(--border);padding:16px;font-family:var(--font-mono);font-size:11px;line-height:1.6;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-all;color:var(--text-sub)}
+
+footer{margin-top:48px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:none;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="nav">NOTE HENSACHI DIAGNOSIS — PROMPT BUILDER</div>
+<h1>Note偏差値診断ビルダー</h1>
+
+<div class="credit">
+  <div class="c-row"><span class="c-label">Original</span><span>営業fafa｜note業界No.1営業マン（<a href="https://note.com/kohana1112" target="_blank" rel="noopener">note.com/kohana1112</a>）</span></div>
+  <div class="c-row"><span class="c-label">Tool by</span><span>KITAcore — 原作プロンプトをHTMLツール化</span></div>
+</div>
+
+<!-- progress -->
+<div class="progress">
+  <div class="p-meta"><span class="p-step" id="pStep">STEP 1 / 6</span><span class="p-title" id="pTitle">継続・蓄積</span></div>
+  <div class="p-bar"><i id="pBar"></i></div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<!-- STEP 1 継続・蓄積 -->
+<section class="step" data-title="継続・蓄積">
+  <h2>01. Continuity — 継続・蓄積</h2>
+  <p class="s-desc">noteをどれだけ続けて積み上げてきたか。</p>
+  <div class="field"><label>活動期間（ヶ月）</label><div class="hint">noteを始めてからの月数</div><input type="number" id="months" min="0" inputmode="numeric" placeholder="0"></div>
+  <div class="field"><label>連続投稿数（日）</label><div class="hint">現在の連続投稿日数</div><input type="number" id="streak" min="0" inputmode="numeric" placeholder="0"></div>
+  <div class="field"><label>総投稿数</label><div class="hint">これまでの投稿記事数</div><input type="number" id="posts" min="0" inputmode="numeric" placeholder="0"></div>
+</section>
+
+<!-- STEP 2 収益化 -->
+<section class="step" data-title="収益化">
+  <h2>02. Revenue — 収益化</h2>
+  <p class="s-desc">直近3ヶ月の売上（有料記事・メンバーシップ等の合計）。</p>
+  <div class="field"><label>直近3ヶ月収益（円）</label><div class="hint">単位は入力不要。数字のみ</div><input type="number" id="revenue" min="0" inputmode="numeric" placeholder="0"></div>
+</section>
+
+<!-- STEP 3 影響力 -->
+<section class="step" data-title="影響力">
+  <h2>03. Influence — 影響力</h2>
+  <p class="s-desc">フォロワー比は自動計算されます（フォロワー ÷ フォロー）。</p>
+  <div class="field"><label>フォロワー数</label><input type="number" id="followers" min="0" inputmode="numeric" placeholder="0"></div>
+  <div class="field"><label>フォロー数</label><div class="hint">あなたがフォローしている数</div><input type="number" id="following" min="0" inputmode="numeric" placeholder="0"></div>
+  <div class="calc">フォロワー比（自動計算）: <b id="ratioDisp">0.0</b></div>
+  <div class="field"><label>月間ビュー数</label><div class="hint">noteダッシュボード参照</div><input type="number" id="views" min="0" inputmode="numeric" placeholder="0"></div>
+</section>
+
+<!-- STEP 4 エンゲージメント -->
+<section class="step" data-title="エンゲージメント">
+  <h2>04. Engagement — エンゲージメント</h2>
+  <p class="s-desc">スキ率は自動計算されます（月間スキ ÷ 月間ビュー × 100）。</p>
+  <div class="field"><label>月間スキ数</label><div class="hint">noteダッシュボード参照</div><input type="number" id="likes" min="0" inputmode="numeric" placeholder="0"></div>
+  <div class="calc">月間平均スキ率（自動計算）: <b id="rateDisp">0.0</b></div>
+  <div class="field"><label>月間コメント数</label><div class="hint">noteダッシュボード参照</div><input type="number" id="comments" min="0" inputmode="numeric" placeholder="0"></div>
+</section>
+
+<!-- STEP 5 note愛 + 氏名 -->
+<section class="step" data-title="note愛ボーナス">
+  <h2>05. Bonus — note愛ボーナス</h2>
+  <p class="s-desc">経験があるものをタップしてください。学生証を作る場合は氏名も入力。</p>
+  <div class="tgl" id="tglMember" data-key="member"><span class="t-label">メンバーシップ加入経験（+4）</span><span class="t-state">なし</span></div>
+  <div class="tgl" id="tglPurchase" data-key="purchase"><span class="t-label">有料記事購入経験（+3）</span><span class="t-state">なし</span></div>
+  <div class="tgl" id="tglSupport" data-key="support"><span class="t-label">サポート（チップ）経験（+3）</span><span class="t-state">なし</span></div>
+  <div class="field" style="margin-top:24px"><label>氏名（学生証バージョン用・任意）</label><input type="text" id="uname" placeholder="ここに名前を入力"></div>
+</section>
+
+<!-- STEP 6 結果 -->
+<section class="step" data-title="結果とプロンプト">
+  <h2>06. Result — 診断結果（参考値）</h2>
+  <p class="s-desc">元プロンプトの採点表を再現した参考値です。正式な結果はChatGPTのSTEP1出力を使用してください。</p>
+
+  <div class="big">
+    <div><span class="lbl">Note偏差値</span><span class="num" id="pvDev">30.0</span></div>
+    <div><span class="lbl">最終戦闘力</span><span class="num2" id="pvPower">0</span></div>
+  </div>
+
+  <div class="uni">
+    <div class="u-name" id="pvUni">—</div>
+    <div class="u-meta"><span id="pvRank">—</span> ／ 総合評価 <span id="pvGrade">—</span></div>
+    <div class="stars" id="pvStars">—</div>
+  </div>
+
+  <div class="kpi">
+    <div class="k"><div class="kl">Base</div><div class="kv"><span id="pvBase">0</span><small> /100</small></div></div>
+    <div class="k"><div class="kl">Bonus</div><div class="kv">+<span id="pvBonus">0</span><small> /10</small></div></div>
+    <div class="k"><div class="kl">Total</div><div class="kv"><span id="pvTotal">0</span><small> /110</small></div></div>
+  </div>
+
+  <div class="bar-row"><div class="bar-head"><span class="bn">継続・蓄積</span><span><span id="vCont">0</span> /30</span></div><div class="bar"><i id="bCont"></i></div></div>
+  <div class="bar-row"><div class="bar-head"><span class="bn">収益化</span><span><span id="vRev">0</span> /15</span></div><div class="bar"><i id="bRev"></i></div></div>
+  <div class="bar-row"><div class="bar-head"><span class="bn">影響力</span><span><span id="vInf">0</span> /25</span></div><div class="bar"><i id="bInf"></i></div></div>
+  <div class="bar-row"><div class="bar-head"><span class="bn">エンゲージメント</span><span><span id="vEng">0</span> /30</span></div><div class="bar"><i id="bEng"></i></div></div>
+
+  <h2 style="margin-top:32px">07. Prompts — コピーして使う</h2>
+  <p class="s-desc">① STEP1をChatGPT（Thinking推奨）へ → JSONが返る → ② アイコン画像＋STEP2で診断カード。学生証はSTEP2の代わりにSTEP2-2。</p>
+
+  <div class="p-out">
+    <div class="po-head"><span class="po-title">STEP1 — 計算<span class="po-sub">あなたの数値埋め込み済み</span></span><button class="copy" data-target="out1">COPY</button></div>
+    <details><summary>内容を確認</summary><pre class="prompt" id="out1"></pre></details>
+  </div>
+  <div class="p-out">
+    <div class="po-head"><span class="po-title">STEP2 — 診断カード画像<span class="po-sub">アイコン画像と一緒に送信</span></span><button class="copy" data-target="out2">COPY</button></div>
+    <details><summary>内容を確認</summary><pre class="prompt" id="out2"></pre></details>
+  </div>
+  <div class="p-out">
+    <div class="po-head"><span class="po-title">STEP2-2 — 学生証バージョン<span class="po-sub">氏名＋計算結果JSON埋め込み済み</span></span><button class="copy" data-target="out3">COPY</button></div>
+    <details><summary>内容を確認</summary><pre class="prompt" id="out3"></pre></details>
+  </div>
+  <p class="note">※ STEP2-2のJSONは本ツールの計算値です。ChatGPTのSTEP1出力を使う場合はJSON部分を差し替えてください。<br>※ 入力値はこのブラウザに自動保存されます。</p>
+</section>
+
+<!-- wizard nav -->
+<div class="btns">
+  <button class="btn-back" id="btnBack" style="visibility:hidden">戻る</button>
+  <button class="btn-next" id="btnNext">次へ →</button>
+</div>
+
+<footer>
+  Original Prompt: 営業fafa｜note業界No.1営業マン ／ Tool: KITACORE<br>
+  本ツールはエンタメ診断です。偏差値・大学ランクは実際の能力や社会的評価を保証するものではありません。
+</footer>
+</div>
+
+<!-- ==================== RAW PROMPTS ==================== -->
+<script type="text/plain" id="rawStep1">
+# Noteアカウント偏差値診断｜STEP1 計算専用プロンプト（完全安定版）
+
+## 目的
+
+ユーザーが提出した以下2点をもとに、Noteアカウントの戦闘力を数値化する。
+
+1. Noteアカウントのアイコン画像
+2. Note運用実績データ
+
+このSTEP1では、**計算と判定だけ**を行う。
+画像生成、装飾、デザイン演出、講評生成は一切行わない。
+
+---
+
+# この診断における「Note戦闘力」の定義
+
+この診断におけるNote戦闘力とは、収益額だけではなく、以下を総合的に数値化したものとする。
+
+- Noteを長く楽しんでいること
+- 継続して投稿していること
+- 投稿を積み上げていること
+- 読者に読まれていること
+- スキやコメントなどの反応があること
+- 収益化も一定程度できていること
+- Note内で読む・買う・応援する活動もしていること
+
+重要：
+
+この診断は「収益化力だけ」を測るものではない。
+Noteを長く、深く、楽しく使っている人ほど数字が出やすい設計とする。
+
+---
+
+# STEP1の絶対ルール
+
+- アイコン画像はこのSTEP1では**スコアに反映しない**
+- アイコン画像の雰囲気で数値補正しない
+- 入力された数値のみを使用する
+- 入力値を推測しない
+- 入力値を補正しない
+- 画像生成は行わない
+- 講評文、説明文、感想文は出力しない
+- 出力は**最終確定JSONのみ**
+- JSON以外の文章は絶対に出力しない
+
+---
+
+# ユーザー入力形式
+
+ユーザーはアイコン画像をアップロードしたうえで、以下の形式で数値のみを入力する。
+
+単位は禁止。
+円、%、PV、人、日、ヶ月などは入力しない。
+
+特別ボーナス項目は、以下のルールで入力する。
+
+- あり：1
+- なし：0
+
+```json
+__USER_INPUT_JSON__
+```
+
+---
+
+# 数値表示ルール
+
+- 表示数値は、小数点第2位を四捨五入し、小数点第1位まで表示する
+- 切り捨て・切り上げは禁止
+- 四捨五入は最終確定時に一度だけ行う
+- 整数スコアは整数で出力する
+- 偏差値のみ小数点第1位で出力する
+
+---
+
+# スコアリングルール
+
+基本スコアは100点満点とする。
+
+基本スコアは以下4カテゴリの合計で算出する。
+
+- 継続・蓄積スコア：最大30点
+- 収益化スコア：最大15点
+- 影響力スコア：最大25点
+- エンゲージメントスコア：最大30点
+
+基本スコア = 継続・蓄積スコア + 収益化スコア + 影響力スコア + エンゲージメントスコア
+
+---
+
+# 1. 継続・蓄積スコア：最大30点
+
+継続・蓄積スコアは以下3項目の合計で算出する。
+
+- 活動期間スコア：最大5点
+- 総投稿数スコア：最大15点
+- 連続投稿数スコア：最大10点
+
+継続・蓄積スコア = 活動期間スコア + 総投稿数スコア + 連続投稿数スコア
+
+---
+
+## 1-1. 活動期間スコア：最大5点
+
+| 活動期間_ヶ月 | 点数 |
+|---|---:|
+| 0〜1 | 1 |
+| 2〜3 | 2 |
+| 4〜6 | 3 |
+| 7〜11 | 4 |
+| 12以上 | 5 |
+
+---
+
+## 1-2. 総投稿数スコア：最大15点
+
+| 総投稿数 | 点数 |
+|---|---:|
+| 0〜29 | 3 |
+| 30〜99 | 6 |
+| 100〜199 | 10 |
+| 200〜299 | 13 |
+| 300以上 | 15 |
+
+---
+
+## 1-3. 連続投稿数スコア：最大10点
+
+| 連続投稿数_日 | 点数 |
+|---|---:|
+| 0〜7 | 1 |
+| 8〜30 | 3 |
+| 31〜100 | 6 |
+| 101〜199 | 8 |
+| 200以上 | 10 |
+
+---
+
+# 2. 収益化スコア：最大15点
+
+収益化スコアは、直近3ヶ月収益のみで算出する。
+
+| 直近3ヶ月収益_円 | 点数 |
+|---|---:|
+| 0 | 0 |
+| 1〜10000 | 3 |
+| 10001〜100000 | 5 |
+| 100001〜300000 | 8 |
+| 300001〜500000 | 12 |
+| 500001以上 | 15 |
+
+---
+
+# 3. 影響力スコア：最大25点
+
+影響力スコアは以下3項目の合計で算出する。
+
+- フォロワー数スコア：最大10点
+- フォロワー比スコア：最大3点
+- 月間ビュー数スコア：最大12点
+
+影響力スコア = フォロワー数スコア + フォロワー比スコア + 月間ビュー数スコア
+
+---
+
+## 3-1. フォロワー数スコア：最大10点
+
+| フォロワー数 | 点数 |
+|---|---:|
+| 0〜500 | 1 |
+| 501〜1000 | 3 |
+| 1001〜2500 | 6 |
+| 2501〜5000 | 8 |
+| 5001以上 | 10 |
+
+---
+
+## 3-2. フォロワー比スコア：最大3点
+
+フォロワー比は、ユーザーが入力した値をそのまま使用する。
+再計算は禁止。
+
+| フォロワー比 | 点数 |
+|---|---:|
+| 0〜1.0 | 1 |
+| 1.1〜3.0 | 2 |
+| 3.1以上 | 3 |
+
+---
+
+## 3-3. 月間ビュー数スコア：最大12点
+
+| 月間ビュー数 | 点数 |
+|---|---:|
+| 0〜5000 | 3 |
+| 5001〜10000 | 5 |
+| 10001〜30000 | 8 |
+| 30001〜100000 | 10 |
+| 100001以上 | 12 |
+
+---
+
+# 4. エンゲージメントスコア：最大30点
+
+エンゲージメントスコアは以下3項目の合計で算出する。
+
+- 月間スキ数スコア：最大10点
+- 月間平均スキ率スコア：最大10点
+- 月間コメント数スコア：最大10点
+
+エンゲージメントスコア = 月間スキ数スコア + 月間平均スキ率スコア + 月間コメント数スコア
+
+---
+
+## 4-1. 月間スキ数スコア：最大10点
+
+| 月間スキ数 | 点数 |
+|---|---:|
+| 0〜100 | 1 |
+| 101〜1000 | 3 |
+| 1001〜2500 | 6 |
+| 2501〜4500 | 8 |
+| 4501以上 | 10 |
+
+---
+
+## 4-2. 月間平均スキ率スコア：最大10点
+
+月間平均スキ率は、ユーザーが入力した値をそのまま使用する。
+再計算は禁止。
+
+| 月間平均スキ率 | 点数 |
+|---|---:|
+| 0〜1.0 | 1 |
+| 1.1〜5.0 | 3 |
+| 5.1〜8.0 | 6 |
+| 8.1〜15.0 | 8 |
+| 15.1以上 | 10 |
+
+---
+
+## 4-3. 月間コメント数スコア：最大10点
+
+| 月間コメント数 | 点数 |
+|---|---:|
+| 0〜10 | 1 |
+| 11〜100 | 3 |
+| 101〜300 | 6 |
+| 301〜600 | 8 |
+| 601以上 | 10 |
+
+---
+
+# 5. note愛ボーナス：最大+10点
+
+note愛ボーナスは、基本スコア100点には含めない。
+note愛ボーナスは、最終戦闘力にのみ加算する。
+
+note愛ボーナスは以下3項目の合計で算出する。
+
+- メンバーシップ加入経験ボーナス：最大+4点
+- 有料記事購入経験ボーナス：最大+3点
+- サポート経験ボーナス：最大+3点
+
+note愛ボーナス = メンバーシップ加入経験ボーナス + 有料記事購入経験ボーナス + サポート経験ボーナス
+
+---
+
+## 5-1. メンバーシップ加入経験ボーナス：最大+4点
+
+| メンバーシップ加入経験 | ボーナス |
+|---|---:|
+| 0 | 0 |
+| 1 | 4 |
+
+---
+
+## 5-2. 有料記事購入経験ボーナス：最大+3点
+
+| 有料記事購入経験 | ボーナス |
+|---|---:|
+| 0 | 0 |
+| 1 | 3 |
+
+---
+
+## 5-3. サポート経験ボーナス：最大+3点
+
+| サポート経験 | ボーナス |
+|---|---:|
+| 0 | 0 |
+| 1 | 3 |
+
+---
+
+# 6. 基本スコア・最終戦闘力・偏差値
+
+## 基本スコア
+
+基本スコア = 継続・蓄積スコア + 収益化スコア + 影響力スコア + エンゲージメントスコア
+
+基本スコアは最大100点。
+
+note愛ボーナスは基本スコアに含めない。
+
+---
+
+## 最終戦闘力
+
+最終戦闘力 = 基本スコア + note愛ボーナス
+
+最終戦闘力は最大110点。
+
+---
+
+## 偏差値
+
+偏差値は以下の固定式のみを使う。
+
+偏差値 = 30 + 基本スコア × 0.5
+
+重要：
+
+- 偏差値計算にはnote愛ボーナスを絶対に含めない
+- 偏差値は基本スコアのみで算出する
+- 最終戦闘力で偏差値を計算してはならない
+
+表示ルール：
+
+- 小数点第1位まで表示
+- 最低30.0
+- 最高80.0
+- 偏差値に「/100」「点」「満点」は付けない
+
+---
+
+# 7. 大学・ランク・星評価マッピング
+
+偏差値は小数点第1位まで確定した後に、下記マッピング表へ当てはめる。
+
+重要：
+
+- 偏差値帯は上から順番に確認する
+- 最初に一致した1つだけを採用する
+- 複数の大学名・ランクを出力してはならない
+- 偏差値・大学ランク・大学名・総合評価ランク・星評価は、基本スコアから算出した偏差値のみで判定する
+- note愛ボーナスや最終戦闘力で大学ランクを変えてはならない
+
+| 偏差値 | 大学ランク | 大学名 | 総合評価ランク | 星評価 |
+|---|---|---|---|---|
+| 78.0以上 | 神域 | ハーバード大学（ロースクール） | SSS+ | ★★★★★★★★★★ |
+| 75.0〜77.9 | 伝説級 | 東京大学（理科三類） | SSS | ★★★★★★★★★☆ |
+| 72.0〜74.9 | 超天才 | 京都大学（医学部） | SS | ★★★★★★★★☆☆ |
+| 69.0〜71.9 | 超エリート | 東京大学（文科一類） | S+ | ★★★★★★★★☆☆ |
+| 66.0〜68.9 | エリート | 京都大学（法学部） | S | ★★★★★★★☆☆☆ |
+| 63.0〜65.9 | 名門上位 | 慶應義塾大学（経済学部） | A+ | ★★★★★★★☆☆☆ |
+| 60.0〜62.9 | 名門 | 早稲田大学（商学部） | A | ★★★★★★☆☆☆☆ |
+| 57.0〜59.9 | 上位私大 | 明治大学（政治経済学部） | B+ | ★★★★★★☆☆☆☆ |
+| 54.0〜56.9 | 中堅上位 | MARCH / 関関同立 | B | ★★★★★☆☆☆☆☆ |
+| 51.0〜53.9 | 中堅 | 日東駒専 / 産近甲龍 | C | ★★★★☆☆☆☆☆☆ |
+| 46.0〜50.9 | 基礎固め中 | 地方中堅私大 | D | ★★★☆☆☆☆☆☆☆ |
+| 46.0未満 | 発展途上 | Note基礎知識習得スクール | E | ★★☆☆☆☆☆☆☆☆ |
+
+---
+
+# 8. 計算手順
+
+必ず以下の順番で計算する。
+
+1. 活動期間スコアを確定する
+2. 総投稿数スコアを確定する
+3. 連続投稿数スコアを確定する
+4. 継続・蓄積スコアを計算する
+5. 収益化スコアを確定する
+6. フォロワー数スコアを確定する
+7. フォロワー比スコアを確定する
+8. 月間ビュー数スコアを確定する
+9. 影響力スコアを計算する
+10. 月間スキ数スコアを確定する
+11. 月間平均スキ率スコアを確定する
+12. 月間コメント数スコアを確定する
+13. エンゲージメントスコアを計算する
+14. 基本スコアを計算する
+15. メンバーシップ加入経験ボーナスを確定する
+16. 有料記事購入経験ボーナスを確定する
+17. サポート経験ボーナスを確定する
+18. note愛ボーナスを計算する
+19. 最終戦闘力を計算する
+20. 基本スコアのみを使って偏差値を計算する
+21. 偏差値を小数点第1位に丸める
+22. 確定した偏差値をマッピング表に当てはめる
+23. 大学ランク、大学名、総合評価ランク、星評価を確定する
+24. 検算する
+25. 最終JSONのみ出力する
+
+---
+
+# 9. 検算ルール
+
+出力前に必ず内部確認する。
+
+---
+
+## 9-1. カテゴリ計算の検算
+
+- 活動期間スコア + 総投稿数スコア + 連続投稿数スコア = 継続・蓄積スコア になっている
+- フォロワー数スコア + フォロワー比スコア + 月間ビュー数スコア = 影響力スコア になっている
+- 月間スキ数スコア + 月間平均スキ率スコア + 月間コメント数スコア = エンゲージメントスコア になっている
+- 継続・蓄積スコア + 収益化スコア + 影響力スコア + エンゲージメントスコア = 基本スコア になっている
+
+---
+
+## 9-2. ボーナス計算の検算
+
+- メンバーシップ加入経験ボーナス + 有料記事購入経験ボーナス + サポート経験ボーナス = note愛ボーナス になっている
+- 基本スコア + note愛ボーナス = 最終戦闘力 になっている
+- note愛ボーナスが基本スコアに含まれていない
+- note愛ボーナスが偏差値計算に含まれていない
+- note愛ボーナスで大学ランクを変更していない
+
+---
+
+## 9-3. 偏差値・ランクの検算
+
+- 偏差値 = 30 + 基本スコア × 0.5 になっている
+- 偏差値が小数点第1位で表示されている
+- 偏差値帯と大学ランクが一致している
+- 偏差値帯と大学名が一致している
+- 偏差値帯と総合評価ランクが一致している
+- 偏差値帯と星評価が一致している
+
+---
+
+## 9-4. 上限確認
+
+- 継続・蓄積スコアが30点を超えていない
+- 収益化スコアが15点を超えていない
+- 影響力スコアが25点を超えていない
+- エンゲージメントスコアが30点を超えていない
+- 基本スコアが100点を超えていない
+- note愛ボーナスが10点を超えていない
+- 最終戦闘力が110点を超えていない
+- 各項目で二重加点していない
+
+不一致がある場合は、修正してから出力する。
+
+---
+
+# 10. 出力ルール
+
+出力は**以下のJSONのみ**とする。
+
+前置き、解説、講評、補足、見出しは禁止。
+
+```json
+{
+  "活動期間スコア": 0,
+  "総投稿数スコア": 0,
+  "連続投稿数スコア": 0,
+  "継続・蓄積スコア": 0,
+  "収益化スコア": 0,
+  "フォロワー数スコア": 0,
+  "フォロワー比スコア": 0,
+  "月間ビュー数スコア": 0,
+  "影響力スコア": 0,
+  "月間スキ数スコア": 0,
+  "月間平均スキ率スコア": 0,
+  "月間コメント数スコア": 0,
+  "エンゲージメントスコア": 0,
+  "基本スコア計算式": "0 + 0 + 0 + 0 = 0",
+  "基本スコア": 0,
+  "メンバーシップ加入経験ボーナス": 0,
+  "有料記事購入経験ボーナス": 0,
+  "サポート経験ボーナス": 0,
+  "note愛ボーナス計算式": "0 + 0 + 0 = 0",
+  "note愛ボーナス": 0,
+  "最終戦闘力計算式": "0 + 0 = 0",
+  "最終戦闘力": 0,
+  "偏差値": 0.0,
+  "大学ランク": "",
+  "大学名": "",
+  "総合評価ランク": "",
+  "星評価": ""
+}
+```
+
+重要：
+
+- 出力時は上のキー名をそのまま使用する
+- キー名を変更しない
+- キーを追加しない
+- キーを削除しない
+- 数値・大学名・ランク・星評価は検算済みの最終値を入れる
+- JSON以外は絶対に出力しない
+- アイコン画像の印象でスコアを変えない
+- 入力されていない数値を推測しない
+- 入力値を補正しない
+- 画像生成は行わない
+</script>
+
+<script type="text/plain" id="rawStep2">
+# Noteアカウント偏差値診断｜STEP2 画像生成専用プロンプト（最終完成版）
+
+## 目的
+
+直前のSTEP1で出力されたJSONを唯一の情報源として使用し、
+「Noteアカウント戦闘力診断カード画像」を1枚生成する。
+
+このSTEP2は画像生成専用であり、
+計算・再判定・再評価は一切行わない。
+
+STEP2の役割は、
+直前のSTEP1 JSONを固定UIへ転記して画像化することのみである。
+
+---
+
+# 使用する情報
+
+このSTEP2では、直前のSTEP1で出力されたJSONを使用する。
+
+参照可能項目：
+
+- 継続・蓄積スコア
+- 収益化スコア
+- 影響力スコア
+- エンゲージメントスコア
+- 基本スコア
+- note愛ボーナス
+- 最終戦闘力
+- 偏差値
+- 大学ランク
+- 大学名
+- 総合評価ランク
+- 星評価
+
+加えて、ユーザーがアップロードしたアイコン画像を使用する。
+
+アイコン画像は以下用途のみ許可：
+
+- 円形アイコン表示
+- 差し色
+- アイコン分析コメント
+
+重要：
+
+アイコン画像の印象を、
+
+- スコア
+- 偏差値
+- 大学名
+- 大学ランク
+- 総合評価ランク
+- 星評価
+
+へ反映してはならない。
+
+---
+
+# 最重要ルール
+
+以下は禁止。
+
+- 数値の再計算
+- 偏差値の再計算
+- ランク変更
+- 大学名変更
+- 星評価変更
+- 実数データ表示
+- 入力値推測
+- アイコン印象による評価補正
+- STEP1に存在しないランク追加
+- デザイン都合による数値変更
+
+直前のSTEP1 JSONを完全コピーして使用する。
+
+---
+
+# 画像仕様
+
+- 縦長ポスター
+- 1080×1350推奨
+- SNS向け
+- 高密度UI
+- スマホ可読性重視
+
+---
+
+# デザイン世界観
+
+以下で統一する。
+
+- 高級感
+- 日本語インフォグラフィック
+- 大学合格通知風
+- ゲームUI風
+- ブラックカード風
+- ダーク背景
+- 金装飾
+- 白文字＋金文字
+- アイコン色を差し色として少量使用
+
+禁止：
+
+- プレゼン資料風
+- シンプルすぎる構成
+- 安っぽい装飾
+- ポップすぎる配色
+- 数値変更
+
+---
+
+# 配色ルール
+
+ベース：
+
+- 黒
+- ダークグレー
+- 金装飾
+
+アクセント：
+
+ユーザーアイコン由来カラーを差し色として使用。
+
+使用箇所：
+
+- 偏差値発光
+- 横棒グラフ
+- UIライン
+- 星評価
+- レーダーチャート
+
+重要：
+
+アクセントカラーを主役にしない。
+
+---
+
+# 偏差値帯ごとの演出変化
+
+## 偏差値46未満
+
+- 装飾少なめ
+- 発光弱め
+- 背景暗め
+- UI簡素
+
+---
+
+## 偏差値54以上
+
+- 金装飾増加
+- 背景模様追加
+- レーダーチャート表示
+- 発光少し追加
+
+---
+
+## 偏差値63以上
+
+- 偏差値数字に金粒子
+- UI立体感増加
+- ブラックカード感追加
+- グラフ高級化
+
+---
+
+## 偏差値72以上
+
+- 背景オーラ
+- 金箔感
+- 王冠系装飾
+- 偏差値数字大型化
+- 高級ホテル感
+
+---
+
+## 偏差値78以上
+
+- 神域演出
+- UI発光増加
+- 神秘的紋章
+- 金粒子増加
+- 超高級感
+- 伝説級ゲームUI感
+
+---
+
+# 固定見出し
+
+以下は完全固定。
+
+- 合格通知書
+- Noteアカウント戦闘力診断
+- Note偏差値
+- 基本スコア
+- 最終戦闘力
+- 総合評価
+- 継続・蓄積
+- 収益化
+- 影響力
+- エンゲージメント
+- スコアバランスチャート
+- AI教授からのガチ講評
+- 推薦アクション
+
+---
+
+# 固定レイアウト
+
+## 左上
+
+- 円形アイコン
+- 金フレーム
+- アイコン分析コメント
+- 総合評価ランク
+
+---
+
+## 右上
+
+- 大学名
+- 大学ランク
+- 偏差値
+
+---
+
+## 中央
+
+超大型で偏差値表示。
+
+表示形式：
+
+```text
+Note偏差値
+偏差値：{偏差値}
+```
+
+注意：
+
+偏差値に、
+
+- /100
+- 点
+- 満点
+
+を付けてはならない。
+
+---
+
+## 中央右
+
+上下2層構成で表示する。
+
+---
+
+### 上段（主役表示）
+
+以下を大きめに表示する。
+
+```text
+最終戦闘力：{最終戦闘力} / 110
+```
+
+加えて：
+
+- 星評価
+
+を表示する。
+
+重要：
+
+- 最終戦闘力を中央右エリアの主役として扱う
+- 星評価は視認性を高める
+- 上段は豪華演出を優先する
+
+---
+
+### 下段（補足情報）
+
+以下をやや小さめに整理表示する。
+
+```text
+基本スコア：{基本スコア} / 100
+note愛ボーナス：+{note愛ボーナス}
+```
+
+加えて：
+
+- 総合評価ランク
+
+を表示する。
+
+重要：
+
+- 情報を横並びに詰め込みすぎない
+- 上段より主張を弱くする
+- 情報整理を優先する
+
+---
+
+## 中段
+
+4カテゴリ横棒グラフ。
+
+- 継続・蓄積
+- 収益化
+- 影響力
+- エンゲージメント
+
+表示形式：
+
+```text
+継続・蓄積：{継続・蓄積スコア} / 30
+収益化：{収益化スコア} / 15
+影響力：{影響力スコア} / 25
+エンゲージメント：{エンゲージメントスコア} / 30
+```
+
+---
+
+## 左下
+
+レーダーチャートを表示。
+
+使用項目：
+
+- 継続・蓄積
+- 収益化
+- 影響力
+- エンゲージメント
+
+重要：
+
+- 基本スコアは禁止
+- 最終戦闘力は禁止
+- 4カテゴリのみ表示
+- 半透明UI
+- 金ライン中心
+- 高級感重視
+- 複雑化禁止
+
+---
+
+## 右下
+
+- AI教授からのガチ講評
+- 推薦アクション
+
+大量バッジは禁止。
+
+---
+
+# 表示禁止情報
+
+以下は禁止。
+
+- 活動期間
+- 連続投稿数
+- 総投稿数
+- 収益金額
+- フォロワー数
+- フォロワー比
+- 月間ビュー数
+- 月間コメント数
+- 月間スキ数
+- 月間平均スキ率
+
+実数データは表示しない。
+
+---
+
+# テキスト生成ルール
+
+## アイコン分析コメント
+
+- 1文
+- 25文字以内
+- アイコンの雰囲気のみ述べる
+- スコア関連禁止
+
+---
+
+## AI教授からのガチ講評
+
+- 2文固定
+- 1文40文字以内
+- 合計80文字以内
+- 実数値禁止
+- スコア傾向のみ分析
+
+---
+
+## 推薦アクション
+
+- 1文のみ
+- 30文字以内
+- 改行禁止
+
+---
+
+## カテゴリ短評
+
+各カテゴリ：
+
+- 1文
+- 15文字以内
+
+---
+
+# UI演出ルール
+
+重要：
+
+UI構造自体は固定する。
+
+変化させて良いのは以下のみ。
+
+- 発光量
+- 金装飾量
+- 背景オーラ
+- 粒子演出
+- 高級感
+- 立体感
+- 紋章演出
+- 王冠演出
+- ブラックカード感
+
+情報量を増やして複雑化してはならない。
+
+---
+
+# 最終ルール
+
+この画像は自由生成ではなく、
+固定UIテンプレートへの情報転記作業として扱う。
+
+最重要：
+
+- STEP1 JSONを完全コピーする
+- 数値変更禁止
+- ランク変更禁止
+- 大学名変更禁止
+- 星評価変更禁止
+
+最終出力は診断カード画像1枚のみとする。
+</script>
+
+<script type="text/plain" id="rawStep3">
+Noteアカウント偏差値診断｜STEP2 学生証＋キャラクター画像生成プロンプト（完成版）
+ここだけ入力
+以下2点だけを入力してください。
+1. 氏名
+氏名：__USER_NAME__
+2. STEP1結果JSON
+以下に、直前のSTEP1で出力されたJSONをそのまま貼り付けてください。
+__STEP1_RESULT_JSON__
+
+⸻
+
+目的
+入力された「氏名」と「STEP1結果JSON」をもとに、 「note大学 学生証」画像を1枚生成する。
+このSTEP2は画像生成専用であり、計算・再判定・再評価・数値補正・講評生成は一切行わない。
+
+⸻
+
+最重要ルール
+	•	氏名だけは、最上部で入力された氏名を使用する
+	•	氏名以外の診断データは、STEP1結果JSONの値をそのまま使用する
+	•	STEP1結果JSONの数値・文言・記号・星評価は変更しない
+	•	推測、補完、補正、再計算、再判定、丸め直し、言い換えは禁止
+	•	会話文や添付画像の雰囲気から診断データを補完しない
+	•	アイコン画像の印象でスコアを変えない
+	•	画像生成のみを行う
+
+⸻
+
+使用する情報
+このSTEP2で使用する情報は以下の2つだけ。
+	1.	最上部で入力された氏名
+	2.	STEP1結果JSON
+氏名以外の診断データは、必ずSTEP1結果JSONから取得する。
+
+⸻
+
+参照するSTEP1 JSONキー
+STEP1結果JSONには、以下のキーが含まれている前提で処理する。
+	•	活動期間スコア
+	•	総投稿数スコア
+	•	連続投稿数スコア
+	•	継続・蓄積スコア
+	•	収益化スコア
+	•	フォロワー数スコア
+	•	フォロワー比スコア
+	•	月間ビュー数スコア
+	•	影響力スコア
+	•	月間スキ数スコア
+	•	月間平均スキ率スコア
+	•	月間コメント数スコア
+	•	エンゲージメントスコア
+	•	基本スコア計算式
+	•	基本スコア
+	•	メンバーシップ加入経験ボーナス
+	•	有料記事購入経験ボーナス
+	•	サポート経験ボーナス
+	•	note愛ボーナス計算式
+	•	note愛ボーナス
+	•	最終戦闘力計算式
+	•	最終戦闘力
+	•	偏差値
+	•	大学ランク
+	•	大学名
+	•	総合評価ランク
+	•	星評価
+
+⸻
+
+画像コンセプト
+テーマは「note大学 学生証」。
+1枚で完結する縦長ポスター風ビジュアルにする。 黒×金を基調に、高級感・合格感・表彰感・エリート感のあるデザインにする。 SNSで共有したくなるような、華やかで見栄えの良い仕上がりにする。
+
+⸻
+
+画像に入れる要素
+画像内には以下を入れる。
+	1.	タイトル「note大学 学生証」
+	2.	学生証を持ったキャラクター
+	3.	学生証本体
+	4.	合格スタンプまたは合格バッジ
+	5.	大学風・表彰風の装飾
+
+⸻
+
+キャラクターの扱い
+	•	キャラクターは1人
+	•	学生証を手に持って見せている構図にする
+	•	表情は、自信があり、魅力的で、少し誇らしげにする
+	•	添付画像がある場合は、その画像の雰囲気、髪型、色味、キャラクター性、印象を参考にする
+	•	添付画像がイラストやアイコンの場合は、その魅力を活かしたオリジナルキャラクターとして表現する
+	•	添付画像が人物写真の場合は、本人をそのまま再現せず、雰囲気を参考にしたオリジナルキャラクターとして表現する
+	•	添付画像がない場合は、note大学の学生証にふさわしい魅力的なキャラクターを自由に作成する
+
+⸻
+
+学生証本体に表示する診断データ
+学生証本体に表示する診断データは、以下の項目に限定する。 値はSTEP1結果JSONからそのまま取得する。
+	•	氏名：最上部で入力された氏名
+	•	大学名：STEP1結果JSONの「大学名」
+	•	大学ランク：STEP1結果JSONの「大学ランク」
+	•	総合評価ランク：STEP1結果JSONの「総合評価ランク」
+	•	偏差値：STEP1結果JSONの「偏差値」
+	•	基本スコア：STEP1結果JSONの「基本スコア」
+	•	note愛ボーナス：STEP1結果JSONの「note愛ボーナス」
+	•	最終戦闘力：STEP1結果JSONの「最終戦闘力」
+	•	星評価：STEP1結果JSONの「星評価」
+重要：
+	•	氏名だけは最上部で入力された氏名を入れる
+	•	それ以外の値はSTEP1結果JSONからそのまま転記する
+	•	数字、記号、星評価は変更しない
+	•	星評価は、可能な限り正確に横一列で表示する
+	•	星評価をアイコン化する場合も、星の数と種類を変えない
+	•	項目名は原則そのまま使用する
+	•	ただし、可読性を高める目的に限り、意味が変わらない短縮表記は許可する 例：総合評価ランク → 評価ランク
+
+⸻
+
+補助パネルの扱い
+細かいスコア内訳や計算式は、画像内にすべて表示しない。
+ただし、余白を活かして補助パネルを入れる場合は、例外的に以下4項目のみ表示してよい。 値はSTEP1結果JSONからそのまま取得する。
+	•	継続・蓄積スコア
+	•	収益化スコア
+	•	影響力スコア
+	•	エンゲージメントスコア
+計算式は画像内に表示しない。
+
+⸻
+
+装飾テキストの扱い
+診断データそのものを勝手に追加・変更してはならない。
+ただし、デザイン目的の短い装飾テキストは追加してよい。
+例：
+	•	note大学
+	•	STUDENT ID
+	•	note UNIVERSITY
+	•	合格
+	•	CERTIFIED
+	•	入学許可
+	•	校章風ロゴ
+	•	金色のフレーム
+	•	月桂樹
+	•	王冠
+	•	星
+	•	光
+	•	リボン
+	•	スタンプ
+装飾テキストは、診断結果の意味を変えない範囲で使用する。
+
+⸻
+
+推奨レイアウト
+上部
+	•	タイトル「note大学 学生証」
+	•	校章風エンブレム
+	•	金色の装飾フレーム
+中央
+	•	学生証を持ったキャラクター
+	•	自信のある表情
+	•	学生証を見せている構図
+下部
+	•	大きめの学生証本体
+	•	氏名、大学名、偏差値、ランク、スコア、星評価を見やすく表示
+	•	合格スタンプや装飾を配置
+文字が多くなりすぎる場合は、学生証本体の可読性を優先し、補助装飾を減らしてよい。 ただし、指定された表示項目と値は削除・変更しない。
+
+⸻
+
+禁止事項
+以下は禁止する。
+	•	氏名以外のSTEP1結果データを変更する
+	•	数字を変更する
+	•	偏差値を変更する
+	•	基本スコアを変更する
+	•	note愛ボーナスを変更する
+	•	最終戦闘力を変更する
+	•	大学名を変更する
+	•	大学ランクを変更する
+	•	総合評価ランクを変更する
+	•	星評価を変更する
+	•	STEP1結果JSONを再計算する
+	•	STEP1結果JSONを再判定する
+	•	入力されていない診断データを追加する
+	•	アイコン画像の雰囲気でスコアを補正する
+	•	名前以外を会話の流れから推測する
+	•	詳細スコアをすべて画像内に詰め込む
+	•	計算式を画像内に表示する
+	•	長文の講評文を画像内に入れる
+
+⸻
+
+最終指示
+最上部で入力された氏名を氏名欄に使用し、 それ以外はSTEP1結果JSONの値を唯一の情報源として使用する。
+診断結果の再計算や再判定は一切行わず、 「note大学 学生証」の完成画像を1枚生成すること。
+</script>
+
+<script>
+(function(){
+"use strict";
+var $ = function(id){return document.getElementById(id);};
+var numIds = ["months","streak","posts","revenue","followers","following","views","likes","comments"];
+var toggles = {member:false, purchase:false, support:false};
+
+/* ---------- wizard ---------- */
+var steps = Array.prototype.slice.call(document.querySelectorAll(".step"));
+var cur = 0;
+var dotsEl = $("dots");
+steps.forEach(function(s,i){
+  var d=document.createElement("button");
+  d.type="button"; d.className="dot"; d.textContent=i+1;
+  d.addEventListener("click",function(){ go(i); });
+  dotsEl.appendChild(d);
+});
+var dots = Array.prototype.slice.call(dotsEl.children);
+
+function go(i){
+  cur = Math.max(0, Math.min(steps.length-1, i));
+  steps.forEach(function(s,j){ s.classList.toggle("active", j===cur); });
+  dots.forEach(function(d,j){
+    d.classList.toggle("cur", j===cur);
+    d.classList.toggle("done", j<cur);
+  });
+  $("pStep").textContent = "STEP "+(cur+1)+" / "+steps.length;
+  $("pTitle").textContent = steps[cur].getAttribute("data-title");
+  $("pBar").style.width = ((cur+1)/steps.length*100)+"%";
+  $("btnBack").style.visibility = cur===0 ? "hidden" : "visible";
+  $("btnNext").textContent = cur===steps.length-1 ? "最初に戻る" : (cur===steps.length-2 ? "結果を見る →" : "次へ →");
+  if(cur===steps.length-1) render();
+  window.scrollTo({top:0, behavior:"smooth"});
+  save();
+}
+$("btnNext").addEventListener("click", function(){ go(cur===steps.length-1 ? 0 : cur+1); });
+$("btnBack").addEventListener("click", function(){ go(cur-1); });
+
+/* ---------- scoring (faithful to original prompt) ---------- */
+function band(v, table){ for(var i=0;i<table.length;i++){ if(v<=table[i][0]) return table[i][1]; } return table[table.length-1][1]; }
+var INF = Infinity;
+function scMonths(v){ return band(v,[[1,1],[3,2],[6,3],[11,4],[INF,5]]); }
+function scPosts(v){ return band(v,[[29,3],[99,6],[199,10],[299,13],[INF,15]]); }
+function scStreak(v){ return band(v,[[7,1],[30,3],[100,6],[199,8],[INF,10]]); }
+function scRevenue(v){ if(v<=0)return 0; return band(v,[[10000,3],[100000,5],[300000,8],[500000,12],[INF,15]]); }
+function scFollowers(v){ return band(v,[[500,1],[1000,3],[2500,6],[5000,8],[INF,10]]); }
+function scRatio(v){ if(v<=1.0)return 1; if(v<=3.0)return 2; return 3; }
+function scViews(v){ return band(v,[[5000,3],[10000,5],[30000,8],[100000,10],[INF,12]]); }
+function scLikes(v){ return band(v,[[100,1],[1000,3],[2500,6],[4500,8],[INF,10]]); }
+function scRate(v){ if(v<=1.0)return 1; if(v<=5.0)return 3; if(v<=8.0)return 6; if(v<=15.0)return 8; return 10; }
+function scComments(v){ return band(v,[[10,1],[100,3],[300,6],[600,8],[INF,10]]); }
+
+var UNI = [
+  [78.0,"神域","ハーバード大学（ロースクール）","SSS+","★★★★★★★★★★"],
+  [75.0,"伝説級","東京大学（理科三類）","SSS","★★★★★★★★★☆"],
+  [72.0,"超天才","京都大学（医学部）","SS","★★★★★★★★☆☆"],
+  [69.0,"超エリート","東京大学（文科一類）","S+","★★★★★★★★☆☆"],
+  [66.0,"エリート","京都大学（法学部）","S","★★★★★★★☆☆☆"],
+  [63.0,"名門上位","慶應義塾大学（経済学部）","A+","★★★★★★★☆☆☆"],
+  [60.0,"名門","早稲田大学（商学部）","A","★★★★★★☆☆☆☆"],
+  [57.0,"上位私大","明治大学（政治経済学部）","B+","★★★★★★☆☆☆☆"],
+  [54.0,"中堅上位","MARCH / 関関同立","B","★★★★★☆☆☆☆☆"],
+  [51.0,"中堅","日東駒専 / 産近甲龍","C","★★★★☆☆☆☆☆☆"],
+  [46.0,"基礎固め中","地方中堅私大","D","★★★☆☆☆☆☆☆☆"],
+  [-1,"発展途上","Note基礎知識習得スクール","E","★★☆☆☆☆☆☆☆☆"]
+];
+function mapUni(dev){ for(var i=0;i<UNI.length;i++){ if(dev>=UNI[i][0]) return UNI[i]; } return UNI[UNI.length-1]; }
+
+function round1(v){ return Math.round(v*10)/10; }
+function n(id){ var v=parseFloat($(id).value); return isNaN(v)||v<0?0:v; }
+
+function compute(){
+  var followers=n("followers"), following=n("following"), views=n("views"), likes=n("likes");
+  var ratio = following>0 ? round1(followers/following) : 0.0;
+  var rate  = views>0 ? round1(likes/views*100) : 0.0;
+  var s = {
+    months: scMonths(n("months")), posts: scPosts(n("posts")), streak: scStreak(n("streak")),
+    revenue: scRevenue(n("revenue")), followers: scFollowers(followers), ratio: scRatio(ratio),
+    views: scViews(views), likes: scLikes(likes), rate: scRate(rate), comments: scComments(n("comments"))
+  };
+  var cont = s.months+s.posts+s.streak;
+  var inf  = s.followers+s.ratio+s.views;
+  var eng  = s.likes+s.rate+s.comments;
+  var base = cont+s.revenue+inf+eng;
+  var bMember = toggles.member?4:0, bPurchase = toggles.purchase?3:0, bSupport = toggles.support?3:0;
+  var bonus = bMember+bPurchase+bSupport;
+  var total = base+bonus;
+  var dev = round1(Math.min(80, Math.max(30, 30 + base*0.5)));
+  return {s:s, ratio:ratio, rate:rate, cont:cont, inf:inf, eng:eng, base:base,
+          bMember:bMember, bPurchase:bPurchase, bSupport:bSupport, bonus:bonus,
+          total:total, dev:dev, uni:mapUni(dev)};
+}
+
+/* ---------- prompt generation ---------- */
+function inputJson(r){
+  return '{\n'+
+  '  "活動期間_ヶ月": '+n("months")+',\n'+
+  '  "連続投稿数_日": '+n("streak")+',\n'+
+  '  "総投稿数": '+n("posts")+',\n'+
+  '  "直近3ヶ月収益_円": '+n("revenue")+',\n'+
+  '  "フォロワー数": '+n("followers")+',\n'+
+  '  "フォロワー比": '+r.ratio.toFixed(1)+',\n'+
+  '  "月間ビュー数": '+n("views")+',\n'+
+  '  "月間コメント数": '+n("comments")+',\n'+
+  '  "月間スキ数": '+n("likes")+',\n'+
+  '  "月間平均スキ率": '+r.rate.toFixed(1)+',\n'+
+  '  "メンバーシップ加入経験": '+(toggles.member?1:0)+',\n'+
+  '  "有料記事購入経験": '+(toggles.purchase?1:0)+',\n'+
+  '  "サポート経験": '+(toggles.support?1:0)+'\n'+
+  '}';
+}
+function resultJson(r){
+  return '{\n'+
+  '  "活動期間スコア": '+r.s.months+',\n'+
+  '  "総投稿数スコア": '+r.s.posts+',\n'+
+  '  "連続投稿数スコア": '+r.s.streak+',\n'+
+  '  "継続・蓄積スコア": '+r.cont+',\n'+
+  '  "収益化スコア": '+r.s.revenue+',\n'+
+  '  "フォロワー数スコア": '+r.s.followers+',\n'+
+  '  "フォロワー比スコア": '+r.s.ratio+',\n'+
+  '  "月間ビュー数スコア": '+r.s.views+',\n'+
+  '  "影響力スコア": '+r.inf+',\n'+
+  '  "月間スキ数スコア": '+r.s.likes+',\n'+
+  '  "月間平均スキ率スコア": '+r.s.rate+',\n'+
+  '  "月間コメント数スコア": '+r.s.comments+',\n'+
+  '  "エンゲージメントスコア": '+r.eng+',\n'+
+  '  "基本スコア計算式": "'+r.cont+' + '+r.s.revenue+' + '+r.inf+' + '+r.eng+' = '+r.base+'",\n'+
+  '  "基本スコア": '+r.base+',\n'+
+  '  "メンバーシップ加入経験ボーナス": '+r.bMember+',\n'+
+  '  "有料記事購入経験ボーナス": '+r.bPurchase+',\n'+
+  '  "サポート経験ボーナス": '+r.bSupport+',\n'+
+  '  "note愛ボーナス計算式": "'+r.bMember+' + '+r.bPurchase+' + '+r.bSupport+' = '+r.bonus+'",\n'+
+  '  "note愛ボーナス": '+r.bonus+',\n'+
+  '  "最終戦闘力計算式": "'+r.base+' + '+r.bonus+' = '+r.total+'",\n'+
+  '  "最終戦闘力": '+r.total+',\n'+
+  '  "偏差値": '+r.dev.toFixed(1)+',\n'+
+  '  "大学ランク": "'+r.uni[1]+'",\n'+
+  '  "大学名": "'+r.uni[2]+'",\n'+
+  '  "総合評価ランク": "'+r.uni[3]+'",\n'+
+  '  "星評価": "'+r.uni[4]+'"\n'+
+  '}';
+}
+function raw(id){ return $(id).textContent.trim(); }
+
+function render(){
+  var r = compute();
+  $("ratioDisp").textContent = r.ratio.toFixed(1);
+  $("rateDisp").textContent = r.rate.toFixed(1);
+  $("pvDev").textContent = r.dev.toFixed(1);
+  $("pvPower").textContent = r.total;
+  $("pvUni").textContent = r.uni[2];
+  $("pvRank").textContent = r.uni[1];
+  $("pvGrade").textContent = r.uni[3];
+  $("pvStars").textContent = r.uni[4];
+  $("pvBase").textContent = r.base;
+  $("pvBonus").textContent = r.bonus;
+  $("pvTotal").textContent = r.total;
+  $("vCont").textContent=r.cont; $("bCont").style.width=(r.cont/30*100)+"%";
+  $("vRev").textContent=r.s.revenue; $("bRev").style.width=(r.s.revenue/15*100)+"%";
+  $("vInf").textContent=r.inf; $("bInf").style.width=(r.inf/25*100)+"%";
+  $("vEng").textContent=r.eng; $("bEng").style.width=(r.eng/30*100)+"%";
+  $("out1").textContent = raw("rawStep1").replace("__USER_INPUT_JSON__", inputJson(r));
+  $("out2").textContent = raw("rawStep2");
+  var name = $("uname").value.trim() || "ここに名前を入力";
+  $("out3").textContent = raw("rawStep3")
+      .replace("__USER_NAME__", name)
+      .replace("__STEP1_RESULT_JSON__", resultJson(r));
+}
+
+/* ---------- persistence ---------- */
+var LS_KEY="note_hensachi_builder_v2";
+function save(){
+  try{
+    var d={t:toggles, name:$("uname").value, step:cur};
+    numIds.forEach(function(id){ d[id]=$(id).value; });
+    localStorage.setItem(LS_KEY, JSON.stringify(d));
+  }catch(e){}
+}
+function load(){
+  try{
+    var d=JSON.parse(localStorage.getItem(LS_KEY)||"null");
+    if(!d)return 0;
+    numIds.forEach(function(id){ if(d[id]!=null)$(id).value=d[id]; });
+    if(d.name!=null)$("uname").value=d.name;
+    if(d.t){ toggles=d.t; syncToggles(); }
+    return d.step||0;
+  }catch(e){ return 0; }
+}
+function syncToggles(){
+  [["tglMember","member"],["tglPurchase","purchase"],["tglSupport","support"]].forEach(function(p){
+    var el=$(p[0]), on=toggles[p[1]];
+    el.classList.toggle("on",on);
+    el.querySelector(".t-state").textContent = on?"あり (1)":"なし";
+  });
+}
+
+/* ---------- events ---------- */
+numIds.concat(["uname"]).forEach(function(id){
+  $(id).addEventListener("input", function(){
+    var r=compute();
+    $("ratioDisp").textContent=r.ratio.toFixed(1);
+    $("rateDisp").textContent=r.rate.toFixed(1);
+    save();
+  });
+});
+document.querySelectorAll(".tgl").forEach(function(el){
+  el.addEventListener("click", function(){
+    var k=el.getAttribute("data-key");
+    toggles[k]=!toggles[k];
+    syncToggles(); save();
+  });
+});
+document.querySelectorAll("button.copy").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    render();
+    var text=$(btn.getAttribute("data-target")).textContent;
+    function done(){ var o=btn.textContent; btn.textContent="COPIED ✓"; btn.classList.add("done");
+      setTimeout(function(){ btn.textContent=o; btn.classList.remove("done"); },1500); }
+    function fallback(){
+      var ta=document.createElement("textarea"); ta.value=text;
+      ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); done(); }catch(e){ alert("コピーに失敗しました。内容を確認から手動でコピーしてください。"); }
+      document.body.removeChild(ta);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    }else fallback();
+  });
+});
+
+var startStep = load();
+go(startStep);
+})();
+</script>
+</body>
+</html>
